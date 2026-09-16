@@ -1,0 +1,5 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/iara_staff_hub.html" }
+  ]
+}
