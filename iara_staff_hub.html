@@ -1554,7 +1554,7 @@ function manualSearch(q){
   count.hidden = false;
   count.textContent = hits
     ? hits + (hits === 1 ? " section matches" : " sections match")
-    : "Nothing in the manual matches that. Try a shorter word.";
+    : "No match for that. Try a shorter word.";
 }
 
 function unmark(m){
@@ -1697,10 +1697,9 @@ function renderFbGrid(){
   if (tabs) tabs.style.display = term ? "none" : "";
   var fbCount = document.getElementById("fb-count");
   if (fbCount) {
-    fbCount.hidden = !term;
-    if (term) fbCount.textContent = items.length
-      ? items.length + (items.length === 1 ? " item matches" : " items match") + " across the menu"
-      : "Nothing on the menu matches that.";
+    fbCount.hidden = !term || !items.length;
+    if (term && items.length) fbCount.textContent =
+      items.length + (items.length === 1 ? " item matches" : " items match") + " across the menu";
   }
   var html = items.map(function(it){
     var allergens = (it.allergens||[]).map(function(a){ return '<span class="badge badge-allergen">'+a+'</span>'; }).join("");
