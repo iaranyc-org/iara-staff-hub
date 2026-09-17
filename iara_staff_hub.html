@@ -1308,7 +1308,7 @@ var db = null;
 var adminApp = null, adminDb = null, adminAuth = null, adminUser = null;
 // Belt and braces only. The rules are the real gate; this just keeps the UI
 // honest and gives a clear message instead of a permission error.
-var MANAGERS = ["ronald@iara.nyc", "vitor@iara.nyc", "jay@iara.nyc"];
+var MANAGERS = ["ronald@iara.nyc", "vitor@iara.nyc", "jay@iara.nyc", "eli@iara.nyc", "contact@iara.nyc"];
 function isManagerEmail(e){
   return !!e && MANAGERS.indexOf(String(e).toLowerCase()) !== -1;
 }

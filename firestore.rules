@@ -27,7 +27,9 @@ service cloud.firestore {
         && request.auth.token.email in [
              'ronald@iara.nyc',
              'vitor@iara.nyc',
-             'jay@iara.nyc'
+             'jay@iara.nyc',
+             'eli@iara.nyc',
+             'contact@iara.nyc'
            ];
     }
 
