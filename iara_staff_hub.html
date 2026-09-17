@@ -260,6 +260,28 @@
   .opt.wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
   .opt[disabled]{ cursor:default; }
   .qexplain{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
+  .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center;
+    justify-content:center; padding:20px; z-index:100; overflow-y:auto; }
+  .modal{ width:100%; max-width:520px; padding:26px; margin:auto; }
+  .modal h3{ margin:0 0 20px; font-size:21px; }
+  .field.two{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .field-help{ margin:6px 0 0; font-size:12px; color:var(--ink-soft); }
+  .req{ color:var(--clay); }
+  .check{ display:flex; align-items:center; gap:9px; font-size:14px; cursor:pointer; margin-bottom:4px; }
+  .check input{ width:16px; height:16px; accent-color:var(--sun); cursor:pointer; flex:none; }
+  .form-err{ margin:12px 0 0; font-size:13.5px; color:var(--clay); font-weight:600; }
+  .modal-actions{ display:flex; align-items:center; gap:10px; margin-top:22px; flex-wrap:wrap; }
+  .modal-actions .spacer{ flex:1; }
+  .modal-actions .btn{ width:auto; }
+  .btn-danger{ color:var(--clay); border-color:color-mix(in srgb, var(--clay) 40%, transparent); }
+  .btn-danger:hover{ border-color:var(--clay); }
+  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:200;
+    background:var(--paper-raised); border:1.5px solid var(--line); border-radius:6px;
+    padding:12px 16px; display:flex; align-items:center; gap:14px; font-size:14px;
+    box-shadow:var(--shadow); max-width:calc(100vw - 32px); }
+  .toast-act{ background:none; border:none; color:var(--sun); font:inherit; font-weight:700;
+    cursor:pointer; text-decoration:underline; padding:0; flex:none; }
+  @media (max-width:860px){ .toast{ bottom:76px; } .field.two{ grid-template-columns:1fr; } }
   .mode-switch{ display:inline-flex; gap:4px; padding:4px; border-radius:6px; border:1.5px solid var(--line);
     background:var(--paper-raised); margin-bottom:18px; }
   .mode-btn{ border:none; background:transparent; color:var(--ink-soft); font:inherit; font-size:14px; font-weight:700;
@@ -1005,25 +1027,144 @@ function renderFbGrid(){
   }
 }
 
+/* A real form. This was five chained prompt() dialogs: no way back, no way to
+   review what you typed, and iOS Safari can suppress a chained prompt outright.
+   It also never asked for price or pronunciation, so a manager entering the
+   real menu could not use the app's own pronunciation feature. */
 function openDishForm(existing){
-  var name = prompt("Dish/drink name:", existing ? existing.name : "");
-  if (name === null) return;
-  var desc = prompt("Description:", existing ? existing.desc : "") || "";
-  var allergensRaw = prompt("Allergens (comma separated, or leave blank):", existing ? (existing.allergens||[]).join(", ") : "") || "";
-  var allergens = allergensRaw.split(",").map(function(s){ return s.trim(); }).filter(Boolean);
-  var isExample = confirm("Mark as EXAMPLE / placeholder (OK = yes, Cancel = this is a confirmed menu item)?");
-  var item = {
-    category: fbActiveCat,
-    name: name.trim(),
-    desc: desc.trim(),
-    allergens: allergens,
-    example: isExample
-  };
-  saveDish(existing ? existing.id : null, item);
+  var isEdit = !!existing;
+  var e = existing || {};
+  var wrap = document.createElement("div");
+  wrap.className = "modal-back";
+  wrap.innerHTML =
+    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="dlg-title">' +
+      '<h3 id="dlg-title">'+(isEdit ? "Edit Item" : "Add Item to " + esc(fbActiveCat))+'</h3>' +
+      '<div class="field"><label for="f-name">Name <span class="req">*</span></label>' +
+        '<input id="f-name" type="text" value="'+esc(e.name||"")+'" placeholder="Pão de Queijo"></div>' +
+      '<div class="field two"><div><label for="f-price">Price</label>' +
+        '<input id="f-price" type="text" value="'+esc(e.price||"")+'" placeholder="$12"></div>' +
+        '<div><label for="f-pron">Pronunciation</label>' +
+        '<input id="f-pron" type="text" value="'+esc(e.pronunciation||"")+'" placeholder="pown deh KAY-zhoo"></div></div>' +
+      '<div class="field"><label for="f-desc">Description</label>' +
+        '<textarea id="f-desc" rows="3" placeholder="What is in it, in a sentence a server can say to a guest.">'+esc(e.desc||"")+'</textarea></div>' +
+      '<div class="field"><label for="f-allerg">Allergens</label>' +
+        '<input id="f-allerg" type="text" value="'+esc((e.allergens||[]).join(", "))+'" placeholder="Dairy, Gluten">' +
+        '<p class="field-help">Separate with commas. Leave blank if there are none.</p></div>' +
+      '<label class="check"><input type="checkbox" id="f-example"'+(e.example ? " checked" : "")+'>' +
+        '<span>Mark as an example, not a confirmed menu item</span></label>' +
+      '<p class="form-err" id="f-err" hidden></p>' +
+      '<div class="modal-actions">' +
+        (isEdit ? '<button class="btn btn-ghost btn-danger" id="f-delete">Delete</button>' : '') +
+        '<span class="spacer"></span>' +
+        '<button class="btn btn-ghost" id="f-cancel">Cancel</button>' +
+        '<button class="btn btn-sun" id="f-save">Save</button>' +
+      '</div></div>';
+  document.body.appendChild(wrap);
+
+  var nameEl = wrap.querySelector("#f-name");
+  nameEl.focus();
+
+  function close(){
+    document.removeEventListener("keydown", onKey);
+    wrap.remove();
+  }
+  function onKey(ev){
+    if (ev.key === "Escape") { ev.preventDefault(); close(); }
+    if (ev.key === "Tab") trapFocus(wrap, ev);
+  }
+  document.addEventListener("keydown", onKey);
+  wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
+  wrap.querySelector("#f-cancel").addEventListener("click", close);
+
+  wrap.querySelector("#f-save").addEventListener("click", function(){
+    var name = nameEl.value.trim();
+    var err = wrap.querySelector("#f-err");
+    if (!name) {
+      err.textContent = "Give the item a name before saving.";
+      err.hidden = false; nameEl.focus(); return;
+    }
+    var pron = wrap.querySelector("#f-pron").value.trim();
+    // Keep every field the item already had (audio ids, speak text, category),
+    // then overwrite only what this form edits.
+    var item = Object.assign({}, e, {
+      category: e.category || fbActiveCat,
+      name: name,
+      price: wrap.querySelector("#f-price").value.trim(),
+      desc: wrap.querySelector("#f-desc").value.trim(),
+      pronunciation: pron,
+      speak: e.speak || name,
+      allergens: wrap.querySelector("#f-allerg").value
+        .split(",").map(function(x){ return x.trim(); }).filter(Boolean),
+      example: wrap.querySelector("#f-example").checked
+    });
+    delete item.id;
+    close();
+    saveDish(isEdit ? e.id : null, item);
+  });
+
+  var del = wrap.querySelector("#f-delete");
+  if (del) del.addEventListener("click", function(){ close(); deleteDish(e); });
 }
 
+// Keeps keyboard focus inside the dialog, per the accessibility floor.
+function trapFocus(root, ev){
+  var f = root.querySelectorAll('button, input, textarea, select, [href]');
+  if (!f.length) return;
+  var first = f[0], last = f[f.length - 1];
+  if (ev.shiftKey && document.activeElement === first) { ev.preventDefault(); last.focus(); }
+  else if (!ev.shiftKey && document.activeElement === last) { ev.preventDefault(); first.focus(); }
+}
+
+/* Delete is recoverable rather than confirmed: the item goes immediately and a
+   5s undo toast offers it back, which is faster than an "are you sure" modal
+   and safer than a bare delete. */
+var pendingDelete = null;
+async function deleteDish(item){
+  if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
+  var snapshot = Object.assign({}, item);
+  try {
+    await db.doc("menu_items/" + item.id).delete();
+    await loadFbItems(); renderFbGrid();
+  } catch(err) { toast("Could not delete that item. Try again."); return; }
+
+  pendingDelete = snapshot;
+  toast("Deleted " + snapshot.name + ".", "Undo", async function(){
+    var restore = Object.assign({}, pendingDelete); delete restore.id;
+    try {
+      await db.collection("menu_items").add(restore);
+      await loadFbItems(); renderFbGrid();
+      toast("Restored " + snapshot.name + ".");
+    } catch(err) { toast("Could not restore that item."); }
+  });
+}
+
+// Small toast, so the app stops using alert() for things the user cannot act on.
+var toastTimer = null;
+function toast(msg, actionLabel, onAction){
+  var old = document.getElementById("toast"); if (old) old.remove();
+  clearTimeout(toastTimer);
+  var t = document.createElement("div");
+  t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status");
+  t.innerHTML = '<span>'+esc(msg)+'</span>' +
+    (actionLabel ? '<button class="toast-act">'+esc(actionLabel)+'</button>' : '');
+  document.body.appendChild(t);
+  if (actionLabel && onAction) {
+    t.querySelector(".toast-act").addEventListener("click", function(){
+      t.remove(); onAction();
+    });
+  }
+  toastTimer = setTimeout(function(){ t.remove(); }, actionLabel ? 5000 : 3200);
+}
+
+var ptVoice = null;
+// Apple ships novelty voices under every locale and they sort first in pt-BR.
+var NOVELTY_VOICE_NAMES = ["albert","bad news","bahh","bells","boing","bubbles","cellos","eddy","flo",
+  "good news","grandma","grandpa","jester","junior","kathy","organ","reed","rocko","sandy","shelley",
+  "superstar","trinoids","whisper","wobble","zarvox"];
+var PREFERRED_PT_VOICES = ["luciana","francisca","camila","vitoria","vit\u00f3ria","joana","ricardo","daniel"];
+
 async function saveDish(id, item){
-  if (!db) { alert("Menu editing needs the app's shared database, which isn't available in this preview."); return; }
+  if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
   try {
     if (id) {
       await db.doc("menu_items/" + id).update(item);
@@ -1032,29 +1173,57 @@ async function saveDish(id, item){
     }
     await loadFbItems();
     renderFbGrid();
+    toast((id ? "Saved " : "Added ") + item.name + ".");
   } catch(e) {
-    alert("Couldn't save — please try again.");
+    toast("Could not save that item. Try again.");
   }
 }
 
-document.getElementById("fb-admin-btn").addEventListener("click", function(){
-  if (fbAdminUnlocked) { fbAdminUnlocked = false; this.textContent = "Edit menu (manager)"; renderFbGrid(); return; }
-  var pin = prompt("Enter the manager PIN to edit the menu:");
-  if (pin === MANAGER_PIN) {
-    fbAdminUnlocked = true;
-    this.textContent = "Done editing";
-    renderFbGrid();
-  } else if (pin !== null) {
-    alert("Incorrect PIN.");
+/* Manager gate. Was prompt() + alert(), which cannot be styled, cannot be
+   cancelled cleanly, and shows the PIN box with no context about what it
+   unlocks. */
+function openManagerGate(onOk){
+  var wrap = document.createElement("div");
+  wrap.className = "modal-back";
+  wrap.innerHTML =
+    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="pin-title" style="max-width:380px;">' +
+      '<h3 id="pin-title">Manager Access</h3>' +
+      '<p class="field-help" style="margin:0 0 16px;">Editing the menu changes it for everyone on the team.</p>' +
+      '<div class="field"><label for="pin-in">Manager PIN</label>' +
+        '<input id="pin-in" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"></div>' +
+      '<p class="form-err" id="pin-err" hidden>That PIN is not right.</p>' +
+      '<div class="modal-actions"><span class="spacer"></span>' +
+        '<button class="btn btn-ghost" id="pin-cancel">Cancel</button>' +
+        '<button class="btn btn-sun" id="pin-ok">Unlock</button></div></div>';
+  document.body.appendChild(wrap);
+  var input = wrap.querySelector("#pin-in");
+  input.focus();
+  function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
+  function submit(){
+    if (input.value === MANAGER_PIN) { close(); onOk(); }
+    else { wrap.querySelector("#pin-err").hidden = false; input.select(); }
   }
+  function onKey(ev){
+    if (ev.key === "Escape") { ev.preventDefault(); close(); }
+    else if (ev.key === "Enter") { ev.preventDefault(); submit(); }
+    else if (ev.key === "Tab") trapFocus(wrap, ev);
+  }
+  document.addEventListener("keydown", onKey);
+  wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
+  wrap.querySelector("#pin-cancel").addEventListener("click", close);
+  wrap.querySelector("#pin-ok").addEventListener("click", submit);
+}
+
+document.getElementById("fb-admin-btn").addEventListener("click", function(){
+  var btn = this;
+  if (fbAdminUnlocked) {
+    fbAdminUnlocked = false; btn.textContent = "Edit Menu"; renderFbGrid(); return;
+  }
+  openManagerGate(function(){
+    fbAdminUnlocked = true; btn.textContent = "Done Editing"; renderFbGrid();
+  });
 });
 
-var ptVoice = null;
-var NOVELTY_VOICE_NAMES = ["albert","bad news","bahh","bells","boing","bubbles","cellos","eddy","flo",
-  "good news","grandma","grandpa","jester","junior","kathy","organ","reed","rocko","sandy","shelley",
-  "superstar","trinoids","whisper","wobble","zarvox"];
-var PREFERRED_PT_VOICES = ["luciana","francisca","camila","vitoria","vit\u00f3ria","joana","ricardo","daniel"];
-var MALE_PT_VOICE_HINTS = ["male","daniel","ricardo","felipe","joaquim","diego","antonio","antônio","rodrigo","bruno","francisco"];
 function loadPtVoice(){
   if (!window.speechSynthesis) return;
   var voices = window.speechSynthesis.getVoices();
