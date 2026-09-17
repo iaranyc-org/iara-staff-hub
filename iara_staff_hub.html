@@ -729,6 +729,17 @@
   .sc-rule{ height:1px; background:var(--rule); margin:20px 0 16px; }
   .sc-blank{ margin:0; font-size:13.5px; color:var(--ink-soft); }
   .sc-stats{ display:flex; gap:34px; flex-wrap:wrap; }
+  .admin-stats{ margin:22px 0 34px; }
+  .admin-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .admin-h2{ font-size:19px; margin:38px 0 12px; }
+  .row-flag td:first-child{ box-shadow:inset 3px 0 var(--sun); padding-left:11px; }
+  .nudge-list{ list-style:none; margin:0; padding:0; }
+  .nudge-list li{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
+    padding:11px 0; border-bottom:1px solid var(--rule); }
+  .nudge-list li:last-child{ border-bottom:none; }
+  .nudge-name{ font-family:'Fraunces',Georgia,serif; font-size:15.5px; color:var(--display); }
+  .nudge-role{ font-size:12px; }
+  .nudge-why{ margin-left:auto; font-size:12.5px; color:var(--ink-soft); }
   .sc-stats > div{ display:flex; flex-direction:column; gap:3px; }
   .sc-stats .num{ font-size:23px; color:var(--display); font-variant-numeric:tabular-nums; }
   .sc-stats .lbl{ font-size:12px; letter-spacing:.01em; color:var(--ink-soft); }
@@ -1384,6 +1395,18 @@ async function touchStaffDoc(){
   } catch(e){ /* non-fatal */ }
 }
 
+// Denormalized so Admin can see who has finished First Week without a
+// manager standing next to that person's phone. Best-effort, same as
+// touchStaffDoc: the checklist itself is still authoritative locally.
+async function syncChecklistToCloud(p){
+  if (!db || !profile) return;
+  try {
+    await db.doc("staff/" + profile.id).set({
+      checklistDone: p.done, checklistTotal: p.total, checklistComplete: p.complete
+    }, { merge: true });
+  } catch(e){ /* non-fatal */ }
+}
+
 async function saveQuizAttempt(category, score, total, missed){
   if (!db || !profile) return;
   try {
@@ -2014,7 +2037,16 @@ async function saveDish(id, item){
 /* Manager gate. Was prompt() + alert(), which cannot be styled, cannot be
    cancelled cleanly, and shows the PIN box with no context about what it
    unlocks. */
+function isManagerSignedIn(){
+  return !!(adminAuth && adminAuth.currentUser && isManagerEmail(adminAuth.currentUser.email));
+}
+
 function openManagerGate(onOk){
+  // Already a manager on this device: no need to show the Google modal at
+  // all, since it would just flash and resolve. Edit Menu and Admin share
+  // one manager session, so unlocking either unlocks both for the rest of
+  // the visit.
+  if (isManagerSignedIn()) { onOk(adminAuth.currentUser); return; }
   var wrap = document.createElement("div");
   wrap.className = "modal-back";
   wrap.innerHTML =
@@ -2623,6 +2655,10 @@ async function renderChecklist(){
   if (!area) return;
   var p = await checklistProgress();
   var state = p.state, auto = p.auto, total = p.total, done = p.done, pct = p.pct;
+  // Three items are automatic (manual read, deck mastery, a passed drill) and
+  // never fire the checkbox handler below, so this view syncing itself on
+  // every visit is what keeps Admin's onboarding numbers honest.
+  syncChecklistToCloud(p);
 
   var html = '<div class="card cl-summary">' +
       '<div class="cl-count"><span class="mono">'+done+'</span> of <span class="mono">'+total+'</span> done</div>' +
@@ -2658,11 +2694,12 @@ async function renderChecklist(){
 
   applyGlossary(area);
   area.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(function(box){
-    box.addEventListener("change", function(){
+    box.addEventListener("change", async function(){
       var st = loadChecklist();
       st[box.getAttribute("data-id")] = box.checked;
       saveChecklist(st);
       renderChecklist();
+      syncChecklistToCloud(await checklistProgress());
     });
   });
 }
@@ -3127,7 +3164,7 @@ async function renderProgress(){
     area.innerHTML = '<p class="placeholder-note">Team progress needs the app\'s shared database, which isn\'t available in this preview.</p>';
     return;
   }
-  area.innerHTML = '<p class="placeholder-note">Loading…</p>';
+  area.innerHTML = '<p class="placeholder-note">Loading\u2026</p>';
   try {
     var CATS = Object.keys(QUIZ_META).map(function(k){ return { key:k, name:QUIZ_META[k].name }; });
     var staffSnap = await (adminDb || db).collection("staff").orderBy("name").get();
@@ -3154,36 +3191,74 @@ async function renderProgress(){
           missTally[q].who[s.name] = true;
         });
       });
-      rows.push({ name: s.name, role: s.role, count: attempts.length, avg: overallAvg, byCat: byCat, last: s.lastActive });
+      rows.push({
+        name: s.name, role: s.role, count: attempts.length, avg: overallAvg, byCat: byCat,
+        last: s.lastActive, created: s.createdAt,
+        // Undefined means this person has not opened First Week since the
+        // sync shipped; treat that the same as not-yet-started rather than
+        // guessing, and it self-corrects the next time they open the app.
+        clDone: typeof s.checklistDone === "number" ? s.checklistDone : null,
+        clTotal: typeof s.checklistTotal === "number" ? s.checklistTotal : null,
+        clComplete: !!s.checklistComplete
+      });
     }
     if (!rows.length) {
       area.innerHTML = '<p class="placeholder-note">No staff have opened the hub yet.</p>';
       return;
     }
-    var catHeaders = CATS.map(function(c){ return '<th>'+c.name+'</th>'; }).join("");
-    var html = '<p class="mg-who">Signed in as <span class="mono">'+esc(adminUser ? adminUser.email : "")+'</span>' +
-        ' <button class="jump-link" id="mg-out">Sign out</button></p>' +
-      '<p class="placeholder-note" style="margin-bottom:10px;">Each section shows average score across attempts, with the number of attempts in parentheses.</p>' +
-      '<div class="table-wrap"><table class="progress"><thead><tr>' +
-      '<th>Name</th><th>Role</th>' + catHeaders + '<th>Overall</th><th>Last active</th></tr></thead><tbody>';
-    rows.forEach(function(r){
-      var catCells = CATS.map(function(c){
-        var cell = r.byCat[c.key];
-        return '<td class="mono">' + (cell.avg===null ? '—' : cell.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+cell.count+')</span>') + '</td>';
-      }).join("");
-      html += '<tr><td>'+r.name+'</td><td>'+r.role+'</td>' + catCells +
-        '<td class="mono">'+(r.avg===null?'—':r.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+r.count+')</span>')+'</td>' +
-        '<td class="mono">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—')+'</td></tr>';
-    });
-    html += '</tbody></table></div>';
 
-    // What the floor keeps dropping. This is the part worth reading out at
-    // lineup, so it says how many people missed it, not just how many times.
+    var DAY = 86400000;
+    var now = Date.now();
+    var daysSince = function(iso){ return iso ? Math.floor((now - new Date(iso).getTime()) / DAY) : null; };
+    rows.forEach(function(r){ r.lastDays = daysSince(r.last); r.hireDays = daysSince(r.created); });
+
+    // ---- header: signed in as, sign out ----
+    var html = '<div class="admin-head">' +
+        '<p class="mg-who">Signed in as <span class="mono">'+esc(adminUser ? adminUser.email : "")+'</span></p>' +
+        '<button class="jump-link" id="mg-out">Sign out</button>' +
+      '</div>';
+
+    // ---- summary strip: the four numbers a manager actually wants first ----
+    var scored = rows.filter(function(r){ return r.avg !== null; });
+    var teamAvg = scored.length ? Math.round(scored.reduce(function(s,r){ return s+r.avg; },0)/scored.length) : null;
+    var onboarded = rows.filter(function(r){ return r.clComplete; }).length;
+    var activeWeek = rows.filter(function(r){ return r.lastDays !== null && r.lastDays <= 7; }).length;
+    html += '<div class="sc-stats admin-stats">' +
+      '<div><span class="num mono">'+rows.length+'</span><span class="lbl">Team</span></div>' +
+      '<div><span class="num mono">'+onboarded+'/'+rows.length+'</span><span class="lbl">Onboarded</span></div>' +
+      '<div><span class="num mono">'+(teamAvg===null?'\u2014':teamAvg+'%')+'</span><span class="lbl">Team drill average</span></div>' +
+      '<div><span class="num mono">'+activeWeek+'/'+rows.length+'</span><span class="lbl">Active this week</span></div>' +
+    '</div>';
+
+    // ---- needs a nudge: incomplete onboarding that has had time to finish,
+    // or anyone who has gone quiet. This is the one list worth reading before
+    // the other two, since it is the only thing here that is actually overdue. ----
+    var nudge = rows.filter(function(r){
+      var stuck = !r.clComplete && r.hireDays !== null && r.hireDays >= 7;
+      var quiet = r.lastDays !== null && r.lastDays >= 14;
+      return stuck || quiet;
+    }).sort(function(a,b){ return (b.lastDays||0) - (a.lastDays||0); });
+    if (nudge.length) {
+      html += '<h2 class="admin-h2">Needs a nudge</h2>' +
+        '<div class="card"><ul class="nudge-list">' + nudge.map(function(r){
+          var bits = [];
+          if (!r.clComplete && r.hireDays !== null && r.hireDays >= 7) {
+            bits.push((r.clTotal ? r.clDone+' of '+r.clTotal : 'First Week') + ' after '+r.hireDays+' days');
+          }
+          if (r.lastDays !== null && r.lastDays >= 14) bits.push('quiet '+r.lastDays+' days');
+          if (r.lastDays === null) bits.push('never opened the hub');
+          return '<li><span class="nudge-name">'+esc(r.name)+'</span>' +
+            '<span class="nudge-role placeholder-note">'+esc(r.role||"")+'</span>' +
+            '<span class="nudge-why">'+esc(bits.join(' \u00b7 '))+'</span></li>';
+        }).join('') + '</ul></div>';
+    }
+
+    // ---- what the team keeps missing: the part worth reading out at lineup ----
     var misses = Object.keys(missTally).map(function(k){ return missTally[k]; })
       .map(function(m){ m.people = Object.keys(m.who).length; return m; })
       .sort(function(a,b){ return b.n - a.n || b.people - a.people; })
       .slice(0, 8);
-    html += '<h2 style="margin-top:38px;">What the team keeps missing</h2>';
+    html += '<h2 class="admin-h2">What the team keeps missing</h2>';
     if (!misses.length) {
       html += '<p class="placeholder-note">Nothing yet. This fills in as the team runs drills.</p>';
     } else {
@@ -3195,6 +3270,29 @@ async function renderProgress(){
             ' \u00b7 '+esc(m.cat || '')+'</p></li>';
         }).join('') + '</ol>';
     }
+
+    // ---- full roster ----
+    html += '<h2 class="admin-h2">Whole team</h2>' +
+      '<p class="placeholder-note" style="margin-bottom:10px;">Each drill section shows average score across attempts, with the number of attempts in parentheses.</p>';
+    var catHeaders = CATS.map(function(c){ return '<th>'+c.name+'</th>'; }).join("");
+    html += '<div class="table-wrap"><table class="progress"><thead><tr>' +
+      '<th>Name</th><th>Role</th><th>Onboarding</th>' + catHeaders + '<th>Overall</th><th>Last active</th></tr></thead><tbody>';
+    rows.forEach(function(r){
+      var catCells = CATS.map(function(c){
+        var cell = r.byCat[c.key];
+        return '<td class="mono">' + (cell.avg===null ? '\u2014' : cell.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+cell.count+')</span>') + '</td>';
+      }).join("");
+      var clCell = r.clTotal === null ? '<span class="placeholder-note">not yet</span>'
+        : (r.clComplete ? 'Done' : r.clDone+' of '+r.clTotal);
+      html += '<tr' + (r.clComplete === false && r.hireDays !== null && r.hireDays >= 7 ? ' class="row-flag"' : '') + '>' +
+        '<td>'+esc(r.name)+'</td><td>'+esc(r.role||"")+'</td>' +
+        '<td class="mono">'+clCell+'</td>' +
+        catCells +
+        '<td class="mono">'+(r.avg===null?'\u2014':r.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+r.count+')</span>')+'</td>' +
+        '<td class="mono">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '\u2014')+'</td></tr>';
+    });
+    html += '</tbody></table></div>';
+
     area.innerHTML = html;
     var out = document.getElementById("mg-out");
     if (out) out.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
