@@ -182,9 +182,9 @@
     background:linear-gradient(135deg, #391d1f 0%, #55291f 100%);
     padding:34px 30px; margin-bottom:26px; border:none;
   }
-  .hero-banner .eyebrow{ color:#fff; opacity:.82; }
+  .hero-banner .eyebrow{ color:var(--river); }
   .hero-banner h1{ color:#faf6f0; }
-  .hero-banner .view-intro{ color:#fff; opacity:.92; margin-bottom:0; }
+  .hero-banner .view-intro{ color:var(--ink); margin-bottom:0; }
 
   /* cards / accordions */
   .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow); }
@@ -932,9 +932,14 @@ function enterShell(){
 }
 
 document.getElementById("sb-switch").addEventListener("click", function(){
-  if (!confirm("Switch to a different user on this device?")) return;
-  localStorage.removeItem(LS_KEY);
-  location.reload();
+  confirmDialog({
+    title: "Switch user?",
+    body: "This device will forget your name, your checklist and your card mastery. Your knowledge check history stays with your manager.",
+    confirm: "Switch User"
+  }, function(){
+    localStorage.removeItem(LS_KEY);
+    location.reload();
+  });
 });
 
 /* ============================================================
@@ -1146,6 +1151,31 @@ function trapFocus(root, ev){
 /* Delete is recoverable rather than confirmed: the item goes immediately and a
    5s undo toast offers it back, which is faster than an "are you sure" modal
    and safer than a bare delete. */
+/* Last native dialog. confirm() cannot be styled, cannot say what is actually
+   lost, and on a phone reads as a browser warning rather than part of the app. */
+function confirmDialog(opts, onYes){
+  var wrap = document.createElement("div");
+  wrap.className = "modal-back";
+  wrap.innerHTML =
+    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="cd-title" style="max-width:400px;">' +
+      '<h3 id="cd-title">'+esc(opts.title)+'</h3>' +
+      '<p class="field-help" style="margin:0 0 4px;">'+esc(opts.body)+'</p>' +
+      '<div class="modal-actions"><span class="spacer"></span>' +
+        '<button class="btn btn-ghost" id="cd-no">'+esc(opts.cancel || "Cancel")+'</button>' +
+        '<button class="btn btn-sun" id="cd-yes">'+esc(opts.confirm || "Continue")+'</button></div></div>';
+  document.body.appendChild(wrap);
+  function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
+  function onKey(ev){
+    if (ev.key === "Escape") { ev.preventDefault(); close(); }
+    else if (ev.key === "Tab") trapFocus(wrap, ev);
+  }
+  document.addEventListener("keydown", onKey);
+  wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
+  wrap.querySelector("#cd-no").addEventListener("click", close);
+  wrap.querySelector("#cd-yes").addEventListener("click", function(){ close(); onYes(); });
+  wrap.querySelector("#cd-yes").focus();
+}
+
 var pendingDelete = null;
 async function deleteDish(item){
   if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
@@ -1797,7 +1827,7 @@ function renderQuizPicker(){
 
 function startQuiz(key){
   var pool = QUIZ_META[key].pool();
-  if (!pool.length) { alert("No questions available for this category yet."); return; }
+  if (!pool.length) { toast("There are no questions in that category yet."); return; }
   var n = Math.min(20, pool.length);
   var chosen = shuffle(pool).slice(0, n).map(function(q){
     var order = shuffle(q.a.map(function(text, i){ return {text:text, correct:i===q.c}; }));
@@ -1920,12 +1950,9 @@ async function renderProgress(){
     area.innerHTML = '<div class="card pin-gate">' +
       '<h3 style="margin-top:0;">Manager access</h3>' +
       '<p class="placeholder-note" style="margin-bottom:14px;">Enter the manager PIN to view team-wide progress.</p>' +
-      '<div class="field"><input type="password" id="pg-pin" placeholder="PIN"></div>' +
       '<button class="btn btn-primary" id="pg-unlock">Unlock</button></div>';
     document.getElementById("pg-unlock").addEventListener("click", function(){
-      var v = document.getElementById("pg-pin").value;
-      if (v === MANAGER_PIN) { progressUnlocked = true; renderProgress(); }
-      else alert("Incorrect PIN.");
+      openManagerGate(function(){ progressUnlocked = true; renderProgress(); });
     });
     return;
   }
