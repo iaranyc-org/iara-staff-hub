@@ -2429,10 +2429,14 @@ function renderStudyPicker(){
 // The pre-shift lineup. Four cards, weighted to whatever is weakest, skipping
 // anything already credited today so a second run in the same shift is
 // revision rather than progress. No schedule, nothing is ever overdue.
+//
+// Draws from both the dish deck and the allergen deck, not just dishes: an
+// allergen miss is exactly the kind of weak spot this is meant to surface,
+// and the two card kinds already grade and mix in the same studyDeck.
 var LINEUP_SIZE = 4;
 function lineupCards(n){
   var m = loadMastery();
-  var pool = buildDeck("all").filter(function(c){
+  var pool = buildDeck("all").concat(buildDeck("allergens")).filter(function(c){
     return !creditedThisShift(m, c.id) && masteryOf(m, c.id) < MASTERY_MAX;
   });
   pool.sort(function(a, b){ return masteryOf(m, a.id) - masteryOf(m, b.id); });
