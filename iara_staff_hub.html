@@ -549,6 +549,8 @@
   .fw-count{ font-size:15px; font-weight:700; margin-bottom:10px; }
   .fw-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:18px; }
   .fw-card .btn{ margin-top:16px; }
+  .lineup-card{ padding:22px 24px; margin:0 0 30px; max-width:var(--measure); }
+  .drill-head{ font-size:19px; margin:0 0 12px; }
   .fw-done{ margin:0 0 26px; font-size:13.5px; color:var(--ink-soft); }
   .mg-who{ margin:0 0 14px; font-size:12.5px; color:var(--ink-soft); }
   .cl-tag-soft{ opacity:.75; }
@@ -649,6 +651,10 @@
   .pips{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
   .pips i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-soft); display:inline-block; }
   .pips i.on{ background:var(--sun); border-color:var(--sun); }
+  .pips i.mark{ position:relative; }
+  .pips i.mark::after{ content:""; position:absolute; right:-3px; top:-3px; bottom:-3px;
+    border-right:1px solid var(--ink-soft); opacity:.55; }
+  .pip-note{ font-size:11px; color:var(--ink-soft); margin-left:8px; }
   .jump-link{ display:inline; padding:0; background:none; border:none; font:inherit;
     color:var(--sun); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
   .jump-link:hover{ color:var(--display); }
@@ -2136,6 +2142,10 @@ function bindSayButtons(root){
     });
   });
 }
+// Holds the clip that is currently playing so a second tap can stop it. This
+// was never declared, and under "use strict" that made every tap of Hear throw
+// before it reached the audio, or the synthesis fallback.
+var dishAudio = null;
 function speakDish(name, id, variant){
   // A pre-rendered pt-BR clip sounds the same on every device. Synthesis does not,
   // so it is only a fallback for items with no recording yet.
@@ -2212,27 +2222,86 @@ function dishesForIngredient(ing){
    scheduling: a pre-opening team needs the menu by opening night, and a
    4-month interval ladder does not serve that.
    ============================================================ */
-var MASTERY_MAX = 4;           // 0 unseen .. 4 mastered
 var studyDeck = null;          // {key, label, cards:[], idx, revealed, right, wrong}
+var studyTarget = "fb-study";  // study renders into the Menu, the lineup into Drill
+function studyArea(){ return document.getElementById(studyTarget); }
 
+var MASTERY_MAX = 6;           // 0 learning .. 3 known .. 6 solid
+var MASTERY_KNOWN = 3;         // the research criterion: 3 correct recalls
+var MASTERY_DECAY_DAYS = 21;   // a step slips if a card goes unseen this long
+
+// Why a card can only earn one credit per shift.
+//
+// Rawson and Dunlosky: recalling an item once in each of three spaced sessions
+// beats getting it right three times in one sitting by more than double. The
+// old model let a missed card come back later in the same session and bank
+// credit, which measured short-term memory and called it mastery. There is
+// still no schedule and nothing is ever "due" or overdue: a second correct
+// answer on the same shift simply does not count.
+function shiftStamp(d){
+  d = d || new Date();
+  return d.getFullYear() + "-" + String(d.getMonth()+1).padStart(2,"0") + "-" + String(d.getDate()).padStart(2,"0");
+}
+function daysBetween(a, b){
+  var pa = String(a).split("-").map(Number), pb = String(b).split("-").map(Number);
+  if (pa.length !== 3 || pb.length !== 3) return 0;
+  var ta = Date.UTC(pa[0], pa[1]-1, pa[2]), tb = Date.UTC(pb[0], pb[1]-1, pb[2]);
+  return Math.round((tb - ta) / 86400000);
+}
 function masteryKey(){ return "iara_mastery_" + (profile ? profile.id : "anon"); }
 function loadMastery(){
-  try { return JSON.parse(localStorage.getItem(masteryKey()) || "{}"); } catch(e){ return {}; }
+  var raw;
+  try { raw = JSON.parse(localStorage.getItem(masteryKey()) || "{}"); } catch(e){ return {}; }
+  // Older devices stored a bare number per card. Carry it over as credits.
+  Object.keys(raw).forEach(function(k){
+    if (typeof raw[k] === "number") raw[k] = { n: raw[k], last: null };
+  });
+  return raw;
 }
 function saveMastery(m){
   try { localStorage.setItem(masteryKey(), JSON.stringify(m)); } catch(e){}
 }
+// Knowledge that is never revisited fades, so the number should too. Computed
+// on read rather than written by a timer, so it can never cascade.
+function masteryOf(m, cardId){
+  var e = m[cardId];
+  if (!e) return 0;
+  var n = e.n || 0;
+  if (e.last && n > 0) {
+    var slipped = Math.floor(daysBetween(e.last, shiftStamp()) / MASTERY_DECAY_DAYS);
+    if (slipped > 0) n = Math.max(0, n - slipped);
+  }
+  return n;
+}
+function creditedThisShift(m, cardId){
+  var e = m[cardId];
+  return !!(e && e.last === shiftStamp());
+}
 function bumpMastery(cardId, got){
   var m = loadMastery();
-  var cur = m[cardId] || 0;
-  m[cardId] = got ? Math.min(MASTERY_MAX, cur + 1) : 0;   // a miss sends it back to the start
+  var cur = masteryOf(m, cardId);
+  var today = shiftStamp();
+  if (got) {
+    // Already credited today: no progress, but no punishment either.
+    if (creditedThisShift(m, cardId)) { m[cardId] = { n: cur, last: today }; }
+    else { m[cardId] = { n: Math.min(MASTERY_MAX, cur + 1), last: today }; }
+  } else {
+    // One step back, not back to nothing. Blanking once on a Tuesday should
+    // not wipe a fortnight of work.
+    m[cardId] = { n: Math.max(0, cur - 1), last: today };
+  }
   saveMastery(m);
-  return m[cardId];
+  return m[cardId].n;
+}
+function masteryLabel(n){
+  if (n >= MASTERY_MAX) return "Solid";
+  if (n >= MASTERY_KNOWN) return "Known";
+  return "Learning";
 }
 function deckMastery(cards){
   if (!cards.length) return 0;
   var m = loadMastery();
-  var total = cards.reduce(function(sum, c){ return sum + Math.min(MASTERY_MAX, m[c.id] || 0); }, 0);
+  var total = cards.reduce(function(sum, c){ return sum + Math.min(MASTERY_MAX, masteryOf(m, c.id)); }, 0);
   return Math.round((total / (cards.length * MASTERY_MAX)) * 100);
 }
 
@@ -2275,7 +2344,7 @@ function studyDecks(){
 }
 
 function renderStudyPicker(){
-  var area = document.getElementById("fb-study");
+  var area = studyArea();
   if (!area) return;
   var html = '<p class="view-intro">Flip a card, say it out loud, then mark whether you had it. ' +
              'Cards you miss come back to the start.</p><div class="deck-grid">';
@@ -2295,6 +2364,36 @@ function renderStudyPicker(){
   });
 }
 
+// The pre-shift lineup. Four cards, weighted to whatever is weakest, skipping
+// anything already credited today so a second run in the same shift is
+// revision rather than progress. No schedule, nothing is ever overdue.
+var LINEUP_SIZE = 4;
+function lineupCards(n){
+  var m = loadMastery();
+  var pool = buildDeck("all").filter(function(c){
+    return !creditedThisShift(m, c.id) && masteryOf(m, c.id) < MASTERY_MAX;
+  });
+  pool.sort(function(a, b){ return masteryOf(m, a.id) - masteryOf(m, b.id); });
+  // Draw from the weakest stretch rather than the weakest four, so it is not
+  // the identical set every shift.
+  return shuffle(pool.slice(0, Math.max(n * 3, n))).slice(0, n);
+}
+function startLineup(){
+  var cards = lineupCards(LINEUP_SIZE);
+  if (!cards.length) {
+    toast("Everything is either solid or already counted for today.");
+    return;
+  }
+  studyTarget = "quiz-area";
+  studyDeck = { key:"lineup", label:"Lineup", cards:cards, idx:0, revealed:false, right:0, wrong:0 };
+  renderStudyCard();
+}
+function exitStudy(){
+  studyDeck = null;
+  if (studyTarget === "quiz-area") { studyTarget = "fb-study"; renderQuizPicker(); }
+  else { renderStudyPicker(); }
+}
+
 function startStudy(key){
   var cards = shuffle(buildDeck(key));
   if (!cards.length) { renderStudyPicker(); return; }
@@ -2304,19 +2403,25 @@ function startStudy(key){
 }
 
 function renderStudyCard(){
-  var area = document.getElementById("fb-study");
+  var area = studyArea();
   var d = studyDeck;
   if (!d) return renderStudyPicker();
   if (d.idx >= d.cards.length) return renderStudyDone();
   var c = d.cards[d.idx];
-  var m = loadMastery()[c.id] || 0;
+  var mAll = loadMastery();
+  var m = masteryOf(mAll, c.id);
   var pips = "";
-  for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+'"></i>';
+  // The third pip is the "Known" line, so the shape of the row shows where a
+  // card sits without anyone having to read a number.
+  for (var i = 0; i < MASTERY_MAX; i++) {
+    pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
+  }
+  var creditedNote = creditedThisShift(mAll, c.id) ? ' <span class="pip-note">counted today</span>' : '';
   var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
   var html = '<div class="card studycard">' +
     '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
       '<span class="qprog-m">'+esc(d.label)+'</span>' +
-      ' <span class="pips" title="Mastery">'+pips+'</span></div>' +
+      ' <span class="pips" title="'+esc(masteryLabel(m))+'">'+pips+'</span>'+creditedNote+'</div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
     '<h3 class="study-front">'+esc(c.front)+'</h3>' +
     (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
@@ -2333,7 +2438,7 @@ function renderStudyCard(){
         '<button class="btn btn-ghost" id="study-again">Missed It</button>' +
         '<button class="btn btn-sun" id="study-got">Got It</button></div>';
   }
-  html += '<button class="linkish" id="study-quit">Back to Decks</button></div>';
+  html += '<button class="linkish" id="study-quit">'+(studyTarget === "quiz-area" ? "Back to Drills" : "Back to Decks")+'</button></div>';
   area.innerHTML = html;
 
   var rev = document.getElementById("study-reveal");
@@ -2343,7 +2448,7 @@ function renderStudyCard(){
   var again = document.getElementById("study-again");
   if (again) again.addEventListener("click", function(){ gradeStudy(false); });
   document.getElementById("study-quit").addEventListener("click", function(){
-    studyDeck = null; renderStudyPicker();
+    exitStudy();
   });
   bindSayButtons(area);
 }
@@ -2352,7 +2457,9 @@ function gradeStudy(got){
   var d = studyDeck;
   var c = d.cards[d.idx];
   bumpMastery(c.id, got);
-  if (got) d.right++; else { d.wrong++; d.cards.push(c); }   // a missed card comes back this session
+  // A missed card still comes back this session for the practice, but it can
+  // no longer bank credit today, so the repeat is revision, not progress.
+  if (got) d.right++; else { d.wrong++; d.cards.push(c); }
   d.idx++; d.revealed = false;
   renderStudyCard();
 }
@@ -2360,7 +2467,7 @@ function gradeStudy(got){
 function renderStudyDone(){
   var d = studyDeck;
   var pct = deckMastery(buildDeck(d.key));
-  document.getElementById("fb-study").innerHTML =
+  studyArea().innerHTML =
     '<div class="card result-wrap">' +
       '<div class="eyebrow">'+esc(d.label)+'</div>' +
       '<div class="result-num mono">'+pct+'%</div>' +
@@ -2370,11 +2477,12 @@ function renderStudyDone(){
         '<button class="btn btn-ghost" id="study-decks">Pick Another Deck</button></div></div>';
   document.getElementById("study-redo").addEventListener("click", function(){ startStudy(d.key); });
   document.getElementById("study-decks").addEventListener("click", function(){
-    studyDeck = null; renderStudyPicker();
+    exitStudy();
   });
 }
 
 function setFbMode(mode){
+  studyTarget = "fb-study";
   var browse = document.getElementById("fb-browse");
   var study  = document.getElementById("fb-study");
   var bBtn   = document.getElementById("mode-browse");
@@ -2799,7 +2907,17 @@ async function renderQuizPicker(){
     };
   }
 
-  var html = '<ol class="drill-list">';
+  var mAll = loadMastery();
+  var ready = lineupCards(LINEUP_SIZE).length;
+  var html = '<div class="card lineup-card">' +
+      '<div class="fw-head">Today\'s lineup</div>' +
+      '<p class="fw-lede">' + (ready
+        ? 'Four cards, whichever you are weakest on. Two minutes before the door opens.'
+        : 'Nothing waiting. Everything is either solid or already counted for this shift.') + '</p>' +
+      (ready ? '<button class="btn btn-sun" id="lineup-go">Run the lineup</button>' : '') +
+    '</div>';
+  html += '<h2 class="drill-head">Full drills</h2>';
+  html += '<ol class="drill-list">';
   Object.keys(QUIZ_META).forEach(function(key){
     var m = QUIZ_META[key];
     var st = statsFor(m.name);
@@ -2823,6 +2941,8 @@ async function renderQuizPicker(){
   });
   html += '</ol>';
   area.innerHTML = html;
+  var lg = document.getElementById("lineup-go");
+  if (lg) lg.addEventListener("click", startLineup);
   area.querySelectorAll(".drill-list button").forEach(function(b){
     b.addEventListener("click", function(){ startQuiz(b.getAttribute("data-key")); });
   });
