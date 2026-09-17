@@ -280,6 +280,12 @@ var FIREBASE_CONFIG = {
 };
 
 /* ---------------- constants ---------------- */
+// Reorder-prediction tuning. LEAD is how many days it takes to place and
+// receive an order (below that, an item is critical); COVER is how many
+// days of runway a fresh order should buy when there's no par level yet
+// to fall back on.
+var REORDER_LEAD_DAYS = 3;
+var PAR_COVER_DAYS = 14;
 var ING_CATS = ["Protein","Produce","Dairy","Dry Goods","Pantry","Wine","Liquor","Beer","N/A Bev","Non-Food/Bev","Maintenance","Other"];
 var STORAGE_AREAS = ["Walk-in Cooler","Freezer","Dry Storage","Bar","Front of House"];
 var UNITS = ["oz","lb","g","kg","ml","L","fl oz","each","dozen","qt","gal"];
@@ -399,9 +405,64 @@ function recipeFoodCostPct(recipe){
   return recipePortionCost(recipe) / price * 100;
 }
 function currentInventoryValue(){ return sum(state.ingredients, ingredientValue); }
-function lowStockIngredients(){
-  return state.ingredients.filter(function(i){ return num(i.parLevel) > 0 && num(i.onHand) < num(i.parLevel); })
-    .sort(function(a,b){ return (num(a.onHand)/num(a.parLevel||1)) - (num(b.onHand)/num(b.parLevel||1)); });
+// Estimate an ingredient's daily consumption from consecutive inventory
+// counts that recorded it. Anything received via a PO between two counts is
+// credited back before the drop counts as usage, so a delivery doesn't read
+// as a huge burn day. Needs at least two counts covering this ingredient —
+// with only one (or none), there is nothing to measure a rate from yet.
+function ingredientUsageRate(ingredientId){
+  var series = state.counts.map(function(c){
+    var line = (c.lines||[]).filter(function(l){ return l.ingredientId===ingredientId; })[0];
+    return line ? {date:new Date(c.date).getTime(), qty:num(line.countedQty)} : null;
+  }).filter(Boolean).sort(function(a,b){ return a.date-b.date; });
+  if(series.length < 2) return null;
+
+  var consumed = 0, days = 0;
+  for(var i=1;i<series.length;i++){
+    var a = series[i-1], b = series[i];
+    var span = (b.date - a.date) / DAY;
+    if(span <= 0) continue;
+    var received = sum(state.pos.filter(function(po){
+      if(po.status!=='received' || !po.receivedAt) return false;
+      var t = new Date(po.receivedAt).getTime();
+      return t > a.date && t <= b.date;
+    }), function(po){
+      return sum((po.lines||[]).filter(function(l){ return l.ingredientId===ingredientId; }), function(l){ return num(l.qty); });
+    });
+    consumed += (a.qty + received - b.qty);
+    days += span;
+  }
+  if(days <= 0) return null;
+  return {dailyRate: consumed/days, days: days, intervals: series.length-1};
+}
+
+// How urgent reordering this ingredient is. Prefers the measured usage rate;
+// falls back to a flat par-level check when there isn't enough count history
+// yet to measure one (the day-one case, before usage data has accumulated).
+function stockRisk(ing){
+  var usage = ingredientUsageRate(ing.id);
+  if(usage && usage.dailyRate > 0.0001){
+    var daysLeft = num(ing.onHand) / usage.dailyRate;
+    var level = daysLeft <= REORDER_LEAD_DAYS ? 'critical' : (daysLeft <= REORDER_LEAD_DAYS*2 ? 'warning' : 'ok');
+    return {level:level, daysLeft:daysLeft, method:'usage', dailyRate:usage.dailyRate};
+  }
+  var par = num(ing.parLevel);
+  if(par > 0 && num(ing.onHand) < par){
+    var ratio = num(ing.onHand)/par;
+    return {level: ratio<0.5?'critical':'warning', daysLeft:null, method:'par', ratio:ratio};
+  }
+  return {level:'ok', daysLeft:null, method:'par', ratio: par>0 ? num(ing.onHand)/par : null};
+}
+
+// All ingredients worth a look, most urgent first: usage-predicted stockouts
+// (sorted by days left) ahead of plain par-level flags (sorted by how far
+// under par), critical before warning within each.
+function stockRiskIngredients(){
+  var scored = state.ingredients.map(function(i){ return {ing:i, risk:stockRisk(i)}; }).filter(function(x){ return x.risk.level!=='ok'; });
+  var byMethodThenUrgency = function(x){ return x.risk.method==='usage' ? x.risk.daysLeft : (x.risk.ratio*100 + 1000); };
+  var critical = scored.filter(function(x){ return x.risk.level==='critical'; }).sort(function(a,b){ return byMethodThenUrgency(a)-byMethodThenUrgency(b); });
+  var warning = scored.filter(function(x){ return x.risk.level==='warning'; }).sort(function(a,b){ return byMethodThenUrgency(a)-byMethodThenUrgency(b); });
+  return critical.concat(warning);
 }
 function recentPriceIncreases(days){
   days = days||30;
@@ -430,10 +491,17 @@ function avgFoodCostPct(){
 function orderGuide(){
   var byVendor = {};
   state.ingredients.forEach(function(ing){
-    var need = round2(num(ing.parLevel) - num(ing.onHand));
+    var risk = stockRisk(ing);
+    if(risk.level==='ok') return;
+    // Par is still the target once it's set. When the only signal is usage
+    // (no par level yet, or par understates real velocity), order enough to
+    // cover PAR_COVER_DAYS at the measured rate instead.
+    var target = num(ing.parLevel);
+    if(risk.method==='usage') target = Math.max(target, risk.dailyRate * PAR_COVER_DAYS);
+    var need = round2(target - num(ing.onHand));
     if(need <= 0) return;
     var v = ing.vendor || 'Unassigned vendor';
-    (byVendor[v] = byVendor[v] || []).push({ing:ing, qty:need, cost:need*unitCostOf(ing)});
+    (byVendor[v] = byVendor[v] || []).push({ing:ing, qty:need, cost:need*unitCostOf(ing), risk:risk});
   });
   return byVendor;
 }
@@ -1004,14 +1072,20 @@ function valueTrendPoints(){
 function renderDashboard(){
   var invVal = currentInventoryValue();
   var afc = avgFoodCostPct();
-  var low = lowStockIngredients();
+  var low = stockRiskIngredients();
   var incr = recentPriceIncreases(30);
   var over = overTargetRecipes();
 
   var trend = lineChartSvg(valueTrendPoints());
 
   var attn = [];
-  low.slice(0,4).forEach(function(i){ attn.push({t:i.name, s:'On hand ' + i.onHand + ' ' + i.invUnit + ' · par ' + i.parLevel, tab:'ingredients', badge:'critical'}); });
+  low.slice(0,4).forEach(function(x){
+    var i = x.ing, r = x.risk;
+    var s = r.method==='usage'
+      ? 'On hand ' + i.onHand + ' ' + i.invUnit + ' · ~' + Math.max(0,Math.round(r.daysLeft)) + ' day' + (Math.round(r.daysLeft)===1?'':'s') + ' left at current pace'
+      : 'On hand ' + i.onHand + ' ' + i.invUnit + ' · par ' + i.parLevel;
+    attn.push({t:i.name, s:s, tab:'ingredients', badge:r.level});
+  });
   over.slice(0,3).forEach(function(r){ attn.push({t:r.name, s:'Food cost ' + pct(recipeFoodCostPct(r)) + ' vs target ' + pct(r.targetFoodCostPct), tab:'recipes', badge:'warning'}); });
   incr.slice(0,3).forEach(function(x){ attn.push({t:x.ing.name, s:'Cost up ' + pct(x.pctChange,1) + ' (' + money(x.from) + ' → ' + money(x.to) + ')', tab:'ingredients', badge:'serious'}); });
 
@@ -1021,7 +1095,7 @@ function renderDashboard(){
   html += '<div class="kpis">'+
     '<div class="kpi"><div class="label">Inventory value</div><div class="value">'+money(invVal)+'</div><div class="foot">'+state.ingredients.length+' items tracked</div></div>'+
     '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Avg. cost %</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+state.recipes.length+' recipes</div></div>'+
-    '<div class="kpi'+(low.length?' alert':'')+'"><div class="label">Low stock items</div><div class="value">'+low.length+'</div><div class="foot">below par level</div></div>'+
+    '<div class="kpi'+(low.length?' alert':'')+'"><div class="label">Low stock items</div><div class="value">'+low.length+'</div><div class="foot">at risk of stockout</div></div>'+
     '<div class="kpi'+(incr.length?' alert':'')+'"><div class="label">Price increases</div><div class="value">'+incr.length+'</div><div class="foot">last 30 days</div></div>'+
   '</div>';
 
@@ -1063,7 +1137,7 @@ function ingredientsTableHtml(){
     unitCost: function(i){ return unitCostOf(i); },
     onHand: function(i){ return num(i.onHand); },
     par: function(i){ return num(i.parLevel); },
-    status: function(i){ return (num(i.parLevel)>0 && num(i.onHand)<num(i.parLevel)) ? 0 : 1; }
+    status: function(i){ var lvl = stockRisk(i).level; return lvl==='critical' ? 0 : (lvl==='warning' ? 1 : 2); }
   });
   if(!rows.length){
     var empty = state.ingredients.length ? 'No ingredients match your search or filter.' : 'No ingredients yet. Add your first purchased item.';
@@ -1075,7 +1149,12 @@ function ingredientsTableHtml(){
     sortTh('Unit cost','ingredients','unitCost',s,'num')+sortTh('On hand','ingredients','onHand',s,'num')+sortTh('Par','ingredients','par',s,'num')+sortTh('Status','ingredients','status',s)+
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(ing){
-    var low = num(ing.parLevel)>0 && num(ing.onHand) < num(ing.parLevel);
+    var risk = stockRisk(ing);
+    var statusHtml = risk.level==='ok'
+      ? '<span class="badge good">OK</span>'
+      : '<span class="badge '+risk.level+'" title="'+(risk.method==='usage'?'Predicted from usage history':'Below par level')+'">'+
+          (risk.method==='usage' ? Math.max(0,Math.round(risk.daysLeft))+'d left' : 'Low')+
+        '</span>';
     html += '<tr>'+
       '<td>'+esc(ing.name)+'<div class="muted" style="font-size:11.5px">'+esc(ing.storageArea||'')+'</div></td>'+
       '<td>'+esc(ing.category)+'</td>'+
@@ -1084,7 +1163,7 @@ function ingredientsTableHtml(){
       '<td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td>'+
       '<td class="num">'+ing.onHand+' '+esc(ing.invUnit)+'</td>'+
       '<td class="num">'+ing.parLevel+' '+esc(ing.invUnit)+'</td>'+
-      '<td>'+(low?'<span class="badge critical">Low</span>':'<span class="badge good">OK</span>')+'</td>'+
+      '<td>'+statusHtml+'</td>'+
       '<td class="row-actions"><button class="btn small ghost" data-action="editIngredient" data-id="'+ing.id+'">Edit</button></td>'+
     '</tr>';
   });
@@ -1193,20 +1272,23 @@ function renderCounts(){
 function renderPurchasing(){
   var guide = orderGuide();
   var vendors = Object.keys(guide).sort();
-  var html = '<div class="panel-head"><div><h2>Purchasing</h2><div class="desc">Par-based order guide, grouped by vendor.</div></div>'+
+  var html = '<div class="panel-head"><div><h2>Purchasing</h2><div class="desc">Order guide, grouped by vendor — usage-predicted where there\'s count history, par level otherwise.</div></div>'+
     '<button class="btn primary" data-action="scanInvoice">📷 Scan invoice</button></div>';
 
   html += '<div class="card">';
   if(!vendors.length){
-    html += '<div class="empty-state">Everything is at or above par — nothing to order.</div>';
+    html += '<div class="empty-state">Nothing needs ordering right now.</div>';
   } else {
     vendors.forEach(function(v){
       var items = guide[v];
       var total = sum(items, function(x){ return x.cost; });
       html += '<div class="vendor-group"><h3>'+esc(v)+' <span class="badge neutral">'+items.length+' item'+(items.length>1?'s':'')+' · '+money(total)+'</span> <button class="btn small primary" data-action="createPoFromGuide" data-vendor="'+esc(v)+'" style="margin-left:auto">Create PO</button></h3>';
-      html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On hand</th><th class="num">Par</th><th class="num">Suggested qty</th><th class="num">Est. cost</th></tr></thead><tbody>';
+      html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On hand</th><th class="num">Par</th><th class="num">Suggested qty</th><th class="num">Est. cost</th><th>Why</th></tr></thead><tbody>';
       items.forEach(function(x){
-        html += '<tr><td>'+esc(x.ing.name)+'</td><td class="num">'+x.ing.onHand+' '+esc(x.ing.invUnit)+'</td><td class="num">'+x.ing.parLevel+' '+esc(x.ing.invUnit)+'</td><td class="num">'+x.qty+' '+esc(x.ing.invUnit)+'</td><td class="num">'+money(x.cost)+'</td></tr>';
+        var why = x.risk.method==='usage'
+          ? '<span class="badge '+x.risk.level+'">~'+Math.max(0,Math.round(x.risk.daysLeft))+'d left</span>'
+          : '<span class="badge '+x.risk.level+'">Below par</span>';
+        html += '<tr><td>'+esc(x.ing.name)+'</td><td class="num">'+x.ing.onHand+' '+esc(x.ing.invUnit)+'</td><td class="num">'+x.ing.parLevel+' '+esc(x.ing.invUnit)+'</td><td class="num">'+x.qty+' '+esc(x.ing.invUnit)+'</td><td class="num">'+money(x.cost)+'</td><td>'+why+'</td></tr>';
       });
       html += '</tbody></table></div></div>';
     });
