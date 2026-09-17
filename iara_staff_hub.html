@@ -300,6 +300,17 @@
   .badge{ display:inline-block; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:6px; }
   .badge-example{ background:var(--clay); color:var(--clay-ink); }
   .badge-allergen{ background:var(--paper); border:1px solid var(--line); color:var(--ink-soft); margin:2px 4px 0 0; }
+  .allergen-picker{ display:flex; flex-wrap:wrap; gap:8px; margin:14px 0 0; }
+  .allerg-chip{ font:inherit; font-size:13.5px; font-weight:600; padding:9px 14px; min-height:44px;
+    border-radius:20px; border:1px solid var(--rule-strong); background:var(--paper); color:var(--ink-mid);
+    cursor:pointer; transition:background .12s ease, border-color .12s ease, color .12s ease; }
+  .allerg-chip:hover{ border-color:var(--display); color:var(--display); }
+  .allerg-chip.is-on{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); font-weight:700; }
+  .allerg-result{ margin:14px 0 0; padding:16px 18px; border-radius:8px; border:1px solid var(--rule); }
+  .allerg-result.is-right{ border-color:var(--sun); background:color-mix(in srgb, var(--sun) 10%, transparent); }
+  .allerg-result.is-wrong{ border-color:var(--rule-strong); }
+  .allerg-verdict{ margin:0 0 6px; font-family:'Fraunces',Georgia,serif; font-size:17px; }
+  .allerg-line{ margin:2px 0; font-size:14px; color:var(--ink-mid); }
   .dish-edit{ position:absolute; top:14px; right:14px; background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:12px; text-decoration:underline; }
   .add-dish{ border:1.5px dashed var(--line); background:none; border-radius:6px; display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--ink-soft); font-weight:700; cursor:pointer; }
 
@@ -2340,7 +2351,15 @@ function deckMastery(cards){
 // A deck is built fresh each time so menu edits flow straight through.
 function buildDeck(key){
   var cards = [];
-  if (key === "ingredients") {
+  if (key === "allergens") {
+    fbItems.forEach(function(it){
+      cards.push({
+        id: "alg:" + it.id, kind: "allergen", speakId: it.id, speak: it.speak || "",
+        front: it.name, pron: it.pronunciation || "",
+        correct: (it.allergens || []).slice().sort(function(a,b){ return a.localeCompare(b); })
+      });
+    });
+  } else if (key === "ingredients") {
     INGREDIENTS.forEach(function(ing){
       var used = dishesForIngredient(ing).map(function(d){ return d.name; });
       cards.push({
@@ -2372,7 +2391,18 @@ function studyDecks(){
   var decks = [{ key:"all", label:"Whole Menu" }];
   FNB_CATEGORIES.forEach(function(c){ decks.push({ key:c, label:c }); });
   decks.push({ key:"ingredients", label:"Ingredients" });
+  // A dish flashcard has always shown allergens as a passive line on the
+  // back, graded by a self-reported tap. That is fine for a pairing fact
+  // and not fine for an allergy fact: a server who feels confident is not
+  // the same as a server who can actually name the allergens. This deck
+  // asks instead, and grades the answer against the real list.
+  decks.push({ key:"allergens", label:"Allergens" });
   return decks;
+}
+function allergenPalette(){
+  var set = {};
+  fbItems.forEach(function(it){ (it.allergens||[]).forEach(function(a){ set[a] = true; }); });
+  return Object.keys(set).sort(function(a,b){ return a.localeCompare(b); });
 }
 
 function renderStudyPicker(){
@@ -2434,12 +2464,16 @@ function startStudy(key){
   renderStudyCard();
 }
 
+var allergenPick = null;   // Set of chip labels currently chosen for this card
+var allergenResult = null; // {correct} once Check has been pressed, else null
+
 function renderStudyCard(){
   var area = studyArea();
   var d = studyDeck;
   if (!d) return renderStudyPicker();
   if (d.idx >= d.cards.length) return renderStudyDone();
   var c = d.cards[d.idx];
+  if (c.kind === "allergen") return renderAllergenCard();
   var mAll = loadMastery();
   var m = masteryOf(mAll, c.id);
   var pips = "";
@@ -2483,6 +2517,88 @@ function renderStudyCard(){
     exitStudy();
   });
   bindSayButtons(area);
+}
+
+// Header identical to renderStudyCard's (progress, pips, mastery, Hear
+// control) so the two card types read as one deck, not two apps stitched
+// together.
+function studyCardHeader(d, c, m, mAll){
+  var pips = "";
+  for (var i = 0; i < MASTERY_MAX; i++) {
+    pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
+  }
+  var creditedNote = creditedThisShift(mAll, c.id) ? ' <span class="pip-note">counted today</span>' : '';
+  var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
+  return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
+      '<span class="qprog-m">'+esc(d.label)+'</span>' +
+      ' <span class="pips" title="'+esc(masteryLabel(m))+'">'+pips+'</span>'+creditedNote+'</div>' +
+    '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
+    '<h3 class="study-front">'+esc(c.front)+'</h3>' +
+    (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
+    (speak ? '<div class="say-row">'+speak+'</div>' : '');
+}
+
+function renderAllergenCard(){
+  var area = studyArea();
+  var d = studyDeck;
+  var c = d.cards[d.idx];
+  var mAll = loadMastery();
+  var m = masteryOf(mAll, c.id);
+  if (!allergenPick) allergenPick = {};
+  var palette = allergenPalette();
+
+  var html = '<div class="card studycard">' + studyCardHeader(d, c, m, mAll);
+
+  if (!allergenResult) {
+    html += '<p class="study-hint">Select every allergen on this dish. ' +
+      'Selecting none is the correct answer for a dish with no listed allergens.</p>' +
+      '<div class="allergen-picker">' + (palette.length ? palette.map(function(a){
+        return '<button type="button" class="allerg-chip'+(allergenPick[a] ? ' is-on' : '')+'" data-a="'+esc(a)+'">'+esc(a)+'</button>';
+      }).join('') : '<p class="placeholder-note">No allergens are on file for the menu yet.</p>') + '</div>' +
+      '<button class="btn btn-sun" id="allerg-check" style="margin-top:16px;">Check</button>';
+  } else {
+    var picked = Object.keys(allergenPick).filter(function(a){ return allergenPick[a]; }).sort(function(a,b){ return a.localeCompare(b); });
+    var correctSet = c.correct;
+    var pickedTxt = picked.length ? picked.join(", ") : "None";
+    var correctTxt = correctSet.length ? correctSet.join(", ") : "None";
+    html += '<div class="allerg-result '+(allergenResult.correct ? "is-right" : "is-wrong")+'">' +
+        '<p class="allerg-verdict">'+(allergenResult.correct ? "Correct." : "Not quite.")+'</p>' +
+        '<p class="allerg-line">You said: '+esc(pickedTxt)+'</p>' +
+        (allergenResult.correct ? '' : '<p class="allerg-line">Actually: '+esc(correctTxt)+'</p>') +
+      '</div>' +
+      '<button class="btn btn-sun" id="allerg-next">Continue</button>';
+  }
+  html += '<button class="linkish" id="study-quit">'+(studyTarget === "quiz-area" ? "Back to Drills" : "Back to Decks")+'</button></div>';
+  area.innerHTML = html;
+
+  if (!allergenResult) {
+    area.querySelectorAll(".allerg-chip").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var a = btn.getAttribute("data-a");
+        allergenPick[a] = !allergenPick[a];
+        renderAllergenCard();
+      });
+    });
+    var chk = document.getElementById("allerg-check");
+    if (chk) chk.addEventListener("click", function(){
+      var picked = Object.keys(allergenPick).filter(function(a){ return allergenPick[a]; }).sort(function(a,b){ return a.localeCompare(b); });
+      var correct = picked.length === c.correct.length && picked.every(function(a, i){ return a === c.correct[i]; });
+      bumpMastery(c.id, correct);
+      allergenResult = { correct: correct };
+      renderAllergenCard();
+    });
+  } else {
+    var nb = document.getElementById("allerg-next");
+    if (nb) nb.addEventListener("click", function(){
+      if (allergenResult.correct) d.right++; else { d.wrong++; d.cards.push(c); }
+      d.idx++;
+      allergenPick = null; allergenResult = null;
+      renderStudyCard();
+    });
+  }
+
+  var quit = document.getElementById("study-quit");
+  if (quit) quit.addEventListener("click", function(){ exitStudy(); });
 }
 
 function gradeStudy(got){
