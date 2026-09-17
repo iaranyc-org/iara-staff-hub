@@ -1694,7 +1694,7 @@ function renderFbGrid(){
     var editBtn = fbAdminUnlocked ? '<button class="dish-edit" data-id="'+it.id+'">Edit</button>' : '';
     var pron = it.pronunciation ? '<span class="pron">('+it.pronunciation+')</span>' : '';
     var speakText = it.speak || "";
-    var speakBtn = (it.pronunciation && speakText) ? ' ' + sayControl(it.name, it.id, speakText) : '';
+    var speakBtn = (it.pronunciation && speakText) ? sayControl(it.name, it.id, speakText) : '';
     var price = it.price ? '<span class="price">'+it.price+'</span>' : '';
     // Typeset like a printed menu: name and price on one line, joined by a
     // dot leader. That rule is the most recognisably "restaurant" thing on the
@@ -1705,7 +1705,7 @@ function renderFbGrid(){
         '<span class="leader"></span>' +
         (it.price ? '<span class="price">'+it.price+'</span>' : '') +
       '</div>' +
-      (pron ? '<div class="pron-line">'+pron+speakBtn+'</div>' : '') +
+      (pron ? '<div class="pron-line">'+speakBtn+pron+'</div>' : '') +
       '<p class="desc">'+(it.desc||'')+'</p>' +
       (allergens ? '<div class="allerg">'+allergens+'</div>' : '') +
       '</article>';
