@@ -120,7 +120,7 @@
   .field{ margin-bottom:16px; }
   .field label{ display:block; font-size:12.5px; font-weight:700;  letter-spacing:.01em; color:var(--ink-soft); margin-bottom:6px; }
   .field input, .field select, .field textarea{
-    width:100%; padding:11px 13px; border-radius:5px; border:1.5px solid var(--line);
+    width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line);
     background:var(--paper); color:var(--ink); font:inherit; font-size:15px;
   }
   .field input:focus, .field select:focus, .field textarea:focus{
@@ -128,7 +128,7 @@
   }
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border-radius:5px; border:1.5px solid transparent; padding:11px 18px;
+    border-radius:6px; border:1.5px solid transparent; padding:11px 18px;
     font-weight:700; font-size:14.5px; cursor:pointer; transition:transform .08s ease, opacity .15s ease;
   }
   .btn:active{ transform:translateY(1px); }
@@ -137,7 +137,7 @@
   .btn-ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
   .btn-ghost:hover{ border-color:var(--ink-soft); }
   .btn-sun{ background:var(--sun); color:var(--sun-ink); }
-  .btn-small{ padding:7px 12px; font-size:13px; border-radius:5px; }
+  .btn-small{ padding:7px 12px; font-size:13px; border-radius:6px; }
   .gate-note{ margin-top:18px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
 
   /* ===================== Shell ===================== */
@@ -151,7 +151,7 @@
     letter-spacing:.06em; color:var(--sidebar-muted); }
   .sb-mark{ display:flex; align-items:center; gap:10px; padding:4px 10px 22px; }
   .nav-btn{
-    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:5px;
+    display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:6px;
     color:var(--sidebar-muted); background:transparent; border:none; text-align:left; font-size:14.5px; font-weight:600;
     cursor:pointer; transition:color .12s ease, background .12s ease;
   }
@@ -163,7 +163,8 @@
   .sb-user{ padding:12px 10px; border-top:1px solid rgba(255,255,255,.15); margin-top:8px; }
   .sb-user .name{ font-weight:700; font-size:14px; }
   .sb-user .role{ font-size:12px; color:var(--sidebar-muted);  letter-spacing:.01em; }
-  .sb-user button{ margin-top:8px; background:none; border:none; color:var(--sidebar-muted); font-size:12px; text-decoration:underline; cursor:pointer; padding:0; }
+  .sb-user button{ margin-top:6px; background:none; border:none; color:var(--sidebar-muted); font-size:12.5px;
+    text-decoration:underline; cursor:pointer; padding:6px 0; display:block; }
 
   .content{ flex:1; min-width:0; }
   .topbar{
@@ -179,7 +180,7 @@
   .bottom-nav-inner{ display:flex; }
   .bottom-nav{ padding-bottom:env(safe-area-inset-bottom, 0px); }
   .bottom-nav .nav-btn{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center;
-    gap:2px; padding:7px 2px 8px; border-radius:5px; font-size:10px; font-weight:700; text-align:center;
+    gap:2px; padding:7px 2px 8px; border-radius:6px; font-size:10px; font-weight:700; text-align:center;
     color:var(--ink-soft); background:none; }
   .bottom-nav .nav-btn{ font-size:10.5px; letter-spacing:.06em; text-transform:uppercase; padding:14px 2px; }
   .bottom-nav .nav-btn.active{ color:var(--sun); }
@@ -199,7 +200,7 @@
   .hero-banner .view-intro{ color:var(--ink); margin-bottom:0; }
 
   /* cards / accordions */
-  .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:5px; box-shadow:var(--shadow); }
+  .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:6px; box-shadow:var(--shadow); }
   .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px; }
   .stat{ padding:18px 18px; }
   .stat .num{ font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; }
@@ -242,24 +243,25 @@
   .say-lbl{ font-size:12px; font-weight:700; letter-spacing:.01em; 
     color:var(--ink-soft); margin-right:2px; }
   .speak-btn{ font-style:normal; background:transparent; border:1px solid var(--line); cursor:pointer;
-    font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1; width:19px; height:19px;
+    font-family:'IBM Plex Mono',monospace; font-size:12px; line-height:1; width:26px; height:26px;
     display:inline-flex; align-items:center; justify-content:center; border-radius:4px;
     color:var(--ink-soft); padding:0; transition:color .12s ease, border-color .12s ease, background .12s ease; }
   .speak-btn:hover{ color:var(--display); border-color:var(--display); }
   .speak-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .speak-btn.playing{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
   .studycard .say-lbl{ font-size:11px; }
-  .studycard .speak-btn{ width:26px; height:26px; font-size:12.5px; }
+  .studycard .speak-btn{ width:30px; height:30px; font-size:13px; }
+  @media (hover:none){ .speak-btn{ width:30px; height:30px; } }
   .dish .desc{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 10px; }
   .badge{ display:inline-block; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:6px; }
   .badge-example{ background:var(--clay); color:var(--clay-ink); }
   .badge-allergen{ background:var(--paper); border:1px solid var(--line); color:var(--ink-soft); margin:2px 4px 0 0; }
   .dish-edit{ position:absolute; top:14px; right:14px; background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:12px; text-decoration:underline; }
-  .add-dish{ border:1.5px dashed var(--line); background:none; border-radius:5px; display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--ink-soft); font-weight:700; cursor:pointer; }
+  .add-dish{ border:1.5px dashed var(--line); background:none; border-radius:6px; display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--ink-soft); font-weight:700; cursor:pointer; }
 
   /* quiz */
   .quiz-pick{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px;}
-  .quiz-pick button{ padding:22px 16px; text-align:left; cursor:pointer; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:5px; }
+  .quiz-pick button{ padding:22px 16px; text-align:left; cursor:pointer; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:6px; }
   .quiz-pick button:hover{ border-color:var(--river); }
   .quiz-pick .qname{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; display:block; margin-bottom:4px; }
   .quiz-pick .qmeta{ font-size:12.5px; color:var(--ink-soft); }
@@ -270,7 +272,7 @@
   .qprog-s{ margin-left:auto; font-size:13px; color:var(--sun); font-variant-numeric:tabular-nums; }
   .qprog-legacy{ font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
   .qtext{ font-size:19px; font-weight:700; margin:0 0 18px; line-height:1.4; }
-  .opt{ display:block; width:100%; text-align:left; padding:13px 15px; border-radius:5px; border:1.5px solid var(--line); background:var(--paper); margin-bottom:10px; cursor:pointer; font-size:14.5px; }
+  .opt{ display:block; width:100%; text-align:left; padding:13px 15px; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); margin-bottom:10px; cursor:pointer; font-size:14.5px; }
   .opt:hover{ border-color:var(--river); }
   .opt.correct{ border-color:var(--forest); background:color-mix(in srgb, var(--forest) 14%, var(--paper)); }
   .opt.wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
@@ -295,7 +297,7 @@
 
   /* Section numbers give the manual a spine to scan. */
   .acc-head h3{ flex:1; text-align:left; margin:0; }
-  .acc-head:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; border-radius:5px; }
+  .acc-head:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; border-radius:6px; }
   .acc-num{ font-size:11px; color:var(--display); opacity:.85; flex:none; letter-spacing:.04em; }
   .accordion.open .acc-num{ opacity:1; }
 
@@ -328,9 +330,9 @@
   /* The home screen is the docket you are handed at the start of a shift. */
   /* Nav: set as a running order, not an icon list. The active item is marked
      with a rule in the margin the way a printed contents page marks a section. */
-  .sidebar .nav-btn{ position:relative; padding:9px 12px 9px 14px; font-size:14px; font-weight:500;
+  .sidebar .nav-btn{ position:relative; padding:10px 12px; font-size:14px; font-weight:500;
     letter-spacing:.01em; border-radius:0; }
-  .sidebar .nav-btn::before{ content:""; position:absolute; left:0; top:50%; transform:translateY(-50%);
+  .sidebar .nav-btn::before{ content:""; position:absolute; left:-10px; top:50%; transform:translateY(-50%);
     width:2px; height:0; background:var(--sun); transition:height .16s cubic-bezier(.16,1,.3,1); }
   .sidebar .nav-btn.active{ background:none; color:var(--sidebar-ink); font-weight:700; }
   .sidebar .nav-btn.active::before{ height:16px; }
@@ -405,7 +407,7 @@
      other plates, and mislabelling food in a tool that teaches allergens is
      not a cosmetic mistake. Per-dish photography waits for the shoot. */
   .photoband{ display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin:0 0 26px;
-    border-radius:5px; overflow:hidden; max-width:640px; }
+    border-radius:6px; overflow:hidden; max-width:640px; }
   .photoband img{ width:100%; height:96px; object-fit:cover; display:block;
     filter:saturate(.92) brightness(.92); }
   @media (max-width:520px){ .photoband img{ height:70px; } }
@@ -443,7 +445,7 @@
     border:2.5px solid var(--sun); border-radius:8px; padding:16px 30px 14px;
     transform:rotate(-2.4deg); color:var(--sun); position:relative; }
   .stamp::after{ content:""; position:absolute; inset:4px; border:1px solid var(--sun);
-    border-radius:5px; opacity:.5; pointer-events:none; }
+    border-radius:6px; opacity:.5; pointer-events:none; }
   .stamp-verdict{ font-family:'Fraunces',Georgia,serif; font-size:29px; line-height:1.05; letter-spacing:.01em; }
   .stamp-score{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-variant-numeric:tabular-nums; }
   .stamp-cat{ font-size:12px;  letter-spacing:.01em; margin-top:3px; opacity:.9; }
@@ -475,7 +477,7 @@
     cursor:pointer; font-size:12.5px; letter-spacing:.01em; }
   .dish-edit:hover{ color:var(--display); }
   .add-dish{ margin-top:18px; width:100%; background:none; border:1.5px dashed var(--rule-strong);
-    color:var(--ink-soft); padding:13px; border-radius:5px; font:inherit; font-size:13.5px; cursor:pointer; }
+    color:var(--ink-soft); padding:13px; border-radius:6px; font:inherit; font-size:13.5px; cursor:pointer; }
   .add-dish:hover{ border-color:var(--display); color:var(--display); }
 
   /* Course headings, set like a menu's */
@@ -586,7 +588,7 @@
   .opt:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .opt[disabled]{ cursor:default; }
   .opt.correct .optkey, .opt.wrong .optkey{ border-color:currentColor; }
-  .q-feedback{ margin-top:16px; padding:14px 16px; border-radius:5px; font-size:14.5px; line-height:1.5;
+  .q-feedback{ margin-top:16px; padding:14px 16px; border-radius:6px; font-size:14.5px; line-height:1.5;
     border:1.5px solid var(--line); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
   .q-feedback.is-right{ border-color:var(--sun); }
   .q-feedback.is-wrong{ border-color:var(--forest); }
