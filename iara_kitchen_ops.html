@@ -122,7 +122,8 @@
   nav.tabs::-webkit-scrollbar{display:none;}
   nav.tabs button{
     flex:none; border:1px solid transparent; background:transparent; color:var(--ink-secondary);
-    padding:7px 13px; border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; white-space:nowrap;
+    padding:7px 13px; min-height:44px; display:inline-flex; align-items:center;
+    border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; white-space:nowrap;
   }
   nav.tabs button:hover{background:var(--surface-raised); border-color:var(--border);}
   nav.tabs button.active{background:var(--accent-soft); color:var(--accent-strong); border-color:transparent;}
