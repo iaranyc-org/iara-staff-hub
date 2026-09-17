@@ -521,10 +521,11 @@
     width:max-content; max-width:min(300px, 78vw); padding:10px 12px; border-radius:6px;
     background:var(--sidebar); color:var(--sidebar-ink); border:1px solid var(--line);
     font-size:12.5px; font-weight:400; line-height:1.5; letter-spacing:0; text-transform:none;
-    box-shadow:var(--shadow); opacity:0; visibility:hidden; transform:translateY(3px);
+    box-shadow:var(--shadow); opacity:0; visibility:hidden;
+    transform:translate(var(--gloss-nudge,0px), 3px);
     transition:opacity .12s ease, transform .12s ease, visibility .12s; pointer-events:none; }
   .gloss:hover::after, .gloss:focus-visible::after, .gloss.is-open::after{
-    opacity:1; visibility:visible; transform:translateY(0); }
+    opacity:1; visibility:visible; transform:translate(var(--gloss-nudge,0px), 0); }
   @media (hover:none){ .gloss{ cursor:pointer; } }
   .cl-summary{ padding:20px 22px; margin-bottom:26px; }
   .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
@@ -2508,13 +2509,31 @@ function applyGlossary(root){
       ev.stopPropagation();
       var open = g.classList.contains("is-open");
       root.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
-      if (!open) g.classList.add("is-open");
+      if (!open) { g.classList.add("is-open"); nudgeGloss(g); }
     });
     g.addEventListener("keydown", function(ev){
       if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); g.click(); }
       if (ev.key === "Escape") g.classList.remove("is-open");
     });
+    g.addEventListener("mouseenter", function(){ nudgeGloss(g); });
+    g.addEventListener("focus", function(){ nudgeGloss(g); });
   });
+}
+// The bubble hangs from the left edge of the word, so a term late in a line
+// would have its right side clipped off a phone screen. Pull it back inside
+// the gutter by however much it overhangs.
+var GLOSS_GUTTER = 12;
+function nudgeGloss(g){
+  g.style.setProperty("--gloss-nudge", "0px");
+  var w = 0;
+  try { w = parseFloat(getComputedStyle(g, "::after").width) || 0; } catch (e) { return; }
+  if (!w) return;
+  var left = g.getBoundingClientRect().left;
+  var over = (left + w) - (document.documentElement.clientWidth - GLOSS_GUTTER);
+  if (over > 0) {
+    var shift = Math.min(over, Math.max(0, left - GLOSS_GUTTER));
+    g.style.setProperty("--gloss-nudge", (-shift) + "px");
+  }
 }
 document.addEventListener("click", function(){
   document.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
