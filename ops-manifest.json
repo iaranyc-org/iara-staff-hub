@@ -1,0 +1,11 @@
+{
+  "name": "Iara Kitchen Ops",
+  "short_name": "Iara Ops",
+  "start_url": "ops",
+  "display": "standalone",
+  "background_color": "#0f6b5c",
+  "theme_color": "#0f6b5c",
+  "icons": [
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
