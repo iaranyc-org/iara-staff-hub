@@ -1,6 +1,9 @@
-# Iara Staff Hub
+# iara Lineup
 
-Single-page staff training PWA: service manual, team bios, food & beverage
+The onboarding and menu-training app for iara. Named after the lineup, the
+pre-service meeting where a restaurant teaches its staff the menu.
+
+Single-page training PWA: service manual, team bios, food & beverage
 guide with a manager-editable menu, knowledge-check quizzes, and a team
 progress view. Everything lives in `iara_staff_hub.html` — no build step.
 
