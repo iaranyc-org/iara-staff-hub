@@ -1,7 +1,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>iara Lineup</title>
-<meta name="description" content="Training and onboarding for the iara floor team. The service manual, the Brazilian menu with pronunciations, and knowledge checks, in one place you can use on a phone.">
+<meta name="description" content="Training and onboarding for the iara floor team. The service manual, the Brazilian menu with pronunciations, and drills, in one place you can use on a phone.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icon-512.png">
@@ -210,6 +210,17 @@
   .stat .lbl{ font-size:12.5px; color:var(--ink-soft);  letter-spacing:.01em; margin-top:4px; }
 
   .accordion{ margin-bottom:14px; overflow:hidden; }
+  .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap; border:0; }
+  .manual-search{ max-width:640px; margin:0 0 20px; }
+  .manual-search input{ width:100%; padding:13px 15px; border-radius:6px;
+    border:1.5px solid var(--line); background:var(--paper-raised); color:var(--ink);
+    font:inherit; font-size:15px; }
+  .manual-search input::placeholder{ color:var(--ink-soft); }
+  .manual-search input:focus{ outline:none; border-color:var(--sun); }
+  .manual-count{ margin:9px 0 0; font-size:13px; color:var(--ink-soft); }
+  mark{ background:color-mix(in srgb, var(--sun) 30%, transparent); color:var(--ink);
+    border-radius:2px; padding:0 1px; }
   .acc-head{
     width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
     padding:16px 18px; background:none; border:none; cursor:pointer; text-align:left;
@@ -414,248 +425,6 @@
     color:var(--sun); font-family:'Instrument Sans',system-ui,sans-serif; font-weight:700;
     margin:30px 0 8px; }
 
-  /* Photography, at last. The app had none, which is the real reason it read
-     as a text dashboard rather than a restaurant. These are iara's own images
-     from iara.nyc, so they are on-brand and rights-clean.
-     They are deliberately NOT attached to individual dishes: the shots are of
-     other plates, and mislabelling food in a tool that teaches allergens is
-     not a cosmetic mistake. Per-dish photography waits for the shoot. */
-  .viewband{ max-width:640px; height:130px; border-radius:6px; overflow:hidden; margin:0 0 26px;
-    position:relative; }
-  .viewband img{ width:100%; height:100%; object-fit:cover; display:block;
-    filter:saturate(.85) brightness(.66); }
-  /* the ground fades up into the image so it sits in the page, not on it */
-  .viewband::after{ content:""; position:absolute; inset:0;
-    background:linear-gradient(to bottom, rgba(57,29,31,.25), var(--paper)); }
-  .viewband-tight{ height:104px; }
-  @media (max-width:520px){ .viewband{ height:96px; } .viewband-tight{ height:80px; } }
-  .photoband{ display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin:0 0 26px;
-    border-radius:6px; overflow:hidden; max-width:640px; }
-  .photoband img{ width:100%; height:96px; object-fit:cover; display:block;
-    filter:saturate(.92) brightness(.92); }
-  @media (max-width:520px){ .photoband img{ height:70px; } }
-
-  .avatar-photo{ object-fit:cover; border:1px solid var(--rule-strong); }
-
-  .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:6px;
-    padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:640px; }
-  .sc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-    font-size:12px;  letter-spacing:.01em; color:var(--ink-soft); }
-  .sc-date{ font-variant-numeric:tabular-nums; letter-spacing:.06em; }
-  .sc-name{ margin:16px 0 6px; font-size:clamp(30px, 4.4vw, 40px); line-height:1.05; letter-spacing:-.018em; }
-  .sc-sub{ margin:0; color:var(--ink-mid); font-size:16.5px; line-height:1.6; max-width:44ch; }
-  .sc-rule{ height:1px; background:var(--rule); margin:20px 0 16px; }
-  .sc-blank{ margin:0; font-size:13.5px; color:var(--ink-soft); }
-  .sc-stats{ display:flex; gap:34px; flex-wrap:wrap; }
-  .sc-stats > div{ display:flex; flex-direction:column; gap:3px; }
-  .sc-stats .num{ font-size:23px; color:var(--display); font-variant-numeric:tabular-nums; }
-  .sc-stats .lbl{ font-size:12px;  letter-spacing:.01em; color:var(--ink-soft); }
-
-  /* A numbered running order, not a row of buttons. */
-  .startlist{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
-  .startlist li{ border-bottom:1px solid var(--rule); }
-  .startlist button{ width:100%; display:grid; grid-template-columns:auto 1fr; gap:4px 18px;
-    align-items:baseline; background:none; border:none; cursor:pointer; text-align:left;
-    padding:20px 4px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
-  .startlist button:hover{ padding-left:10px; }
-  .startlist button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
-  .sl-n{ grid-row:1 / span 2; font-size:11px; color:var(--ink-soft); letter-spacing:.06em; }
-  .sl-t{ font-family:'Fraunces',Georgia,serif; font-size:23px; color:var(--display); }
-  .sl-d{ font-size:14.5px; color:var(--ink-mid); }
-
-  /* A rubber stamp on a docket. Physical, warm, and it does not cheer at you. */
-  .result-wrap{ text-align:center; padding:34px 20px 30px; }
-  .stamp{ display:inline-flex; flex-direction:column; align-items:center; gap:2px;
-    border:2.5px solid var(--sun); border-radius:8px; padding:16px 30px 14px;
-    transform:rotate(-2.4deg); color:var(--sun); position:relative; }
-  .stamp::after{ content:""; position:absolute; inset:4px; border:1px solid var(--sun);
-    border-radius:6px; opacity:.5; pointer-events:none; }
-  .stamp-verdict{ font-family:'Fraunces',Georgia,serif; font-size:29px; line-height:1.05; letter-spacing:.01em; }
-  .stamp-score{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-variant-numeric:tabular-nums; }
-  .stamp-cat{ font-size:12px;  letter-spacing:.01em; margin-top:3px; opacity:.9; }
-  .result-note{ margin:26px auto 0; max-width:38ch; font-size:14.5px; line-height:1.6; color:var(--ink-soft); }
-  .result-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
-  .result-actions .btn{ width:auto; }
-
-  /* Study cards turn over rather than swap. */
-  .studycard{ perspective:1200px; }
-  .study-back{ animation:flipIn .3s cubic-bezier(.16,1,.3,1); transform-origin:top center; }
-  @keyframes flipIn{ from{ transform:rotateX(-14deg); } to{ transform:rotateX(0); } }
-  @media (prefers-reduced-motion:reduce){ .study-back{ animation:none; } }
-
-  .dish-grid{ display:block; }
-  #fb-grid{ max-width:640px; }
-  .dish{ position:relative; padding:22px 0 24px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
-  .dish:last-of-type{ border-bottom:none; }
-  .dish-line{ display:flex; align-items:baseline; gap:8px; }
-  .dish-line h4{ margin:0; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:22px;
-    color:var(--display); letter-spacing:.01em; flex:none; max-width:78%; }
-  .leader{ flex:1; min-width:16px; align-self:flex-end; position:relative; bottom:4px;
-    border-bottom:1.5px dotted var(--rule-strong); }
-  .dish-line .price{ flex:none; font-family:'IBM Plex Mono',monospace; font-size:13px;
-    color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums; }
-  .dish .desc{ margin:8px 0 0; font-size:15.5px; line-height:1.65; color:var(--ink-mid); max-width:56ch; }
-  .dish .allerg{ margin-top:9px; }
-  .dish .badge-example{ margin-left:8px; vertical-align:middle; }
-  .dish-edit{ position:absolute; top:18px; right:0; background:none; border:none; color:var(--ink-soft);
-    cursor:pointer; font-size:12.5px; letter-spacing:.01em; }
-  .dish-edit:hover{ color:var(--display); }
-  .add-dish{ margin-top:18px; width:100%; background:none; border:1.5px dashed var(--rule-strong);
-    color:var(--ink-soft); padding:13px; border-radius:6px; font:inherit; font-size:13.5px; cursor:pointer; }
-  .add-dish:hover{ border-color:var(--display); color:var(--display); }
-
-  /* Course headings, set like a menu's */
-  .fb-tabs{ display:flex; gap:6px; flex-wrap:wrap; }
-
-  /* Empty states say which empty this is and what will fill it. */
-  .empty{ padding:28px 0; max-width:42ch; }
-  .empty-h{ margin:0 0 6px; font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
-  .empty-b{ margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.55; }
-
-  .gloss{ border-bottom:1px dashed var(--display); cursor:help; position:relative; }
-  .gloss:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
-  .gloss::after{
-    content:attr(data-def); position:absolute; left:0; bottom:calc(100% + 8px); z-index:60;
-    width:max-content; max-width:min(300px, 78vw); padding:10px 12px; border-radius:6px;
-    background:var(--sidebar); color:var(--sidebar-ink); border:1px solid var(--line);
-    font-size:12.5px; font-weight:400; line-height:1.5; letter-spacing:0; text-transform:none;
-    box-shadow:var(--shadow); opacity:0; visibility:hidden; transform:translateY(3px);
-    transition:opacity .12s ease, transform .12s ease, visibility .12s; pointer-events:none; }
-  .gloss:hover::after, .gloss:focus-visible::after, .gloss.is-open::after{
-    opacity:1; visibility:visible; transform:translateY(0); }
-  @media (hover:none){ .gloss{ cursor:pointer; } }
-  .cl-summary{ padding:20px 22px; margin-bottom:26px; }
-  .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
-  .cl-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:19px; }
-  .cl-note{ margin:10px 0 0; font-size:13.5px; color:var(--ink-soft); }
-  .cl-group{ font-size:19px; margin:26px 0 10px; }
-  .cl-list{ padding:6px 4px; }
-  .cl-item{ padding:11px 16px; border-bottom:1px solid var(--line); }
-  .cl-item:last-child{ border-bottom:none; }
-  .cl-item label{ display:flex; align-items:flex-start; gap:11px; cursor:pointer; }
-  .cl-item input{ width:17px; height:17px; margin-top:2px; accent-color:var(--sun); flex:none; cursor:pointer; }
-  .cl-item input:disabled{ cursor:default; }
-  .cl-item input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .cl-text{ font-size:16px; line-height:1.5; }
-  .cl-item.is-done .cl-text{ color:var(--ink-soft); text-decoration:line-through; }
-  .cl-tag{ display:inline-block; margin-left:8px; font-size:12px; font-weight:700; letter-spacing:.01em;
-     color:var(--display); border:1px solid var(--line); border-radius:4px;
-    padding:1px 6px; vertical-align:middle; text-decoration:none; }
-  .cl-help{ margin:6px 0 0 28px; font-size:14px; color:var(--ink-soft); line-height:1.55; }
-  .cl-help a{ color:var(--sun); }
-  .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center;
-    justify-content:center; padding:20px; z-index:100; overflow-y:auto; }
-  .modal{ width:100%; max-width:520px; padding:26px; margin:auto; }
-  .modal h3{ margin:0 0 20px; font-size:21px; }
-  .field.two{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .field-help{ margin:6px 0 0; font-size:12px; color:var(--ink-soft); }
-  .req{ color:var(--clay); }
-  .check{ display:flex; align-items:center; gap:9px; font-size:14px; cursor:pointer; margin-bottom:4px; }
-  .check input{ width:16px; height:16px; accent-color:var(--sun); cursor:pointer; flex:none; }
-  .form-err{ margin:12px 0 0; font-size:13.5px; color:var(--clay); font-weight:600; }
-  .modal-actions{ display:flex; align-items:center; gap:10px; margin-top:22px; flex-wrap:wrap; }
-  .modal-actions .spacer{ flex:1; }
-  .modal-actions .btn{ width:auto; }
-  .btn-danger{ color:var(--clay); border-color:color-mix(in srgb, var(--clay) 40%, transparent); }
-  .btn-danger:hover{ border-color:var(--clay); }
-  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:200;
-    background:var(--paper-raised); border:1.5px solid var(--line); border-radius:6px;
-    padding:12px 16px; display:flex; align-items:center; gap:14px; font-size:14px;
-    box-shadow:var(--shadow); max-width:calc(100vw - 32px); }
-  .toast-act{ background:none; border:none; color:var(--sun); font:inherit; font-weight:700;
-    cursor:pointer; text-decoration:underline; padding:0; flex:none; }
-  @media (max-width:860px){ .toast{ bottom:76px; } .field.two{ grid-template-columns:1fr; } }
-  /* Base for the mode switch; the menu-style treatment is defined above. */
-  .mode-switch{ display:inline-flex; }
-  .mode-btn{ border:none; background:transparent; color:var(--ink-soft); font:inherit; font-weight:700;
-    cursor:pointer; transition:color .12s ease, border-color .12s ease; }
-  .mode-btn:hover{ color:var(--ink); }
-  .mode-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .fb-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
-  .used-in{ margin:10px 0 0; font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
-  .used-in span{  letter-spacing:.01em; font-size:12px; font-weight:700; color:var(--display); }
-
-  .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
-  .deck{ text-align:left; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:8px;
-    padding:16px; cursor:pointer; display:flex; flex-direction:column; gap:6px; font:inherit; color:var(--ink);
-    transition:border-color .12s ease, transform .08s ease; }
-  .deck:hover{ border-color:var(--sun); }
-  .deck:active{ transform:translateY(1px); }
-  .deck:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .deck-name{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
-  .deck-meta{ font-size:12px; color:var(--ink-soft); }
-  .deck-bar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin-top:4px; }
-  .deck-bar span{ display:block; height:100%; background:var(--sun); border-radius:3px; }
-  .deck-pct{ font-size:11.5px; color:var(--ink-soft); }
-
-  .studycard{ padding:26px; max-width:620px; }
-  .study-front{ font-size:27px; margin:6px 0 4px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .study-hint{ color:var(--ink-soft); font-size:14px; margin:14px 0 20px; }
-  .study-back{ border-top:1px solid var(--line); margin-top:16px; padding-top:16px; }
-  .study-back p{ margin:0 0 8px; font-size:15.5px; line-height:1.6; }
-  .study-extra{ font-size:13px; color:var(--ink-soft); }
-  .study-grade{ display:flex; gap:10px; margin-top:20px; }
-  .study-grade .btn{ flex:1; }
-  .pips{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
-  .pips i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-soft); display:inline-block; }
-  .pips i.on{ background:var(--sun); border-color:var(--sun); }
-  .linkish{ display:block; margin-top:18px; background:none; border:none; color:var(--ink-soft);
-    font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
-  .linkish:hover{ color:var(--ink); }
-  /* Drill categories as an editorial list, matching the manual and the decks. */
-  .drill-list{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
-  .drill-list li{ border-bottom:1px solid var(--rule); }
-  .drill-list button{ width:100%; display:grid; grid-template-columns:1fr auto; gap:3px 16px;
-    align-items:baseline; background:none; border:none; cursor:pointer; text-align:left;
-    padding:16px 2px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
-  .drill-list button:hover{ padding-left:9px; }
-  .drill-list button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
-  .drill-name{ font-family:'Fraunces',Georgia,serif; font-size:23px; color:var(--display); }
-  .drill-desc{ grid-column:1 / -1; font-size:14.5px; color:var(--ink-mid); line-height:1.55; }
-  .drill-state{ font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
-  .drill-state.is-good{ color:var(--sun); }
-  .drill-state.is-new{ font-size:12px; }
-  /* Admin table, set like the rest of the app: rules, no boxes. */
-  table.progress{ width:100%; border-collapse:collapse; max-width:760px; }
-  table.progress th{ text-align:left; font-size:12px; font-weight:600; color:var(--ink-soft);
-    letter-spacing:.02em; padding:0 14px 10px 0; border-bottom:1px solid var(--rule-strong); }
-  table.progress td{ padding:14px 14px 14px 0; border-bottom:1px solid var(--rule); font-size:14.5px; }
-  table.progress tr:last-child td{ border-bottom:none; }
-  table.progress tbody tr:hover td{ background:color-mix(in srgb, var(--sun) 4%, transparent); }
-  table.progress td:first-child{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
-  .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
-  .qbar span{ display:block; height:100%; background:var(--sun); border-radius:3px; transition:width .25s cubic-bezier(.16,1,.3,1); }
-  .opt{ display:flex; align-items:center; gap:10px; }
-  .optkey{ flex:none; width:22px; height:22px; border-radius:4px; border:1px solid var(--line); display:inline-flex;
-    align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:11.5px; color:var(--ink-soft); }
-  .opt:not([disabled]):hover{ border-color:var(--sun); }
-  .opt:not([disabled]):active{ transform:scale(.995); }
-  .opt:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .opt[disabled]{ cursor:default; }
-  .opt.correct .optkey, .opt.wrong .optkey{ border-color:currentColor; }
-  .q-feedback{ margin-top:16px; padding:14px 16px; border-radius:6px; font-size:14.5px; line-height:1.5;
-    border:1.5px solid var(--line); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
-  .q-feedback.is-right{ border-color:var(--sun); }
-  .q-feedback.is-wrong{ border-color:var(--forest); }
-  .q-feedback em{ font-style:normal; font-weight:700; color:var(--display); }
-  .btn-next{ margin-left:auto; width:auto; }
-  .result-num{ font-family:'IBM Plex Mono',monospace; font-size:52px; font-weight:600; }
-  .result-wrap{ text-align:center; padding:40px 20px; }
-
-  /* progress dashboard */
-  .pin-gate{ max-width:340px; padding:30px; }
-
-  .table-wrap{ overflow-x:auto; max-width:760px; }
-
-  @media (max-width:860px){
-    .sidebar{ display:none; }
-    .topbar{ display:flex; }
-    .bottom-nav{ display:block; }
-    .view{ padding:20px 16px 104px; }
-    .stat-row{ grid-template-columns:1fr; }
-    .quiz-pick{ grid-template-columns:1fr; }
-    .bio{ grid-template-columns:52px 1fr; }
-  }
   [hidden]{ display:none !important; }
 </style>
 
@@ -712,7 +481,7 @@
     <div class="sb-user">
       <div class="name" id="sb-name">—</div>
       <div class="role" id="sb-role">—</div>
-      <button id="sb-switch">Switch user</button>
+      <button id="sb-switch">Switch User</button>
       <button class="nav-btn sb-admin" data-view="progress">Admin</button>
     </div>
   </aside>
@@ -755,15 +524,19 @@
     </section>
 
     <section class="view" id="view-manual">
-      <div class="viewband" aria-hidden="true"><img src="img/amazon.jpg" alt="" loading="lazy"></div>
       <h1>The Manual</h1>
       <p class="view-intro">The printed manual, in the order a shift actually runs.</p>
+      <div class="manual-search">
+        <label class="sr-only" for="manual-q">Search the manual</label>
+        <input id="manual-q" type="search" autocomplete="off"
+               placeholder="Search the manual, e.g. allergy, intoxicated, tray">
+        <p class="manual-count" id="manual-count" hidden></p>
+      </div>
       <div id="manual-accordions"></div>
     </section>
 
     <!-- TEAM -->
     <section class="view" id="view-team">
-      <div class="viewband viewband-tight" aria-hidden="true"><img src="img/vitor.jpg" alt="" loading="lazy"></div>
       <h1>Team</h1>
       <p class="view-intro">Who you are working with.</p>
       <div id="team-bios"></div>
@@ -777,13 +550,6 @@
       <div class="mode-switch" role="tablist" aria-label="Food and beverage mode">
         <button class="mode-btn active" id="mode-browse" role="tab" aria-selected="true">Browse</button>
         <button class="mode-btn" id="mode-study" role="tab" aria-selected="false">Study</button>
-      </div>
-
-      <div class="photoband" aria-hidden="true">
-        <img src="img/dish-tapioca.jpg" alt="" loading="lazy">
-        <img src="img/dish-greens.jpg" alt="" loading="lazy">
-        <img src="img/dish-snapper.jpg" alt="" loading="lazy">
-        <img src="img/dish-picanha.jpg" alt="" loading="lazy">
       </div>
       <div id="fb-browse">
         <div class="fb-toolbar">
@@ -802,7 +568,6 @@
 
     <!-- QUIZ -->
     <section class="view" id="view-quiz">
-      <div class="viewband viewband-tight" aria-hidden="true"><img src="img/dish-snapper.jpg" alt="" loading="lazy"></div>
       <h1>Drill</h1>
       <p class="view-intro" id="quiz-intro">Fresh questions every time. Run it until you stop missing.</p>
       <div id="quiz-area"></div>
@@ -810,7 +575,6 @@
 
     <!-- PROGRESS (manager) -->
     <section class="view" id="view-checklist">
-      <div class="viewband viewband-tight" aria-hidden="true"><img src="img/dish-greens.jpg" alt="" loading="lazy"></div>
       <h1>First Week</h1>
       <p class="view-intro">What to get through before you run your own section.</p>
       <div id="checklist-area"></div>
@@ -927,7 +691,7 @@ var MANUAL = [
 
 var TEAM = [
   { name:"Vitor Mendes", title:"Chef-Owner", initials:"VM", photo:"img/vitor.jpg",
-    bio:"Chef-Owner of iara. Born in Parnana, Brazil, Vitor studied at the International Culinary Center (ICC) and went on to cook in some of New York's most respected kitchens: The Modern, the Chef's Table at Brooklyn Fare, Frevo, The Fulton, and, most recently, Theodora. After his father passed away during the COVID-19 pandemic, Vitor returned to Brazil for a seven-month trip; it ended in the Amazon, where he found the inspiration to build a restaurant around the region's ingredients, techniques, and traditions. That journey shaped iara's Amazonian-inspired menu and open-kitchen concept." },
+    bio:"Chef-Owner of iara. Brazilian-American, Vitor started working in restaurants at 15 to help support his family and found his calling almost immediately. He enrolled at the Institute of Culinary Education and spent over a decade in some of New York's most demanding kitchens: Theodora, Frevo, the Fulton by Jean-Georges, and Chef's Table at Brooklyn Fare. After his father's passing he returned to Brazil in 2021 and cooked across the country for the first time. Everything shifted deep in the Amazon, where he spent a month learning the ingredients and the culture around them. He was a finalist in the S.Pellegrino Young Chef Academy Competition in 2022, was recruited by chef Tomer Blechman to take the reins at Theodora in 2023, and was named a StarChefs NYC Rising Star in 2025. iara is his first restaurant as founder, where the precision of his fine-dining years meets the ingredient-led cooking he found in the Amazon." },
   { name:"Ronald Rufino", title:"General Manager", initials:"RR",
     bio:"General Manager of iara. Ronald most recently served as General Manager of Little Maven, overseeing daily operations and the beverage program, while also serving as Head Sommelier &amp; Wine Buyer for Flyfish Club, a Members Club. His background spans some of New York's most respected dining rooms, including Captain &amp; Service Manager at the Michelin-starred Blue Hill at Stone Barns, Service Director at the Michelin-starred Frevo, Captain at the Michelin-starred SHO Shaun Hergatt, and a spot on the opening team at Upland. After the pandemic, he co-founded a kombucha company called Feel Good Booch. Ronald is a Certified Sommelier with a particular love of mezcal." },
   { name:"Eli Gitelman", title:"Executive Sous Chef", initials:"EG",
@@ -1291,7 +1055,7 @@ function enterShell(){
 document.getElementById("sb-switch").addEventListener("click", function(){
   confirmDialog({
     title: "Switch user?",
-    body: "This device will forget your name, your checklist and your card mastery. Your knowledge check history stays with your manager.",
+    body: "This device will forget your name, your checklist and your card mastery. Your drill history stays with your manager.",
     confirm: "Switch User"
   }, function(){
     localStorage.removeItem(LS_KEY);
@@ -1401,6 +1165,65 @@ function loopDiagram(){
   '</figure>';
 }
 
+/* A manual is read two ways: start to finish while learning, and looked up in
+   ten seconds mid-service. Only the first was possible. Typing opens the
+   sections that match and hides the rest, so the second works too. */
+function manualSearch(q){
+  var wrap = document.getElementById("manual-accordions");
+  var count = document.getElementById("manual-count");
+  var term = (q || "").trim().toLowerCase();
+  var cards = wrap.querySelectorAll(".accordion");
+
+  if (!term) {
+    cards.forEach(function(c, i){
+      c.hidden = false;
+      c.classList.toggle("open", i === 0);
+      c.querySelectorAll("mark").forEach(unmark);
+    });
+    count.hidden = true;
+    return;
+  }
+
+  var hits = 0;
+  cards.forEach(function(c){
+    c.querySelectorAll("mark").forEach(unmark);
+    var match = c.textContent.toLowerCase().indexOf(term) !== -1;
+    c.hidden = !match;
+    c.classList.toggle("open", match);
+    if (match) { hits++; highlight(c, term); }
+  });
+  count.hidden = false;
+  count.textContent = hits
+    ? hits + (hits === 1 ? " section matches" : " sections match")
+    : "Nothing in the manual matches that. Try a shorter word.";
+}
+
+function unmark(m){
+  var t = document.createTextNode(m.textContent);
+  m.parentNode.replaceChild(t, m);
+}
+
+function highlight(root, term){
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(n){
+      if (!n.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      var p = n.parentElement;
+      if (p && (p.tagName === "MARK" || p.classList.contains("acc-num"))) return NodeFilter.FILTER_REJECT;
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var nodes = []; while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach(function(node){
+    var i = node.nodeValue.toLowerCase().indexOf(term);
+    if (i === -1) return;
+    var after = node.splitText(i);
+    var hit = after.splitText(term.length);
+    var m = document.createElement("mark");
+    m.textContent = after.nodeValue;
+    after.parentNode.replaceChild(m, after);
+  });
+}
+
 function renderManual(){
   var wrap = document.getElementById("manual-accordions");
   wrap.innerHTML = MANUAL.map(function(sec, i){
@@ -1418,6 +1241,18 @@ function renderManual(){
   });
   if (wrap.firstElementChild) wrap.firstElementChild.classList.add("open");
   applyGlossary(wrap);
+  var q = document.getElementById("manual-q");
+  if (q && !q.dataset.bound) {
+    q.dataset.bound = "1";
+    var t = null;
+    q.addEventListener("input", function(){
+      clearTimeout(t);
+      t = setTimeout(function(){ manualSearch(q.value); }, 120);
+    });
+    q.addEventListener("keydown", function(ev){
+      if (ev.key === "Escape") { q.value = ""; manualSearch(""); q.blur(); }
+    });
+  }
 }
 
 /* ============================================================
@@ -1985,7 +1820,7 @@ function renderStudyCard(){
         '<button class="btn btn-ghost" id="study-again">Missed It</button>' +
         '<button class="btn btn-sun" id="study-got">Got It</button></div>';
   }
-  html += '<button class="linkish" id="study-quit">Back to decks</button></div>';
+  html += '<button class="linkish" id="study-quit">Back to Decks</button></div>';
   area.innerHTML = html;
 
   var rev = document.getElementById("study-reveal");
@@ -2019,7 +1854,7 @@ function renderStudyDone(){
       '<p class="result-note">mastered. '+d.right+' first try, '+d.wrong+' to revisit.</p>' +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
         '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
-        '<button class="btn btn-ghost" id="study-decks">All Decks</button></div></div>';
+        '<button class="btn btn-ghost" id="study-decks">Pick Another Deck</button></div></div>';
   document.getElementById("study-redo").addEventListener("click", function(){ startStudy(d.key); });
   document.getElementById("study-decks").addEventListener("click", function(){
     studyDeck = null; renderStudyPicker();
@@ -2084,7 +1919,7 @@ var CHECKLIST = [
     { id:"manual-read", label:"Read through the Service Manual once end to end" },
     { id:"fnb-study", label:"Study the Whole Menu deck until you are over 50% mastered",
       auto:"study" },
-    { id:"quiz-pass", label:"Score 80% or better on any Knowledge Check",
+    { id:"quiz-pass", label:"Score 80% or better on any drill",
       auto:"quiz", help:"Ticks itself as soon as you do." }
   ]},
   { group:"On the floor", items:[
@@ -2512,7 +2347,7 @@ function renderQuizResult(){
       '<p class="result-note">'+esc(note)+'</p>' +
       '<div class="result-actions">' +
         '<button class="btn btn-sun" id="quiz-again">Run It Again</button>' +
-        '<button class="btn btn-ghost" id="quiz-back">Pick Another</button></div></div>';
+        '<button class="btn btn-ghost" id="quiz-back">Pick Another Drill</button></div></div>';
   document.getElementById("quiz-again").addEventListener("click", function(){ startQuiz(aq.key); });
   document.getElementById("quiz-back").addEventListener("click", renderQuizPicker);
 }
