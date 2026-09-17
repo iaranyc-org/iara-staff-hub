@@ -848,7 +848,7 @@
     <button class="nav-btn" data-view="team">Team</button>
     <div class="nav-rule"></div>
     <button class="nav-btn" data-view="study">Study</button>
-    <button class="nav-btn" data-view="quiz">Test</button>
+    <button class="nav-btn" data-view="quiz">Final Exam</button>
     <div class="sb-spacer"></div>
     <div class="sb-user">
       <div class="name" id="sb-name"></div>
@@ -892,7 +892,7 @@
           <span class="sl-t">Learn the Menu</span>
           <span class="sl-d">Every dish, how to say it, what it sets off.</span></button></li>
         <li><button class="jump" data-view="quiz"><span class="sl-n mono">03</span>
-          <span class="sl-t">Take a Test</span>
+          <span class="sl-t">Take the Final Exam</span>
           <span class="sl-d">Find out what you actually know.</span></button></li>
       </ol>
     </section>
@@ -954,7 +954,7 @@
 
     <!-- QUIZ -->
     <section class="view" id="view-quiz">
-      <h1>Test</h1>
+      <h1>Final Exam</h1>
       <p class="view-intro" id="quiz-intro">Fresh questions every time. Run it until you stop missing.</p>
       <div id="quiz-area"></div>
     </section>
@@ -980,7 +980,7 @@
       <button class="nav-btn" data-view="fnb">Menu</button>
       <button class="nav-btn" data-view="team">Team</button>
       <button class="nav-btn" data-view="study">Study</button>
-      <button class="nav-btn" data-view="quiz">Test</button>
+      <button class="nav-btn" data-view="quiz">Final Exam</button>
     </div>
   </nav>
 </div>
@@ -1527,7 +1527,7 @@ document.getElementById("sb-switch").addEventListener("click", function(){
 /* ============================================================
    Nav
    ============================================================ */
-var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", study:"Study", quiz:"Test", checklist:"First Week", progress:"Admin" };
+var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", study:"Study", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
 
 /* Hash routing. Without it a refresh, or the phone reloading the tab in the
    background, dumps you back on Home and loses your place mid-manual. It also
@@ -3160,7 +3160,7 @@ function renderQuizQuestion(){
     }).join("") +
     '<div id="q-feedback" class="q-feedback" hidden></div>' +
     // Study lets you back out mid-deck; a test should not trap you either.
-    '<button class="linkish" id="quiz-quit">Back to Test</button>' +
+    '<button class="linkish" id="quiz-quit">Back to Final Exam</button>' +
     '</div>';
   area.innerHTML = html;
   area.querySelectorAll(".opt").forEach(function(btn){
@@ -3248,7 +3248,7 @@ function renderQuizResult(){
       '<p class="result-note">'+esc(note)+'</p>' +
       '<div class="result-actions">' +
         '<button class="btn btn-sun" id="quiz-again">Run It Again</button>' +
-        '<button class="btn btn-ghost" id="quiz-back">Pick Another Test</button></div>' +
+        '<button class="btn btn-ghost" id="quiz-back">Pick Another Section</button></div>' +
       review + '</div>';
   document.getElementById("quiz-again").addEventListener("click", function(){ startQuiz(aq.key); });
   document.getElementById("quiz-back").addEventListener("click", renderQuizPicker);
