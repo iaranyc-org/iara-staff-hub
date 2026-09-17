@@ -75,6 +75,7 @@
   }
 
   *{box-sizing:border-box;}
+  html{ background:var(--paper); }
   body{
     background:
       linear-gradient(160deg,
@@ -262,6 +263,65 @@
   .opt.wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
   .opt[disabled]{ cursor:default; }
   .qexplain{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
+  /* Grain. A large flat maroon field bands badly and reads as dead space; a
+     little noise gives it a printed, paper-like surface. House premium touch.
+     contrast/brightness amplify the low-alpha turbulence into visible grain. */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    filter:contrast(170%) brightness(1000%); mix-blend-mode:overlay; }
+  #shell, #gate{ position:relative; z-index:1; }
+
+  /* Cards sat flat on a same-tone ground. A hairline top highlight is what
+     actually reads as "raised" on a dark surface, more than a shadow does. */
+  .card{ position:relative; }
+  .card::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:1px; border-radius:inherit;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.10) 22%, rgba(255,255,255,.10) 78%, transparent);
+    pointer-events:none; }
+
+  /* Section numbers give the manual a spine to scan. */
+  .acc-head h3{ flex:1; text-align:left; margin:0; }
+  .acc-head:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; border-radius:5px; }
+  .acc-num{ font-size:11px; color:var(--display); opacity:.85; flex:none; letter-spacing:.04em; }
+  .accordion.open .acc-num{ opacity:1; }
+
+  /* The loop, drawn */
+  .loop-fig{ margin:18px 0 4px; }
+  .loop-fig svg{ width:100%; height:auto; max-width:460px; display:block; }
+  .lp-node circle{ fill:var(--paper-raised); stroke:var(--line); stroke-width:1.5; }
+  .lp-node text{ fill:var(--ink); font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; }
+  .lp-node .lp-ord{ fill:var(--ink-soft); font-size:10px; font-weight:600; }
+  .lp-late circle{ stroke:var(--sun); stroke-dasharray:4 3; }
+  .lp-late text{ fill:var(--sun); }
+  .lp-path{ fill:none; stroke:var(--display); stroke-width:1.6; }
+  .lp-path[marker-end]{ marker-end:url(#lp-arrow); }
+  .lp-dash{ stroke:var(--sun); stroke-dasharray:5 4; }
+  #lp-arrow path{ fill:var(--display); }
+  .loop-fig figcaption{ margin-top:10px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+
+  /* Entrance is transform-only and never animates opacity from 0: a tab that
+     backgrounds mid-animation freezes at frame 0, and an opacity fade would
+     leave the panel blank. Worst case here is a few px offset. */
+  .view.active{ animation:viewIn .22s cubic-bezier(.16,1,.3,1); }
+  @keyframes viewIn{ from{ transform:translateY(6px); } to{ transform:translateY(0); } }
+  @media (prefers-reduced-motion:reduce){
+    .view.active{ animation:none; }
+    .qbar span, .deck-bar span{ transition:none; }
+  }
+
+  .gloss{ border-bottom:1px dashed var(--display); cursor:help; position:relative; }
+  .gloss:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
+  .gloss::after{
+    content:attr(data-def); position:absolute; left:0; bottom:calc(100% + 8px); z-index:60;
+    width:max-content; max-width:min(300px, 78vw); padding:10px 12px; border-radius:6px;
+    background:var(--sidebar); color:var(--sidebar-ink); border:1px solid var(--line);
+    font-size:12.5px; font-weight:400; line-height:1.5; letter-spacing:0; text-transform:none;
+    box-shadow:var(--shadow); opacity:0; visibility:hidden; transform:translateY(3px);
+    transition:opacity .12s ease, transform .12s ease, visibility .12s; pointer-events:none; }
+  .gloss:hover::after, .gloss:focus-visible::after, .gloss.is-open::after{
+    opacity:1; visibility:visible; transform:translateY(0); }
+  @media (hover:none){ .gloss{ cursor:pointer; } }
   .cl-summary{ padding:20px 22px; margin-bottom:26px; }
   .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
   .cl-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:19px; }
@@ -410,7 +470,7 @@
       </div>
       <button type="submit" class="btn btn-primary">Enter the hub</button>
     </form>
-    <p class="gate-note">This isn't a secure login — it's just how the app knows whose progress to save. Use your real name so your manager can see your training progress.</p>
+    <p class="gate-note">This isn't a secure login. It's just how the app knows whose progress to save. Use your real name so your manager can see your training progress.</p>
   </div>
 </div>
 
@@ -444,8 +504,8 @@
     <section class="view active" id="view-home">
       <div class="card hero-banner">
         <p class="eyebrow">Welcome</p>
-        <h1>Hi <span id="home-name">there</span> — here's your hub.</h1>
-        <p class="view-intro">Everything you need to train, reference, and test yourself on iara's service standards, menu, and team lives here. Start with the Service Manual, then try a Knowledge Check whenever you're ready.</p>
+        <h1>Hi <span id="home-name">there</span>, welcome to the lineup.</h1>
+        <p class="view-intro">Everything you need to train, reference, and test yourself on iara's service standards, menu, and team. Start with the Service Manual, then try a Knowledge Check whenever you're ready.</p>
       </div>
       <div class="stat-row">
         <div class="card stat"><div class="num mono" id="stat-attempts">0</div><div class="lbl">Quizzes taken</div></div>
@@ -466,7 +526,7 @@
     <section class="view" id="view-manual">
       <p class="eyebrow">Reference</p>
       <h1>Service Manual</h1>
-      <p class="view-intro">The full manual lives here as quick-reference sections. Tap a section to expand it — this mirrors the printed iara Service Manual your manager gave you at training.</p>
+      <p class="view-intro">The full manual lives here as quick-reference sections. Tap a section to expand it. This mirrors the printed iara Service Manual your manager gave you at training.</p>
       <div id="manual-accordions"></div>
     </section>
 
@@ -523,7 +583,7 @@
     <section class="view" id="view-progress">
       <p class="eyebrow">For managers</p>
       <h1>Team Progress</h1>
-      <p class="view-intro">A quick look at who's used the hub and how their knowledge checks are going.</p>
+      <p class="view-intro">A quick look at who has used the app and how their knowledge checks are going.</p>
       <div id="progress-area"></div>
     </section>
   </div>
@@ -548,7 +608,7 @@
 "use strict";
 
 /* ============================================================
-   Firebase config — fill in with your project's values from
+   Firebase config. Fill in with your project's values from
    Firebase Console > Project settings > General > Your apps > SDK setup.
    These values are safe to expose client-side (they identify the
    project, not a secret); access is controlled by Firestore
@@ -564,77 +624,78 @@ var FIREBASE_CONFIG = {
 };
 
 /* ============================================================
-   DATA — Service Manual condensed content
+   DATA: Service Manual condensed content
    ============================================================ */
 var MANUAL = [
-  { title:"Front-of-House Roles", body:[
-    "<span class='role-tag'>Door 1</span> Leads the host stand and owns the guest experience from arrival through seating — manages the reservation book, controls the waitlist, hands off chits clearly, and flags VIPs and priority reservations to the team.",
-    "<span class='role-tag'>Door 2</span> Supports Door 1 by pushing table resets, keeping the dining room and restrooms clean, and giving Door 1 real-time updates on table status.",
-    "<span class='role-tag'>Expo</span> The central link between kitchen and floor — calls tickets, paces dishes leaving the pass, prioritizes allergy tickets, and directs runners.",
-    "<span class='role-tag'>Server</span> Owns the guest experience for their section start to finish — accurate orders (including allergies), pacing, resets, and a smooth close to the meal.",
-    "<span class='role-tag'>Counter Server</span> A support role that prioritizes running hot food and resetting tables in coordination with the expo.",
-    "<span class='role-tag'>Bartender</span> Balances bar-guest hospitality with producing drinks for the whole room — never ignoring guests at the bar.",
-    "<span class='role-tag'>Busser / Runner</span> A dual role that keeps the dining room moving and food flowing — fast, clean resets, running food from the pass, and polished silverware without leaving the floor uncovered for long."
-  ]},
-  { title:"Uniform & Personal Appearance", body:[
-    "All team members (FOH &amp; BOH) are provided two iara-branded t-shirts as part of their uniform.",
+  { id:"start", title:"Shift Start", body:[
+    "Arrive on time, in full uniform, and begin opening sidework immediately. The goal is a fully built, stocked bar or station before the first guest arrives.",
+    "Sidework is complete when the station is clean, fully stocked, organized and reset, and ready for immediate use. That same standard applies at the end of the night.",
+  ] },
+  { id:"uniform", title:"Uniform & Personal Appearance", body:[
+    "All team members (FOH and BOH) are provided two iara-branded t-shirts as part of their uniform.",
     "FOH: iara t-shirt with black bottoms, closed-toe non-slip shoes, hair neat and tied back if past collar-length, minimal jewelry, natural nail length.",
     "BOH: iara t-shirt plus an iara-branded hat (also provided), closed-toe non-slip shoes, hair restrained or covered, no loose jewelry, apron worn at all times on the line.",
     "Visible tattoos and piercings are permitted as long as the content isn't offensive or explicit.",
-    "These standards are role-based and job-related — never tied to a protected characteristic. Religious dress and natural hair/protective hairstyles are always accommodated."
-  ]},
-  { title:"Hospitality & Guest Service", body:[
-    "Our service style is warm and welcoming above all else — mechanical service (accurate orders, allergies honored, requests followed through, timely water/drinks/silverware) is mandatory, but it's a tool for hospitality, not a substitute for it.",
-    "Guests have the right of way; use open-handed gestures, never point; say \"behind\" and \"corner\" clearly at all times.",
-    "Keep eyes trained on guests' faces as you move through the room so you can catch anyone who needs help — offer a smile even when they don't need anything.",
-    "Drinks: max 6 per tray, no bottles on trays — empty glassware is allowed on trays. Food: max 3 plates carried.",
-    "Clearing: up to 2 empty glasses may be cleared by hand if you're actively at the table; 3+ requires a tray."
-  ]},
-  { title:"Serving a Table — The Loop", body:[
-    "The loop is the system that ensures no table in your section is missed: move through tables roughly in the order they were seated, at a steady interval, generating momentum.",
-    "Example: seated 41, 42, 44, 46 in that order — when 43 is sat, greet them, then return to 41 → 42 → 44 → 46 → 43, and restart the loop from any newly seated table.",
-    "Greeting sets the tone — welcome, offer still/sparkling water, introduce the shareable-plates format, and guide how much to order. Leave the table with a clear sense of the meal and what happens next.",
+    "These standards are role-based and job-related, never tied to a protected characteristic. Religious dress and natural hair or protective hairstyles are always accommodated.",
+  ] },
+  { id:"roles", title:"Front-of-House Roles", body:[
+    "<span class='role-tag'>Door 1</span> Leads the host stand and owns the guest experience from arrival through seating. Manages the reservation book, controls the waitlist, hands off chits clearly, and flags VIPs and priority reservations to the team.",
+    "<span class='role-tag'>Door 2</span> Supports Door 1 by pushing table resets, keeping the dining room and restrooms clean, and giving Door 1 real-time updates on table status.",
+    "<span class='role-tag'>Expo</span> The central link between kitchen and floor. Calls tickets, paces dishes leaving the pass, prioritizes allergy tickets, and directs runners.",
+    "<span class='role-tag'>Server</span> Owns the guest experience for their section start to finish: accurate orders (including allergies), pacing, resets, and a smooth close to the meal.",
+    "<span class='role-tag'>Counter Server</span> A support role that prioritizes running hot food and resetting tables in coordination with the expo.",
+    "<span class='role-tag'>Bartender</span> Balances bar-guest hospitality with producing drinks for the whole room, never ignoring guests at the bar.",
+    "<span class='role-tag'>Busser / Runner</span> A dual role that keeps the dining room moving and food flowing: fast, clean resets, running food from the pass, and polished silverware without leaving the floor uncovered for long.",
+  ] },
+  { id:"hospitality", title:"Hospitality & Guest Service", body:[
+    "Our service style is warm and welcoming above all else. Mechanical service (accurate orders, allergies honored, requests followed through, timely water, drinks and silverware) is mandatory, but it's a tool for hospitality, not a substitute for it.",
+    "Guests have the right of way. Use open-handed gestures, never point, and say \"behind\" and \"corner\" clearly at all times.",
+    "Keep eyes trained on guests' faces as you move through the room so you can catch anyone who needs help. Offer a smile even when they don't need anything.",
+    "Drinks: max 6 per tray, no bottles on trays. Empty glassware is allowed on trays. Food: max 3 plates carried.",
+    "Clearing: up to 2 empty glasses may be cleared by hand if you're actively at the table. 3 or more requires a tray.",
+  ] },
+  { id:"loop", title:"Serving a Table: The Loop", body:[
+    "The loop is the system that ensures no table in your section is missed. Move through tables roughly in the order they were seated, at a steady interval, generating momentum.",
+    "Example: seated 41, 42, 44, 46 in that order. When 43 is sat, greet them, then return to 41, 42, 44, 46, 43, and restart the loop from any newly seated table.",
+    "Greeting sets the tone. Welcome the table, offer still or sparkling water, introduce the shareable-plates format, and guide how much to order. Leave the table with a clear sense of the meal and what happens next.",
     "Read back food orders before leaving the table, flag any unusual pacing, and confirm allergy modifications with a manager or floater before sending the ticket.",
-    "Drop the check when asked or after dessert is cleared — always double-check accuracy before dropping it."
-  ]},
-  { title:"Food Allergies & Guest Problems", body:[
-    "We are not an allergen-free kitchen. If a guest isn't comfortable with cross-contact/trace amounts, loop in a manager immediately.",
+    "Drop the check when asked or after dessert is cleared. Always double-check accuracy before dropping it.",
+  ] },
+  { id:"allergies", title:"Allergies & Dietary Requests", body:[
+    "We are not an allergen-free kitchen. If a guest isn't comfortable with cross-contact or trace amounts, loop in a manager immediately.",
     "For guests okay with cross-contact: make all modifications yourself first, then get manager or floater approval before sending the ticket.",
-    "Intoxicated guests: alert a manager immediately — we're legally forbidden from serving a visibly intoxicated guest, even if they arrived that way.",
-    "Aggressive or harassing guest behavior: alert your manager right away and let them handle it — this is never something hospitality requires you to absorb.",
-    "Only a manager may ask a guest to leave."
-  ]},
-  { title:"VIP Service", body:[
-    "VIP tags (F&F, PX, PX+, PX++) are set by management and communicated to the team, never to the guest.",
-    "For a VIP, we may pour an alternative welcome beverage — if so, it will be listed on the guest chit. Always confirm with management beforehand, since there will be moments when we do not pour anything at all.",
-    "Whatever is (or isn't) poured, always check allergies first, since extras are sometimes sent before the guest orders.",
-    "Confirm the tab name is correct — that's how the kitchen and expo gift the right table.",
-    "When in doubt whether to loop in the MOD or the Chef about a VIP, ask at the start of the shift who your point of contact should be."
-  ]},
-  { title:"Department of Health", body:[
-    "A bell is rung the moment someone from DOH is identified in the building — that's the signal for the whole team, especially the prep kitchen, to stop and get their station inspection-ready immediately.",
-    "An inspector is typically out of place, business casual, and may push past the host stand without waiting for a manager — when this happens, everything stops and the focus is getting the space ready.",
+  ] },
+  { id:"problems", title:"When a Guest Is a Problem", body:[
+    "Intoxicated guests: alert a manager immediately. We're legally forbidden from serving a visibly intoxicated guest, even if they arrived that way.",
+    "Aggressive or harassing guest behavior: alert your manager right away and let them handle it. This is never something hospitality requires you to absorb.",
+    "Only a manager may ask a guest to leave.",
+  ] },
+  { id:"vip", title:"VIP Service", body:[
+    "VIP tags (F&amp;F, PX, PX+, PX++) are set by management and communicated to the team, never to the guest.",
+    "For a VIP, we may pour an alternative welcome beverage. If so, it will be listed on the guest chit. Always confirm with management beforehand, since there will be moments when we do not pour anything at all.",
+    "Whatever is or isn't poured, always check allergies first, since extras are sometimes sent before the guest orders.",
+    "Confirm the tab name is correct. That's how the kitchen and expo gift the right table.",
+    "When in doubt whether to loop in the MOD or the Chef about a VIP, ask at the start of the shift who your point of contact should be.",
+  ] },
+  { id:"doh", title:"Department of Health", body:[
+    "A bell is rung the moment someone from DOH is identified in the building. That's the signal for the whole team, especially the prep kitchen, to stop and get their station inspection-ready immediately.",
+    "An inspector is typically out of place, business casual, and may push past the host stand without waiting for a manager. When this happens, everything stops and the focus is getting the space ready.",
     "Nobody talks to DOH except the Chef or a Manager. If asked a direct question, politely say you can't answer and direct them to the Chef or a Manager.",
-    "First check yourself: hair pulled back, no rags on your person, clean apron — then follow your station's inspection checklist."
-  ]},
-  { title:"Shift Start & End", body:[
-    "Arrive on time, in full uniform, and begin opening sidework immediately — the goal is a fully built, stocked bar/station before the first guest arrives.",
-    "Last call for savory food should feel subtle — ask \"are you thinking you might want to add on more food tonight?\" and avoid the words \"last call\" or \"closing.\"",
-    "Closing focuses on cleaning, resetting, and prepping for the next shift — the goal is that the next shift can start service immediately with no extra prep.",
-    "Sidework is complete when the station is clean, fully stocked, organized and reset, and ready for immediate use."
-  ]},
+    "First check yourself: hair pulled back, no rags on your person, clean apron. Then follow your station's inspection checklist.",
+  ] },
+  { id:"end", title:"Shift End", body:[
+    "Last call for savory food should feel subtle. Ask \"are you thinking you might want to add on more food tonight?\" and avoid the words \"last call\" or \"closing.\"",
+    "Closing focuses on cleaning, resetting, and prepping for the next shift. The goal is that the next shift can start service immediately with no extra prep.",
+  ] },
 ];
 
-/* ============================================================
-   DATA — Team bios
-   ============================================================ */
 var TEAM = [
   { name:"Vitor Mendes", title:"Chef-Owner", initials:"VM",
-    bio:"Chef-Owner of iara. Born in Parnana, Brazil, Vitor studied at the International Culinary Center (ICC) and went on to cook in some of New York's most respected kitchens — The Modern, the Chef's Table at Brooklyn Fare, Frevo, The Fulton, and, most recently, Theodora. After his father passed away during the COVID-19 pandemic, Vitor returned to Brazil for a seven-month trip; it ended in the Amazon, where he found the inspiration to build a restaurant around the region's ingredients, techniques, and traditions. That journey shaped iara's Amazonian-inspired menu and open-kitchen concept." },
+    bio:"Chef-Owner of iara. Born in Parnana, Brazil, Vitor studied at the International Culinary Center (ICC) and went on to cook in some of New York's most respected kitchens: The Modern, the Chef's Table at Brooklyn Fare, Frevo, The Fulton, and, most recently, Theodora. After his father passed away during the COVID-19 pandemic, Vitor returned to Brazil for a seven-month trip; it ended in the Amazon, where he found the inspiration to build a restaurant around the region's ingredients, techniques, and traditions. That journey shaped iara's Amazonian-inspired menu and open-kitchen concept." },
   { name:"Ronald Rufino", title:"General Manager", initials:"RR",
     bio:"General Manager of iara. Ronald most recently served as General Manager of Little Maven, overseeing daily operations and the beverage program, while also serving as Head Sommelier &amp; Wine Buyer for Flyfish Club, a Members Club. His background spans some of New York's most respected dining rooms, including Captain &amp; Service Manager at the Michelin-starred Blue Hill at Stone Barns, Service Director at the Michelin-starred Frevo, Captain at the Michelin-starred SHO Shaun Hergatt, and a spot on the opening team at Upland. After the pandemic, he co-founded a kombucha company called Feel Good Booch. Ronald is a Certified Sommelier with a particular love of mezcal." },
   { name:"Eli Gitelman", title:"Executive Sous Chef", initials:"EG",
-    bio:"Executive Sous Chef at iara. A Daniel Boulud alum, Eli trained at Restaurant Daniel and was selected for the opening team at Le Pavillon. He then joined the opening team at Al Coro, which earned two Michelin stars within three months — among the fastest in New York City history. He went on to work alongside Chef Dave Santos at Foxface, helping the restaurant earn three stars from Pete Wells at The New York Times. Eli specializes in fermentation and wood-fire cooking." },
+    bio:"Executive Sous Chef at iara. A Daniel Boulud alum, Eli trained at Restaurant Daniel and was selected for the opening team at Le Pavillon. He then joined the opening team at Al Coro, which earned two Michelin stars within three months, among the fastest in New York City history. He went on to work alongside Chef Dave Santos at Foxface, helping the restaurant earn three stars from Pete Wells at The New York Times. Eli specializes in fermentation and wood-fire cooking." },
   { name:"Calvin Czypinski", title:"Head Bartender", initials:"CC",
     bio:"Head Bartender at iara. Originally from Wisconsin, Calvin got his start at River Park before moving to Miss Ada, where he first built out a bar program, and then to Theodora, where he was promoted to Head Bartender and ran the bar program there as well. Most recently, he ran the bar program at Theodora Beach Club, where he hosted collaborations including Mirate, Sunken Harbor, Bangkok Supper Club, Bar Madonna, Bar Francis, and Dolores. Calvin was named VinePair's Best New Bartender this year." },
   { name:"[Insert additional owner/partner]", title:"Owner / Partner", initials:"?",
@@ -642,7 +703,7 @@ var TEAM = [
 ];
 
 /* ============================================================
-   DATA — Food & Beverage defaults (used until admin edits are saved to the shared menu)
+   DATA: Food & Beverage defaults (used until admin edits are saved to the shared menu)
    ============================================================ */
 var FNB_CATEGORIES = ["Starters","Mains","Sides","Desserts","Cocktails","Wine & Beer"];
 var FNB_DEFAULTS = [
@@ -682,7 +743,7 @@ var FNB_DEFAULTS = [
 ];
 
 /* ============================================================
-   DATA — Core ingredient glossary (from FOH training notes)
+   DATA: Core ingredient glossary (from FOH training notes)
    ============================================================ */
 var INGREDIENTS = [
   { term:"Tapioca (bite & fries)", def:"Made from cassava root starch, hardened into pearls. Milk is boiled and poured over the tapioca pearls and cheese mixture, mixed well, set on sheet trays overnight, then cut into cubes or fries." },
@@ -691,10 +752,10 @@ var INGREDIENTS = [
   { term:"Pão de Queijo", def:"Traditional Brazilian cheese bread made from cassava flour and cheese." },
   { term:"Pão de Alho", def:"Brazilian-style garlic bread, known for its ultra-creamy, cheesy filling and smoky flavor when grilled." },
   { term:"Açaí", def:"A small, dark purple drupe (pit fruit) that grows in clusters on palm trees in the Amazon rainforest. Earthy and unsweetened, tasting like a cross between wild blackberries and dark chocolate." },
-  { term:"Cumaru", def:"The fragrant, dark seed of the Amazonian Dipteryx odorata tree — often called \"Brazilian vanilla.\"" },
+  { term:"Cumaru", def:"The fragrant, dark seed of the Amazonian Dipteryx odorata tree, often called \"Brazilian vanilla.\"" },
   { term:"Puxuri", def:"An aromatic seed from an Amazonian laurel-family tree (Licaria species), widely known as \"Brazilian nutmeg.\"" },
   { term:"Moqueca (Baiana)", def:"A rich, vibrant fish stew from Bahia in northeastern Brazil, heavily influenced by African culinary traditions. Built on a base of coconut milk and dendê oil (red palm oil), giving it a golden-orange color and a smoky, floral flavor." },
-  { term:"Picanha", def:"Considered the \"queen of steaks\" in Brazil and the centerpiece of traditional churrascarias. A triangular cut of beef from the top of the rump where it meets the sirloin (also called top sirloin cap, rump cap, rump cover, or coulotte steak) — lean and tender, with a signature thick fat cap that bastes the steak as it cooks." },
+  { term:"Picanha", def:"Considered the \"queen of steaks\" in Brazil and the centerpiece of traditional churrascarias. A triangular cut of beef from the top of the rump where it meets the sirloin (also called top sirloin cap, rump cap, rump cover, or coulotte steak). Lean and tender, with a signature thick fat cap that bastes the steak as it cooks." },
   { term:"Feijão Manteiguinha", def:"A tiny, delicate heirloom bean from the Amazon region (often called feijão manteiguinha de Santarém), known for its buttery texture and mild, slightly sweet flavor." },
   { term:"Farofa", def:"A traditional Brazilian side dish and seasoning made from toasted cassava (manioc) flour." },
   { term:"Cupuaçu", def:"A tropical rainforest tree and its melon-sized fruit, native to the Amazon basin and closely related to the cacao plant." },
@@ -702,7 +763,7 @@ var INGREDIENTS = [
 ];
 
 /* ============================================================
-   DATA — Fixed quiz pools
+   DATA: Fixed quiz pools
    ============================================================ */
 var QUIZ_FOOD_EXTRA = [
   { q:"What's the price of Dadinho de Tapioca?", a:["$6/pc","$8/pc","$10/pc","$12/pc"], c:1 },
@@ -768,20 +829,20 @@ var QUIZ_GLOSSARY = [
 var QUIZ_MANUAL = [
   { q:"What is the maximum number of plates a server should carry to a table at one time?", a:["2","3","4","5"], c:1 },
   { q:"What is the maximum number of drinks allowed on a tray?", a:["4","5","6","8"], c:2 },
-  { q:"Is empty glassware allowed on a tray?", a:["Never — always cleared by hand","Yes, empty glassware is allowed on trays","Only if a manager approves each time","Only during closing sidework"], c:1 },
+  { q:"Is empty glassware allowed on a tray?", a:["Never, always cleared by hand","Yes, empty glassware is allowed on trays","Only if a manager approves each time","Only during closing sidework"], c:1 },
   { q:"How many empty glasses can you clear from a table by hand (while actively present)?", a:["Up to 1","Up to 2","Up to 4","Any number"], c:1 },
   { q:"What is \"the loop\"?", a:["The bar's drink queue","The system for moving through your section in seated order so no table is missed","The dessert menu rotation","The closing checklist"], c:1 },
   { q:"Who is the only person allowed to ask a guest to leave?", a:["Any server","The busser","A manager","The host"], c:2 },
   { q:"What phrase should you avoid saying to guests near the kitchen's cutoff time?", a:["\"Can I get you anything else?\"","\"Last call\" or \"closing\"","\"Take your time\"","\"Any questions on the menu?\""], c:1 },
   { q:"Before sending an allergy modification to the kitchen, you should:", a:["Send it immediately for speed","Make the modification yourself, then get manager/floater approval","Ask the guest to speak to the kitchen directly","Skip the modification and note it verbally"], c:1 },
   { q:"When should you ideally drop the check?", a:["As soon as entrées are served","When asked, or after dessert is cleared","Immediately after ordering","Only when guests ask twice"], c:1 },
-  { q:"A VIP tag note must always include:", a:["The guest's credit card info","The guest's full name and connection to the restaurant","The guest's home address","Nothing — tags are verbal only"], c:1 },
+  { q:"A VIP tag note must always include:", a:["The guest's credit card info","The guest's full name and connection to the restaurant","The guest's home address","Nothing, tags are verbal only"], c:1 },
   { q:"What should a Busser/Runner prioritize above all else?", a:["Folding napkins","Resetting tables to support seating and pacing, and running food","Answering guest wine questions","Only running desserts"], c:1 },
   { q:"Who is allowed to talk to a Department of Health inspector?", a:["Any employee who's free","The Chef or a Manager","Only the owners","The host stand only"], c:1 },
   { q:"What should you do the moment you hear the DOH alert bell?", a:["Keep working as normal","Stop and get your station (especially the prep kitchen) inspection-ready immediately","Leave the building","Wait for a manager to tell you what it means"], c:1 },
-  { q:"Is Barback a separate role at iara right now?", a:["Yes, a dedicated role","No — there's no separate barback role currently","Only on weekends","Only for private events"], c:1 },
+  { q:"Is Barback a separate role at iara right now?", a:["Yes, a dedicated role","No, there's no separate barback role currently","Only on weekends","Only for private events"], c:1 },
   { q:"If you take the last of a shared supply item, you should:", a:["Say nothing, it's not a big deal","Notify the MOD immediately","Wait until the next shift meeting","Leave a note for the next day"], c:1 },
-  { q:"If a guest is visibly intoxicated, you should:", a:["Serve them but limit quantity","Alert a manager immediately — do not serve them","Serve one more drink then cut them off","Ignore it if they arrived that way"], c:1 },
+  { q:"If a guest is visibly intoxicated, you should:", a:["Serve them but limit quantity","Alert a manager immediately, do not serve them","Serve one more drink then cut them off","Ignore it if they arrived that way"], c:1 },
   { q:"Sidework is considered complete when:", a:["The shift ends, regardless of state","The station is clean, stocked, organized, and ready for immediate use","All silverware is polished only","A manager says it's fine"], c:1 },
 ];
 
@@ -798,7 +859,7 @@ var QUIZ_GENERAL = [
   { q:"What kombucha company did GM Ronald Rufino co-found after the pandemic?", a:["Feel Good Booch","Brew Buddha","Kombucha Bros","Ferment Co"], c:0 },
   { q:"What kind of cuisine does iara serve?", a:["Modern Brazilian, Amazonian-inspired","Northern Italian","Classic French bistro","Southeast Asian street food"], c:0 },
   { q:"Where is iara located?", a:["Fort Greene, Brooklyn","Lower East Side, Manhattan","Carroll Gardens, Brooklyn","West Village, Manhattan"], c:1 },
-  { q:"Is iara's kitchen centered on live fire?", a:["Yes, entirely wood-fired","No — it's an open kitchen not centered on live fire","Only for desserts","Only on weekends"], c:1 },
+  { q:"Is iara's kitchen centered on live fire?", a:["Yes, entirely wood-fired","No, it's an open kitchen not centered on live fire","Only for desserts","Only on weekends"], c:1 },
   { q:"How would you describe portion sizing at iara?", a:["Strict individual courses only","Plates range small to large, shareable but never required","Family-style only, no individual plates", "Tasting menu only"], c:1 },
   { q:"Where did Chef Vitor Mendes work before opening iara?", a:["Miss Ada","Theodora","Maialino","Nili"], c:1 },
   { q:"What is iara's payday schedule?", a:["Bi-weekly on Mondays","Weekly, every Friday","Monthly","Whenever payroll gets to it"], c:1 },
@@ -870,7 +931,7 @@ async function initDb(){
       db = await window.claude.use("db");
       return;
     }
-  } catch(e){ /* not running inside Claude — fall through to Firebase */ }
+  } catch(e){ /* not running inside Claude, fall through to Firebase */ }
   try {
     if (FIREBASE_CONFIG.apiKey === "REPLACE_ME") { db = null; return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
@@ -931,6 +992,7 @@ function enterShell(){
   document.getElementById("home-name").textContent = profile.name.split(" ")[0];
   touchStaffDoc();
   refreshHomeStats();
+  routeFromHash();
 }
 
 document.getElementById("sb-switch").addEventListener("click", function(){
@@ -949,7 +1011,21 @@ document.getElementById("sb-switch").addEventListener("click", function(){
    ============================================================ */
 var VIEW_TITLES = { home:"Home", manual:"Service Manual", team:"Team", fnb:"Food & Beverage", quiz:"Knowledge Check", checklist:"Your First Week", progress:"Team Progress" };
 
-function showView(name){
+/* Hash routing. Without it a refresh, or the phone reloading the tab in the
+   background, dumps you back on Home and loses your place mid-manual. It also
+   makes the back button work and lets a manager send a link to one section. */
+var VIEW_NAMES = ["home","manual","team","fnb","quiz","checklist","progress"];
+
+function parseHash(){
+  var raw = (location.hash || "").replace(/^#\/?/, "");
+  var parts = raw.split("/").filter(Boolean);
+  var name = VIEW_NAMES.indexOf(parts[0]) !== -1 ? parts[0] : "home";
+  return { view: name, section: parts[1] || null };
+}
+
+function showView(name, opts){
+  opts = opts || {};
+  if (VIEW_NAMES.indexOf(name) === -1) name = "home";
   document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
   document.getElementById("view-" + name).classList.add("active");
   document.querySelectorAll(".nav-btn").forEach(function(b){
@@ -957,11 +1033,39 @@ function showView(name){
   });
   var t = document.getElementById("topbar-title");
   if (t) t.textContent = VIEW_TITLES[name] || "iara";
+  document.title = (VIEW_TITLES[name] ? VIEW_TITLES[name] + " \u00b7 " : "") + "iara Lineup";
   if (name === "checklist") renderChecklist();
   if (name === "progress") renderProgress();
   if (name === "home") refreshHomeStats();
-  window.scrollTo(0,0);
+
+  var want = "#/" + name + (opts.section ? "/" + opts.section : "");
+  if (!opts.fromHash && location.hash !== want) {
+    history.pushState(null, "", want);
+  }
+  if (opts.section && name === "manual") openManualSection(opts.section);
+  else window.scrollTo(0,0);
 }
+
+// Deep link straight to one manual section, e.g. #/manual/loop
+function openManualSection(id){
+  var idx = -1;
+  MANUAL.forEach(function(sec, i){ if (sec.id === id) idx = i; });
+  if (idx === -1) { window.scrollTo(0,0); return; }
+  var els = document.querySelectorAll("#manual-accordions .accordion");
+  els.forEach(function(el){ el.classList.remove("open"); });
+  var target = els[idx];
+  if (!target) return;
+  target.classList.add("open");
+  target.scrollIntoView({ block: "start", behavior: "smooth" });
+}
+
+function routeFromHash(){
+  var r = parseHash();
+  showView(r.view, { fromHash: true, section: r.section });
+}
+window.addEventListener("popstate", routeFromHash);
+window.addEventListener("hashchange", routeFromHash);
+
 document.querySelectorAll(".nav-btn, .jump").forEach(function(btn){
   btn.addEventListener("click", function(){ showView(btn.getAttribute("data-view")); });
 });
@@ -969,13 +1073,49 @@ document.querySelectorAll(".nav-btn, .jump").forEach(function(btn){
 /* ============================================================
    Manual accordions
    ============================================================ */
+
+/* The loop is the one idea in the manual that is genuinely spatial: tables in
+   seated order, revisited on a cycle. Ronald's own example (41, 42, 44, 46,
+   then 43 arrives) is drawn here exactly as written, nothing added. */
+function loopDiagram(){
+  var t = [
+    {n:"41", x:60,  y:52,  order:1},
+    {n:"42", x:168, y:52,  order:2},
+    {n:"44", x:276, y:52,  order:3},
+    {n:"46", x:384, y:52,  order:4},
+    {n:"43", x:222, y:150, order:5, late:true}
+  ];
+  var nodes = t.map(function(d){
+    return '<g class="lp-node'+(d.late ? " lp-late" : "")+'">' +
+      '<circle cx="'+d.x+'" cy="'+d.y+'" r="26"/>' +
+      '<text x="'+d.x+'" y="'+(d.y+5)+'" text-anchor="middle">'+d.n+'</text>' +
+      '<text class="lp-ord" x="'+d.x+'" y="'+(d.y-34)+'" text-anchor="middle">'+d.order+'</text>' +
+      '</g>';
+  }).join("");
+  return '<figure class="loop-fig">' +
+    '<svg viewBox="0 0 444 210" role="img" aria-label="The loop: tables 41, 42, 44 and 46 are visited in seated order, then 43 once it is sat, then the cycle restarts.">' +
+      '<defs><marker id="lp-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">' +
+        '<path d="M0,0 L10,5 L0,10 z"/></marker></defs>' +
+      '<path class="lp-path" d="M86,52 L142,52" marker-end="url(#lp-arrow)"/>' +
+      '<path class="lp-path" d="M194,52 L250,52" marker-end="url(#lp-arrow)"/>' +
+      '<path class="lp-path" d="M302,52 L358,52" marker-end="url(#lp-arrow)"/>' +
+      '<path class="lp-path lp-dash" d="M384,78 Q384,150 248,150" marker-end="url(#lp-arrow)"/>' +
+      '<path class="lp-path lp-dash" d="M196,150 Q60,150 60,78" marker-end="url(#lp-arrow)"/>' +
+      nodes +
+    '</svg>' +
+    '<figcaption>Seated order sets the route. 43 is sat late, so it is greeted, then picked up at the end of the cycle before the loop restarts.</figcaption>' +
+  '</figure>';
+}
+
 function renderManual(){
   var wrap = document.getElementById("manual-accordions");
   wrap.innerHTML = MANUAL.map(function(sec, i){
     var items = sec.body.map(function(b){ return "<li>" + b + "</li>"; }).join("");
+    var extra = sec.id === "loop" ? loopDiagram() : "";
     return '<div class="card accordion" data-i="'+i+'">' +
-      '<button class="acc-head"><h3>'+sec.title+'</h3><span class="chev">▾</span></button>' +
-      '<div class="acc-body"><ul>'+items+'</ul></div></div>';
+      '<button class="acc-head"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
+        '<h3>'+sec.title+'</h3><span class="chev">▾</span></button>' +
+      '<div class="acc-body"><ul>'+items+'</ul>'+extra+'</div></div>';
   }).join("");
   wrap.querySelectorAll(".acc-head").forEach(function(h){
     h.addEventListener("click", function(){
@@ -983,6 +1123,7 @@ function renderManual(){
     });
   });
   if (wrap.firstElementChild) wrap.firstElementChild.classList.add("open");
+  applyGlossary(wrap);
 }
 
 /* ============================================================
@@ -1414,7 +1555,7 @@ function dishesForIngredient(ing){
 
 
 /* ============================================================
-   Study mode — flashcards with per-item mastery
+   Study mode: flashcards with per-item mastery
    Modelled on WaniKani's idea that you learn the parts before the whole:
    ingredients are the atoms, dishes are built from them. No timed review
    scheduling: a pre-opening team needs the menu by opening night, and a
@@ -1712,6 +1853,7 @@ async function renderChecklist(){
   });
   area.innerHTML = html;
 
+  applyGlossary(area);
   area.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(function(box){
     box.addEventListener("change", function(){
       var st = loadChecklist();
@@ -1721,6 +1863,108 @@ async function renderChecklist(){
     });
   });
 }
+
+
+
+/* ============================================================
+   Glossary tooltips
+   A new hire meets a lot of restaurant shorthand on day one. These define it
+   in passing, in plain language, without rewriting the manual.
+
+   Rule: only terms whose meaning is standard across restaurants are defined
+   outright. Anything specific to how iara runs (the VIP tiers, exactly who
+   the floater is on a given night) says to ask a manager instead of guessing,
+   because inventing a definition here would be inventing policy.
+   ============================================================ */
+var GLOSSARY = {
+  "sidework":      "The setup and reset work around service: stocking, polishing, folding, restocking your station. Opening sidework happens before guests arrive, closing sidework after.",
+  "chit":          "The printed slip that carries a table's information, such as the reservation notes or a VIP tag. Not the same as the guest's check.",
+  "the pass":      "The counter where the kitchen sends finished plates out and the floor picks them up.",
+  "expo":          "Short for expediter. The person standing at the pass calling tickets and keeping food moving in the right order.",
+  "MOD":           "Manager on Duty. The manager running the floor for that shift, and the person you escalate to.",
+  "floater":       "A support role that moves between sections rather than owning one, and who can approve things like allergy modifications. Ask at the start of your shift who is floating.",
+  "cross-contact": "When an allergen moves onto a dish it is not an ingredient of, usually by a shared surface, tool or fryer. It is why we cannot promise an allergen-free plate.",
+  "FOH":           "Front of house. Everyone working the dining room, bar and host stand.",
+  "BOH":           "Back of house. Everyone working the kitchen and prep.",
+  "DOH":           "New York City Department of Health, who inspect the restaurant without warning.",
+  "covers":        "The number of guests served. One cover is one guest, not one table.",
+  "VIP tags":      "Set by management to mark a table for extra attention. Ask your manager what each tier means here, since they are specific to iara.",
+  "trail":         "A training shift where you shadow someone doing the job before you take a section of your own."
+};
+
+// Longest first, so "the pass" is matched before "pass" would be.
+var GLOSSARY_TERMS = Object.keys(GLOSSARY).sort(function(a,b){ return b.length - a.length; });
+
+function escAttr(v){ return esc(v); }
+
+/* Wraps the first mention of each term inside a container. First mention only:
+   defining the same word six times is noise, not help. Skips anything already
+   inside a tag, a link or another tooltip. */
+function applyGlossary(root){
+  if (!root) return;
+  var used = {};
+  var walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+    acceptNode: function(node){
+      if (!node.nodeValue.trim()) return NodeFilter.FILTER_REJECT;
+      var p = node.parentElement;
+      while (p && p !== root) {
+        var t = p.tagName;
+        if (t === "A" || t === "BUTTON" || p.classList.contains("gloss") ||
+            p.classList.contains("role-tag")) return NodeFilter.FILTER_REJECT;
+        p = p.parentElement;
+      }
+      return NodeFilter.FILTER_ACCEPT;
+    }
+  });
+  var nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+
+  nodes.forEach(function(node){
+    var text = node.nodeValue, hit = null, at = -1, term = null;
+    for (var i = 0; i < GLOSSARY_TERMS.length; i++) {
+      var t = GLOSSARY_TERMS[i];
+      if (used[t]) continue;
+      var re = new RegExp("(^|[^\\w-])(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")(?![\\w-])",
+                          t === t.toUpperCase() ? "" : "i");
+      var m = re.exec(text);
+      if (m && (at === -1 || m.index < at)) { at = m.index; hit = m; term = t; }
+    }
+    if (!hit) return;
+    used[term] = true;
+    var before = text.slice(0, hit.index + hit[1].length);
+    var match  = hit[2];
+    var after  = text.slice(hit.index + hit[1].length + match.length);
+    var span = document.createElement("span");
+    span.className = "gloss";
+    span.setAttribute("tabindex", "0");
+    span.setAttribute("role", "button");
+    span.setAttribute("aria-label", match + ": " + GLOSSARY[term]);
+    span.setAttribute("data-def", GLOSSARY[term]);
+    span.textContent = match;
+    var frag = document.createDocumentFragment();
+    frag.appendChild(document.createTextNode(before));
+    frag.appendChild(span);
+    frag.appendChild(document.createTextNode(after));
+    node.parentNode.replaceChild(frag, node);
+  });
+
+  // Touch devices have no hover, so a tap toggles the definition.
+  root.querySelectorAll(".gloss").forEach(function(g){
+    g.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      var open = g.classList.contains("is-open");
+      root.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
+      if (!open) g.classList.add("is-open");
+    });
+    g.addEventListener("keydown", function(ev){
+      if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); g.click(); }
+      if (ev.key === "Escape") g.classList.remove("is-open");
+    });
+  });
+}
+document.addEventListener("click", function(){
+  document.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
+});
 
 
 function renderGlossary(){
