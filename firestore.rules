@@ -1,14 +1,39 @@
 rules_version = '2';
+
+// iara Lineup.
+//
+// The app signs in to one shared account (staff@iara.nyc) using the password
+// the team is given. That is the whole access model, and it is deliberate: a
+// password compared in JavaScript protects nothing, because anyone can talk to
+// Firestore directly. Requiring a real session here is what actually closes it.
+//
+// Email/Password is the only enabled provider and there is exactly one account,
+// so "signed in" means "knows the staff password". If another provider is ever
+// enabled, tighten this to check request.auth.uid against that account.
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // One document per staff member, plus their quiz attempts.
     match /staff/{staffId} {
-      allow read, write: if true;
+      allow read, write: if signedIn();
       match /quizzes/{quizId} {
-        allow read, write: if true;
+        allow read, write: if signedIn();
       }
     }
+
+    // The menu the chef edits. Read by everyone signed in; the manager PIN
+    // gates the editing UI, not this rule.
     match /menu_items/{itemId} {
-      allow read, write: if true;
+      allow read, write: if signedIn();
+    }
+
+    // Nothing else is reachable.
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }

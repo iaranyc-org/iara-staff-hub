@@ -645,9 +645,14 @@
           <option>Manager</option>
         </select>
       </div>
+      <div class="field" id="pw-field" hidden>
+        <label for="in-pw">Staff password</label>
+        <input id="in-pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
+      </div>
+      <p class="form-err" id="gate-err" hidden></p>
       <button type="submit" class="btn btn-primary">Start</button>
     </form>
-    <p class="gate-note">Not a login. It is how your drills get saved against your name, so use the one your manager knows you by.</p>
+    <p class="gate-note">Your name is how your drills get saved, so use the one your manager knows you by. The password is the same for the whole team.</p>
   </div>
 </div>
 
@@ -786,6 +791,7 @@
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/4.2.0/mustache.min.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script>
 (function(){
@@ -799,12 +805,12 @@
    Security Rules, not by hiding this object.
    ============================================================ */
 var FIREBASE_CONFIG = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.appspot.com",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME"
+  apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE",
+  authDomain: "iara-lineup.firebaseapp.com",
+  projectId: "iara-lineup",
+  storageBucket: "iara-lineup.firebasestorage.app",
+  messagingSenderId: "840712867607",
+  appId: "1:840712867607:web:2003c145731aa85a13b152"
 };
 
 /* ============================================================
@@ -1109,6 +1115,13 @@ function uid(){
   return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
 }
 
+/* The team shares one Firebase account. The password everyone is given is the
+   password to that account, not a string this file compares, because a
+   comparison in JavaScript protects nothing: Firestore is reachable directly.
+   Signing in for real is what makes the security rules able to say no. */
+var STAFF_EMAIL = "staff@iara.nyc";
+var LS_PW = "iara_pw";
+
 async function initDb(){
   try {
     if (window.claude && window.claude.use) {
@@ -1121,6 +1134,30 @@ async function initDb(){
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
   } catch(e){ db = null; }
+}
+
+// Returns true once there is a real session. Remembers the password on the
+// device so a server types it once, not every shift.
+async function signInStaff(password){
+  if (!db || !firebase.auth) return false;
+  try {
+    if (firebase.auth().currentUser) return true;
+    await firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, password);
+    try { localStorage.setItem(LS_PW, password); } catch(e){}
+    return true;
+  } catch(e){
+    try { localStorage.removeItem(LS_PW); } catch(e2){}
+    return false;
+  }
+}
+
+async function restoreSession(){
+  if (!db || !firebase.auth) return false;
+  if (firebase.auth().currentUser) return true;
+  var saved = null;
+  try { saved = localStorage.getItem(LS_PW); } catch(e){}
+  if (!saved) return false;
+  return signInStaff(saved);
 }
 
 async function touchStaffDoc(){
@@ -1157,11 +1194,36 @@ async function loadOwnAttempts(){
 /* ============================================================
    Gate / login
    ============================================================ */
-document.getElementById("gate-form").addEventListener("submit", function(ev){
+document.getElementById("gate-form").addEventListener("submit", async function(ev){
   ev.preventDefault();
   var name = document.getElementById("in-name").value.trim();
   var role = document.getElementById("in-role").value;
+  var err  = document.getElementById("gate-err");
+  var btn  = ev.target.querySelector('button[type="submit"]');
   if (!name || !role) return;
+
+  // Only ask for the password when there is no session to restore.
+  if (db && firebase.auth && !firebase.auth().currentUser) {
+    var pwField = document.getElementById("pw-field");
+    var pw = document.getElementById("in-pw").value;
+    if (!pw) {
+      pwField.hidden = false;
+      document.getElementById("in-pw").focus();
+      err.textContent = "Enter the staff password to continue.";
+      err.hidden = false;
+      return;
+    }
+    btn.disabled = true; btn.textContent = "Checking\u2026";
+    var ok = await signInStaff(pw);
+    btn.disabled = false; btn.textContent = "Start";
+    if (!ok) {
+      pwField.hidden = false;
+      err.textContent = "That password is not right. Ask your manager.";
+      err.hidden = false;
+      return;
+    }
+  }
+  err.hidden = true;
   profile = { id: uid(), name: name, role: role };
   saveProfile(profile);
   enterShell();
@@ -2461,6 +2523,9 @@ async function renderProgress(){
    ============================================================ */
 async function boot(data){
   await initDb();
+  // A device that has signed in before goes straight back in; the menu and
+  // progress both need a session before they can read anything.
+  await restoreSession();
   renderManual();
   renderTeam();
   await loadFbItems();
@@ -2470,9 +2535,19 @@ async function boot(data){
   renderQuizPicker();
 
   var existing = (data && data.profile) ? data.profile : loadProfile();
-  if (existing && existing.id && existing.name) {
+  var signedIn = !db || !firebase.auth || !!firebase.auth().currentUser;
+  if (existing && existing.id && existing.name && signedIn) {
     profile = existing;
     enterShell();
+  } else if (existing && existing.name) {
+    // Known name but no session: prefill and ask only for the password.
+    document.getElementById("in-name").value = existing.name;
+    if (existing.role) document.getElementById("in-role").value = existing.role;
+    document.getElementById("pw-field").hidden = false;
+  }
+  // Menu items need a session, so load them once one exists.
+  if (db && firebase.auth && firebase.auth().currentUser) {
+    await loadFbItems(); renderFbGrid();
   }
 }
 
