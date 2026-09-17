@@ -848,7 +848,7 @@
         <div class="sc-rule"></div>
         <p class="sc-blank" id="sc-blank" hidden>Your record shows up here once you have run a test.</p>
         <div class="sc-stats">
-          <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Drills run</span></div>
+          <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Tests run</span></div>
           <div><span class="num mono" id="stat-best">&mdash;</span><span class="lbl">Average score</span></div>
           <div><span class="num mono" id="stat-last">&mdash;</span><span class="lbl">Last test</span></div>
         </div>
@@ -2629,7 +2629,7 @@ function renderStudyDone(){
     ? Math.round((d.right / (d.right + d.wrong)) * 100)
     : deckMastery(buildDeck(d.key));
   var actions = isLineup
-    ? '<button class="btn btn-sun" id="study-decks">Back to Drills</button>'
+    ? '<button class="btn btn-sun" id="study-decks">Back to Study</button>'
     : '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
       '<button class="btn btn-ghost" id="study-decks">Pick Another Deck</button>';
   studyArea().innerHTML =
@@ -3112,8 +3112,8 @@ function renderQuizQuestion(){
       return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span>'+esc(o.text)+'</button>';
     }).join("") +
     '<div id="q-feedback" class="q-feedback" hidden></div>' +
-    // Study lets you back out mid-deck; a drill should not trap you either.
-    '<button class="linkish" id="quiz-quit">Back to Drills</button>' +
+    // Study lets you back out mid-deck; a test should not trap you either.
+    '<button class="linkish" id="quiz-quit">Back to Test</button>' +
     '</div>';
   area.innerHTML = html;
   area.querySelectorAll(".opt").forEach(function(btn){
