@@ -1078,6 +1078,8 @@ function renderNav(){
 
 function render(){
   renderNav();
+  var activeTab = TABS.filter(function(t){ return t.id===state.tab; })[0];
+  document.title = (activeTab ? activeTab.label + ' · ' : '') + 'iara Kitchen Ops';
   var main = $('#main');
   if(!isReady()){
     main.innerHTML = '<div class="empty-state card">Loading kitchen data…</div>';
