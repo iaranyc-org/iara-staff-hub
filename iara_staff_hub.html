@@ -118,7 +118,7 @@
   .logo-img-sm{ width:78px; height:auto; flex:none; }
   .gate-sub{ color:var(--ink-soft); font-size:14.5px; line-height:1.55; margin:0 0 24px; }
   .field{ margin-bottom:16px; }
-  .field label{ display:block; font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin-bottom:6px; }
+  .field label{ display:block; font-size:12.5px; font-weight:700;  letter-spacing:.01em; color:var(--ink-soft); margin-bottom:6px; }
   .field input, .field select, .field textarea{
     width:100%; padding:11px 13px; border-radius:5px; border:1.5px solid var(--line);
     background:var(--paper); color:var(--ink); font:inherit; font-size:15px;
@@ -162,7 +162,7 @@
   .sb-spacer{ flex:1; }
   .sb-user{ padding:12px 10px; border-top:1px solid rgba(255,255,255,.15); margin-top:8px; }
   .sb-user .name{ font-weight:700; font-size:14px; }
-  .sb-user .role{ font-size:12px; color:var(--sidebar-muted); text-transform:uppercase; letter-spacing:.05em; }
+  .sb-user .role{ font-size:12px; color:var(--sidebar-muted);  letter-spacing:.01em; }
   .sb-user button{ margin-top:8px; background:none; border:none; color:var(--sidebar-muted); font-size:12px; text-decoration:underline; cursor:pointer; padding:0; }
 
   .content{ flex:1; min-width:0; }
@@ -203,7 +203,7 @@
   .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px; }
   .stat{ padding:18px 18px; }
   .stat .num{ font-family:'IBM Plex Mono',monospace; font-size:26px; font-weight:600; }
-  .stat .lbl{ font-size:12.5px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.05em; margin-top:4px; }
+  .stat .lbl{ font-size:12.5px; color:var(--ink-soft);  letter-spacing:.01em; margin-top:4px; }
 
   .accordion{ margin-bottom:14px; overflow:hidden; }
   .acc-head{
@@ -225,7 +225,7 @@
   .bio{ display:grid; grid-template-columns:64px 1fr; gap:16px; padding:20px; margin-bottom:14px; }
   .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:22px; }
   .bio h3{ margin:0 0 2px; font-size:18px; }
-  .bio .title{ color:var(--river); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
+  .bio .title{ color:var(--river); font-weight:700; font-size:13px;  letter-spacing:.01em; margin-bottom:8px; }
   .bio p{ margin:0; font-size:14.5px; line-height:1.6; }
   .placeholder-note{ font-size:13px; color:var(--ink-soft); font-style:italic; }
 
@@ -239,7 +239,7 @@
   .dish .price{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--river); font-weight:600; }
   .dish .pron-line{ font-size:12px; color:var(--ink-soft); font-style:italic; margin:-2px 0 6px; display:flex; align-items:center; gap:6px; }
   .say{ display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
-  .say-lbl{ font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+  .say-lbl{ font-size:12px; font-weight:700; letter-spacing:.01em; 
     color:var(--ink-soft); margin-right:2px; }
   .speak-btn{ font-style:normal; background:transparent; border:1px solid var(--line); cursor:pointer;
     font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1; width:19px; height:19px;
@@ -264,7 +264,11 @@
   .quiz-pick .qname{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; display:block; margin-bottom:4px; }
   .quiz-pick .qmeta{ font-size:12.5px; color:var(--ink-soft); }
   .qcard{ padding:26px 26px 22px; }
-  .qprog{ font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
+  .qprog{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
+  .qprog-n{ font-family:'IBM Plex Mono',monospace; font-size:14px; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .qprog-m{ font-size:13px; color:var(--ink-soft); }
+  .qprog-s{ margin-left:auto; font-size:13px; color:var(--sun); font-variant-numeric:tabular-nums; }
+  .qprog-legacy{ font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
   .qtext{ font-size:19px; font-weight:700; margin:0 0 18px; line-height:1.4; }
   .opt{ display:block; width:100%; text-align:left; padding:13px 15px; border-radius:5px; border:1.5px solid var(--line); background:var(--paper); margin-bottom:10px; cursor:pointer; font-size:14.5px; }
   .opt:hover{ border-color:var(--river); }
@@ -331,8 +335,8 @@
   .sidebar .nav-btn.active{ background:none; color:var(--sidebar-ink); font-weight:700; }
   .sidebar .nav-btn.active::before{ height:16px; }
   .sidebar .nav-btn:hover{ background:none; color:var(--sidebar-ink); }
-  .sb-admin{ margin-top:10px; font-size:11.5px !important; text-transform:uppercase;
-    letter-spacing:.14em; color:var(--sidebar-muted) !important; padding-left:0 !important; }
+  .sb-admin{ margin-top:10px; font-size:11.5px !important; 
+    letter-spacing:.01em; color:var(--sidebar-muted) !important; padding-left:0 !important; }
   .sb-admin::before{ display:none; }
 
   /* Course tabs: set like a menu's course line, not pills. */
@@ -347,7 +351,7 @@
   .mode-switch{ border:none; background:none; padding:0; gap:20px; margin-bottom:20px;
     border-bottom:1px solid var(--rule); }
   .mode-btn{ border-radius:0; padding:8px 0; border-bottom:2px solid transparent;
-    text-transform:uppercase; letter-spacing:.12em; font-size:11.5px; }
+    letter-spacing:.01em; font-size:14px; font-weight:600; }
   .mode-btn.active{ background:none; color:var(--display); border-bottom-color:var(--sun); }
 
   /* Distinct radii by role, rather than one value everywhere. */
@@ -366,8 +370,8 @@
     border:1px solid var(--rule-strong); color:var(--display);
     font-family:'Fraunces',serif; font-weight:400; font-size:17px; letter-spacing:.02em; }
   .bio h3{ margin:0; font-size:20px; font-weight:400; }
-  .bio .title{ margin:2px 0 8px; font-size:10px; text-transform:uppercase;
-    letter-spacing:.16em; color:var(--sun); font-weight:700; }
+  .bio .title{ margin:2px 0 8px; font-size:13px; letter-spacing:.01em;
+    color:var(--sun); font-weight:600; }
   .bio p{ margin:0; font-size:14.5px; line-height:1.65; color:var(--ink-soft); max-width:58ch; }
 
   /* Decks as a contents list, not a card grid. */
@@ -390,7 +394,7 @@
     padding:0; max-width:640px; border-top:1px solid var(--rule); }
   .cl-list::before{ display:none; }
   .cl-item{ padding:13px 2px; border-bottom:1px solid var(--rule); }
-  .cl-group{ font-size:11px; text-transform:uppercase; letter-spacing:.16em;
+  .cl-group{ font-size:12px;  letter-spacing:.01em;
     color:var(--sun); font-family:'Instrument Sans',system-ui,sans-serif; font-weight:700;
     margin:30px 0 8px; }
 
@@ -411,7 +415,7 @@
   .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:6px;
     padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:640px; }
   .sc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-    font-size:10px; text-transform:uppercase; letter-spacing:.18em; color:var(--ink-soft); }
+    font-size:12px;  letter-spacing:.01em; color:var(--ink-soft); }
   .sc-date{ font-variant-numeric:tabular-nums; letter-spacing:.06em; }
   .sc-name{ margin:14px 0 4px; font-size:31px; }
   .sc-sub{ margin:0; color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:44ch; }
@@ -419,7 +423,7 @@
   .sc-stats{ display:flex; gap:34px; flex-wrap:wrap; }
   .sc-stats > div{ display:flex; flex-direction:column; gap:3px; }
   .sc-stats .num{ font-size:23px; color:var(--display); font-variant-numeric:tabular-nums; }
-  .sc-stats .lbl{ font-size:9.5px; text-transform:uppercase; letter-spacing:.14em; color:var(--ink-soft); }
+  .sc-stats .lbl{ font-size:12px;  letter-spacing:.01em; color:var(--ink-soft); }
 
   /* A numbered running order, not a row of buttons. */
   .startlist{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
@@ -442,7 +446,7 @@
     border-radius:5px; opacity:.5; pointer-events:none; }
   .stamp-verdict{ font-family:'Fraunces',Georgia,serif; font-size:29px; line-height:1.05; letter-spacing:.01em; }
   .stamp-score{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-variant-numeric:tabular-nums; }
-  .stamp-cat{ font-size:9.5px; text-transform:uppercase; letter-spacing:.18em; margin-top:3px; opacity:.9; }
+  .stamp-cat{ font-size:12px;  letter-spacing:.01em; margin-top:3px; opacity:.9; }
   .result-note{ margin:26px auto 0; max-width:38ch; font-size:14.5px; line-height:1.6; color:var(--ink-soft); }
   .result-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
   .result-actions .btn{ width:auto; }
@@ -468,7 +472,7 @@
   .dish .allerg{ margin-top:9px; }
   .dish .badge-example{ margin-left:8px; vertical-align:middle; }
   .dish-edit{ position:absolute; top:18px; right:0; background:none; border:none; color:var(--ink-soft);
-    cursor:pointer; font-size:11.5px; text-transform:uppercase; letter-spacing:.08em; }
+    cursor:pointer; font-size:12.5px; letter-spacing:.01em; }
   .dish-edit:hover{ color:var(--display); }
   .add-dish{ margin-top:18px; width:100%; background:none; border:1.5px dashed var(--rule-strong);
     color:var(--ink-soft); padding:13px; border-radius:5px; font:inherit; font-size:13.5px; cursor:pointer; }
@@ -508,8 +512,8 @@
   .cl-item input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .cl-text{ font-size:14.5px; line-height:1.45; }
   .cl-item.is-done .cl-text{ color:var(--ink-soft); text-decoration:line-through; }
-  .cl-tag{ display:inline-block; margin-left:8px; font-size:9.5px; font-weight:700; letter-spacing:.07em;
-    text-transform:uppercase; color:var(--display); border:1px solid var(--line); border-radius:4px;
+  .cl-tag{ display:inline-block; margin-left:8px; font-size:12px; font-weight:700; letter-spacing:.01em;
+     color:var(--display); border:1px solid var(--line); border-radius:4px;
     padding:1px 6px; vertical-align:middle; text-decoration:none; }
   .cl-help{ margin:5px 0 0 28px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
   .cl-help a{ color:var(--sun); }
@@ -543,7 +547,7 @@
   .mode-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .fb-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
   .used-in{ margin:10px 0 0; font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
-  .used-in span{ text-transform:uppercase; letter-spacing:.06em; font-size:10.5px; font-weight:700; color:var(--display); }
+  .used-in span{  letter-spacing:.01em; font-size:12px; font-weight:700; color:var(--display); }
 
   .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
   .deck{ text-align:left; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:8px;
@@ -1800,7 +1804,7 @@ function buildDeck(key){
       cards.push({
         id: "dish:" + it.id, kind: "dish", speakId: it.id, speak: it.speak || "",
         front: it.name, pron: it.pronunciation || "",
-        back: it.desc || "", extra: bits.join("  \u00b7  ")
+        back: it.desc || "", extra: bits.join(" .  ")
       });
     });
   }
@@ -1854,7 +1858,8 @@ function renderStudyCard(){
   for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+'"></i>';
   var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
   var html = '<div class="card studycard">' +
-    '<div class="qprog">'+esc(d.label.toUpperCase())+' \u00b7 CARD '+(d.idx+1)+' OF '+d.cards.length+'' +
+    '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
+      '<span class="qprog-m">'+esc(d.label)+'</span>' +
       ' <span class="pips" title="Mastery">'+pips+'</span></div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
     '<h3 class="study-front">'+esc(c.front)+speak+'</h3>' +
@@ -1902,8 +1907,7 @@ function renderStudyDone(){
     '<div class="card result-wrap">' +
       '<div class="eyebrow">'+esc(d.label)+'</div>' +
       '<div class="result-num mono">'+pct+'%</div>' +
-      '<p style="color:var(--ink-soft);margin:6px 0 24px;">mastered \u00b7 ' +
-        d.right+' first-try, '+d.wrong+' to revisit</p>' +
+      '<p class="result-note">mastered. '+d.right+' first try, '+d.wrong+' to revisit.</p>' +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
         '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
         '<button class="btn btn-ghost" id="study-decks">All Decks</button></div></div>';
@@ -2281,8 +2285,9 @@ function renderQuizQuestion(){
   var q = aq.questions[aq.idx];
   var pctDone = Math.round((aq.idx / aq.questions.length) * 100);
   var html = '<div class="card qcard">' +
-    '<div class="qprog">'+esc(QUIZ_META[aq.key].name.toUpperCase())+' \u00b7 QUESTION '+(aq.idx+1)+' OF '+aq.questions.length+
-      ' \u00b7 SCORE '+aq.score+'</div>' +
+    '<div class="qprog"><span class="qprog-n">'+(aq.idx+1)+' of '+aq.questions.length+'</span>' +
+      '<span class="qprog-m">'+esc(QUIZ_META[aq.key].name)+'</span>' +
+      '<span class="qprog-s">'+aq.score+' right</span></div>' +
     '<div class="qbar"><span style="width:'+pctDone+'%"></span></div>' +
     '<p class="qtext">'+esc(q.q)+'</p>' +
     q.opts.map(function(o, i){
