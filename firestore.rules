@@ -57,6 +57,16 @@ service cloud.firestore {
       allow write: if isManager();
     }
 
+    // Kitchen Ops (iara_kitchen_ops.html): costing, inventory, POs, sales.
+    // Manager-only in both directions — this is financial/business data,
+    // not something the shared staff session should see.
+    match /ingredients/{ingredientId} { allow read, write: if isManager(); }
+    match /recipes/{recipeId}         { allow read, write: if isManager(); }
+    match /counts/{countId}           { allow read, write: if isManager(); }
+    match /pos/{poId}                 { allow read, write: if isManager(); }
+    match /sales/{salesId}            { allow read, write: if isManager(); }
+    match /meta/{metaId}              { allow read, write: if isManager(); }
+
     // Nothing else is reachable.
     match /{document=**} {
       allow read, write: if false;
