@@ -550,6 +550,7 @@
   .fw-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:18px; }
   .fw-card .btn{ margin-top:16px; }
   .fw-done{ margin:0 0 26px; font-size:13.5px; color:var(--ink-soft); }
+  .mg-who{ margin:0 0 14px; font-size:12.5px; color:var(--ink-soft); }
   .cl-tag-soft{ opacity:.75; }
   .cl-summary{ padding:20px 22px; margin-bottom:26px; }
   .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
@@ -1254,6 +1255,17 @@ var QUIZ_GENERAL_MORE = [
 var LS_KEY = "iara_hub_profile_v1";
 var profile = null; // {id, name, role}
 var db = null;
+// Manager auth runs on a SECOND Firebase app instance. Firebase keeps one
+// signed-in user per instance, so signing a manager in on the main one would
+// evict the shared staff session the whole app runs on. Two instances lets
+// Ronald stay signed in as staff and be a manager at the same time.
+var adminApp = null, adminDb = null, adminAuth = null, adminUser = null;
+// Belt and braces only. The rules are the real gate; this just keeps the UI
+// honest and gives a clear message instead of a permission error.
+var MANAGERS = ["ronald@iara.nyc", "vitor@iara.nyc", "jay@iara.nyc"];
+function isManagerEmail(e){
+  return !!e && MANAGERS.indexOf(String(e).toLowerCase()) !== -1;
+}
 
 function loadProfile(){
   try { return JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch(e){ return null; }
@@ -1289,7 +1301,44 @@ async function initDb(){
     if (FIREBASE_CONFIG.apiKey === "REPLACE_ME") { db = null; return; }
     if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
     db = firebase.firestore();
+    try {
+      adminApp = firebase.apps.filter(function(a){ return a.name === "manager"; })[0]
+              || firebase.initializeApp(FIREBASE_CONFIG, "manager");
+      adminAuth = adminApp.auth();
+      adminDb = adminApp.firestore();
+      adminAuth.onAuthStateChanged(function(u){
+        adminUser = (u && isManagerEmail(u.email)) ? u : null;
+      });
+    } catch(e){ adminApp = null; adminDb = null; adminAuth = null; }
   } catch(e){ db = null; }
+}
+
+// Resolves to the signed-in manager, or null. Reuses an existing session so a
+// manager signs in once per device, not once per visit.
+async function signInManager(){
+  if (!adminAuth) return null;
+  if (adminAuth.currentUser && isManagerEmail(adminAuth.currentUser.email)) {
+    return adminAuth.currentUser;
+  }
+  var provider = new firebase.auth.GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account", hd: "iara.nyc" });
+  var res = await adminAuth.signInWithPopup(provider);
+  var u = res && res.user;
+  if (!u || !isManagerEmail(u.email)) {
+    var bad = u ? u.email : "";
+    await adminAuth.signOut();
+    var err = new Error("not-a-manager");
+    err.email = bad;
+    throw err;
+  }
+  return u;
+}
+
+async function signOutManager(){
+  fbAdminUnlocked = false;
+  progressUnlocked = false;
+  adminUser = null;
+  try { if (adminAuth) await adminAuth.signOut(); } catch(e){}
 }
 
 // Returns true once there is a real session. Remembers the password on the
@@ -1679,7 +1728,6 @@ function renderTeam(){
 var fbItems = FNB_DEFAULTS.slice();
 var fbActiveCat = "Starters";
 var fbAdminUnlocked = false;
-var MANAGER_PIN = "1926";
 
 async function loadFbItems(){
   if (!db) { fbItems = FNB_DEFAULTS.slice(); return; }
@@ -1902,7 +1950,7 @@ async function deleteDish(item){
   if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
   var snapshot = Object.assign({}, item);
   try {
-    await db.doc("menu_items/" + item.id).delete();
+    await (adminDb || db).doc("menu_items/" + item.id).delete();
     await loadFbItems(); renderFbGrid();
   } catch(err) { toast("Could not delete that item. Try again."); return; }
 
@@ -1910,7 +1958,7 @@ async function deleteDish(item){
   toast("Deleted " + snapshot.name + ".", "Undo", async function(){
     var restore = Object.assign({}, pendingDelete); delete restore.id;
     try {
-      await db.collection("menu_items").add(restore);
+      await (adminDb || db).collection("menu_items").add(restore);
       await loadFbItems(); renderFbGrid();
       toast("Restored " + snapshot.name + ".");
     } catch(err) { toast("Could not restore that item."); }
@@ -1946,9 +1994,9 @@ async function saveDish(id, item){
   if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
   try {
     if (id) {
-      await db.doc("menu_items/" + id).update(item);
+      await (adminDb || db).doc("menu_items/" + id).update(item);
     } else {
-      await db.collection("menu_items").add(item);
+      await (adminDb || db).collection("menu_items").add(item);
     }
     await loadFbItems();
     renderFbGrid();
@@ -1965,22 +2013,36 @@ function openManagerGate(onOk){
   var wrap = document.createElement("div");
   wrap.className = "modal-back";
   wrap.innerHTML =
-    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="pin-title" style="max-width:380px;">' +
-      '<h3 id="pin-title">Manager Access</h3>' +
-      '<p class="field-help" style="margin:0 0 16px;">Editing the menu changes it for everyone on the team.</p>' +
-      '<div class="field"><label for="pin-in">Manager PIN</label>' +
-        '<input id="pin-in" type="password" inputmode="numeric" autocomplete="off" placeholder="PIN"></div>' +
-      '<p class="form-err" id="pin-err" hidden>That PIN is not right.</p>' +
+    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="mg-title" style="max-width:400px;">' +
+      '<h3 id="mg-title">Manager access</h3>' +
+      '<p class="field-help" style="margin:0 0 16px;">Sign in with your iara Google account. ' +
+        'Editing the menu changes it for everyone, and team progress is everyone\'s record.</p>' +
+      '<p class="form-err" id="mg-err" hidden></p>' +
       '<div class="modal-actions"><span class="spacer"></span>' +
-        '<button class="btn btn-ghost" id="pin-cancel">Cancel</button>' +
-        '<button class="btn btn-sun" id="pin-ok">Unlock</button></div></div>';
+        '<button class="btn btn-ghost" id="mg-cancel">Cancel</button>' +
+        '<button class="btn btn-sun" id="mg-go">Sign in with Google</button></div></div>';
   document.body.appendChild(wrap);
-  var input = wrap.querySelector("#pin-in");
-  input.focus();
+  var goBtn = wrap.querySelector("#mg-go");
+  var errEl = wrap.querySelector("#mg-err");
+  goBtn.focus();
   function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
-  function submit(){
-    if (input.value === MANAGER_PIN) { close(); onOk(); }
-    else { wrap.querySelector("#pin-err").hidden = false; input.select(); }
+  function fail(msg){ errEl.textContent = msg; errEl.hidden = false; goBtn.disabled = false; goBtn.textContent = "Sign in with Google"; }
+  async function submit(){
+    errEl.hidden = true;
+    goBtn.disabled = true; goBtn.textContent = "Opening Google\u2026";
+    try {
+      var u = await signInManager();
+      close();
+      onOk(u);
+    } catch(e){
+      if (e && e.message === "not-a-manager") {
+        fail((e.email || "That account") + " is not a manager on this app.");
+      } else if (e && (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request")) {
+        fail("Sign-in was closed before it finished.");
+      } else {
+        fail("Could not sign in. Check the connection and try again.");
+      }
+    }
   }
   function onKey(ev){
     if (ev.key === "Escape") { ev.preventDefault(); close(); }
@@ -1989,8 +2051,8 @@ function openManagerGate(onOk){
   }
   document.addEventListener("keydown", onKey);
   wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
-  wrap.querySelector("#pin-cancel").addEventListener("click", close);
-  wrap.querySelector("#pin-ok").addEventListener("click", submit);
+  wrap.querySelector("#mg-cancel").addEventListener("click", close);
+  goBtn.addEventListener("click", submit);
 }
 
 document.getElementById("fb-admin-btn").addEventListener("click", function(){
@@ -2926,7 +2988,7 @@ async function renderProgress(){
   if (!progressUnlocked) {
     area.innerHTML = '<div class="card pin-gate">' +
       '<h3 style="margin-top:0;">Manager access</h3>' +
-      '<p class="placeholder-note" style="margin-bottom:14px;">Enter the manager PIN to view team-wide progress.</p>' +
+      '<p class="placeholder-note" style="margin-bottom:14px;">Sign in with your iara Google account to see team-wide progress.</p>' +
       '<button class="btn btn-primary" id="pg-unlock">Unlock</button></div>';
     document.getElementById("pg-unlock").addEventListener("click", function(){
       openManagerGate(function(){ progressUnlocked = true; renderProgress(); });
@@ -2940,13 +3002,13 @@ async function renderProgress(){
   area.innerHTML = '<p class="placeholder-note">Loading…</p>';
   try {
     var CATS = Object.keys(QUIZ_META).map(function(k){ return { key:k, name:QUIZ_META[k].name }; });
-    var staffSnap = await db.collection("staff").orderBy("name").get();
+    var staffSnap = await (adminDb || db).collection("staff").orderBy("name").get();
     var rows = [];
     var missTally = {};
     for (var i = 0; i < staffSnap.docs.length; i++) {
       var d = staffSnap.docs[i];
       var s = d.data();
-      var qSnap = await db.doc("staff/" + d.id).collection("quizzes").get();
+      var qSnap = await (adminDb || db).doc("staff/" + d.id).collection("quizzes").get();
       var attempts = qSnap.docs.map(function(qd){ return qd.data(); });
       var byCat = {};
       CATS.forEach(function(c){
@@ -2971,7 +3033,9 @@ async function renderProgress(){
       return;
     }
     var catHeaders = CATS.map(function(c){ return '<th>'+c.name+'</th>'; }).join("");
-    var html = '<p class="placeholder-note" style="margin-bottom:10px;">Each section shows average score across attempts, with the number of attempts in parentheses.</p>' +
+    var html = '<p class="mg-who">Signed in as <span class="mono">'+esc(adminUser ? adminUser.email : "")+'</span>' +
+        ' <button class="jump-link" id="mg-out">Sign out</button></p>' +
+      '<p class="placeholder-note" style="margin-bottom:10px;">Each section shows average score across attempts, with the number of attempts in parentheses.</p>' +
       '<div class="table-wrap"><table class="progress"><thead><tr>' +
       '<th>Name</th><th>Role</th>' + catHeaders + '<th>Overall</th><th>Last active</th></tr></thead><tbody>';
     rows.forEach(function(r){
@@ -3004,8 +3068,14 @@ async function renderProgress(){
         }).join('') + '</ol>';
     }
     area.innerHTML = html;
+    var out = document.getElementById("mg-out");
+    if (out) out.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
   } catch(e) {
-    area.innerHTML = '<p class="placeholder-note">Couldn\'t load team progress right now.</p>';
+    area.innerHTML = '<p class="placeholder-note">Couldn\'t load team progress right now. ' +
+      'If you have just been added as a manager, sign out and back in.</p>' +
+      '<p><button class="jump-link" id="mg-out">Sign out</button></p>';
+    var o2 = document.getElementById("mg-out");
+    if (o2) o2.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
   }
 }
 

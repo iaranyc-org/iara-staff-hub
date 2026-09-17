@@ -2,14 +2,17 @@ rules_version = '2';
 
 // iara Lineup.
 //
-// The app signs in to one shared account (staff@iara.nyc) using the password
-// the team is given. That is the whole access model, and it is deliberate: a
-// password compared in JavaScript protects nothing, because anyone can talk to
-// Firestore directly. Requiring a real session here is what actually closes it.
+// Two kinds of session.
 //
-// Email/Password is the only enabled provider and there is exactly one account,
-// so "signed in" means "knows the staff password". If another provider is ever
-// enabled, tighten this to check request.auth.uid against that account.
+// 1. The team shares one account (staff@iara.nyc) using the password they are
+//    given. That is deliberate: a password compared in JavaScript protects
+//    nothing, because anyone can talk to Firestore directly. Requiring a real
+//    session here is what actually closes it.
+//
+// 2. Managers additionally sign in with Google on a second Firebase app
+//    instance, so the manager token and the shared staff token coexist. The
+//    allowlist below is the real gate for manager-only actions. The copy in
+//    the app is a courtesy, not a control.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -17,18 +20,41 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    // Keep this list in step with MANAGERS in the app. This one is what counts.
+    function isManager() {
+      return signedIn()
+        && request.auth.token.email_verified == true
+        && request.auth.token.email in [
+             'ronald@iara.nyc',
+             'vitor@iara.nyc',
+             'jay@iara.nyc'
+           ];
+    }
+
     // One document per staff member, plus their quiz attempts.
+    //
+    // 'get' stays open to the shared account because the app reads and writes
+    // the current device's own record. 'list' is manager-only, so a curious
+    // server cannot enumerate the roster and read everyone else's scores.
+    //
+    // Honest limit: with one shared account Firestore cannot tell one server
+    // from another, so someone who already knows another person's id could
+    // still read that record. Closing that properly means per-person accounts.
     match /staff/{staffId} {
-      allow read, write: if signedIn();
+      allow get: if signedIn();
+      allow list: if isManager();
+      allow write: if signedIn();
+
       match /quizzes/{quizId} {
-        allow read, write: if signedIn();
+        allow read: if signedIn();
+        allow write: if signedIn();
       }
     }
 
-    // The menu the chef edits. Read by everyone signed in; the manager PIN
-    // gates the editing UI, not this rule.
+    // The menu. Everyone signed in reads it; only a manager may change it.
     match /menu_items/{itemId} {
-      allow read, write: if signedIn();
+      allow read: if signedIn();
+      allow write: if isManager();
     }
 
     // Nothing else is reachable.
