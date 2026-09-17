@@ -1,10 +1,11 @@
-<title>Iara Kitchen Ops</title>
+<meta charset="utf-8">
+<title>iara Kitchen Ops</title>
 <link rel="manifest" href="ops-manifest.json">
 <link rel="apple-touch-icon" href="icon-512.png">
 <link rel="icon" href="icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Iara Ops">
+<meta name="apple-mobile-web-app-title" content="iara Ops">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#0f6b5c">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
@@ -234,7 +235,7 @@
     <div class="brand">
       <div class="brand-mark">I</div>
       <div class="brand-text">
-        <h1>Iara Kitchen Ops</h1>
+        <h1>iara Kitchen Ops</h1>
         <div class="sub" id="todayLabel">Costing &amp; Inventory</div>
       </div>
     </div>
@@ -270,12 +271,12 @@
    Security Rules, not by hiding this object.
    ============================================================ */
 var FIREBASE_CONFIG = {
-  apiKey: "REPLACE_ME",
-  authDomain: "REPLACE_ME.firebaseapp.com",
-  projectId: "REPLACE_ME",
-  storageBucket: "REPLACE_ME.appspot.com",
-  messagingSenderId: "REPLACE_ME",
-  appId: "REPLACE_ME"
+  apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE",
+  authDomain: "iara-lineup.firebaseapp.com",
+  projectId: "iara-lineup",
+  storageBucket: "iara-lineup.firebasestorage.app",
+  messagingSenderId: "840712867607",
+  appId: "1:840712867607:web:2003c145731aa85a13b152"
 };
 
 /* ---------------- constants ---------------- */
@@ -970,7 +971,7 @@ function render(){
   if(state.dbAvailable === false){
     html += '<div class="sample-banner">Preview mode: this view isn’t connected to shared storage, so edits here won’t be saved. Example data shown below.</div>';
   } else if(state.ingredients.some(function(i){ return i.seed; })){
-    html += '<div class="sample-banner">Loaded with example Iara ingredients, recipes &amp; counts so you can see how everything works — edit or delete anything below to make it yours.</div>';
+    html += '<div class="sample-banner">Loaded with example iara ingredients, recipes &amp; counts so you can see how everything works — edit or delete anything below to make it yours.</div>';
   }
   switch(state.tab){
     case 'dashboard': html += renderDashboard(); break;
@@ -1016,7 +1017,7 @@ function renderDashboard(){
 
   var foodStats = departmentStats('Food'), bevStats = departmentStats('Beverage');
 
-  var html = '<div class="panel-head"><div><h2>Dashboard</h2><div class="desc">Live snapshot of Iara’s kitchen costs and stock.</div></div></div>';
+  var html = '<div class="panel-head"><div><h2>Dashboard</h2><div class="desc">Live snapshot of iara’s kitchen costs and stock.</div></div></div>';
   html += '<div class="kpis">'+
     '<div class="kpi"><div class="label">Inventory value</div><div class="value">'+money(invVal)+'</div><div class="foot">'+state.ingredients.length+' items tracked</div></div>'+
     '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Avg. cost %</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+state.recipes.length+' recipes</div></div>'+
