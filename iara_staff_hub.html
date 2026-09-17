@@ -180,7 +180,7 @@
   .sb-user button{ margin-top:6px; background:none; border:none; color:var(--sidebar-muted); font-size:12.5px;
     text-decoration:underline; cursor:pointer; padding:6px 0; display:block; }
 
-  .content{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; }
+  .content{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
   .topbar{
     display:none; align-self:stretch; align-items:center; gap:10px; padding:12px 18px;
     border-bottom:1px solid var(--line); background:var(--paper-raised); position:sticky; top:0; z-index:5;
@@ -203,8 +203,9 @@
   .bottom-nav .nav-btn.active{ color:var(--sun); }
   .bottom-nav .nav-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
 
-  .view{ display:none; width:100%; padding:36px 56px 90px;
-    max-width:calc(var(--measure) + 112px); }
+  .view{ display:none; width:100%;
+    padding:36px clamp(56px, 3.2vw, 104px) 90px;
+    max-width:calc(var(--measure) + 2 * clamp(56px, 3.2vw, 104px)); }
   .view.active{ display:block; }
   .eyebrow{ text-transform:uppercase; letter-spacing:.08em; font-size:12.5px; font-weight:700; color:var(--river); margin:0 0 6px; }
   .view h1{ font-size:clamp(34px, 5vw, 46px); line-height:1.04; margin:0 0 10px; letter-spacing:-.018em; }
