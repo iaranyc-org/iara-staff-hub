@@ -2466,16 +2466,25 @@ function gradeStudy(got){
 
 function renderStudyDone(){
   var d = studyDeck;
-  var pct = deckMastery(buildDeck(d.key));
+  var isLineup = (d.key === "lineup");
+  // "lineup" is not a real deck key, so scoring it against buildDeck(d.key)
+  // silently measured an empty deck and always read 0%. The lineup's own
+  // number is simply how many of today's four cards went right first try.
+  var pct = isLineup
+    ? Math.round((d.right / (d.right + d.wrong)) * 100)
+    : deckMastery(buildDeck(d.key));
+  var actions = isLineup
+    ? '<button class="btn btn-sun" id="study-decks">Back to Drills</button>'
+    : '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
+      '<button class="btn btn-ghost" id="study-decks">Pick Another Deck</button>';
   studyArea().innerHTML =
     '<div class="card result-wrap">' +
       '<div class="eyebrow">'+esc(d.label)+'</div>' +
       '<div class="result-num mono">'+pct+'%</div>' +
-      '<p class="result-note">mastered. '+d.right+' first try, '+d.wrong+' to revisit.</p>' +
-      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
-        '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
-        '<button class="btn btn-ghost" id="study-decks">Pick Another Deck</button></div></div>';
-  document.getElementById("study-redo").addEventListener("click", function(){ startStudy(d.key); });
+      '<p class="result-note">'+(isLineup ? "right first try. " : "mastered. ")+d.right+' first try, '+d.wrong+' to revisit.</p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' + actions + '</div></div>';
+  var redo = document.getElementById("study-redo");
+  if (redo) redo.addEventListener("click", function(){ startStudy(d.key); });
   document.getElementById("study-decks").addEventListener("click", function(){
     exitStudy();
   });
