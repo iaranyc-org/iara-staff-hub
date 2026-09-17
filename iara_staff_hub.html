@@ -248,6 +248,13 @@
   .bio h3{ margin:0 0 2px; font-size:18px; }
   .bio .title{ color:var(--river); font-weight:700; font-size:13px;  letter-spacing:.01em; margin-bottom:8px; }
   .bio p{ margin:0; font-size:15.5px; line-height:1.7; color:var(--ink-mid); }
+  .bio-body.is-clamped p{ display:-webkit-box; -webkit-box-orient:vertical;
+    -webkit-line-clamp:4; overflow:hidden; }
+  .bio-body.is-clamped.is-open p{ display:block; overflow:visible; }
+  .bio-more{ margin-top:8px; background:none; border:none; padding:0; cursor:pointer;
+    font:inherit; font-size:13.5px; color:var(--sun); text-decoration:underline; }
+  .bio-more:hover{ color:var(--display); }
+  .bio-more:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
   .placeholder-note{ font-size:13px; color:var(--ink-soft); font-style:italic; }
 
   /* F&B */
@@ -559,26 +566,16 @@
   .used-in{ margin:10px 0 0; font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
   .used-in span{  letter-spacing:.01em; font-size:12px; font-weight:700; color:var(--display); }
 
-  .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
-  .deck{ text-align:left; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:8px;
-    padding:16px; cursor:pointer; display:flex; flex-direction:column; gap:6px; font:inherit; color:var(--ink);
-    transition:border-color .12s ease, transform .08s ease; }
-  .deck:hover{ border-color:var(--sun); }
-  .deck:active{ transform:translateY(1px); }
-  .deck:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .deck-name{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
-  .deck-meta{ font-size:12px; color:var(--ink-soft); }
-  .deck-bar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin-top:4px; }
-  .deck-bar span{ display:block; height:100%; background:var(--sun); border-radius:3px; }
-  .deck-pct{ font-size:11.5px; color:var(--ink-soft); }
 
-  .studycard{ padding:26px; max-width:var(--measure); }
-  .study-front{ font-size:27px; margin:6px 0 4px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
-  .study-hint{ color:var(--ink-soft); font-size:14px; margin:14px 0 20px; }
-  .study-back{ border-top:1px solid var(--line); margin-top:16px; padding-top:16px; }
-  .study-back p{ margin:0 0 8px; font-size:15.5px; line-height:1.6; }
+  .studycard{ padding:44px 40px 36px; max-width:var(--measure); min-height:340px;
+    display:flex; flex-direction:column; }
+  .study-front{ font-size:clamp(30px,3.4vw,40px); line-height:1.08; margin:18px 0 6px;
+    display:flex; align-items:center; gap:12px; flex-wrap:wrap; }
+  .study-hint{ color:var(--ink-soft); font-size:15px; margin:auto 0 22px; max-width:46ch; }
+  .study-back{ border-top:1px solid var(--rule); margin-top:22px; padding-top:20px; }
+  .study-back p{ margin:0 0 10px; font-size:16.5px; line-height:1.65; color:var(--ink-mid); }
   .study-extra{ font-size:13px; color:var(--ink-soft); }
-  .study-grade{ display:flex; gap:10px; margin-top:20px; }
+  .study-grade{ display:flex; gap:12px; margin-top:26px; }
   .study-grade .btn{ flex:1; }
   .pips{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
   .pips i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-soft); display:inline-block; }
@@ -1580,9 +1577,21 @@ function renderTeam(){
       (p.photo
         ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy">'
         : '<div class="avatar">'+esc(p.initials)+'</div>') +
-      '<div><h3>'+p.name+'</h3><div class="title">'+p.title+'</div>' +
-      '<p class="'+(p.placeholder ? 'placeholder-note' : '')+'">'+p.bio+'</p></div></div>';
+      '<div><h3>'+esc(p.name)+'</h3><div class="title">'+esc(p.title)+'</div>' +
+      '<div class="bio-body"><p>'+p.bio+'</p>' +
+      '<button class="bio-more" aria-expanded="false">Read more</button></div>' +
+      '</div></div>';
   }).join("");
+  wrap.querySelectorAll(".bio-more").forEach(function(b){
+    var body = b.closest(".bio-body");
+    // only offer the control where the text is actually clipped
+    body.classList.add("is-clamped");
+    b.addEventListener("click", function(){
+      var open = body.classList.toggle("is-open");
+      b.textContent = open ? "Show less" : "Read more";
+      b.setAttribute("aria-expanded", String(open));
+    });
+  });
 }
 
 /* ============================================================
@@ -2126,7 +2135,7 @@ function renderStudyPicker(){
       '<span class="deck-name">'+esc(d.label)+'</span>' +
       '<span class="deck-meta">'+cards.length+(cards.length===1?' card':' cards')+'</span>' +
       '<span class="deck-bar"><span style="width:'+pct+'%"></span></span>' +
-      '<span class="deck-pct mono">'+pct+'% mastered</span></button>';
+      (pct ? '<span class="deck-pct mono">'+pct+'% mastered</span>' : '') + '</button>';
   });
   html += '</div>';
   area.innerHTML = html;
