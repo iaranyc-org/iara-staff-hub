@@ -169,8 +169,16 @@
   .gate-note{ margin-top:18px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
 
   /* ===================== Shell ===================== */
+  /* Anchoring the reading column close to the sidebar (rather than
+     centring it in whatever space the sidebar left) fixed drift on
+     merely-wide screens, but let a genuinely large monitor leave more
+     than half the window empty on the right, since nothing ever
+     stopped the gutter from growing. Capping and centring the whole
+     shell is the standard fix: past this width the dead space becomes
+     small, even margins on the true window edges instead of one
+     lopsided gap after the content column. */
   #shell{ display:none; min-height:100vh; }
-  #shell.active{ display:flex; }
+  #shell.active{ display:flex; max-width:1560px; margin:0 auto; }
   .sidebar{
     width:230px; flex:none; background:var(--sidebar); color:var(--sidebar-ink);
     padding:24px 16px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh;
