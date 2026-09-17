@@ -632,6 +632,10 @@
   .pips{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
   .pips i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-soft); display:inline-block; }
   .pips i.on{ background:var(--sun); border-color:var(--sun); }
+  .jump-link{ display:inline; padding:0; background:none; border:none; font:inherit;
+    color:var(--sun); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+  .jump-link:hover{ color:var(--display); }
+  .jump-link:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
   .linkish{ display:block; margin-top:18px; background:none; border:none; color:var(--ink-soft);
     font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
   .linkish:hover{ color:var(--ink); }
@@ -809,12 +813,12 @@
           <span class="sc-date mono" id="home-date"></span>
         </div>
         <h1 class="sc-name">Evening, <span id="home-name">there</span>.</h1>
-        <p class="sc-sub">Start with the manual. Drill the menu until it sticks.</p>
+        <p class="sc-sub">Work through <button class="jump-link" data-view="checklist">First Week</button>. These three are most of it.</p>
         <div class="sc-rule"></div>
         <p class="sc-blank" id="sc-blank" hidden>Your record shows up here once you have run a drill.</p>
         <div class="sc-stats">
           <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Drills run</span></div>
-          <div><span class="num mono" id="stat-best">&mdash;</span><span class="lbl">Average</span></div>
+          <div><span class="num mono" id="stat-best">&mdash;</span><span class="lbl">Average score</span></div>
           <div><span class="num mono" id="stat-last">&mdash;</span><span class="lbl">Last drill</span></div>
         </div>
       </div>
@@ -1448,7 +1452,7 @@ function routeFromHash(){
 window.addEventListener("popstate", routeFromHash);
 window.addEventListener("hashchange", routeFromHash);
 
-document.querySelectorAll(".nav-btn, .jump").forEach(function(btn){
+document.querySelectorAll(".nav-btn, .jump, .jump-link").forEach(function(btn){
   btn.addEventListener("click", function(){ showView(btn.getAttribute("data-view")); });
 });
 
@@ -2734,10 +2738,15 @@ function renderQuizQuestion(){
       return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span>'+esc(o.text)+'</button>';
     }).join("") +
     '<div id="q-feedback" class="q-feedback" hidden></div>' +
+    // Study lets you back out mid-deck; a drill should not trap you either.
+    '<button class="linkish" id="quiz-quit">Back to Drills</button>' +
     '</div>';
   area.innerHTML = html;
   area.querySelectorAll(".opt").forEach(function(btn){
     btn.addEventListener("click", function(){ answerQuiz(parseInt(btn.getAttribute("data-i"),10)); });
+  });
+  document.getElementById("quiz-quit").addEventListener("click", function(){
+    activeQuiz = null; renderQuizPicker();
   });
   var first = area.querySelector(".opt");
   if (first) first.focus();
