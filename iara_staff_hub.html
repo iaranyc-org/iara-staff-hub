@@ -781,7 +781,9 @@
   .manual-search input::placeholder{ color:var(--ink-soft); }
   .manual-search input:focus{ outline:none; border-color:var(--sun); }
   .manual-count{ margin:9px 0 0; font-size:13px; color:var(--ink-soft); }
-  .manual-read{ margin:9px 0 0; font-size:13px; color:var(--ink-soft); }
+  .manual-read-row{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:9px 0 0; }
+  .manual-read{ margin:0; font-size:13px; color:var(--ink-soft); }
+  .manual-read-row .linkish{ margin:0; font-size:13px; }
   .accordion.is-read .acc-num::after{ content:"\2713"; margin-left:6px; color:var(--sun); }
   mark{ background:color-mix(in srgb, var(--sun) 30%, transparent); color:var(--ink);
     border-radius:2px; padding:0 1px; }
@@ -895,7 +897,10 @@
         <input id="manual-q" type="search" autocomplete="off"
                placeholder="Search the manual, e.g. allergy, intoxicated, tray">
         <p class="manual-count" id="manual-count" hidden></p>
-        <p class="manual-read" id="manual-read"></p>
+        <div class="manual-read-row">
+          <p class="manual-read" id="manual-read"></p>
+          <button class="linkish" id="manual-expand-all" type="button">Expand all</button>
+        </div>
       </div>
       <div id="manual-accordions"></div>
     </section>
@@ -1648,6 +1653,7 @@ function updateReadCount(){
   });
 }
 
+var manualAllOpen = false;
 function manualSearch(q){
   var wrap = document.getElementById("manual-accordions");
   var count = document.getElementById("manual-count");
@@ -1657,7 +1663,9 @@ function manualSearch(q){
   if (!term) {
     cards.forEach(function(c, i){
       c.hidden = false;
-      c.classList.toggle("open", i === 0);
+      // Respect Expand All rather than silently collapsing everything back
+      // down to just the first section the moment a search is cleared.
+      c.classList.toggle("open", manualAllOpen || i === 0);
       c.querySelectorAll("mark").forEach(unmark);
     });
     count.hidden = true;
@@ -1737,6 +1745,19 @@ function renderManual(){
     });
     q.addEventListener("keydown", function(ev){
       if (ev.key === "Escape") { q.value = ""; manualSearch(""); q.blur(); }
+    });
+  }
+  var expandBtn = document.getElementById("manual-expand-all");
+  if (expandBtn && !expandBtn.dataset.bound) {
+    expandBtn.dataset.bound = "1";
+    expandBtn.addEventListener("click", function(){
+      manualAllOpen = !manualAllOpen;
+      expandBtn.textContent = manualAllOpen ? "Collapse all" : "Expand all";
+      wrap.querySelectorAll(".accordion").forEach(function(c, i){
+        if (c.hidden) return; // leave an active search filter alone
+        c.classList.toggle("open", manualAllOpen || i === 0);
+        if (c.classList.contains("open")) markRead(c.dataset.sec);
+      });
     });
   }
 }
