@@ -223,8 +223,18 @@
   .dish h4{ margin:0 0 4px; font-family:'Fraunces',serif; font-size:16.5px; }
   .dish .price{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--river); font-weight:600; }
   .dish .pron-line{ font-size:12px; color:var(--ink-soft); font-style:italic; margin:-2px 0 6px; display:flex; align-items:center; gap:6px; }
-  .speak-btn{ font-style:normal; background:none; border:none; cursor:pointer; font-size:13px; line-height:1; padding:2px 4px; border-radius:6px; color:var(--river); }
-  .speak-btn:hover{ background:color-mix(in srgb, var(--river) 14%, transparent); }
+  .say{ display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
+  .say-lbl{ font-size:9.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin-right:2px; }
+  .speak-btn{ font-style:normal; background:transparent; border:1px solid var(--line); cursor:pointer;
+    font-family:'IBM Plex Mono',monospace; font-size:10.5px; line-height:1; width:19px; height:19px;
+    display:inline-flex; align-items:center; justify-content:center; border-radius:4px;
+    color:var(--ink-soft); padding:0; transition:color .12s ease, border-color .12s ease, background .12s ease; }
+  .speak-btn:hover{ color:var(--display); border-color:var(--display); }
+  .speak-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .speak-btn.playing{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
+  .studycard .say-lbl{ font-size:11px; }
+  .studycard .speak-btn{ width:26px; height:26px; font-size:12.5px; }
   .dish .desc{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:0 0 10px; }
   .badge{ display:inline-block; font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; padding:2px 7px; border-radius:6px; }
   .badge-example{ background:var(--clay); color:var(--clay-ink); }
@@ -966,7 +976,7 @@ function renderFbGrid(){
     var editBtn = fbAdminUnlocked ? '<button class="dish-edit" data-id="'+it.id+'">Edit</button>' : '';
     var pron = it.pronunciation ? '<span class="pron">('+it.pronunciation+')</span>' : '';
     var speakText = it.speak || "";
-    var speakBtn = (it.pronunciation && speakText) ? ' <button class="speak-btn" data-say="'+esc(speakText)+'" data-id="'+esc(it.id)+'" title="Hear pronunciation" aria-label="Hear how to say '+esc(it.name)+'">&#128266;</button>' : '';
+    var speakBtn = (it.pronunciation && speakText) ? ' ' + sayControl(it.name, it.id, speakText) : '';
     var price = it.price ? '<span class="price">'+it.price+'</span>' : '';
     return '<div class="card dish">'+editBtn+
       (it.example ? '<span class="badge badge-example">Example</span> ' : '') +
@@ -979,12 +989,7 @@ function renderFbGrid(){
     html += '<button class="add-dish" id="fb-add">+ Add item to '+fbActiveCat+'</button>';
   }
   grid.innerHTML = html || '<p class="placeholder-note">No items in this category yet.</p>';
-  grid.querySelectorAll(".speak-btn").forEach(function(b){
-    b.addEventListener("click", function(ev){
-      ev.stopPropagation();
-      speakDish(b.getAttribute("data-say"), b.getAttribute("data-id"));
-    });
-  });
+  bindSayButtons(grid);
   if (fbAdminUnlocked) {
     var addBtn = document.getElementById("fb-add");
     if (addBtn) addBtn.addEventListener("click", function(){ openDishForm(null); });
@@ -1083,13 +1088,36 @@ if (window.speechSynthesis) {
   window.speechSynthesis.addEventListener("voiceschanged", loadPtVoice);
 }
 
+var SAY_VOICES = 3;
+// Three speakers per item on purpose: hearing one voice teaches you that voice,
+// hearing several teaches you the word.
+function sayControl(name, id, speakText){
+  if (!id || !speakText) return "";
+  var html = '<span class="say"><span class="say-lbl">Hear</span>';
+  for (var v = 1; v <= SAY_VOICES; v++) {
+    html += '<button class="speak-btn" data-say="'+esc(speakText)+'" data-id="'+esc(id)+'" data-v="'+v+'"' +
+            ' aria-label="Hear '+esc(name)+', voice '+v+' of '+SAY_VOICES+'">'+v+'</button>';
+  }
+  return html + '</span>';
+}
+function bindSayButtons(root){
+  root.querySelectorAll(".speak-btn").forEach(function(b){
+    b.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      root.querySelectorAll(".speak-btn").forEach(function(o){ o.classList.remove("playing"); });
+      b.classList.add("playing");
+      speakDish(b.getAttribute("data-say"), b.getAttribute("data-id"), b.getAttribute("data-v"));
+    });
+  });
+}
+
 var dishAudio = null;
-function speakDish(name, id){
+function speakDish(name, id, variant){
   // A pre-rendered pt-BR clip sounds the same on every device. Synthesis does not,
   // so it is only a fallback for items with no recording yet.
   if (id) {
     if (dishAudio) { dishAudio.pause(); dishAudio = null; }
-    var a = new Audio("audio/" + id + ".mp3");
+    var a = new Audio("audio/" + id + "-" + (variant || 1) + ".mp3");
     dishAudio = a;
     var fellBack = false;
     a.addEventListener("error", function(){
@@ -1260,8 +1288,7 @@ function renderStudyCard(){
   var m = loadMastery()[c.id] || 0;
   var pips = "";
   for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+'"></i>';
-  var speak = (c.speakId && c.speak)
-    ? ' <button class="speak-btn" data-say="'+esc(c.speak)+'" data-id="'+esc(c.speakId)+'" aria-label="Hear how to say '+esc(c.front)+'">&#128266;</button>' : '';
+  var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
   var html = '<div class="card studycard">' +
     '<div class="qprog">'+esc(d.label.toUpperCase())+' \u00b7 CARD '+(d.idx+1)+' OF '+d.cards.length+'' +
       ' <span class="pips" title="Mastery">'+pips+'</span></div>' +
@@ -1292,12 +1319,7 @@ function renderStudyCard(){
   document.getElementById("study-quit").addEventListener("click", function(){
     studyDeck = null; renderStudyPicker();
   });
-  area.querySelectorAll(".speak-btn").forEach(function(b){
-    b.addEventListener("click", function(ev){
-      ev.stopPropagation();
-      speakDish(b.getAttribute("data-say"), b.getAttribute("data-id"));
-    });
-  });
+  bindSayButtons(area);
 }
 
 function gradeStudy(got){

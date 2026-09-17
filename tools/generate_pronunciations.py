@@ -45,9 +45,18 @@ VOICE_POOL = [
     ("Laura",   "FGY2WhTYpPnrIDTdsKH5"),
 ]
 
-def voice_for(index):
-    """Stable assignment: the same dish always gets the same voice on a rerun."""
-    return VOICE_POOL[index % len(VOICE_POOL)]
+VARIANTS = int(os.environ.get("ELEVENLABS_VARIANTS", "3"))
+
+def voices_for(index):
+    """Pick VARIANTS distinct voices for one item, stable across reruns.
+
+    Hearing the same word from several speakers is what builds recognition, so
+    each dish gets a small panel of voices rather than one. The 0/3/7 offsets
+    are coprime-ish with a 10-voice pool, so the three are always different and
+    the pool stays evenly used across the menu. The pool alternates male and
+    female, so a trio is normally mixed."""
+    offsets = [0, 3, 7, 1, 5, 9][:VARIANTS]
+    return [VOICE_POOL[(index + o) % len(VOICE_POOL)] for o in offsets]
 
 ITEM_RE = re.compile(
     r'\{\s*id:"(?P<id>[^"]+)",\s*category:"[^"]*",\s*name:"(?P<name>[^"]*)",'
@@ -91,23 +100,27 @@ def main():
     force = "--force" in sys.argv
     OUT.mkdir(exist_ok=True)
     todo = sorted(items(), key=lambda d: int(re.sub(r"\D", "", d["id"]) or 0))
-    print(f"{len(todo)} items; model={MODEL_ID} speed={SPEED} "
-          f"across {len(VOICE_POOL)} voices")
+    print(f"{len(todo)} items x {VARIANTS} voices; model={MODEL_ID} speed={SPEED} "
+          f"from a pool of {len(VOICE_POOL)}")
     made = skipped = 0
     for n, it in enumerate(todo):
-        vname, vid = voice_for(n)
-        dest = OUT / f"{it['id']}.mp3"
-        if dest.exists() and not force:
-            skipped += 1; continue
-        try:
-            dest.write_bytes(synth(it["speak"], key, vid))
-            made += 1
-            print(f"  ok   {it['id']:>4}  {it['speak']:<28} {vname}")
-        except urllib.error.HTTPError as e:
-            print(f"  FAIL {it['id']:>4}  {it['speak']}  HTTP {e.code} {e.read()[:200]!r}")
-        except Exception as e:
-            print(f"  FAIL {it['id']:>4}  {it['speak']}  {e}")
+        chosen = voices_for(n)
+        names = []
+        for v, (vname, vid) in enumerate(chosen, start=1):
+            dest = OUT / f"{it['id']}-{v}.mp3"
+            names.append(vname)
+            if dest.exists() and not force:
+                skipped += 1; continue
+            try:
+                dest.write_bytes(synth(it["speak"], key, vid))
+                made += 1
+            except urllib.error.HTTPError as e:
+                print(f"  FAIL {it['id']}-{v}  {it['speak']}  HTTP {e.code} {e.read()[:200]!r}")
+            except Exception as e:
+                print(f"  FAIL {it['id']}-{v}  {it['speak']}  {e}")
+        print(f"  ok   {it['id']:>4}  {it['speak']:<28} {', '.join(names)}")
     print(f"\nwrote {made}, skipped {skipped} already present -> {OUT}")
+    print(f"{len(todo)} items x {VARIANTS} voices")
 
 if __name__ == "__main__":
     main()
