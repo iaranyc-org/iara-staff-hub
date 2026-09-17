@@ -247,6 +247,44 @@
   .opt.wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
   .opt[disabled]{ cursor:default; }
   .qexplain{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
+  .mode-switch{ display:inline-flex; gap:4px; padding:4px; border-radius:6px; border:1.5px solid var(--line);
+    background:var(--paper-raised); margin-bottom:18px; }
+  .mode-btn{ border:none; background:transparent; color:var(--ink-soft); font:inherit; font-size:14px; font-weight:700;
+    padding:8px 18px; border-radius:4px; cursor:pointer; transition:color .12s ease, background .12s ease; }
+  .mode-btn:hover{ color:var(--ink); }
+  .mode-btn.active{ background:var(--forest); color:var(--forest-ink); }
+  .mode-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .fb-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+  .used-in{ margin:10px 0 0; font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
+  .used-in span{ text-transform:uppercase; letter-spacing:.06em; font-size:10.5px; font-weight:700; color:var(--display); }
+
+  .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px; }
+  .deck{ text-align:left; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:8px;
+    padding:16px; cursor:pointer; display:flex; flex-direction:column; gap:6px; font:inherit; color:var(--ink);
+    transition:border-color .12s ease, transform .08s ease; }
+  .deck:hover{ border-color:var(--sun); }
+  .deck:active{ transform:translateY(1px); }
+  .deck:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .deck-name{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
+  .deck-meta{ font-size:12px; color:var(--ink-soft); }
+  .deck-bar{ height:4px; border-radius:999px; background:var(--line); overflow:hidden; margin-top:4px; }
+  .deck-bar span{ display:block; height:100%; background:var(--sun); border-radius:999px; }
+  .deck-pct{ font-size:11.5px; color:var(--ink-soft); }
+
+  .studycard{ padding:26px; max-width:620px; }
+  .study-front{ font-size:27px; margin:6px 0 4px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+  .study-hint{ color:var(--ink-soft); font-size:14px; margin:14px 0 20px; }
+  .study-back{ border-top:1px solid var(--line); margin-top:16px; padding-top:16px; }
+  .study-back p{ margin:0 0 8px; font-size:15.5px; line-height:1.6; }
+  .study-extra{ font-size:13px; color:var(--ink-soft); }
+  .study-grade{ display:flex; gap:10px; margin-top:20px; }
+  .study-grade .btn{ flex:1; }
+  .pips{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
+  .pips i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-soft); display:inline-block; }
+  .pips i.on{ background:var(--sun); border-color:var(--sun); }
+  .linkish{ display:block; margin-top:18px; background:none; border:none; color:var(--ink-soft);
+    font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
+  .linkish:hover{ color:var(--ink); }
   .qbar{ height:4px; border-radius:999px; background:var(--line); overflow:hidden; margin:0 0 18px; }
   .qbar span{ display:block; height:100%; background:var(--sun); border-radius:999px; transition:width .25s cubic-bezier(.16,1,.3,1); }
   .opt{ display:flex; align-items:center; gap:10px; }
@@ -387,16 +425,26 @@
     <section class="view" id="view-fnb">
       <p class="eyebrow">Menu knowledge</p>
       <h1>Food &amp; Beverage</h1>
-      <p class="view-intro">Dishes, drinks, and their ingredients &amp; allergens. Items marked <span class="badge badge-example">Example</span> are placeholders — your manager or chef can replace them with the real menu using Edit mode below.</p>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px;">
-        <div class="fb-tabs" id="fb-tabs"></div>
-        <button class="btn btn-ghost btn-small" id="fb-admin-btn">Edit menu (manager)</button>
-      </div>
-      <div class="dish-grid" id="fb-grid"></div>
+      <p class="view-intro">Every dish and drink, what goes in it, and what it can set off. Look something up mid-service, or study it card by card. Items tagged <span class="badge badge-example">Example</span> are stand-ins until the chef confirms the real menu.</p>
 
-      <h2 style="margin-top:40px;">Core Ingredient Glossary</h2>
-      <p class="view-intro" style="margin-bottom:20px;">Amazonian and Brazilian ingredients and terms you'll hear on the line and should be able to explain to guests.</p>
-      <div id="fb-glossary" class="dish-grid"></div>
+      <div class="mode-switch" role="tablist" aria-label="Food and beverage mode">
+        <button class="mode-btn active" id="mode-browse" role="tab" aria-selected="true">Browse</button>
+        <button class="mode-btn" id="mode-study" role="tab" aria-selected="false">Study</button>
+      </div>
+
+      <div id="fb-browse">
+        <div class="fb-toolbar">
+          <div class="fb-tabs" id="fb-tabs"></div>
+          <button class="btn btn-ghost btn-small" id="fb-admin-btn">Edit Menu</button>
+        </div>
+        <div class="dish-grid" id="fb-grid"></div>
+
+        <h2 style="margin-top:40px;">Ingredient Glossary</h2>
+        <p class="view-intro" style="margin-bottom:20px;">The Amazonian and Brazilian ingredients you will be asked about on the floor, and the dishes each one turns up in.</p>
+        <div id="fb-glossary" class="dish-grid"></div>
+      </div>
+
+      <div id="fb-study" hidden></div>
     </section>
 
     <!-- QUIZ -->
@@ -1063,10 +1111,250 @@ function speakSynth(name){
   window.speechSynthesis.speak(utter);
 }
 
+
+/* Which words identify an ingredient inside a dish name or description.
+   Curated on purpose rather than derived: matching on the last word of a term
+   wrongly tied "Pao de Queijo" to the Romeo and Juliet Martini, whose
+   description mentions "Queijo Minas-washed vermouth". Generic words like
+   queijo (cheese) or alho (garlic) are not usable as aliases. Edit this map
+   if a dish and an ingredient should be linked and are not. */
+var ING_ALIASES = {
+  "Tapioca (bite & fries)": ["tapioca"],
+  "Amazon Jambu":           ["jambu"],
+  "Tucupi":                 ["tucupi"],
+  "P\u00e3o de Queijo":       ["p\u00e3o de queijo"],
+  "P\u00e3o de Alho":         ["p\u00e3o de alho"],
+  "A\u00e7a\u00ed":             ["a\u00e7a\u00ed"],
+  "Cumaru":                 ["cumaru"],
+  "Puxuri":                 ["puxuri"],
+  "Moqueca (Baiana)":       ["moqueca"],
+  "Picanha":                ["picanha"],
+  "Feij\u00e3o Manteiguinha": ["feij\u00e3o manteiguinha","manteiguinha"],
+  "Farofa":                 ["farofa"],
+  "Cupua\u00e7u":             ["cupua\u00e7u"],
+  "Brigadeiro":             ["brigadeiro"]
+};
+function normTxt(t){
+  return String(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+}
+// Ingredients named in a dish's title or description.
+function ingredientsForDish(it){
+  var hay = normTxt((it.name||"") + " " + (it.desc||""));
+  return INGREDIENTS.filter(function(ing){
+    var alts = ING_ALIASES[ing.term] || [ing.term];
+    return alts.some(function(a){ return a && hay.indexOf(normTxt(a)) !== -1; });
+  });
+}
+// Dishes that name a given ingredient.
+function dishesForIngredient(ing){
+  return fbItems.filter(function(it){
+    return ingredientsForDish(it).some(function(x){ return x.term === ing.term; });
+  });
+}
+
+
+/* ============================================================
+   Study mode — flashcards with per-item mastery
+   Modelled on WaniKani's idea that you learn the parts before the whole:
+   ingredients are the atoms, dishes are built from them. No timed review
+   scheduling: a pre-opening team needs the menu by opening night, and a
+   4-month interval ladder does not serve that.
+   ============================================================ */
+var MASTERY_MAX = 4;           // 0 unseen .. 4 mastered
+var studyDeck = null;          // {key, label, cards:[], idx, revealed, right, wrong}
+
+function masteryKey(){ return "iara_mastery_" + (profile ? profile.id : "anon"); }
+function loadMastery(){
+  try { return JSON.parse(localStorage.getItem(masteryKey()) || "{}"); } catch(e){ return {}; }
+}
+function saveMastery(m){
+  try { localStorage.setItem(masteryKey(), JSON.stringify(m)); } catch(e){}
+}
+function bumpMastery(cardId, got){
+  var m = loadMastery();
+  var cur = m[cardId] || 0;
+  m[cardId] = got ? Math.min(MASTERY_MAX, cur + 1) : 0;   // a miss sends it back to the start
+  saveMastery(m);
+  return m[cardId];
+}
+function deckMastery(cards){
+  if (!cards.length) return 0;
+  var m = loadMastery();
+  var total = cards.reduce(function(sum, c){ return sum + Math.min(MASTERY_MAX, m[c.id] || 0); }, 0);
+  return Math.round((total / (cards.length * MASTERY_MAX)) * 100);
+}
+
+// A deck is built fresh each time so menu edits flow straight through.
+function buildDeck(key){
+  var cards = [];
+  if (key === "ingredients") {
+    INGREDIENTS.forEach(function(ing){
+      var used = dishesForIngredient(ing).map(function(d){ return d.name; });
+      cards.push({
+        id: "ing:" + ing.term, kind: "ingredient",
+        front: ing.term, back: ing.def,
+        extra: used.length ? "On the menu in: " + used.join(", ") : ""
+      });
+    });
+  } else {
+    var items = fbItems.filter(function(it){ return key === "all" || it.category === key; });
+    items.forEach(function(it){
+      var ings = ingredientsForDish(it).map(function(x){ return x.term; });
+      var bits = [];
+      if (ings.length) bits.push("Key ingredients: " + ings.join(", "));
+      bits.push((it.allergens && it.allergens.length)
+        ? "Allergens: " + it.allergens.join(", ")
+        : "No allergens listed");
+      cards.push({
+        id: "dish:" + it.id, kind: "dish", speakId: it.id, speak: it.speak || "",
+        front: it.name, pron: it.pronunciation || "",
+        back: it.desc || "", extra: bits.join("  \u00b7  ")
+      });
+    });
+  }
+  return cards;
+}
+
+function studyDecks(){
+  var decks = [{ key:"all", label:"Whole Menu" }];
+  FNB_CATEGORIES.forEach(function(c){ decks.push({ key:c, label:c }); });
+  decks.push({ key:"ingredients", label:"Ingredients" });
+  return decks;
+}
+
+function renderStudyPicker(){
+  var area = document.getElementById("fb-study");
+  if (!area) return;
+  var html = '<p class="view-intro">Flip a card, say it out loud, then mark whether you had it. ' +
+             'Cards you miss come back to the start.</p><div class="deck-grid">';
+  studyDecks().forEach(function(d){
+    var cards = buildDeck(d.key);
+    var pct = deckMastery(cards);
+    html += '<button class="deck" data-deck="'+esc(d.key)+'">' +
+      '<span class="deck-name">'+esc(d.label)+'</span>' +
+      '<span class="deck-meta">'+cards.length+(cards.length===1?' card':' cards')+'</span>' +
+      '<span class="deck-bar"><span style="width:'+pct+'%"></span></span>' +
+      '<span class="deck-pct mono">'+pct+'% mastered</span></button>';
+  });
+  html += '</div>';
+  area.innerHTML = html;
+  area.querySelectorAll(".deck").forEach(function(b){
+    b.addEventListener("click", function(){ startStudy(b.getAttribute("data-deck")); });
+  });
+}
+
+function startStudy(key){
+  var cards = shuffle(buildDeck(key));
+  if (!cards.length) { renderStudyPicker(); return; }
+  var label = (studyDecks().find(function(d){ return d.key === key; }) || {}).label || key;
+  studyDeck = { key:key, label:label, cards:cards, idx:0, revealed:false, right:0, wrong:0 };
+  renderStudyCard();
+}
+
+function renderStudyCard(){
+  var area = document.getElementById("fb-study");
+  var d = studyDeck;
+  if (!d) return renderStudyPicker();
+  if (d.idx >= d.cards.length) return renderStudyDone();
+  var c = d.cards[d.idx];
+  var m = loadMastery()[c.id] || 0;
+  var pips = "";
+  for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+'"></i>';
+  var speak = (c.speakId && c.speak)
+    ? ' <button class="speak-btn" data-say="'+esc(c.speak)+'" data-id="'+esc(c.speakId)+'" aria-label="Hear how to say '+esc(c.front)+'">&#128266;</button>' : '';
+  var html = '<div class="card studycard">' +
+    '<div class="qprog">'+esc(d.label.toUpperCase())+' \u00b7 CARD '+(d.idx+1)+' OF '+d.cards.length+'' +
+      ' <span class="pips" title="Mastery">'+pips+'</span></div>' +
+    '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
+    '<h3 class="study-front">'+esc(c.front)+speak+'</h3>' +
+    (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '');
+  if (!d.revealed) {
+    html += '<p class="study-hint">'+(c.kind === "dish"
+      ? "Say it out loud, then recall what is in it and its allergens."
+      : "Recall what this is and where it shows up on the menu.")+'</p>' +
+      '<button class="btn btn-sun" id="study-reveal">Show Answer</button>';
+  } else {
+    html += '<div class="study-back"><p>'+esc(c.back)+'</p>' +
+      (c.extra ? '<p class="study-extra">'+esc(c.extra)+'</p>' : '') + '</div>' +
+      '<div class="study-grade">' +
+        '<button class="btn btn-ghost" id="study-again">Missed It</button>' +
+        '<button class="btn btn-sun" id="study-got">Got It</button></div>';
+  }
+  html += '<button class="linkish" id="study-quit">Back to decks</button></div>';
+  area.innerHTML = html;
+
+  var rev = document.getElementById("study-reveal");
+  if (rev) rev.addEventListener("click", function(){ studyDeck.revealed = true; renderStudyCard(); });
+  var got = document.getElementById("study-got");
+  if (got) got.addEventListener("click", function(){ gradeStudy(true); });
+  var again = document.getElementById("study-again");
+  if (again) again.addEventListener("click", function(){ gradeStudy(false); });
+  document.getElementById("study-quit").addEventListener("click", function(){
+    studyDeck = null; renderStudyPicker();
+  });
+  area.querySelectorAll(".speak-btn").forEach(function(b){
+    b.addEventListener("click", function(ev){
+      ev.stopPropagation();
+      speakDish(b.getAttribute("data-say"), b.getAttribute("data-id"));
+    });
+  });
+}
+
+function gradeStudy(got){
+  var d = studyDeck;
+  var c = d.cards[d.idx];
+  bumpMastery(c.id, got);
+  if (got) d.right++; else { d.wrong++; d.cards.push(c); }   // a missed card comes back this session
+  d.idx++; d.revealed = false;
+  renderStudyCard();
+}
+
+function renderStudyDone(){
+  var d = studyDeck;
+  var pct = deckMastery(buildDeck(d.key));
+  document.getElementById("fb-study").innerHTML =
+    '<div class="card result-wrap">' +
+      '<div class="eyebrow">'+esc(d.label)+'</div>' +
+      '<div class="result-num mono">'+pct+'%</div>' +
+      '<p style="color:var(--ink-soft);margin:6px 0 24px;">mastered \u00b7 ' +
+        d.right+' first-try, '+d.wrong+' to revisit</p>' +
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+        '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
+        '<button class="btn btn-ghost" id="study-decks">All Decks</button></div></div>';
+  document.getElementById("study-redo").addEventListener("click", function(){ startStudy(d.key); });
+  document.getElementById("study-decks").addEventListener("click", function(){
+    studyDeck = null; renderStudyPicker();
+  });
+}
+
+function setFbMode(mode){
+  var browse = document.getElementById("fb-browse");
+  var study  = document.getElementById("fb-study");
+  var bBtn   = document.getElementById("mode-browse");
+  var sBtn   = document.getElementById("mode-study");
+  var studying = mode === "study";
+  browse.hidden = studying;
+  study.hidden  = !studying;
+  bBtn.classList.toggle("active", !studying);
+  sBtn.classList.toggle("active", studying);
+  bBtn.setAttribute("aria-selected", String(!studying));
+  sBtn.setAttribute("aria-selected", String(studying));
+  if (studying && !studyDeck) renderStudyPicker();
+}
+document.addEventListener("DOMContentLoaded", function(){
+  var b = document.getElementById("mode-browse");
+  var st = document.getElementById("mode-study");
+  if (b) b.addEventListener("click", function(){ setFbMode("browse"); });
+  if (st) st.addEventListener("click", function(){ setFbMode("study"); });
+});
+
 function renderGlossary(){
   var wrap = document.getElementById("fb-glossary");
   wrap.innerHTML = INGREDIENTS.map(function(it){
-    return '<div class="card dish"><h4>'+it.term+'</h4><p class="desc">'+it.def+'</p></div>';
+    var used = dishesForIngredient(it).map(function(d){ return d.name; });
+    return '<div class="card dish"><h4>'+esc(it.term)+'</h4><p class="desc">'+esc(it.def)+'</p>' +
+      (used.length ? '<p class="used-in"><span>On the menu in</span> '+esc(used.join(", "))+'</p>' : '') +
+      '</div>';
   }).join("");
 }
 
