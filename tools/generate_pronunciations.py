@@ -21,9 +21,33 @@ ROOT  = pathlib.Path(__file__).resolve().parent.parent
 HTML  = ROOT / "iara_staff_hub.html"
 OUT   = ROOT / "audio"
 
-# Multilingual v2 handles pt-BR well. Override with ELEVENLABS_VOICE_ID.
-VOICE_ID = os.environ.get("ELEVENLABS_VOICE_ID", "pNInz6obpgDQGcFmaJgB")
 MODEL_ID = os.environ.get("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2")
+
+# These clips teach an English speaker to say a Brazilian dish name, so they are
+# rendered slowly and deliberately rather than at conversational pace.
+SPEED      = float(os.environ.get("ELEVENLABS_SPEED", "0.8"))   # 0.7 slowest .. 1.2
+STABILITY  = float(os.environ.get("ELEVENLABS_STABILITY", "0.7"))
+SIMILARITY = float(os.environ.get("ELEVENLABS_SIMILARITY", "0.75"))
+
+# A rotating cast, so the menu is not read by one voice end to end. All are
+# ElevenLabs premade voices, which is what a free account can use via the API;
+# shared-library voices (which include native Brazilian accents) are paid only.
+VOICE_POOL = [
+    ("Brian",   "nPczCjzI2devNBz1zQrb"),
+    ("Sarah",   "EXAVITQu4vr4xnSDxMaL"),
+    ("Chris",   "iP95p4xoKVk53GoZ742B"),
+    ("Alice",   "Xb7hH8MSUJpSbSDYk0k2"),
+    ("Will",    "bIHbv24MWmeRgasZH58o"),
+    ("Matilda", "XrExE9yKIg1WjnnlVkGX"),
+    ("Eric",    "cjVigY5qzO86Huf0OWal"),
+    ("Jessica", "cgSgspJ2msm6clMCkdW9"),
+    ("River",   "SAz9YHcvj6GT2YYXdXww"),
+    ("Laura",   "FGY2WhTYpPnrIDTdsKH5"),
+]
+
+def voice_for(index):
+    """Stable assignment: the same dish always gets the same voice on a rerun."""
+    return VOICE_POOL[index % len(VOICE_POOL)]
 
 ITEM_RE = re.compile(
     r'\{\s*id:"(?P<id>[^"]+)",\s*category:"[^"]*",\s*name:"(?P<name>[^"]*)",'
@@ -39,14 +63,17 @@ def items():
             seen.add(d["id"]); out.append(d)
     return out
 
-def synth(text, key):
+def synth(text, key, voice_id):
     req = urllib.request.Request(
-        f"https://api.elevenlabs.io/v1/text-to-speech/{VOICE_ID}",
+        f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}",
         data=json.dumps({
             "text": text,
             "model_id": MODEL_ID,
-            # slight stability bump keeps short proper nouns from being clipped
-            "voice_settings": {"stability": 0.55, "similarity_boost": 0.8},
+            "voice_settings": {
+                "stability": STABILITY,
+                "similarity_boost": SIMILARITY,
+                "speed": SPEED,
+            },
         }).encode(),
         headers={"xi-api-key": key, "Content-Type": "application/json",
                  "Accept": "audio/mpeg"},
@@ -63,17 +90,19 @@ def main():
                  "then:  export ELEVENLABS_API_KEY=sk_...")
     force = "--force" in sys.argv
     OUT.mkdir(exist_ok=True)
-    todo = items()
-    print(f"{len(todo)} items; voice={VOICE_ID} model={MODEL_ID}")
+    todo = sorted(items(), key=lambda d: int(re.sub(r"\D", "", d["id"]) or 0))
+    print(f"{len(todo)} items; model={MODEL_ID} speed={SPEED} "
+          f"across {len(VOICE_POOL)} voices")
     made = skipped = 0
-    for it in todo:
+    for n, it in enumerate(todo):
+        vname, vid = voice_for(n)
         dest = OUT / f"{it['id']}.mp3"
         if dest.exists() and not force:
             skipped += 1; continue
         try:
-            dest.write_bytes(synth(it["speak"], key))
+            dest.write_bytes(synth(it["speak"], key, vid))
             made += 1
-            print(f"  ok   {it['id']:>4}  {it['speak']}")
+            print(f"  ok   {it['id']:>4}  {it['speak']:<28} {vname}")
         except urllib.error.HTTPError as e:
             print(f"  FAIL {it['id']:>4}  {it['speak']}  HTTP {e.code} {e.read()[:200]!r}")
         except Exception as e:
