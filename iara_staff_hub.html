@@ -517,16 +517,22 @@
   }
   .gloss{ border-bottom:1px dashed var(--display); cursor:help; position:relative; }
   .gloss:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
+  /* Closed, the bubble must take up no room at all: visibility:hidden still
+     occupies layout, and an absolutely positioned 300px box hanging off every
+     defined term was quietly widening the whole page on a phone. */
   .gloss::after{
-    content:attr(data-def); position:absolute; left:0; bottom:calc(100% + 8px); z-index:60;
-    width:max-content; max-width:min(300px, 78vw); padding:10px 12px; border-radius:6px;
-    background:var(--sidebar); color:var(--sidebar-ink); border:1px solid var(--line);
-    font-size:12.5px; font-weight:400; line-height:1.5; letter-spacing:0; text-transform:none;
-    box-shadow:var(--shadow); opacity:0; visibility:hidden;
+    content:""; position:absolute; left:0; bottom:calc(100% + 8px); z-index:60;
+    width:0; height:0; padding:0; border:0; overflow:hidden;
+    background:var(--sidebar); color:var(--sidebar-ink); border-radius:6px;
+    font-size:12.5px; font-weight:400; line-height:1.5; letter-spacing:0;
+    font-style:normal; text-transform:none; text-align:left;
+    box-shadow:var(--shadow); opacity:0; pointer-events:none;
     transform:translate(var(--gloss-nudge,0px), 3px);
-    transition:opacity .12s ease, transform .12s ease, visibility .12s; pointer-events:none; }
+    transition:opacity .12s ease, transform .12s ease; }
   .gloss:hover::after, .gloss:focus-visible::after, .gloss.is-open::after{
-    opacity:1; visibility:visible; transform:translate(var(--gloss-nudge,0px), 0); }
+    content:attr(data-def); width:max-content; height:auto; overflow:visible;
+    max-width:min(300px, 78vw); padding:10px 12px; border:1px solid var(--line);
+    opacity:1; transform:translate(var(--gloss-nudge,0px), 0); }
   @media (hover:none){ .gloss{ cursor:pointer; } }
   .cl-summary{ padding:20px 22px; margin-bottom:26px; }
   .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
