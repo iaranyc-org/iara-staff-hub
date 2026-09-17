@@ -2516,6 +2516,10 @@ function applyGlossary(root){
   root.querySelectorAll(".gloss").forEach(function(g){
     g.addEventListener("click", function(ev){
       ev.stopPropagation();
+      // Defined terms appear inside checklist <label>s, where a bare click
+      // would activate the checkbox and tick the task off. Reading a
+      // definition must never complete someone's onboarding item.
+      ev.preventDefault();
       var open = g.classList.contains("is-open");
       root.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
       if (!open) { g.classList.add("is-open"); nudgeGloss(g); }
