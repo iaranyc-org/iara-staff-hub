@@ -19,14 +19,19 @@
      rule), not guessed: badge/critical text against its own tinted card,
      not the flat page. See git history for the contrast numbers. */
   :root{
-    --accent:#e0633f; --accent-strong:#f08a63; --accent-soft:rgba(224,99,63,0.16); --accent-ink:#2a1206;
+    --accent:#e0633f; --accent-strong:#f4a88b; --accent-soft:rgba(224,99,63,0.16); --accent-ink:#2a1206;
     --surface:#4a2528; --surface-raised:#55292f; --page:#391d1f;
     --ink:#faf6f0; --ink-secondary:#ded5c7; --ink-muted:#b3a695;
     --border:#5f3b3e; --grid:#5a3a3c; --baseline:#7a5153;
     --display:#e8cbab;
-    --good:#95c298; --good-soft:rgba(149,194,152,0.16); --warning:#fbbf56; --warning-soft:rgba(251,191,86,0.16);
-    --serious:#ebae88; --serious-soft:rgba(235,174,136,0.16); --critical:#f1a9ad; --critical-soft:rgba(241,169,173,0.16);
+    --good:#bad7bc; --good-soft:rgba(186,215,188,0.16); --warning:#fccb76; --warning-soft:rgba(252,203,118,0.16);
+    --serious:#f2cab1; --serious-soft:rgba(242,202,177,0.16); --critical:#f6c8ca; --critical-soft:rgba(246,200,202,0.16);
     --cat-1:#e0633f; --cat-2:#fbbf56; --cat-3:#6fb572; --cat-4:#c97a4a; --cat-5:#ce6f77; --cat-6:#cbb08a;
+    /* Same six hues, lightened for the one place a cat color is small text on
+       a neutral pill (recipe category badge) rather than a chart fill -
+       the saturated versions above measure under 3:1 there. */
+    --cat-1-text:#efac99; --cat-2-text:#fbbf56; --cat-3-text:#94c896;
+    --cat-4-text:#e0b297; --cat-5-text:#e3aeb2; --cat-6-text:#d0b896;
     --font-sans:'Instrument Sans',system-ui,-apple-system,"Segoe UI",sans-serif;
     --font-display:'Fraunces',Georgia,serif;
     --font-mono:'IBM Plex Mono',ui-monospace,"SFMono-Regular",Menlo,monospace;
@@ -203,6 +208,9 @@
   .lines-box{border:1px solid var(--border); border-radius:10px; padding:10px 12px; max-height:280px; overflow-y:auto;}
   .cost-preview{display:flex; justify-content:space-between; align-items:center; background:var(--accent-soft); border-radius:10px; padding:10px 14px; font-size:13px;}
   .cost-preview strong{font-family:var(--font-mono); font-size:16px; color:var(--accent-strong);}
+  /* --ink-muted reads fine on the page/card grounds .hint is normally on,
+     but not on this tinted pill - it measured 4.14 here. */
+  .cost-preview .hint{color:var(--ink-secondary);}
   fieldset{border:none; padding:0; margin:0; display:flex; flex-direction:column; gap:10px;}
 
   /* charts */
@@ -231,11 +239,12 @@
   .combo-option:hover{background:var(--accent-soft); color:var(--accent-strong);}
   .combo-empty{padding:8px 10px; font-size:12px; color:var(--ink-muted);}
   .pr-strong td{font-weight:700; background:var(--accent-soft);}
+  .pr-strong .muted{color:var(--ink-secondary);}
   .search-box{border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:13.5px; background:var(--surface-raised); color:var(--ink); width:100%; max-width:320px;}
   .toolbar-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:2px;}
   th.sortable{cursor:pointer; user-select:none;}
   th.sortable:hover{color:var(--ink);}
-  .sort-arrow{font-size:9px; margin-left:2px; color:var(--accent);}
+  .sort-arrow{font-size:9px; margin-left:2px; color:var(--accent-strong);}
   .filter-row select, .filter-row input{border:1px solid var(--border); background:var(--surface-raised); border-radius:8px; padding:7px 10px; font-size:13px;}
   .pr-clickable td{cursor:pointer;}
   [hidden]{display:none!important;}
@@ -316,6 +325,10 @@ var STORAGE_AREAS = ["Walk-in Cooler","Freezer","Dry Storage","Bar","Front of Ho
 var UNITS = ["oz","lb","g","kg","ml","L","fl oz","each","dozen","qt","gal"];
 var RECIPE_CATS = ["Appetizer","Entree","Side","Dessert","Beverage","Prep/Batch"];
 var CAT_COLOR = {"Appetizer":"var(--cat-1)","Entree":"var(--cat-2)","Side":"var(--cat-3)","Dessert":"var(--cat-4)","Beverage":"var(--cat-5)","Prep/Batch":"var(--cat-6)"};
+// Chart fills use the saturated CAT_COLOR above (fine at the 3:1 a graphical
+// object needs); a badge is small text on --border and needs the full 4.5:1,
+// so it gets the lightened -text variant of the same hue instead.
+var CAT_COLOR_TEXT = {"Appetizer":"var(--cat-1-text)","Entree":"var(--cat-2-text)","Side":"var(--cat-3-text)","Dessert":"var(--cat-4-text)","Beverage":"var(--cat-5-text)","Prep/Batch":"var(--cat-6-text)"};
 var PO_STATUSES = ["draft","sent","received"];
 var DAY = 86400000;
 var DEPARTMENTS = ["Food","Beverage"];
@@ -1235,7 +1248,7 @@ function recipesTableHtml(){
     var over = fc > num(r.targetFoodCostPct||30);
     html += '<tr>'+
       '<td>'+esc(r.name)+'</td>'+
-      '<td><span class="badge neutral" style="color:'+ (CAT_COLOR[r.category]||'var(--ink-secondary)') +'">'+esc(r.category)+'</span></td>'+
+      '<td><span class="badge neutral" style="color:'+ (CAT_COLOR_TEXT[r.category]||'var(--ink-secondary)') +'">'+esc(r.category)+'</span></td>'+
       '<td><span class="badge neutral">'+recipeDept(r)+'</span></td>'+
       '<td class="num">'+r.yieldQty+' '+esc(r.yieldUnit)+'</td>'+
       '<td class="num">'+money(recipePortionCost(r))+'</td>'+
