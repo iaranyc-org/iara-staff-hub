@@ -422,6 +422,7 @@
   .sc-name{ margin:14px 0 4px; font-size:31px; }
   .sc-sub{ margin:0; color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:44ch; }
   .sc-rule{ height:1px; background:var(--rule); margin:20px 0 16px; }
+  .sc-blank{ margin:0; font-size:13.5px; color:var(--ink-soft); }
   .sc-stats{ display:flex; gap:34px; flex-wrap:wrap; }
   .sc-stats > div{ display:flex; flex-direction:column; gap:3px; }
   .sc-stats .num{ font-size:23px; color:var(--display); font-variant-numeric:tabular-nums; }
@@ -578,6 +579,19 @@
   .linkish{ display:block; margin-top:18px; background:none; border:none; color:var(--ink-soft);
     font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
   .linkish:hover{ color:var(--ink); }
+  /* Drill categories as an editorial list, matching the manual and the decks. */
+  .drill-list{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
+  .drill-list li{ border-bottom:1px solid var(--rule); }
+  .drill-list button{ width:100%; display:grid; grid-template-columns:1fr auto; gap:3px 16px;
+    align-items:baseline; background:none; border:none; cursor:pointer; text-align:left;
+    padding:16px 2px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
+  .drill-list button:hover{ padding-left:9px; }
+  .drill-list button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
+  .drill-name{ font-family:'Fraunces',Georgia,serif; font-size:19px; color:var(--display); }
+  .drill-desc{ grid-column:1 / -1; font-size:13px; color:var(--ink-soft); line-height:1.5; }
+  .drill-state{ font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .drill-state.is-good{ color:var(--sun); }
+  .drill-state.is-new{ font-size:12px; }
   .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
   .qbar span{ display:block; height:100%; background:var(--sun); border-radius:3px; transition:width .25s cubic-bezier(.16,1,.3,1); }
   .opt{ display:flex; align-items:center; gap:10px; }
@@ -692,6 +706,7 @@
         <h1 class="sc-name">Evening, <span id="home-name">there</span>.</h1>
         <p class="sc-sub">Start with the manual. Drill the menu until it sticks.</p>
         <div class="sc-rule"></div>
+        <p class="sc-blank" id="sc-blank" hidden>Your record shows up here once you have run a drill.</p>
         <div class="sc-stats">
           <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Drills run</span></div>
           <div><span class="num mono" id="stat-best">&mdash;</span><span class="lbl">Average</span></div>
@@ -1283,6 +1298,7 @@ function showView(name, opts){
   var t = document.getElementById("topbar-title");
   if (t) t.textContent = VIEW_TITLES[name] || "iara";
   document.title = (VIEW_TITLES[name] ? VIEW_TITLES[name] + " \u00b7 " : "") + "iara Lineup";
+  if (name === "quiz" && !activeQuiz) renderQuizPicker();
   if (name === "checklist") renderChecklist();
   if (name === "progress") renderProgress();
   if (name === "home") refreshHomeStats();
@@ -2316,16 +2332,52 @@ var QUIZ_META = {
 
 var activeQuiz = null; // {key, questions, idx, score}
 
-function renderQuizPicker(){
+/* The picker used to be three cards that said nothing you did not already
+   know. It now carries your record in each category, so the screen tells you
+   where to go next instead of asking you to choose blind. */
+async function renderQuizPicker(){
   var area = document.getElementById("quiz-area");
-  var html = '<div class="quiz-pick">';
+  var attempts = [];
+  try { attempts = await loadOwnAttempts(); } catch(e){}
+
+  function statsFor(name){
+    var mine = attempts.filter(function(a){ return a.category === name; });
+    if (!mine.length) return null;
+    var best = Math.max.apply(null, mine.map(function(a){ return Math.round((a.score/a.total)*100); }));
+    var last = mine[0];
+    return {
+      runs: mine.length,
+      best: best,
+      lastPct: Math.round((last.score/last.total)*100),
+      when: new Date(last.date)
+    };
+  }
+
+  var html = '<ol class="drill-list">';
   Object.keys(QUIZ_META).forEach(function(key){
     var m = QUIZ_META[key];
-    html += '<button data-key="'+key+'"><span class="qname">'+m.name+'</span><span class="qmeta">'+m.desc+'</span></button>';
+    var st = statsFor(m.name);
+    var right;
+    if (!st) {
+      right = '<span class="drill-state is-new">Not run yet</span>';
+    } else if (st.best >= 80) {
+      right = '<span class="drill-state is-good mono">'+st.best+'%</span>';
+    } else {
+      right = '<span class="drill-state mono">'+st.best+'%</span>';
+    }
+    var sub = st
+      ? esc(m.desc) + ' ' + st.runs + (st.runs === 1 ? ' run' : ' runs') +
+        ', last ' + st.lastPct + '%'
+      : esc(m.desc);
+    html += '<li><button data-key="'+esc(key)+'">' +
+      '<span class="drill-name">'+esc(m.name)+'</span>' +
+      right +
+      '<span class="drill-desc">'+sub+'</span>' +
+      '</button></li>';
   });
-  html += '</div>';
+  html += '</ol>';
   area.innerHTML = html;
-  area.querySelectorAll(".quiz-pick button").forEach(function(b){
+  area.querySelectorAll(".drill-list button").forEach(function(b){
     b.addEventListener("click", function(){ startQuiz(b.getAttribute("data-key")); });
   });
 }
@@ -2441,6 +2493,16 @@ function renderQuizResult(){
    ============================================================ */
 async function refreshHomeStats(){
   var attempts = await loadOwnAttempts();
+  var row = document.querySelector(".sc-stats");
+  var blank = document.getElementById("sc-blank");
+  if (!attempts.length) {
+    // Nothing to report yet, so say so rather than showing 0 and two dashes.
+    if (row) row.hidden = true;
+    if (blank) blank.hidden = false;
+    return;
+  }
+  if (row) row.hidden = false;
+  if (blank) blank.hidden = true;
   document.getElementById("stat-attempts").textContent = attempts.length;
   if (attempts.length) {
     var avg = Math.round(attempts.reduce(function(s,a){ return s + (a.score/a.total)*100; },0) / attempts.length);
