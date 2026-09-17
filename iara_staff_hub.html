@@ -218,7 +218,18 @@
   .acc-head .chev{ transition:transform .15s ease; color:var(--ink-soft); flex:none; }
   .accordion.open .acc-head .chev{ transform:rotate(180deg); }
   .acc-body{ display:none; padding:0 18px 22px; }
-  .accordion.open .acc-body{ display:block; }
+  .accordion.open .acc-body{ display:block; animation:accIn .22s cubic-bezier(.16,1,.3,1); }
+  @keyframes accIn{ from{ transform:translateY(-4px); } to{ transform:translateY(0); } }
+  .chev{ transition:transform .2s cubic-bezier(.16,1,.3,1); display:inline-block; }
+  .accordion.open .chev{ transform:rotate(180deg); }
+  .q-feedback{ animation:accIn .22s cubic-bezier(.16,1,.3,1); }
+  .opt{ transition:border-color .12s ease, background .12s ease, transform .08s ease; }
+  .stamp{ animation:stampIn .32s cubic-bezier(.2,1.3,.4,1); }
+  @keyframes stampIn{ from{ transform:rotate(-8deg) scale(1.12); } to{ transform:rotate(-2.4deg) scale(1); } }
+  @media (prefers-reduced-motion:reduce){
+    .accordion.open .acc-body, .q-feedback, .stamp{ animation:none; }
+    .chev{ transition:none; }
+  }
   .acc-body ul{ margin:10px 0 0; padding-left:20px; max-width:62ch; }
   .acc-body li{ margin-bottom:11px; line-height:1.68; font-size:16px; color:var(--ink-mid); }
   .acc-body p{ line-height:1.68; font-size:16px; margin:0 0 12px; color:var(--ink-mid); }
@@ -604,6 +615,14 @@
   .drill-state{ font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
   .drill-state.is-good{ color:var(--sun); }
   .drill-state.is-new{ font-size:12px; }
+  /* Admin table, set like the rest of the app: rules, no boxes. */
+  table.progress{ width:100%; border-collapse:collapse; max-width:760px; }
+  table.progress th{ text-align:left; font-size:12px; font-weight:600; color:var(--ink-soft);
+    letter-spacing:.02em; padding:0 14px 10px 0; border-bottom:1px solid var(--rule-strong); }
+  table.progress td{ padding:14px 14px 14px 0; border-bottom:1px solid var(--rule); font-size:14.5px; }
+  table.progress tr:last-child td{ border-bottom:none; }
+  table.progress tbody tr:hover td{ background:color-mix(in srgb, var(--sun) 4%, transparent); }
+  table.progress td:first-child{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
   .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
   .qbar span{ display:block; height:100%; background:var(--sun); border-radius:3px; transition:width .25s cubic-bezier(.16,1,.3,1); }
   .opt{ display:flex; align-items:center; gap:10px; }
@@ -624,13 +643,9 @@
   .result-wrap{ text-align:center; padding:40px 20px; }
 
   /* progress dashboard */
-  table.progress{ width:100%; border-collapse:collapse; font-size:14px; }
-  table.progress th{ text-align:left; font-size:11.5px; text-transform:uppercase; letter-spacing:.05em; color:var(--ink-soft); padding:10px 12px; border-bottom:1.5px solid var(--line); }
-  table.progress td{ padding:11px 12px; border-bottom:1px solid var(--line); }
-  table.progress tr:last-child td{ border-bottom:none; }
   .pin-gate{ max-width:340px; padding:30px; }
 
-  .table-wrap{ overflow-x:auto; }
+  .table-wrap{ overflow-x:auto; max-width:760px; }
 
   @media (max-width:860px){
     .sidebar{ display:none; }
@@ -748,6 +763,7 @@
 
     <!-- TEAM -->
     <section class="view" id="view-team">
+      <div class="viewband viewband-tight" aria-hidden="true"><img src="img/vitor.jpg" alt="" loading="lazy"></div>
       <h1>Team</h1>
       <p class="view-intro">Who you are working with.</p>
       <div id="team-bios"></div>
@@ -786,6 +802,7 @@
 
     <!-- QUIZ -->
     <section class="view" id="view-quiz">
+      <div class="viewband viewband-tight" aria-hidden="true"><img src="img/dish-snapper.jpg" alt="" loading="lazy"></div>
       <h1>Drill</h1>
       <p class="view-intro" id="quiz-intro">Fresh questions every time. Run it until you stop missing.</p>
       <div id="quiz-area"></div>
@@ -917,8 +934,6 @@ var TEAM = [
     bio:"Executive Sous Chef at iara. A Daniel Boulud alum, Eli trained at Restaurant Daniel and was selected for the opening team at Le Pavillon. He then joined the opening team at Al Coro, which earned two Michelin stars within three months, among the fastest in New York City history. He went on to work alongside Chef Dave Santos at Foxface, helping the restaurant earn three stars from Pete Wells at The New York Times. Eli specializes in fermentation and wood-fire cooking." },
   { name:"Calvin Czypinski", title:"Head Bartender", initials:"CC",
     bio:"Head Bartender at iara. Originally from Wisconsin, Calvin got his start at River Park before moving to Miss Ada, where he first built out a bar program, and then to Theodora, where he was promoted to Head Bartender and ran the bar program there as well. Most recently, he ran the bar program at Theodora Beach Club, where he hosted collaborations including Mirate, Sunken Harbor, Bangkok Supper Club, Bar Madonna, Bar Francis, and Dolores. Calvin was named VinePair's Best New Bartender this year." },
-  { name:"[Insert additional owner/partner]", title:"Owner / Partner", initials:"?",
-    bio:"[Add a short bio for any additional owners or partners the team should know.]", placeholder:true },
 ];
 
 /* ============================================================
@@ -2576,7 +2591,7 @@ async function renderProgress(){
     }
     var catHeaders = CATS.map(function(c){ return '<th>'+c.name+'</th>'; }).join("");
     var html = '<p class="placeholder-note" style="margin-bottom:10px;">Each section shows average score across attempts, with the number of attempts in parentheses.</p>' +
-      '<div class="card table-wrap"><table class="progress"><thead><tr>' +
+      '<div class="table-wrap"><table class="progress"><thead><tr>' +
       '<th>Name</th><th>Role</th>' + catHeaders + '<th>Overall</th><th>Last active</th></tr></thead><tbody>';
     rows.forEach(function(r){
       var catCells = CATS.map(function(c){
