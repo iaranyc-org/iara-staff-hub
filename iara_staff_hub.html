@@ -33,6 +33,8 @@
     --sidebar-ink:#faf6f0;
     --sidebar-muted:#c9bfae;
     --display:#e8cbab;
+    --measure:660px;
+    --measure-wide:820px;
     --rule:#5a3a3c;
     --rule-strong:#7a5153;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
@@ -56,6 +58,8 @@
     --sidebar-ink:#faf6f0;
     --sidebar-muted:#c9bfae;
     --display:#88301c;
+    --measure:660px;
+    --measure-wide:820px;
     --rule:#e0d6c6;
     --rule-strong:#c3b39c;
     --shadow: 0 1px 2px rgba(57,29,31,.06), 0 8px 24px -12px rgba(57,29,31,.18);
@@ -189,7 +193,7 @@
   .bottom-nav .nav-btn.active{ color:var(--sun); }
   .bottom-nav .nav-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
 
-  .view{ display:none; padding:36px 44px 90px; max-width:880px; }
+  .view{ display:none; padding:36px 44px 90px; max-width:calc(var(--measure) + 88px); }
   .view.active{ display:block; }
   .eyebrow{ text-transform:uppercase; letter-spacing:.08em; font-size:12.5px; font-weight:700; color:var(--river); margin:0 0 6px; }
   .view h1{ font-size:clamp(34px, 5vw, 46px); line-height:1.04; margin:0 0 10px; letter-spacing:-.018em; }
@@ -377,7 +381,7 @@
 
   /* Team reads as a masthead: rules between people, a squared monogram
      rather than a circular avatar, role set as a standfirst. */
-  #team-bios{ max-width:680px; border-top:1px solid var(--rule); }
+  #team-bios{ max-width:var(--measure); border-top:1px solid var(--rule); }
   .bio{ display:grid; grid-template-columns:52px 1fr; gap:18px; padding:22px 0;
     margin:0; background:none; border:none; border-radius:0; border-bottom:1px solid var(--rule); box-shadow:none; }
   .bio::before{ display:none; }
@@ -404,17 +408,17 @@
 
   /* Checklist as a printed list with a rule per line. */
   .cl-summary{ background:none; border:none; border-bottom:1px solid var(--rule);
-    border-radius:0; box-shadow:none; padding:0 0 18px; max-width:640px; }
+    border-radius:0; box-shadow:none; padding:0 0 18px; max-width:var(--measure); }
   .cl-summary::before{ display:none; }
   .cl-list{ background:none; border:none; border-radius:0; box-shadow:none;
-    padding:0; max-width:640px; border-top:1px solid var(--rule); }
+    padding:0; max-width:var(--measure); border-top:1px solid var(--rule); }
   .cl-list::before{ display:none; }
   .cl-item{ padding:16px 2px; border-bottom:1px solid var(--rule); }
   .cl-group{ font-size:12px;  letter-spacing:.01em;
     color:var(--sun); font-family:'Instrument Sans',system-ui,sans-serif; font-weight:700;
     margin:30px 0 8px; }
 
-  .startlist{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
+  .startlist{ list-style:none; margin:0; padding:0; max-width:var(--measure); border-top:1px solid var(--rule); }
   .startlist li{ border-bottom:1px solid var(--rule); }
   .startlist button{ width:100%; display:grid; grid-template-columns:auto 1fr; gap:4px 18px;
     align-items:baseline; background:none; border:none; cursor:pointer; text-align:left;
@@ -446,7 +450,7 @@
   @media (prefers-reduced-motion:reduce){ .study-back{ animation:none; } }
 
   .dish-grid{ display:block; }
-  #fb-grid{ max-width:640px; }
+  #fb-grid{ max-width:var(--measure); }
   .dish{ position:relative; padding:22px 0 24px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
   .dish:last-of-type{ border-bottom:none; }
   .dish-line{ display:flex; align-items:baseline; gap:8px; }
@@ -474,6 +478,22 @@
   .empty-h{ margin:0 0 6px; font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
   .empty-b{ margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.55; }
 
+  /* Glossary: a term list you can scan, not fourteen full-width panels.
+     Two columns where there is room, the term held beside its definition, and
+     a measure short enough to read. */
+  .gloss-list{ margin:0; max-width:var(--measure); border-top:1px solid var(--rule); }
+  .gloss-row{ display:grid; grid-template-columns:170px 1fr; gap:4px 24px;
+    padding:14px 0; border-bottom:1px solid var(--rule); align-items:baseline; }
+  .gloss-row dt{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display);
+    line-height:1.3; }
+  .gloss-row dd{ margin:0; }
+  .gloss-def{ margin:0; font-size:14.5px; line-height:1.55; color:var(--ink-mid); max-width:62ch; }
+  .gloss-in{ margin:4px 0 0; font-size:12.5px; line-height:1.5; color:var(--ink-soft); }
+  .gloss-in::before{ content:"On the menu in "; color:var(--sun); }
+  @media (max-width:620px){
+    .gloss-row{ grid-template-columns:1fr; gap:3px; padding:13px 0; }
+    .gloss-row dt{ font-size:16px; }
+  }
   .gloss{ border-bottom:1px dashed var(--display); cursor:help; position:relative; }
   .gloss:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
   .gloss::after{
@@ -550,7 +570,7 @@
   .deck-bar span{ display:block; height:100%; background:var(--sun); border-radius:3px; }
   .deck-pct{ font-size:11.5px; color:var(--ink-soft); }
 
-  .studycard{ padding:26px; max-width:620px; }
+  .studycard{ padding:26px; max-width:var(--measure); }
   .study-front{ font-size:27px; margin:6px 0 4px; display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
   .study-hint{ color:var(--ink-soft); font-size:14px; margin:14px 0 20px; }
   .study-back{ border-top:1px solid var(--line); margin-top:16px; padding-top:16px; }
@@ -565,7 +585,7 @@
     font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
   .linkish:hover{ color:var(--ink); }
   /* Drill categories as an editorial list, matching the manual and the decks. */
-  .drill-list{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
+  .drill-list{ list-style:none; margin:0; padding:0; max-width:var(--measure); border-top:1px solid var(--rule); }
   .drill-list li{ border-bottom:1px solid var(--rule); }
   .drill-list button{ width:100%; display:grid; grid-template-columns:1fr auto; gap:3px 16px;
     align-items:baseline; background:none; border:none; cursor:pointer; text-align:left;
@@ -578,7 +598,7 @@
   .drill-state.is-good{ color:var(--sun); }
   .drill-state.is-new{ font-size:12px; }
   /* Admin table, set like the rest of the app: rules, no boxes. */
-  table.progress{ width:100%; border-collapse:collapse; max-width:760px; }
+  table.progress{ width:100%; border-collapse:collapse; max-width:var(--measure-wide); }
   table.progress th{ text-align:left; font-size:12px; font-weight:600; color:var(--ink-soft);
     letter-spacing:.02em; padding:0 14px 10px 0; border-bottom:1px solid var(--rule-strong); }
   table.progress td{ padding:14px 14px 14px 0; border-bottom:1px solid var(--rule); font-size:14.5px; }
@@ -607,7 +627,7 @@
   /* progress dashboard */
   .pin-gate{ max-width:340px; padding:30px; }
 
-  .table-wrap{ overflow-x:auto; max-width:760px; }
+  .table-wrap{ overflow-x:auto; max-width:var(--measure-wide); }
 
   @media (max-width:860px){
     .sidebar{ display:none; }
@@ -622,7 +642,7 @@
 
   /* The home screen is the docket you are handed at the start of a shift. */
   .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:6px;
-    padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:640px; }
+    padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:var(--measure); }
   .sc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
     font-size:12px; letter-spacing:.01em; color:var(--ink-soft); }
   .sc-date{ font-variant-numeric:tabular-nums; letter-spacing:.06em; }
@@ -636,7 +656,7 @@
   .sc-stats .lbl{ font-size:12px; letter-spacing:.01em; color:var(--ink-soft); }
 
   /* The misses are the useful half of a result. A score alone teaches nothing. */
-  .misses{ margin:38px auto 0; max-width:560px; text-align:left;
+  .misses{ margin:38px auto 0; max-width:var(--measure); text-align:left;
     border-top:1px solid var(--rule); padding-top:24px; }
   .misses h3{ font-size:17px; margin:0 0 4px; }
   .misses ol{ list-style:none; margin:14px 0 0; padding:0; counter-reset:miss; }
@@ -654,7 +674,7 @@
   /* search and read tracking */
   .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
     clip:rect(0 0 0 0); white-space:nowrap; border:0; }
-  .manual-search{ max-width:640px; margin:0 0 20px; }
+  .manual-search{ max-width:var(--measure); margin:0 0 20px; }
   .manual-search input{ width:100%; padding:13px 15px; border-radius:6px;
     border:1.5px solid var(--line); background:var(--paper-raised); color:var(--ink);
     font:inherit; font-size:15px; }
@@ -806,7 +826,7 @@
 
         <h2 id="gloss-head" style="margin-top:40px;">Ingredient Glossary</h2>
         <p class="view-intro" id="gloss-intro" style="margin-bottom:20px;">The Amazonian and Brazilian ingredients you will be asked about on the floor, and the dishes each one turns up in.</p>
-        <div id="fb-glossary" class="dish-grid"></div>
+        <div id="fb-glossary"></div>
       </div>
 
       <div id="fb-study" hidden></div>
@@ -2451,12 +2471,14 @@ function renderGlossary(){
   if (head)  head.hidden  = term && !list.length;
   if (intro) intro.hidden = !!term;
   if (term && !list.length) { wrap.innerHTML = ""; return; }
-  wrap.innerHTML = list.map(function(it){
+  wrap.innerHTML = '<dl class="gloss-list">' + list.map(function(it){
     var used = dishesForIngredient(it).map(function(d){ return d.name; });
-    return '<div class="card dish"><h4>'+esc(it.term)+'</h4><p class="desc">'+esc(it.def)+'</p>' +
-      (used.length ? '<p class="used-in"><span>On the menu in</span> '+esc(used.join(", "))+'</p>' : '') +
-      '</div>';
-  }).join("");
+    return '<div class="gloss-row">' +
+      '<dt>'+esc(it.term)+'</dt>' +
+      '<dd><p class="gloss-def">'+esc(it.def)+'</p>' +
+      (used.length ? '<p class="gloss-in">'+esc(used.join(", "))+'</p>' : '') +
+      '</dd></div>';
+  }).join("") + '</dl>';
 }
 
 /* ============================================================
