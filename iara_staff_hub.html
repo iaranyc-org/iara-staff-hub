@@ -17,7 +17,8 @@
   /* ===================== Design tokens ===================== */
   :root{
     --ink:#faf6f0;
-    --ink-soft:#c9bfae;
+    --ink-soft:#b3a695;
+    --ink-mid:#ded5c7;
     --paper:#391d1f;
     --paper-raised:#4a2528;
     --line:#5f3b3e;
@@ -40,6 +41,7 @@
   :root[data-theme="light"]{
     --ink:#391d1f;
     --ink-soft:#6b5f5a;
+    --ink-mid:#4a3f3c;
     --paper:#faf6f0;
     --paper-raised:#ffffff;
     --line:#e8e0d2;
@@ -61,7 +63,8 @@
   }
   :root[data-theme="dark"]{
     --ink:#faf6f0;
-      --ink-soft:#c9bfae;
+      --ink-soft:#b3a695;
+    --ink-mid:#ded5c7;
       --paper:#391d1f;
       --paper-raised:#4a2528;
       --line:#5f3b3e;
@@ -189,8 +192,8 @@
   .view{ display:none; padding:36px 44px 90px; max-width:880px; }
   .view.active{ display:block; }
   .eyebrow{ text-transform:uppercase; letter-spacing:.08em; font-size:12.5px; font-weight:700; color:var(--river); margin:0 0 6px; }
-  .view h1{ font-size:32px; margin:0 0 6px; }
-  .view-intro{ color:var(--ink-soft); font-size:15.5px; line-height:1.6; max-width:62ch; margin:0 0 28px; }
+  .view h1{ font-size:clamp(34px, 5vw, 46px); line-height:1.04; margin:0 0 10px; letter-spacing:-.018em; }
+  .view-intro{ color:var(--ink-mid); font-size:17px; line-height:1.62; max-width:56ch; margin:0 0 34px; text-wrap:pretty; }
   .hero-banner{
     background:linear-gradient(135deg, #391d1f 0%, #55291f 100%);
     padding:34px 30px; margin-bottom:26px; border:none;
@@ -211,14 +214,14 @@
     width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
     padding:16px 18px; background:none; border:none; cursor:pointer; text-align:left;
   }
-  .acc-head h3{ margin:0; font-size:17px; }
+  .acc-head h3{ margin:0; font-size:21px; }
   .acc-head .chev{ transition:transform .15s ease; color:var(--ink-soft); flex:none; }
   .accordion.open .acc-head .chev{ transform:rotate(180deg); }
-  .acc-body{ display:none; padding:0 18px 18px; }
+  .acc-body{ display:none; padding:0 18px 22px; }
   .accordion.open .acc-body{ display:block; }
-  .acc-body ul{ margin:8px 0; padding-left:20px; }
-  .acc-body li{ margin-bottom:6px; line-height:1.55; font-size:14.5px; }
-  .acc-body p{ line-height:1.6; font-size:14.5px; margin:0 0 10px; }
+  .acc-body ul{ margin:10px 0 0; padding-left:20px; max-width:62ch; }
+  .acc-body li{ margin-bottom:11px; line-height:1.68; font-size:16px; color:var(--ink-mid); }
+  .acc-body p{ line-height:1.68; font-size:16px; margin:0 0 12px; color:var(--ink-mid); }
   .role-tag{ display:inline-block; font-size:11.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em; background:var(--sun); color:var(--sun-ink); padding:2px 8px; border-radius:6px; margin-right:8px; }
   .sub-h{ font-weight:700; font-size:13.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--river); margin:14px 0 4px; }
 
@@ -227,7 +230,7 @@
   .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:22px; }
   .bio h3{ margin:0 0 2px; font-size:18px; }
   .bio .title{ color:var(--river); font-weight:700; font-size:13px;  letter-spacing:.01em; margin-bottom:8px; }
-  .bio p{ margin:0; font-size:14.5px; line-height:1.6; }
+  .bio p{ margin:0; font-size:15.5px; line-height:1.7; color:var(--ink-mid); }
   .placeholder-note{ font-size:13px; color:var(--ink-soft); font-style:italic; }
 
   /* F&B */
@@ -395,7 +398,7 @@
   .cl-list{ background:none; border:none; border-radius:0; box-shadow:none;
     padding:0; max-width:640px; border-top:1px solid var(--rule); }
   .cl-list::before{ display:none; }
-  .cl-item{ padding:13px 2px; border-bottom:1px solid var(--rule); }
+  .cl-item{ padding:16px 2px; border-bottom:1px solid var(--rule); }
   .cl-group{ font-size:12px;  letter-spacing:.01em;
     color:var(--sun); font-family:'Instrument Sans',system-ui,sans-serif; font-weight:700;
     margin:30px 0 8px; }
@@ -406,6 +409,15 @@
      They are deliberately NOT attached to individual dishes: the shots are of
      other plates, and mislabelling food in a tool that teaches allergens is
      not a cosmetic mistake. Per-dish photography waits for the shoot. */
+  .viewband{ max-width:640px; height:130px; border-radius:6px; overflow:hidden; margin:0 0 26px;
+    position:relative; }
+  .viewband img{ width:100%; height:100%; object-fit:cover; display:block;
+    filter:saturate(.85) brightness(.66); }
+  /* the ground fades up into the image so it sits in the page, not on it */
+  .viewband::after{ content:""; position:absolute; inset:0;
+    background:linear-gradient(to bottom, rgba(57,29,31,.25), var(--paper)); }
+  .viewband-tight{ height:104px; }
+  @media (max-width:520px){ .viewband{ height:96px; } .viewband-tight{ height:80px; } }
   .photoband{ display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin:0 0 26px;
     border-radius:6px; overflow:hidden; max-width:640px; }
   .photoband img{ width:100%; height:96px; object-fit:cover; display:block;
@@ -419,8 +431,8 @@
   .sc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
     font-size:12px;  letter-spacing:.01em; color:var(--ink-soft); }
   .sc-date{ font-variant-numeric:tabular-nums; letter-spacing:.06em; }
-  .sc-name{ margin:14px 0 4px; font-size:31px; }
-  .sc-sub{ margin:0; color:var(--ink-soft); font-size:15px; line-height:1.55; max-width:44ch; }
+  .sc-name{ margin:16px 0 6px; font-size:clamp(30px, 4.4vw, 40px); line-height:1.05; letter-spacing:-.018em; }
+  .sc-sub{ margin:0; color:var(--ink-mid); font-size:16.5px; line-height:1.6; max-width:44ch; }
   .sc-rule{ height:1px; background:var(--rule); margin:20px 0 16px; }
   .sc-blank{ margin:0; font-size:13.5px; color:var(--ink-soft); }
   .sc-stats{ display:flex; gap:34px; flex-wrap:wrap; }
@@ -431,14 +443,14 @@
   /* A numbered running order, not a row of buttons. */
   .startlist{ list-style:none; margin:0; padding:0; max-width:640px; border-top:1px solid var(--rule); }
   .startlist li{ border-bottom:1px solid var(--rule); }
-  .startlist button{ width:100%; display:grid; grid-template-columns:auto 1fr; gap:2px 16px;
+  .startlist button{ width:100%; display:grid; grid-template-columns:auto 1fr; gap:4px 18px;
     align-items:baseline; background:none; border:none; cursor:pointer; text-align:left;
-    padding:16px 4px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
+    padding:20px 4px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
   .startlist button:hover{ padding-left:10px; }
   .startlist button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
   .sl-n{ grid-row:1 / span 2; font-size:11px; color:var(--ink-soft); letter-spacing:.06em; }
-  .sl-t{ font-family:'Fraunces',Georgia,serif; font-size:19px; color:var(--display); }
-  .sl-d{ font-size:13px; color:var(--ink-soft); }
+  .sl-t{ font-family:'Fraunces',Georgia,serif; font-size:23px; color:var(--display); }
+  .sl-d{ font-size:14.5px; color:var(--ink-mid); }
 
   /* A rubber stamp on a docket. Physical, warm, and it does not cheer at you. */
   .result-wrap{ text-align:center; padding:34px 20px 30px; }
@@ -462,16 +474,16 @@
 
   .dish-grid{ display:block; }
   #fb-grid{ max-width:640px; }
-  .dish{ position:relative; padding:18px 0 20px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
+  .dish{ position:relative; padding:22px 0 24px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
   .dish:last-of-type{ border-bottom:none; }
   .dish-line{ display:flex; align-items:baseline; gap:8px; }
-  .dish-line h4{ margin:0; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:19px;
+  .dish-line h4{ margin:0; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:22px;
     color:var(--display); letter-spacing:.01em; flex:none; max-width:78%; }
   .leader{ flex:1; min-width:16px; align-self:flex-end; position:relative; bottom:4px;
     border-bottom:1.5px dotted var(--rule-strong); }
   .dish-line .price{ flex:none; font-family:'IBM Plex Mono',monospace; font-size:13px;
     color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums; }
-  .dish .desc{ margin:7px 0 0; font-size:14.5px; line-height:1.6; color:var(--ink-soft); max-width:56ch; }
+  .dish .desc{ margin:8px 0 0; font-size:15.5px; line-height:1.65; color:var(--ink-mid); max-width:56ch; }
   .dish .allerg{ margin-top:9px; }
   .dish .badge-example{ margin-left:8px; vertical-align:middle; }
   .dish-edit{ position:absolute; top:18px; right:0; background:none; border:none; color:var(--ink-soft);
@@ -513,12 +525,12 @@
   .cl-item input{ width:17px; height:17px; margin-top:2px; accent-color:var(--sun); flex:none; cursor:pointer; }
   .cl-item input:disabled{ cursor:default; }
   .cl-item input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .cl-text{ font-size:14.5px; line-height:1.45; }
+  .cl-text{ font-size:16px; line-height:1.5; }
   .cl-item.is-done .cl-text{ color:var(--ink-soft); text-decoration:line-through; }
   .cl-tag{ display:inline-block; margin-left:8px; font-size:12px; font-weight:700; letter-spacing:.01em;
      color:var(--display); border:1px solid var(--line); border-radius:4px;
     padding:1px 6px; vertical-align:middle; text-decoration:none; }
-  .cl-help{ margin:5px 0 0 28px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
+  .cl-help{ margin:6px 0 0 28px; font-size:14px; color:var(--ink-soft); line-height:1.55; }
   .cl-help a{ color:var(--sun); }
   .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center;
     justify-content:center; padding:20px; z-index:100; overflow-y:auto; }
@@ -587,8 +599,8 @@
     padding:16px 2px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
   .drill-list button:hover{ padding-left:9px; }
   .drill-list button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
-  .drill-name{ font-family:'Fraunces',Georgia,serif; font-size:19px; color:var(--display); }
-  .drill-desc{ grid-column:1 / -1; font-size:13px; color:var(--ink-soft); line-height:1.5; }
+  .drill-name{ font-family:'Fraunces',Georgia,serif; font-size:23px; color:var(--display); }
+  .drill-desc{ grid-column:1 / -1; font-size:14.5px; color:var(--ink-mid); line-height:1.55; }
   .drill-state{ font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
   .drill-state.is-good{ color:var(--sun); }
   .drill-state.is-new{ font-size:12px; }
@@ -728,6 +740,7 @@
     </section>
 
     <section class="view" id="view-manual">
+      <div class="viewband" aria-hidden="true"><img src="img/amazon.jpg" alt="" loading="lazy"></div>
       <h1>The Manual</h1>
       <p class="view-intro">The printed manual, in the order a shift actually runs.</p>
       <div id="manual-accordions"></div>
@@ -780,6 +793,7 @@
 
     <!-- PROGRESS (manager) -->
     <section class="view" id="view-checklist">
+      <div class="viewband viewband-tight" aria-hidden="true"><img src="img/dish-greens.jpg" alt="" loading="lazy"></div>
       <h1>First Week</h1>
       <p class="view-intro">What to get through before you run your own section.</p>
       <div id="checklist-area"></div>
