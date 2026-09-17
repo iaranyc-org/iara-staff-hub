@@ -846,6 +846,7 @@
     <button class="nav-btn" data-view="manual">The Manual</button>
     <button class="nav-btn" data-view="fnb">The Menu</button>
     <button class="nav-btn" data-view="team">Team</button>
+    <button class="nav-btn" data-view="lore">The Lore</button>
     <div class="nav-rule"></div>
     <button class="nav-btn" data-view="study">Study</button>
     <button class="nav-btn" data-view="quiz">Final Exam</button>
@@ -920,6 +921,15 @@
       <div id="team-bios"></div>
     </section>
 
+    <!-- LORE: the stories behind the room itself, not the food or the team.
+         Empty until Vitor supplies it; never invent what a piece of art or a
+         plate actually means to him. -->
+    <section class="view" id="view-lore">
+      <h1>The Lore</h1>
+      <p class="view-intro">The plates, the art, the decoration — and the brief story behind each one, so you can actually answer when a guest asks.</p>
+      <div id="lore-cards"></div>
+    </section>
+
     <!-- FOOD & BEVERAGE -->
     <section class="view" id="view-fnb">
       <h1>The Menu</h1>
@@ -979,6 +989,7 @@
       <button class="nav-btn" data-view="manual">Manual</button>
       <button class="nav-btn" data-view="fnb">Menu</button>
       <button class="nav-btn" data-view="team">Team</button>
+      <button class="nav-btn" data-view="lore">Lore</button>
       <button class="nav-btn" data-view="study">Study</button>
       <button class="nav-btn" data-view="quiz">Final Exam</button>
     </div>
@@ -1093,6 +1104,17 @@ var TEAM = [
     bio:"Executive Sous Chef at iara. A Daniel Boulud alum, Eli trained at Restaurant Daniel and was selected for the opening team at Le Pavillon. He then joined the opening team at Al Coro, which earned two Michelin stars within three months, among the fastest in New York City history. He went on to work alongside Chef Dave Santos at Foxface, helping the restaurant earn three stars from Pete Wells at The New York Times. Eli specializes in fermentation and wood-fire cooking." },
   { name:"Calvin Czypinski", title:"Head Bartender", initials:"CC",
     bio:"Head Bartender at iara. Originally from Wisconsin, Calvin got his start at River Park before moving to Miss Ada, where he first built out a bar program, and then to Theodora, where he was promoted to Head Bartender and ran the bar program there as well. Most recently, he ran the bar program at Theodora Beach Club, where he hosted collaborations including Mirate, Sunken Harbor, Bangkok Supper Club, Bar Madonna, Bar Francis, and Dolores. Calvin was named VinePair's Best New Bartender this year." },
+];
+
+// The stories behind the room itself: plates, art, decoration. Distinct from
+// the ingredient glossary (what's in the food) and the manual (how a shift
+// runs) - this is "what a guest is looking at, and why it's there."
+//
+// Empty by design. Inventing what a piece means to Vitor is the same
+// mistake the VIP tiers and the manual gaps were flagged for avoiding
+// elsewhere in this app: real content or nothing, never a guess standing
+// in for it.
+var LORE = [
 ];
 
 /* ============================================================
@@ -1527,12 +1549,12 @@ document.getElementById("sb-switch").addEventListener("click", function(){
 /* ============================================================
    Nav
    ============================================================ */
-var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", study:"Study", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
+var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
 
 /* Hash routing. Without it a refresh, or the phone reloading the tab in the
    background, dumps you back on Home and loses your place mid-manual. It also
    makes the back button work and lets a manager send a link to one section. */
-var VIEW_NAMES = ["home","manual","team","fnb","study","quiz","checklist","progress"];
+var VIEW_NAMES = ["home","manual","team","fnb","lore","study","quiz","checklist","progress"];
 
 function parseHash(){
   var raw = (location.hash || "").replace(/^#\/?/, "");
@@ -1788,6 +1810,37 @@ function renderTeam(){
   wrap.querySelectorAll(".bio-more").forEach(function(b){
     var body = b.closest(".bio-body");
     // only offer the control where the text is actually clipped
+    body.classList.add("is-clamped");
+    b.addEventListener("click", function(){
+      var open = body.classList.toggle("is-open");
+      b.textContent = open ? "Show less" : "Read more";
+      b.setAttribute("aria-expanded", String(open));
+    });
+  });
+}
+
+function renderLore(){
+  var wrap = document.getElementById("lore-cards");
+  if (!wrap) return;
+  if (!LORE.length) {
+    wrap.innerHTML = '<div class="empty"><p class="empty-h">Nothing here yet.</p>' +
+      '<p class="empty-b">The stories behind the plates, the art, and the decoration around the room ' +
+      'will show up here once Vitor adds them.</p></div>';
+    return;
+  }
+  wrap.innerHTML = LORE.map(function(p){
+    return '<div class="card bio">' +
+      (p.photo
+        ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.title)+'" loading="lazy">'
+        : '<div class="avatar">'+esc((p.title||"").slice(0,2).toUpperCase())+'</div>') +
+      '<div><h3>'+esc(p.title)+'</h3>' +
+      (p.subtitle ? '<div class="title">'+esc(p.subtitle)+'</div>' : '') +
+      '<div class="bio-body"><p>'+p.story+'</p>' +
+      '<button class="bio-more" aria-expanded="false">Read more</button></div>' +
+      '</div></div>';
+  }).join("");
+  wrap.querySelectorAll(".bio-more").forEach(function(b){
+    var body = b.closest(".bio-body");
     body.classList.add("is-clamped");
     b.addEventListener("click", function(){
       var open = body.classList.toggle("is-open");
@@ -3457,6 +3510,7 @@ async function boot(data){
   await restoreSession();
   renderManual();
   renderTeam();
+  renderLore();
   await loadFbItems();
   renderFbTabs();
   renderFbGrid();
