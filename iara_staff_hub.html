@@ -853,6 +853,16 @@
 (function(){
 "use strict";
 
+/* Offline. The checklist promises the app keeps working once added to the home
+   screen, and without this it did not. Registered late so it never delays
+   first paint, and only over https or localhost, where workers are allowed. */
+if ("serviceWorker" in navigator &&
+    (location.protocol === "https:" || location.hostname === "localhost")) {
+  window.addEventListener("load", function(){
+    navigator.serviceWorker.register("sw.js").catch(function(){ /* offline is a bonus, never a blocker */ });
+  });
+}
+
 /* ============================================================
    Firebase config. Fill in with your project's values from
    Firebase Console > Project settings > General > Your apps > SDK setup.
