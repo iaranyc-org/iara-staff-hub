@@ -3255,13 +3255,18 @@ var progressUnlocked = false;
 async function renderProgress(){
   var area = document.getElementById("progress-area");
   if (!progressUnlocked) {
+    // No landing page to click through: the Google prompt opens as soon as
+    // you arrive. If you are already signed in as a manager on this device,
+    // openManagerGate resolves that instantly with no modal at all, so
+    // clicking Admin just goes straight to the dashboard. This card only
+    // stays on screen if the prompt gets cancelled or fails, as a retry.
     area.innerHTML = '<div class="card pin-gate">' +
       '<h3 style="margin-top:0;">Manager access</h3>' +
       '<p class="placeholder-note" style="margin-bottom:14px;">Sign in with your iara Google account to see team-wide progress.</p>' +
-      '<button class="btn btn-primary" id="pg-unlock">Unlock</button></div>';
-    document.getElementById("pg-unlock").addEventListener("click", function(){
-      openManagerGate(function(){ progressUnlocked = true; renderProgress(); });
-    });
+      '<button class="btn btn-primary" id="pg-unlock">Sign in with Google</button></div>';
+    var unlock = function(){ openManagerGate(function(){ progressUnlocked = true; renderProgress(); }); };
+    document.getElementById("pg-unlock").addEventListener("click", unlock);
+    unlock();
     return;
   }
   if (!db) {
