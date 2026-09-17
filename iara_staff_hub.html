@@ -92,7 +92,7 @@
     font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3,.display{ font-family:'forevs','Fraunces',Georgia,serif; font-weight:400; color:var(--display); text-wrap:balance; letter-spacing:-.01em; }
+  h1,h2,h3,.display{ font-family:'Fraunces',Georgia,serif; font-weight:400; color:var(--display); text-wrap:balance; letter-spacing:-.01em; }
   .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
   a{ color:var(--river); }
   button{ font-family:inherit; }
@@ -102,7 +102,9 @@
   #gate{
     min-height:100vh; display:flex; align-items:center; justify-content:center;
     padding: 48px 20px;
-    background: linear-gradient(140deg, #2b1517 0%, #391d1f 52%, #55291f 100%);
+    background:
+      linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
+      url("img/amazon.jpg") center/cover no-repeat, #391d1f;
   }
   .gate-card{
     width:100%; max-width:420px; background:var(--paper-raised); border:1px solid var(--line);
@@ -145,6 +147,8 @@
     width:230px; flex:none; background:var(--sidebar); color:var(--sidebar-ink);
     padding:24px 16px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh;
   }
+  .sb-mark .word{ font-family:'forevs','Fraunces',serif; font-weight:400; font-size:15px;
+    letter-spacing:.06em; color:var(--sidebar-muted); }
   .sb-mark{ display:flex; align-items:center; gap:10px; padding:4px 10px 22px; }
   .nav-btn{
     display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:5px;
@@ -166,7 +170,7 @@
     display:none; align-items:center; gap:10px; padding:14px 18px;
     border-bottom:1px solid var(--line); background:var(--paper-raised); position:sticky; top:0; z-index:5;
   }
-  .topbar .word{ font-family:'forevs','Fraunces',serif; font-weight:700; font-size:17px; }
+  .topbar .word{ font-family:'Fraunces',serif; font-weight:700; font-size:17px; }
 
   /* Bottom tab bar (phone) */
   .bottom-nav{ display:none; position:fixed; left:0; right:0; bottom:0; z-index:20;
@@ -219,7 +223,7 @@
 
   /* team bios */
   .bio{ display:grid; grid-template-columns:64px 1fr; gap:16px; padding:20px; margin-bottom:14px; }
-  .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:'forevs','Fraunces',serif; font-weight:700; font-size:22px; }
+  .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:22px; }
   .bio h3{ margin:0 0 2px; font-size:18px; }
   .bio .title{ color:var(--river); font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
   .bio p{ margin:0; font-size:14.5px; line-height:1.6; }
@@ -231,7 +235,7 @@
   .fb-tab.active{ background:var(--forest); color:var(--forest-ink); border-color:var(--forest); }
   .dish-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
   .dish{ padding:16px; position:relative; }
-  .dish h4{ margin:0 0 4px; font-family:'forevs','Fraunces',serif; font-size:16.5px; }
+  .dish h4{ margin:0 0 4px; font-family:'Fraunces',serif; font-size:16.5px; }
   .dish .price{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--river); font-weight:600; }
   .dish .pron-line{ font-size:12px; color:var(--ink-soft); font-style:italic; margin:-2px 0 6px; display:flex; align-items:center; gap:6px; }
   .say{ display:inline-flex; align-items:center; gap:4px; vertical-align:middle; }
@@ -257,7 +261,7 @@
   .quiz-pick{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px;}
   .quiz-pick button{ padding:22px 16px; text-align:left; cursor:pointer; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:5px; }
   .quiz-pick button:hover{ border-color:var(--river); }
-  .quiz-pick .qname{ font-family:'forevs','Fraunces',serif; font-weight:600; font-size:17px; display:block; margin-bottom:4px; }
+  .quiz-pick .qname{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; display:block; margin-bottom:4px; }
   .quiz-pick .qmeta{ font-size:12.5px; color:var(--ink-soft); }
   .qcard{ padding:26px 26px 22px; }
   .qprog{ font-size:12.5px; color:var(--ink-soft); font-family:'IBM Plex Mono',monospace; margin-bottom:10px; }
@@ -351,6 +355,59 @@
   .btn{ border-radius:4px; }
   .badge{ border-radius:2px; }
 
+  /* Team reads as a masthead: rules between people, a squared monogram
+     rather than a circular avatar, role set as a standfirst. */
+  #team-bios{ max-width:680px; border-top:1px solid var(--rule); }
+  .bio{ display:grid; grid-template-columns:52px 1fr; gap:18px; padding:22px 0;
+    margin:0; background:none; border:none; border-radius:0; border-bottom:1px solid var(--rule); box-shadow:none; }
+  .bio::before{ display:none; }
+  .bio:last-child{ border-bottom:none; }
+  .avatar{ width:52px; height:52px; border-radius:3px; background:none;
+    border:1px solid var(--rule-strong); color:var(--display);
+    font-family:'Fraunces',serif; font-weight:400; font-size:17px; letter-spacing:.02em; }
+  .bio h3{ margin:0; font-size:20px; font-weight:400; }
+  .bio .title{ margin:2px 0 8px; font-size:10px; text-transform:uppercase;
+    letter-spacing:.16em; color:var(--sun); font-weight:700; }
+  .bio p{ margin:0; font-size:14.5px; line-height:1.65; color:var(--ink-soft); max-width:58ch; }
+
+  /* Decks as a contents list, not a card grid. */
+  .deck-grid{ display:block; max-width:520px; border-top:1px solid var(--rule); }
+  .deck{ width:100%; display:grid; grid-template-columns:1fr auto; align-items:baseline;
+    gap:4px 18px; background:none; border:none; border-bottom:1px solid var(--rule);
+    border-radius:0; padding:15px 2px; transition:padding-left .14s ease; }
+  .deck:hover{ border-color:var(--rule); padding-left:8px; }
+  .deck-name{ font-size:18px; }
+  .deck-meta{ grid-column:1; font-size:12px; }
+  .deck-pct{ grid-column:2; grid-row:1; font-size:11.5px; color:var(--display);
+    font-variant-numeric:tabular-nums; }
+  .deck-bar{ grid-column:1 / -1; margin-top:7px; height:2px; }
+
+  /* Checklist as a printed list with a rule per line. */
+  .cl-summary{ background:none; border:none; border-bottom:1px solid var(--rule);
+    border-radius:0; box-shadow:none; padding:0 0 18px; max-width:640px; }
+  .cl-summary::before{ display:none; }
+  .cl-list{ background:none; border:none; border-radius:0; box-shadow:none;
+    padding:0; max-width:640px; border-top:1px solid var(--rule); }
+  .cl-list::before{ display:none; }
+  .cl-item{ padding:13px 2px; border-bottom:1px solid var(--rule); }
+  .cl-group{ font-size:11px; text-transform:uppercase; letter-spacing:.16em;
+    color:var(--sun); font-family:'Instrument Sans',system-ui,sans-serif; font-weight:700;
+    margin:30px 0 8px; }
+
+  /* Photography, at last. The app had none, which is the real reason it read
+     as a text dashboard rather than a restaurant. These are iara's own images
+     from iara.nyc, so they are on-brand and rights-clean.
+     They are deliberately NOT attached to individual dishes: the shots are of
+     other plates, and mislabelling food in a tool that teaches allergens is
+     not a cosmetic mistake. Per-dish photography waits for the shoot. */
+  .photoband{ display:grid; grid-template-columns:repeat(4,1fr); gap:3px; margin:0 0 26px;
+    border-radius:5px; overflow:hidden; max-width:640px; }
+  .photoband img{ width:100%; height:96px; object-fit:cover; display:block;
+    filter:saturate(.92) brightness(.92); }
+  @media (max-width:520px){ .photoband img{ height:70px; } }
+
+  .avatar-photo{ object-fit:cover; border:1px solid var(--rule-strong); }
+
   .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:6px;
     padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:640px; }
   .sc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
@@ -373,7 +430,7 @@
   .startlist button:hover{ padding-left:10px; }
   .startlist button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
   .sl-n{ grid-row:1 / span 2; font-size:11px; color:var(--ink-soft); letter-spacing:.06em; }
-  .sl-t{ font-family:'forevs','Fraunces',Georgia,serif; font-size:19px; color:var(--display); }
+  .sl-t{ font-family:'Fraunces',Georgia,serif; font-size:19px; color:var(--display); }
   .sl-d{ font-size:13px; color:var(--ink-soft); }
 
   /* A rubber stamp on a docket. Physical, warm, and it does not cheer at you. */
@@ -383,7 +440,7 @@
     transform:rotate(-2.4deg); color:var(--sun); position:relative; }
   .stamp::after{ content:""; position:absolute; inset:4px; border:1px solid var(--sun);
     border-radius:5px; opacity:.5; pointer-events:none; }
-  .stamp-verdict{ font-family:'forevs','Fraunces',Georgia,serif; font-size:29px; line-height:1.05; letter-spacing:.01em; }
+  .stamp-verdict{ font-family:'Fraunces',Georgia,serif; font-size:29px; line-height:1.05; letter-spacing:.01em; }
   .stamp-score{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-variant-numeric:tabular-nums; }
   .stamp-cat{ font-size:9.5px; text-transform:uppercase; letter-spacing:.18em; margin-top:3px; opacity:.9; }
   .result-note{ margin:26px auto 0; max-width:38ch; font-size:14.5px; line-height:1.6; color:var(--ink-soft); }
@@ -401,7 +458,7 @@
   .dish{ position:relative; padding:18px 0 20px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
   .dish:last-of-type{ border-bottom:none; }
   .dish-line{ display:flex; align-items:baseline; gap:8px; }
-  .dish-line h4{ margin:0; font-family:'forevs','Fraunces',Georgia,serif; font-weight:400; font-size:19px;
+  .dish-line h4{ margin:0; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:19px;
     color:var(--display); letter-spacing:.01em; flex:none; max-width:78%; }
   .leader{ flex:1; min-width:16px; align-self:flex-end; position:relative; bottom:4px;
     border-bottom:1.5px dotted var(--rule-strong); }
@@ -422,7 +479,7 @@
 
   /* Empty states say which empty this is and what will fill it. */
   .empty{ padding:28px 0; max-width:42ch; }
-  .empty-h{ margin:0 0 6px; font-family:'forevs','Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
+  .empty-h{ margin:0 0 6px; font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
   .empty-b{ margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.55; }
 
   .gloss{ border-bottom:1px dashed var(--display); cursor:help; position:relative; }
@@ -495,7 +552,7 @@
   .deck:hover{ border-color:var(--sun); }
   .deck:active{ transform:translateY(1px); }
   .deck:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .deck-name{ font-family:'forevs','Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
+  .deck-name{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
   .deck-meta{ font-size:12px; color:var(--ink-soft); }
   .deck-bar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin-top:4px; }
   .deck-bar span{ display:block; height:100%; background:var(--sun); border-radius:3px; }
@@ -667,6 +724,12 @@
         <button class="mode-btn" id="mode-study" role="tab" aria-selected="false">Study</button>
       </div>
 
+      <div class="photoband" aria-hidden="true">
+        <img src="img/dish-tapioca.jpg" alt="" loading="lazy">
+        <img src="img/dish-greens.jpg" alt="" loading="lazy">
+        <img src="img/dish-snapper.jpg" alt="" loading="lazy">
+        <img src="img/dish-picanha.jpg" alt="" loading="lazy">
+      </div>
       <div id="fb-browse">
         <div class="fb-toolbar">
           <div class="fb-tabs" id="fb-tabs"></div>
@@ -805,7 +868,7 @@ var MANUAL = [
 ];
 
 var TEAM = [
-  { name:"Vitor Mendes", title:"Chef-Owner", initials:"VM",
+  { name:"Vitor Mendes", title:"Chef-Owner", initials:"VM", photo:"img/vitor.jpg",
     bio:"Chef-Owner of iara. Born in Parnana, Brazil, Vitor studied at the International Culinary Center (ICC) and went on to cook in some of New York's most respected kitchens: The Modern, the Chef's Table at Brooklyn Fare, Frevo, The Fulton, and, most recently, Theodora. After his father passed away during the COVID-19 pandemic, Vitor returned to Brazil for a seven-month trip; it ended in the Amazon, where he found the inspiration to build a restaurant around the region's ingredients, techniques, and traditions. That journey shaped iara's Amazonian-inspired menu and open-kitchen concept." },
   { name:"Ronald Rufino", title:"General Manager", initials:"RR",
     bio:"General Manager of iara. Ronald most recently served as General Manager of Little Maven, overseeing daily operations and the beverage program, while also serving as Head Sommelier &amp; Wine Buyer for Flyfish Club, a Members Club. His background spans some of New York's most respected dining rooms, including Captain &amp; Service Manager at the Michelin-starred Blue Hill at Stone Barns, Service Director at the Michelin-starred Frevo, Captain at the Michelin-starred SHO Shaun Hergatt, and a spot on the opening team at Upland. After the pandemic, he co-founded a kombucha company called Feel Good Booch. Ronald is a Certified Sommelier with a particular love of mezcal." },
@@ -1251,7 +1314,9 @@ function renderTeam(){
   var wrap = document.getElementById("team-bios");
   wrap.innerHTML = TEAM.map(function(p){
     return '<div class="card bio">' +
-      '<div class="avatar">'+p.initials+'</div>' +
+      (p.photo
+        ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy">'
+        : '<div class="avatar">'+esc(p.initials)+'</div>') +
       '<div><h3>'+p.name+'</h3><div class="title">'+p.title+'</div>' +
       '<p class="'+(p.placeholder ? 'placeholder-note' : '')+'">'+p.bio+'</p></div></div>';
   }).join("");
