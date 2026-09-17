@@ -1,11 +1,15 @@
 {
-  "name": "Iara Staff Hub",
-  "short_name": "Iara Hub",
+  "name": "iara Staff Hub",
+  "short_name": "iara Hub",
   "start_url": ".",
   "display": "standalone",
-  "background_color": "#0c6b4a",
-  "theme_color": "#0c6b4a",
+  "background_color": "#391d1f",
+  "theme_color": "#391d1f",
   "icons": [
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
   ]
 }
