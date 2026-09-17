@@ -2436,7 +2436,15 @@ function renderStudyPicker(){
 var LINEUP_SIZE = 4;
 function lineupCards(n){
   var m = loadMastery();
-  var pool = buildDeck("all").concat(buildDeck("allergens")).filter(function(c){
+  // Shuffled before the sort, not after: Array.sort is stable, and almost
+  // everything sits tied at mastery 0 early on. Sorting the dish-then-
+  // allergen concatenation directly would let that stable tie-order always
+  // favor dish cards, since they are listed first going in, and starve
+  // allergen cards out of the weakest-stretch slice below whenever 12 or
+  // more dish cards are tied at zero. Shuffling first makes the tie order
+  // random instead of favoring whichever deck happened to be concatenated
+  // first.
+  var pool = shuffle(buildDeck("all").concat(buildDeck("allergens"))).filter(function(c){
     return !creditedThisShift(m, c.id) && masteryOf(m, c.id) < MASTERY_MAX;
   });
   pool.sort(function(a, b){ return masteryOf(m, a.id) - masteryOf(m, b.id); });
