@@ -1,0 +1,135 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iara</title>
+<meta name="description" content="Staff intranet for iara. Lineup, Kitchen Ops, and whatever comes next.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="iara">
+<meta property="og:description" content="Staff intranet for iara.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://staff.iara.nyc/">
+<meta property="og:image" content="https://staff.iara.nyc/img/og-lineup.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="iara">
+<meta name="twitter:description" content="Staff intranet for iara.">
+<meta name="twitter:image" content="https://staff.iara.nyc/img/og-lineup.png">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="icon" href="/icon-512.png">
+<meta name="theme-color" content="#391d1f">
+<link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --ink:#faf6f0;
+    --ink-soft:#b3a695;
+    --ink-mid:#ded5c7;
+    --paper:#391d1f;
+    --paper-raised:#4a2528;
+    --line:#5f3b3e;
+    --forest:#e0633f;
+    --forest-ink:#2a1206;
+    --sun:#fbbf56;
+    --sun-ink:#391d1f;
+    --river:#e8cbab;
+    --display:#e8cbab;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html{ background:var(--paper); }
+  body{
+    margin:0; min-height:100vh;
+    background:
+      linear-gradient(160deg,
+        color-mix(in srgb, var(--forest) 11%, var(--paper)) 0%,
+        var(--paper) 42%,
+        color-mix(in srgb, var(--sun) 13%, var(--paper)) 100%);
+    background-attachment:fixed;
+    color:var(--ink);
+    font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    display:flex; align-items:center; justify-content:center;
+    padding:48px 20px;
+  }
+  /* Grain: a flat maroon field bands badly on a phone screen; a little noise
+     reads as a printed surface instead of dead space. Same recipe as Lineup
+     and Kitchen Ops, so the three apps feel like one house. */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    filter:contrast(170%) brightness(1000%); mix-blend-mode:overlay;
+  }
+  ::selection{ background:var(--sun); color:var(--sun-ink); }
+  a{ color:inherit; text-decoration:none; }
+
+  .wrap{ position:relative; z-index:1; width:100%; max-width:560px; }
+  .mark{ text-align:center; margin-bottom:8px; }
+  .mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:clamp(40px,8vw,56px);
+    color:var(--display); letter-spacing:-.01em; }
+  .eyebrow{ text-align:center; text-transform:uppercase; letter-spacing:.14em; font-size:12px; font-weight:700;
+    color:var(--ink-soft); margin:0 0 40px; }
+
+  .apps{ display:grid; gap:14px; }
+  .app-card{
+    position:relative; display:flex; align-items:center; gap:16px;
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;
+    padding:20px 20px; box-shadow:var(--shadow);
+    transition:transform .12s cubic-bezier(.16,1,.3,1), border-color .12s ease;
+  }
+  .app-card::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:1px; border-radius:inherit;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.10) 22%, rgba(255,255,255,.10) 78%, transparent);
+    pointer-events:none;
+  }
+  .app-card:hover{ transform:translateY(-1px); border-color:var(--ink-soft); }
+  .app-card:active{ transform:translateY(0); }
+  .app-card:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .app-glyph{
+    flex:none; width:44px; height:44px; border-radius:9px; display:flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-size:20px; color:var(--sun-ink); background:var(--sun);
+  }
+  .app-body{ flex:1; min-width:0; }
+  .app-title{ display:flex; align-items:center; gap:8px; font-weight:700; font-size:16.5px; color:var(--ink); }
+  .app-desc{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin-top:3px; }
+  .app-badge{
+    font-size:10.5px; font-weight:700; text-transform:uppercase; letter-spacing:.05em;
+    color:var(--sun-ink); background:var(--sun); border-radius:100px; padding:2px 8px;
+  }
+  .app-arrow{ flex:none; color:var(--ink-soft); font-size:18px; }
+  .app-card:hover .app-arrow{ color:var(--river); }
+
+  .foot{ text-align:center; margin-top:32px; font-size:12px; color:var(--ink-soft); line-height:1.6; }
+
+  @media (max-width:420px){
+    .app-card{ padding:16px 16px; gap:12px; }
+    .app-glyph{ width:38px; height:38px; font-size:17px; }
+  }
+</style>
+
+<div class="wrap">
+  <div class="mark"><span class="word">iara</span></div>
+  <p class="eyebrow">Staff Intranet</p>
+
+  <div class="apps">
+    <a class="app-card" href="/lineup">
+      <span class="app-glyph" aria-hidden="true">L</span>
+      <span class="app-body">
+        <span class="app-title">iara Lineup</span>
+        <span class="app-desc">Service manual, the menu with pronunciations, and pre-shift practice.</span>
+      </span>
+      <span class="app-arrow" aria-hidden="true">→</span>
+    </a>
+
+    <a class="app-card" href="/ops">
+      <span class="app-glyph" aria-hidden="true">K</span>
+      <span class="app-body">
+        <span class="app-title">iara Kitchen Ops <span class="app-badge">Manager</span></span>
+        <span class="app-desc">Ingredient costing, inventory counts, and purchasing.</span>
+      </span>
+      <span class="app-arrow" aria-hidden="true">→</span>
+    </a>
+  </div>
+
+  <p class="foot">iara · 205 Allen St, New York</p>
+</div>

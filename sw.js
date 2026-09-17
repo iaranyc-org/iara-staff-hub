@@ -1,4 +1,5 @@
-/* iara Lineup service worker.
+/* iara staff site service worker, covering the hub, Lineup, and Ops - one
+ * scope, one worker, since they all live under staff.iara.nyc.
  *
  * The app told staff it works offline once installed, which was not true:
  * there was no worker, so a phone with no signal got nothing. A restaurant
@@ -13,9 +14,11 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v1';
+const VERSION = 'iara-lineup-v2';
 const CORE = [
   './',
+  './iara_hub.html',
+  './lineup',
   './iara_staff_hub.html',
   './manifest.json',
   './icon-512.png',
@@ -51,15 +54,23 @@ self.addEventListener('fetch', (e) => {
 
   const isDoc = req.mode === 'navigate' || /\.html$/.test(url.pathname);
 
+  // Root now covers three pages (the hub, Lineup at /lineup, Ops at /ops), so
+  // each is cached and matched by its own request rather than one hardcoded
+  // key - the old single-key version quietly served Lineup's markup for every
+  // route once it was cached. Falls back to Lineup specifically (not the hub)
+  // because that is the one staff actually need with no signal in the
+  // basement; the hub is just a launcher.
   if (isDoc) {
     e.respondWith(
       fetch(req)
         .then((res) => {
           const copy = res.clone();
-          caches.open(VERSION).then((c) => c.put('./iara_staff_hub.html', copy));
+          caches.open(VERSION).then((c) => c.put(req, copy));
           return res;
         })
-        .catch(() => caches.match('./iara_staff_hub.html').then((r) => r || caches.match('./')))
+        .catch(() => caches.match(req)
+          .then((r) => r || caches.match('./iara_staff_hub.html'))
+          .then((r) => r || caches.match('./')))
     );
     return;
   }

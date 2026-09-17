@@ -1,13 +1,13 @@
 {
   "name": "iara Lineup",
   "short_name": "iara Lineup",
-  "start_url": ".",
+  "start_url": "/lineup",
   "display": "standalone",
   "background_color": "#391d1f",
   "theme_color": "#391d1f",
   "icons": [
     {
-      "src": "icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
       "type": "image/png"
     }

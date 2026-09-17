@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/iara_staff_hub.html" },
+    { "source": "/", "destination": "/iara_hub.html" },
+    { "source": "/lineup", "destination": "/iara_staff_hub.html" },
     { "source": "/ops", "destination": "/iara_kitchen_ops.html" }
   ]
 }

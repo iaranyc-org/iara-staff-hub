@@ -14,7 +14,7 @@
 <meta property="og:title" content="iara Lineup">
 <meta property="og:description" content="Training and onboarding for the iara floor team.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://staff.iara.nyc/">
+<meta property="og:url" content="https://staff.iara.nyc/lineup">
 <meta property="og:image" content="https://staff.iara.nyc/img/og-lineup.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -22,9 +22,9 @@
 <meta name="twitter:title" content="iara Lineup">
 <meta name="twitter:description" content="Training and onboarding for the iara floor team.">
 <meta name="twitter:image" content="https://staff.iara.nyc/img/og-lineup.png">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icon-512.png">
-<link rel="icon" href="icon-512.png">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="icon" href="/icon-512.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="iara Lineup">
@@ -132,7 +132,7 @@
     padding: 48px 20px;
     background:
       linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
-      url("img/amazon.jpg") center/cover no-repeat, #391d1f;
+      url("/img/amazon.jpg") center/cover no-repeat, #391d1f;
   }
   .gate-card{
     width:100%; max-width:420px; background:var(--paper-raised); border:1px solid var(--line);
@@ -981,7 +981,7 @@
 if ("serviceWorker" in navigator &&
     (location.protocol === "https:" || location.hostname === "localhost")) {
   window.addEventListener("load", function(){
-    navigator.serviceWorker.register("sw.js").catch(function(){ /* offline is a bonus, never a blocker */ });
+    navigator.serviceWorker.register("/sw.js").catch(function(){ /* offline is a bonus, never a blocker */ });
   });
 }
 
@@ -1068,7 +1068,7 @@ var MANUAL = [
 ];
 
 var TEAM = [
-  { name:"Vitor Mendes", title:"Chef-Owner", initials:"VM", photo:"img/vitor.jpg",
+  { name:"Vitor Mendes", title:"Chef-Owner", initials:"VM", photo:"/img/vitor.jpg",
     bio:"Chef-Owner of iara. Brazilian-American, Vitor started working in restaurants at 15 to help support his family and found his calling almost immediately. He enrolled at the Institute of Culinary Education and spent over a decade in some of New York's most demanding kitchens: Theodora, Frevo, the Fulton by Jean-Georges, and Chef's Table at Brooklyn Fare. After his father's passing he returned to Brazil in 2021 and cooked across the country for the first time. Everything shifted deep in the Amazon, where he spent a month learning the ingredients and the culture around them. He was a finalist in the S.Pellegrino Young Chef Academy Competition in 2022, was recruited by chef Tomer Blechman to take the reins at Theodora in 2023, and was named a StarChefs NYC Rising Star in 2025. iara is his first restaurant as founder, where the precision of his fine-dining years meets the ingredient-led cooking he found in the Amazon." },
   { name:"Ronald Rufino", title:"General Manager", initials:"RR",
     bio:"General Manager of iara. Ronald most recently served as General Manager of Little Maven, overseeing daily operations and the beverage program, while also serving as Head Sommelier &amp; Wine Buyer for Flyfish Club, a Members Club. His background spans some of New York's most respected dining rooms, including Captain &amp; Service Manager at the Michelin-starred Blue Hill at Stone Barns, Service Director at the Michelin-starred Frevo, Captain at the Michelin-starred SHO Shaun Hergatt, and a spot on the opening team at Upland. After the pandemic, he co-founded a kombucha company called Feel Good Booch. Ronald is a Certified Sommelier with a particular love of mezcal." },
@@ -2197,7 +2197,7 @@ function speakDish(name, id, variant){
   // so it is only a fallback for items with no recording yet.
   if (id) {
     if (dishAudio) { dishAudio.pause(); dishAudio = null; }
-    var a = new Audio("audio/" + id + "-" + (variant || 1) + ".mp3");
+    var a = new Audio("/audio/" + id + "-" + (variant || 1) + ".mp3");
     dishAudio = a;
     var fellBack = false;
     a.addEventListener("error", function(){

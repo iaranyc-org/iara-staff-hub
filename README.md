@@ -1,16 +1,23 @@
-# iara Lineup
+# iara Staff Intranet
 
-The onboarding and menu-training app for iara. Named after the lineup, the
-pre-service meeting where a restaurant teaches its staff the menu.
+The staff-facing tools for iara, all under staff.iara.nyc. Three single-page
+apps, no build step for any of them:
 
-This repo has two single-page PWAs, no build step for either:
-
-- `iara_staff_hub.html` — service manual, team bios, food & beverage guide
-  with a manager-editable menu, knowledge-check quizzes, and a team
-  progress view. Serves at `/`.
-- `iara_kitchen_ops.html` — kitchen ops: ingredient costing, recipe
+- `iara_hub.html` — the landing page at `/`. A launcher, nothing more: cards
+  linking out to Lineup and Ops.
+- `iara_staff_hub.html` — **iara Lineup**, named after the lineup, the
+  pre-service meeting where a restaurant teaches its staff the menu. Service
+  manual, team bios, food & beverage guide with a manager-editable menu,
+  knowledge-check quizzes, and a team progress view. Serves at `/lineup`.
+- `iara_kitchen_ops.html` — **iara Kitchen Ops**: ingredient costing, recipe
   costing, inventory counts, purchase orders, and sales tracking.
   Manager-only. Serves at `/ops`.
+
+Every asset reference in `iara_staff_hub.html` and `iara_kitchen_ops.html`
+(manifest, icons, service worker, audio, images) uses an absolute `/` path.
+That matters because Vercel's rewrite means the browser's address bar shows
+`/lineup` or `/ops` while serving these files - a relative path would resolve
+against the visible URL, not the file's own location, and 404.
 
 ## Local preview
 
@@ -67,9 +74,10 @@ features and progress view go inactive while everything else keeps working.
 1. Push this repo to GitHub (see below).
 2. In [Vercel](https://vercel.com/new), **Import Project** and select the
    GitHub repo. No framework/build settings needed — it's static.
-3. Deploy. `vercel.json` rewrites `/` to `/iara_staff_hub.html` and `/ops`
-   to `/iara_kitchen_ops.html`; `manifest.json`/`ops-manifest.json` and
-   `icon-512.png` are served as-is for each app's PWA install prompt.
+3. Deploy. `vercel.json` rewrites `/` to `/iara_hub.html`, `/lineup` to
+   `/iara_staff_hub.html`, and `/ops` to `/iara_kitchen_ops.html`;
+   `manifest.json`/`ops-manifest.json` and `icon-512.png` are served as-is
+   for each app's PWA install prompt.
 
 ## Collaborating via GitHub
 
