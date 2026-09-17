@@ -537,6 +537,11 @@
     max-width:min(300px, 78vw); padding:10px 12px; border:1px solid var(--line);
     opacity:1; transform:translate(var(--gloss-nudge,0px), 0); }
   @media (hover:none){ .gloss{ cursor:pointer; } }
+  .miss-rank{ margin:0; padding-left:22px; max-width:var(--measure); }
+  .miss-rank li{ padding:12px 0; border-bottom:1px solid var(--rule); }
+  .miss-rank li:last-child{ border-bottom:none; }
+  .miss-rank .miss-q{ margin:0; font-size:15px; line-height:1.5; }
+  .miss-rank .miss-meta{ margin:4px 0 0; font-size:12.5px; color:var(--ink-soft); }
   .cl-summary{ padding:20px 22px; margin-bottom:26px; }
   .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
   .cl-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:19px; }
@@ -1313,11 +1318,17 @@ async function touchStaffDoc(){
   } catch(e){ /* non-fatal */ }
 }
 
-async function saveQuizAttempt(category, score, total){
+async function saveQuizAttempt(category, score, total, missed){
   if (!db || !profile) return;
   try {
     var col = db.doc("staff/" + profile.id).collection("quizzes");
-    await col.add({ category: category, score: score, total: total, date: new Date().toISOString() });
+    await col.add({
+      category: category, score: score, total: total,
+      // Question text only. What a manager needs at lineup is which questions
+      // the floor keeps dropping, not a record of who picked what.
+      missed: (missed || []).map(function(m){ return m.q; }),
+      date: new Date().toISOString()
+    });
   } catch(e){ /* non-fatal */ }
 }
 
@@ -2802,7 +2813,7 @@ document.addEventListener("keydown", function(ev){
 function renderQuizResult(){
   var aq = activeQuiz;
   var pct = Math.round((aq.score / aq.questions.length) * 100);
-  saveQuizAttempt(QUIZ_META[aq.key].name, aq.score, aq.questions.length).then(refreshHomeStats);
+  saveQuizAttempt(QUIZ_META[aq.key].name, aq.score, aq.questions.length, aq.missed).then(refreshHomeStats);
   // Dry, specific, no confetti. The brand voice does not cheer.
   var verdict = pct === 100 ? "Clean" : pct >= 80 ? "Passed" : pct >= 60 ? "Close" : "Run it again";
   var note = pct === 100 ? "Every one. Go again tomorrow so it sticks."
@@ -2885,6 +2896,7 @@ async function renderProgress(){
     var CATS = Object.keys(QUIZ_META).map(function(k){ return { key:k, name:QUIZ_META[k].name }; });
     var staffSnap = await db.collection("staff").orderBy("name").get();
     var rows = [];
+    var missTally = {};
     for (var i = 0; i < staffSnap.docs.length; i++) {
       var d = staffSnap.docs[i];
       var s = d.data();
@@ -2899,6 +2911,13 @@ async function renderProgress(){
         };
       });
       var overallAvg = attempts.length ? Math.round(attempts.reduce(function(sum,a){ return sum + (a.score/a.total)*100; },0)/attempts.length) : null;
+      attempts.forEach(function(a){
+        (a.missed || []).forEach(function(q){
+          if (!missTally[q]) missTally[q] = { q: q, n: 0, cat: a.category, who: {} };
+          missTally[q].n++;
+          missTally[q].who[s.name] = true;
+        });
+      });
       rows.push({ name: s.name, role: s.role, count: attempts.length, avg: overallAvg, byCat: byCat, last: s.lastActive });
     }
     if (!rows.length) {
@@ -2919,6 +2938,25 @@ async function renderProgress(){
         '<td class="mono">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—')+'</td></tr>';
     });
     html += '</tbody></table></div>';
+
+    // What the floor keeps dropping. This is the part worth reading out at
+    // lineup, so it says how many people missed it, not just how many times.
+    var misses = Object.keys(missTally).map(function(k){ return missTally[k]; })
+      .map(function(m){ m.people = Object.keys(m.who).length; return m; })
+      .sort(function(a,b){ return b.n - a.n || b.people - a.people; })
+      .slice(0, 8);
+    html += '<h2 style="margin-top:38px;">What the team keeps missing</h2>';
+    if (!misses.length) {
+      html += '<p class="placeholder-note">Nothing yet. This fills in as the team runs drills.</p>';
+    } else {
+      html += '<p class="placeholder-note" style="margin-bottom:10px;">Ranked by how often it has been missed. Worth reading out at lineup.</p>' +
+        '<ol class="miss-rank">' + misses.map(function(m){
+          return '<li><p class="miss-q">'+esc(m.q)+'</p>' +
+            '<p class="miss-meta"><span class="mono">'+m.n+'</span> '+(m.n===1?'miss':'misses')+
+            ' across <span class="mono">'+m.people+'</span> '+(m.people===1?'person':'people')+
+            ' \u00b7 '+esc(m.cat || '')+'</p></li>';
+        }).join('') + '</ol>';
+    }
     area.innerHTML = html;
   } catch(e) {
     area.innerHTML = '<p class="placeholder-note">Couldn\'t load team progress right now.</p>';
