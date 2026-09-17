@@ -8,50 +8,73 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="iara Ops">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0f6b5c">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<meta name="theme-color" content="#391d1f">
+<link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
+  /* iara signage palette (the same tokens iara_staff_hub.html and
+     iara_hub.html use), pinned dark on every device - iara.nyc has no
+     light mode, so Kitchen Ops doesn't get one either. Every color below
+     is measured against the background it actually sits on (design-review
+     rule), not guessed: badge/critical text against its own tinted card,
+     not the flat page. See git history for the contrast numbers. */
   :root{
-    --accent:#0f6b5c; --accent-strong:#0a4f45; --accent-soft:#e3f2ef; --accent-ink:#ffffff;
-    --surface:#fcfcfb; --surface-raised:#ffffff; --page:#f5f5f2;
-    --ink:#0b0b0b; --ink-secondary:#52514e; --ink-muted:#898781;
-    --border:rgba(11,11,11,0.10); --grid:#e1e0d9; --baseline:#c3c2b7;
-    --good:#0ca30c; --good-soft:#e6f6e6; --warning:#a86a00; --warning-soft:#fdf1d6;
-    --serious:#b6551f; --serious-soft:#fbe7dd; --critical:#d03b3b; --critical-soft:#fbe4e4;
-    --cat-1:#2a78d6; --cat-2:#eb6834; --cat-3:#1baf7a; --cat-4:#eda100; --cat-5:#e87ba4; --cat-6:#008300;
-    --font-sans:'Inter',system-ui,-apple-system,"Segoe UI",sans-serif;
+    --accent:#e0633f; --accent-strong:#f08a63; --accent-soft:rgba(224,99,63,0.16); --accent-ink:#2a1206;
+    --surface:#4a2528; --surface-raised:#55292f; --page:#391d1f;
+    --ink:#faf6f0; --ink-secondary:#ded5c7; --ink-muted:#b3a695;
+    --border:#5f3b3e; --grid:#5a3a3c; --baseline:#7a5153;
+    --display:#e8cbab;
+    --good:#95c298; --good-soft:rgba(149,194,152,0.16); --warning:#fbbf56; --warning-soft:rgba(251,191,86,0.16);
+    --serious:#ebae88; --serious-soft:rgba(235,174,136,0.16); --critical:#f1a9ad; --critical-soft:rgba(241,169,173,0.16);
+    --cat-1:#e0633f; --cat-2:#fbbf56; --cat-3:#6fb572; --cat-4:#c97a4a; --cat-5:#ce6f77; --cat-6:#cbb08a;
+    --font-sans:'Instrument Sans',system-ui,-apple-system,"Segoe UI",sans-serif;
+    --font-display:'Fraunces',Georgia,serif;
     --font-mono:'IBM Plex Mono',ui-monospace,"SFMono-Regular",Menlo,monospace;
-    --shadow-card:0 1px 2px rgba(11,11,11,0.04), 0 1px 1px rgba(11,11,11,0.03);
-    --shadow-modal:0 20px 60px rgba(11,11,11,0.28);
+    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.3);
+    --shadow-modal:0 20px 60px rgba(0,0,0,0.6);
+    color-scheme: dark;
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --accent:#2bbfa3; --accent-strong:#3ed8ba; --accent-soft:rgba(43,191,163,0.14); --accent-ink:#04211c;
-      --surface:#1a1a19; --surface-raised:#222221; --page:#0c0c0b;
-      --ink:#ffffff; --ink-secondary:#c3c2b7; --ink-muted:#8f8d86;
-      --border:rgba(255,255,255,0.10); --grid:#2c2c2a; --baseline:#3a3a37;
-      --good:#3ec93e; --good-soft:rgba(62,201,62,0.14); --warning:#e8b13a; --warning-soft:rgba(232,177,58,0.14);
-      --serious:#e0895a; --serious-soft:rgba(224,137,90,0.14); --critical:#e66767; --critical-soft:rgba(230,103,103,0.14);
-      --cat-1:#3987e5; --cat-2:#d95926; --cat-3:#199e70; --cat-4:#c98500; --cat-5:#d55181; --cat-6:#008300;
-      --shadow-card:0 1px 2px rgba(0,0,0,0.4); --shadow-modal:0 20px 60px rgba(0,0,0,0.6);
-    }
-  }
-  :root[data-theme="dark"]{
-    --accent:#2bbfa3; --accent-strong:#3ed8ba; --accent-soft:rgba(43,191,163,0.14); --accent-ink:#04211c;
-    --surface:#1a1a19; --surface-raised:#222221; --page:#0c0c0b;
-    --ink:#ffffff; --ink-secondary:#c3c2b7; --ink-muted:#8f8d86;
-    --border:rgba(255,255,255,0.10); --grid:#2c2c2a; --baseline:#3a3a37;
-    --good:#3ec93e; --good-soft:rgba(62,201,62,0.14); --warning:#e8b13a; --warning-soft:rgba(232,177,58,0.14);
-    --serious:#e0895a; --serious-soft:rgba(224,137,90,0.14); --critical:#e66767; --critical-soft:rgba(230,103,103,0.14);
-    --cat-1:#3987e5; --cat-2:#d95926; --cat-3:#199e70; --cat-4:#c98500; --cat-5:#d55181; --cat-6:#008300;
-    --shadow-card:0 1px 2px rgba(0,0,0,0.4); --shadow-modal:0 20px 60px rgba(0,0,0,0.6);
+  /* Kept only as the one-line revert Lineup also keeps - nothing switches
+     this on today. */
+  :root[data-theme="light"]{
+    --accent:#875228; --accent-strong:#875228; --accent-soft:rgba(135,82,40,0.12); --accent-ink:#ffffff;
+    --surface:#ffffff; --surface-raised:#faf6ef; --page:#faf6ef;
+    --ink:#1c3a2b; --ink-secondary:#3f5b4c; --ink-muted:#6b7f73;
+    --border:rgba(28,58,43,0.14); --grid:#e7e0d2; --baseline:#cfc6b0;
+    --display:#88301c;
+    --good:#2f7a3d; --good-soft:#e3f1e5; --warning:#88621d; --warning-soft:#f8ecd3;
+    --serious:#a1471f; --serious-soft:#f6e2d6; --critical:#b3313a; --critical-soft:#f7dcdd;
+    --cat-1:#88301c; --cat-2:#88621d; --cat-3:#1c3a2b; --cat-4:#935026; --cat-5:#a1471f; --cat-6:#6b7f73;
+    --shadow-card:0 1px 2px rgba(28,58,43,0.06), 0 1px 1px rgba(28,58,43,0.04);
+    --shadow-modal:0 20px 60px rgba(28,58,43,0.18);
+    color-scheme: light;
   }
 
   *{box-sizing:border-box;}
-  body{background:var(--page); color:var(--ink); font-family:var(--font-sans); padding-inline:0;}
+  html{background:var(--page);}
+  body{
+    background:
+      linear-gradient(160deg,
+        color-mix(in srgb, #e0633f 11%, var(--page)) 0%,
+        var(--page) 42%,
+        color-mix(in srgb, #fbbf56 13%, var(--page)) 100%);
+    background-attachment:fixed;
+    color:var(--ink); font-family:var(--font-sans); padding-inline:0;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* Same grain recipe as Lineup and the hub, so all three read as one
+     house rather than three separately-styled tools. */
+  body::before{
+    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    filter:contrast(170%) brightness(1000%); mix-blend-mode:overlay;
+  }
+  :root[data-theme="light"] body::before{ opacity:.12; }
+  #app, #modalRoot, #authGate, .toast-stack{ position:relative; z-index:1; }
   #app{min-height:100%; display:flex; flex-direction:column;}
   button, input, select, textarea{font:inherit; color:inherit;}
   h1,h2,h3,h4{margin:0; text-wrap:balance; font-weight:700;}
+  h1,h2{font-family:var(--font-display); font-weight:600; color:var(--display); letter-spacing:-.01em;}
   p{margin:0;}
   a{color:var(--accent);}
   .num{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
@@ -70,7 +93,7 @@
     width:34px; height:34px; border-radius:9px; background:var(--accent); color:var(--accent-ink);
     display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; flex:none;
   }
-  .brand-text h1{font-size:16px; letter-spacing:-0.01em;}
+  .brand-text h1{font-size:17px; font-weight:700; letter-spacing:-0.01em;}
   .brand-text .sub{font-size:11.5px; color:var(--ink-muted); text-transform:uppercase; letter-spacing:0.06em;}
   .sync-chip{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-muted);}
   .sync-dot{width:7px; height:7px; border-radius:50%; background:var(--good); flex:none;}
@@ -93,7 +116,7 @@
   @media (max-width:640px){ main{padding:14px;} header.topbar{padding:12px 14px;} nav.tabs{padding:8px 10px; top:calc(env(safe-area-inset-top,0px) + 58px);} }
 
   .panel-head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .panel-head h2{font-size:19px;}
+  .panel-head h2{font-size:23px;}
   .panel-head .desc{font-size:13px; color:var(--ink-muted); margin-top:2px;}
 
   .btn{
