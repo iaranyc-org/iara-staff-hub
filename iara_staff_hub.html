@@ -918,7 +918,7 @@ function renderFbGrid(){
     var editBtn = fbAdminUnlocked ? '<button class="dish-edit" data-id="'+it.id+'">Edit</button>' : '';
     var pron = it.pronunciation ? '<span class="pron">('+it.pronunciation+')</span>' : '';
     var speakText = it.speak || "";
-    var speakBtn = (it.pronunciation && speakText) ? ' <button class="speak-btn" data-say="'+speakText.replace(/"/g,'&quot;')+'" title="Hear pronunciation" aria-label="Hear pronunciation">&#128266;</button>' : '';
+    var speakBtn = (it.pronunciation && speakText) ? ' <button class="speak-btn" data-say="'+esc(speakText)+'" data-id="'+esc(it.id)+'" title="Hear pronunciation" aria-label="Hear how to say '+esc(it.name)+'">&#128266;</button>' : '';
     var price = it.price ? '<span class="price">'+it.price+'</span>' : '';
     return '<div class="card dish">'+editBtn+
       (it.example ? '<span class="badge badge-example">Example</span> ' : '') +
@@ -934,7 +934,7 @@ function renderFbGrid(){
   grid.querySelectorAll(".speak-btn").forEach(function(b){
     b.addEventListener("click", function(ev){
       ev.stopPropagation();
-      speakDish(b.getAttribute("data-say"));
+      speakDish(b.getAttribute("data-say"), b.getAttribute("data-id"));
     });
   });
   if (fbAdminUnlocked) {
@@ -994,43 +994,72 @@ document.getElementById("fb-admin-btn").addEventListener("click", function(){
 });
 
 var ptVoice = null;
+var NOVELTY_VOICE_NAMES = ["albert","bad news","bahh","bells","boing","bubbles","cellos","eddy","flo",
+  "good news","grandma","grandpa","jester","junior","kathy","organ","reed","rocko","sandy","shelley",
+  "superstar","trinoids","whisper","wobble","zarvox"];
+var PREFERRED_PT_VOICES = ["luciana","francisca","camila","vitoria","vit\u00f3ria","joana","ricardo","daniel"];
 var MALE_PT_VOICE_HINTS = ["male","daniel","ricardo","felipe","joaquim","diego","antonio","antônio","rodrigo","bruno","francisco"];
 function loadPtVoice(){
   if (!window.speechSynthesis) return;
   var voices = window.speechSynthesis.getVoices();
-  // Prefer an explicit Brazilian Portuguese voice — by locale code first, then by name
-  // (some browsers expose a Brazilian voice under a generic "pt" locale but name it
-  // "Brazil"/"Brasil"). Only fall back to European Portuguese if no Brazilian voice exists,
-  // since a pt-PT voice does not sound Brazilian. Note: on a device/browser with no
-  // Portuguese voice installed at all, speech synthesis will fall back to a default
-  // system voice that won't sound Brazilian or Portuguese no matter what's set here —
-  // that's a limitation of the browser's installed voices, not a setting in this app.
-  var byLocale = voices.filter(function(v){ return v.lang === "pt-BR"; });
-  var byName = voices.filter(function(v){
+  function isNovelty(v){
     var n = v.name.toLowerCase();
-    return n.indexOf("brazil") !== -1 || n.indexOf("brasil") !== -1;
-  });
-  var ptBR = byLocale.length ? byLocale : byName;
+    return NOVELTY_VOICE_NAMES.some(function(bad){ return n.indexOf(bad) !== -1; });
+  }
+  // Brazilian first; only fall back to European Portuguese if there is no pt-BR voice,
+  // since pt-PT does not sound Brazilian.
+  var ptBR = voices.filter(function(v){ return v.lang === "pt-BR"; });
+  if (!ptBR.length) {
+    ptBR = voices.filter(function(v){
+      var n = v.name.toLowerCase();
+      return n.indexOf("brazil") !== -1 || n.indexOf("brasil") !== -1;
+    });
+  }
   var ptAny = voices.filter(function(v){ return v.lang && v.lang.toLowerCase().indexOf("pt") === 0; });
-  var ptVoices = ptBR.length ? ptBR : ptAny;
-  var male = ptVoices.find(function(v){
-    var n = v.name.toLowerCase();
-    return MALE_PT_VOICE_HINTS.some(function(hint){ return n.indexOf(hint) !== -1; });
+  var pool = (ptBR.length ? ptBR : ptAny).filter(function(v){ return !isNovelty(v); });
+  if (!pool.length) pool = (ptBR.length ? ptBR : ptAny);
+  // Prefer a known-good natural voice by name before falling back to list order.
+  var preferred = null;
+  PREFERRED_PT_VOICES.some(function(want){
+    preferred = pool.find(function(v){ return v.name.toLowerCase().indexOf(want) !== -1; });
+    return !!preferred;
   });
-  ptVoice = male || ptVoices[0] || null;
+  ptVoice = preferred || pool[0] || null;
 }
+
+// loadPtVoice() was never invoked, so ptVoice stayed null and synthesis fell back to
+// the browser default voice. Chrome also populates getVoices() asynchronously, so we
+// bind once now and again when the list arrives.
 if (window.speechSynthesis) {
   loadPtVoice();
-  window.speechSynthesis.onvoiceschanged = loadPtVoice;
+  window.speechSynthesis.addEventListener("voiceschanged", loadPtVoice);
 }
-function speakDish(name){
-  if (!window.speechSynthesis) { alert("Spoken pronunciation isn't supported in this browser."); return; }
+
+var dishAudio = null;
+function speakDish(name, id){
+  // A pre-rendered pt-BR clip sounds the same on every device. Synthesis does not,
+  // so it is only a fallback for items with no recording yet.
+  if (id) {
+    if (dishAudio) { dishAudio.pause(); dishAudio = null; }
+    var a = new Audio("audio/" + id + ".mp3");
+    dishAudio = a;
+    var fellBack = false;
+    a.addEventListener("error", function(){
+      if (fellBack) return; fellBack = true; speakSynth(name);
+    });
+    a.play().catch(function(){ if (!fellBack) { fellBack = true; speakSynth(name); } });
+    return;
+  }
+  speakSynth(name);
+}
+function speakSynth(name){
+  if (!window.speechSynthesis) return;
   window.speechSynthesis.cancel();
   var utter = new SpeechSynthesisUtterance(name);
   utter.lang = "pt-BR";
   if (ptVoice) utter.voice = ptVoice;
-  utter.pitch = 0.9;
-  utter.rate = 0.7;
+  utter.pitch = 0.95;
+  utter.rate = 0.75;
   window.speechSynthesis.speak(utter);
 }
 
