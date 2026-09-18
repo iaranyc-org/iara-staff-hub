@@ -878,7 +878,7 @@
           <span class="sc-date mono" id="home-date"></span>
         </div>
         <h1 class="sc-name">Evening, <span id="home-name">there</span>.</h1>
-        <p class="sc-sub">Start with the manual. Study the menu until it sticks.</p>
+        <p class="sc-sub">Manual, menu, study, then the Final Exam — aim to finish within your first week. The Lore is worth a look too, whenever you have a minute.</p>
         <div class="sc-rule"></div>
         <p class="sc-blank" id="sc-blank" hidden>Your record shows up here once you have run a test.</p>
         <div class="sc-stats">
@@ -897,7 +897,10 @@
         <li><button class="jump" data-view="fnb"><span class="sl-n mono">02</span>
           <span class="sl-t">Learn the Menu</span>
           <span class="sl-d">Every dish, how to say it, what it sets off.</span></button></li>
-        <li><button class="jump" data-view="quiz"><span class="sl-n mono">03</span>
+        <li><button class="jump" data-view="study"><span class="sl-n mono">03</span>
+          <span class="sl-t">Study</span>
+          <span class="sl-d">Flashcards and a daily lineup, a few minutes at a time.</span></button></li>
+        <li><button class="jump" data-view="quiz"><span class="sl-n mono">04</span>
           <span class="sl-t">Take the Final Exam</span>
           <span class="sl-d">Find out what you actually know.</span></button></li>
       </ol>
@@ -2761,7 +2764,7 @@ var CHECKLIST = [
   { group:"Before your first shift", items:[
     { id:"handbook", label:"Read the Employee Handbook",
       help:"Your manager will give you the link or a printed copy." },
-    { id:"handbook-sign", label:"Sign the handbook acknowledgement",
+    { id:"handbook-sign", label:"Sign the Employee Handbook acknowledgment",
       help:"Hand the signed page back to your manager." },
     { id:"paperwork", label:"Finish your onboarding paperwork in Toast",
       help:"Tax forms and direct deposit. Ask your manager if you have not had the invite." }
@@ -2772,12 +2775,22 @@ var CHECKLIST = [
     { id:"uniform", label:"Pick up your iara t-shirts",
       help:"Front and back of house are both provided two." },
     { id:"lineup-app", label:"Add this app to your phone home screen",
-      help:"Open it in your browser, press Share, then Add to Home Screen. It works offline once installed." }
+      help:"Open it in your browser, press Share, then Add to Home Screen. It works offline once installed." },
+    { id:"email-sig", label:"Set up your email signature",
+      optional:true, help:"Ask your manager for the template." }
   ]},
   { group:"Follow the restaurant", items:[
     { id:"ig-follow", label:"Follow @iara.nyc on Instagram",
       href:"https://instagram.com/iara.nyc",
       help:"Most of what guests see about us starts here." },
+    { id:"li-follow", label:"Follow iara on LinkedIn",
+      href:"https://www.linkedin.com/company/iaranyc/",
+      help:"Where press, hiring, and industry news about us shows up first." },
+    { id:"ca-follow", label:"Follow iara on Culinary Agents",
+      href:"https://culinaryagents.com/entities/1102076-iara/business_profile",
+      help:"Where most of the team found this job in the first place." },
+    { id:"li-banner", label:"Download the LinkedIn banner graphic",
+      optional:true, help:"Ask your manager for the link once it is ready." },
     { id:"ig-share", label:"Share the opening announcement to your story",
       optional:true, help:"Optional, but it genuinely helps before we open." }
   ]},
@@ -2792,7 +2805,7 @@ var CHECKLIST = [
   { group:"On the floor", items:[
     { id:"trail-1", label:"Complete your first trail shift" },
     { id:"trail-2", label:"Complete your second trail shift" },
-    { id:"signoff", label:"Manager sign-off that you are ready for your own section",
+    { id:"signoff", label:"Get manager sign-off that you are ready for your own section",
       manager:true, help:"Your manager ticks this one." }
   ]}
 ];

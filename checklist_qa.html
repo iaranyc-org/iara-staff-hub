@@ -1,0 +1,84 @@
+<meta charset="utf-8"><title>checklist QA</title>
+<style>:root{
+    --ink:#faf6f0;
+    --ink-soft:#b3a695;
+    --ink-mid:#ded5c7;
+    --paper:#391d1f;
+    --paper-raised:#4a2528;
+    --line:#5f3b3e;
+    --forest:#e0633f;
+    --forest-ink:#2a1206;
+    --sun:#fbbf56;
+    --sun-ink:#391d1f;
+    --river:#e8cbab;
+    --clay:#fbbf56;
+    --clay-ink:#391d1f;
+    --sidebar:#2b1517;
+    --sidebar-ink:#faf6f0;
+    --sidebar-muted:#c9bfae;
+    --display:#e8cbab;
+    --measure:660px;
+    --measure-wide:820px;
+    --rule:#5a3a3c;
+    --rule-strong:#7a5153;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+body{background:var(--paper);color:var(--ink);font-family:'Inter',system-ui,sans-serif;margin:0;padding:20px;max-width:640px;}
+  .cl-summary{ background:none; border:none; border-bottom:1px solid var(--rule);
+    border-radius:0; box-shadow:none; padding:0 0 18px; max-width:var(--measure); }
+  .cl-count{ font-size:16px; font-weight:700; margin-bottom:12px; }
+  .cl-group{ font-size:12px;  letter-spacing:.01em;
+    color:var(--sun); font-family:'Instrument Sans',system-ui,sans-serif; font-weight:700;
+    margin:30px 0 8px; }
+  .cl-list{ background:none; border:none; border-radius:0; box-shadow:none;
+    padding:0; max-width:var(--measure); border-top:1px solid var(--rule); }
+  .cl-item{ padding:16px 2px; border-bottom:1px solid var(--rule); }
+  .cl-item:last-child{ border-bottom:none; }
+  .cl-item label{ display:flex; align-items:flex-start; gap:11px; cursor:pointer; }
+  .cl-item input{ width:17px; height:17px; margin-top:2px; accent-color:var(--sun); flex:none; cursor:pointer; }
+  .cl-item input:disabled{ cursor:default; }
+  .cl-text{ font-size:16px; line-height:1.5; }
+  .cl-item.is-done .cl-text{ color:var(--ink-soft); text-decoration:line-through; }
+  .cl-tag{ display:inline-block; margin-left:8px; font-size:12px; font-weight:700; letter-spacing:.01em;
+     color:var(--display); border:1px solid var(--line); border-radius:4px;
+    padding:1px 6px; vertical-align:middle; text-decoration:none; }
+  .cl-tag-soft{ opacity:.75; }
+  .cl-help{ margin:6px 0 0 28px; font-size:14px; color:var(--ink-soft); line-height:1.55; }
+  .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:6px; box-shadow:var(--shadow); }
+  .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
+</style>
+
+<h2 class="cl-group">Get set up</h2><div class="card cl-list">
+  <div class="cl-item">
+    <label><input type="checkbox"><span class="cl-text">Add this app to your phone home screen</span></label>
+    <p class="cl-help">Open it in your browser, press Share, then Add to Home Screen. It works offline once installed.</p>
+  </div>
+  <div class="cl-item">
+    <label><input type="checkbox"><span class="cl-text">Set up your email signature<span class="cl-tag cl-tag-soft">Optional</span></span></label>
+    <p class="cl-help">Ask your manager for the template.</p>
+  </div>
+</div>
+
+<h2 class="cl-group">Follow the restaurant</h2><div class="card cl-list">
+  <div class="cl-item">
+    <label><input type="checkbox"><span class="cl-text">Follow @iara.nyc on Instagram</span></label>
+    <p class="cl-help">Most of what guests see about us starts here.</p>
+  </div>
+  <div class="cl-item">
+    <label><input type="checkbox"><span class="cl-text">Follow iara on LinkedIn</span></label>
+    <p class="cl-help">Where press, hiring, and industry news about us shows up first.</p>
+  </div>
+  <div class="cl-item">
+    <label><input type="checkbox"><span class="cl-text">Follow iara on Culinary Agents</span></label>
+    <p class="cl-help">Where most of the team found this job in the first place.</p>
+  </div>
+  <div class="cl-item">
+    <label><input type="checkbox"><span class="cl-text">Download the LinkedIn banner graphic<span class="cl-tag cl-tag-soft">Optional</span></span></label>
+    <p class="cl-help">Ask your manager for the link once it is ready.</p>
+  </div>
+  <div class="cl-item is-done">
+    <label><input type="checkbox" checked><span class="cl-text">Share the opening announcement to your story<span class="cl-tag cl-tag-soft">Optional</span></span></label>
+    <p class="cl-help">Optional, but it genuinely helps before we open.</p>
+  </div>
+</div>
