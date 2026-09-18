@@ -537,8 +537,8 @@
     color:var(--display); letter-spacing:.01em; flex:none; max-width:78%; }
   .leader{ flex:1; min-width:16px; align-self:flex-end; position:relative; bottom:4px;
     border-bottom:1.5px dotted var(--rule-strong); }
-  .dish-line .price{ flex:none; font-family:'IBM Plex Mono',monospace; font-size:13px;
-    color:var(--ink); font-weight:500; font-variant-numeric:tabular-nums; }
+  .dish-line .price{ flex:none; font-family:'IBM Plex Mono',monospace; font-size:16px;
+    color:var(--sun); font-weight:700; font-variant-numeric:tabular-nums; }
   .dish .desc{ margin:8px 0 0; font-size:15.5px; line-height:1.65; color:var(--ink-mid); max-width:56ch; }
   .dish .allerg{ margin-top:9px; }
   .dish .badge-example{ margin-left:8px; vertical-align:middle; }
@@ -678,6 +678,20 @@
     .dish-line h4{ flex:1 1 auto; }
   }
   .fb-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+  .fb-lens{ display:flex; gap:8px; margin-bottom:18px; }
+  .fb-lens-btn{
+    font:inherit; font-size:13.5px; font-weight:700; letter-spacing:.01em;
+    padding:0 16px; min-height:44px; border-radius:8px; border:1px solid var(--rule-strong);
+    background:var(--paper); color:var(--ink-mid); cursor:pointer;
+    transition:border-color .12s ease, color .12s ease, background .12s ease;
+  }
+  .fb-lens-btn:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .fb-lens-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .fb-lens-btn.active{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
+  /* Reuses .dish's own list rhythm; "used in" replaces the price/allergen
+     rows since an ingredient is never itself something a guest orders. */
+  .dish .used-in{ margin:9px 0 0; font-size:12.5px; line-height:1.5; color:var(--ink-soft); }
+  .dish .used-in::before{ content:"On the menu in "; color:var(--sun); }
   .used-in{ margin:10px 0 0; font-size:12.5px; color:var(--ink-soft); line-height:1.45; }
   .used-in span{  letter-spacing:.01em; font-size:12px; font-weight:700; color:var(--display); }
 
@@ -968,24 +982,28 @@
     <!-- FOOD & BEVERAGE -->
     <section class="view" id="view-fnb">
       <h1>The Menu</h1>
-      <p class="view-intro">Every dish, what is in it, and what it sets off. Look it up mid-service. Study is where you practice it card by card. <span class="badge badge-example">Example</span> items are stand-ins until the chef confirms the menu.</p>
+      <p class="view-intro">Every dish, what is in it, and what it sets off — or switch to Ingredients for the Amazonian and Brazilian staples behind them. Look it up mid-service. Study is where you practice it card by card. <span class="badge badge-example">Example</span> items are stand-ins until the chef confirms the menu.</p>
 
       <div id="fb-browse">
+        <!-- Dishes vs Ingredients: two lenses on one search and one card
+             design, not a 7th tab next to Starters/Mains/etc - ingredients
+             aren't orderable, and folding them into the course strip would
+             read as if they were. -->
+        <div class="fb-lens" role="tablist" aria-label="Browse dishes or ingredients">
+          <button class="fb-lens-btn active" id="lens-dishes" role="tab" aria-selected="true">Dishes</button>
+          <button class="fb-lens-btn" id="lens-ingredients" role="tab" aria-selected="false">Ingredients</button>
+        </div>
         <div class="manual-search">
           <label class="sr-only" for="fb-q">Search the menu</label>
           <input id="fb-q" type="search" autocomplete="off"
                  placeholder="Search dishes and allergens, e.g. tucupi, dairy, shellfish">
           <p class="manual-count" id="fb-count" hidden></p>
         </div>
-        <div class="fb-toolbar">
+        <div class="fb-toolbar" id="fb-toolbar">
           <div class="fb-tabs" id="fb-tabs"></div>
           <button class="btn btn-ghost btn-small" id="fb-admin-btn">Edit Menu</button>
         </div>
         <div class="dish-grid" id="fb-grid"></div>
-
-        <h2 id="gloss-head" style="margin-top:40px;">Ingredient Glossary</h2>
-        <p class="view-intro" id="gloss-intro" style="margin-bottom:20px;">The Amazonian and Brazilian ingredients you will be asked about on the floor, and the dishes each one turns up in.</p>
-        <div id="fb-glossary"></div>
       </div>
     </section>
 
@@ -1195,20 +1213,34 @@ var FNB_DEFAULTS = [
    DATA: Core ingredient glossary (from FOH training notes)
    ============================================================ */
 var INGREDIENTS = [
-  { term:"Tapioca (bite & fries)", def:"Made from cassava root starch, hardened into pearls. Milk is boiled and poured over the tapioca pearls and cheese mixture, mixed well, set on sheet trays overnight, then cut into cubes or fries." },
-  { term:"Amazon Jambu", def:"A leafy green herb native to the Amazon rainforest, famous for causing a tingling, numbing sensation on the tongue and lips." },
-  { term:"Tucupi", def:"A bright yellow, tangy sauce made from the fermented, extracted juice of wild manioc (cassava) root, originating from the Amazon rainforest." },
-  { term:"Pão de Queijo", def:"Traditional Brazilian cheese bread made from cassava flour and cheese." },
-  { term:"Pão de Alho", def:"Brazilian-style garlic bread, known for its ultra-creamy, cheesy filling and smoky flavor when grilled." },
-  { term:"Açaí", def:"A small, dark purple drupe (pit fruit) that grows in clusters on palm trees in the Amazon rainforest. Earthy and unsweetened, tasting like a cross between wild blackberries and dark chocolate." },
-  { term:"Cumaru", def:"The fragrant, dark seed of the Amazonian Dipteryx odorata tree, often called \"Brazilian vanilla.\"" },
-  { term:"Puxuri", def:"An aromatic seed from an Amazonian laurel-family tree (Licaria species), widely known as \"Brazilian nutmeg.\"" },
-  { term:"Moqueca (Baiana)", def:"A rich, vibrant fish stew from Bahia in northeastern Brazil, heavily influenced by African culinary traditions. Built on a base of coconut milk and dendê oil (red palm oil), giving it a golden-orange color and a smoky, floral flavor." },
-  { term:"Picanha", def:"Considered the \"queen of steaks\" in Brazil and the centerpiece of traditional churrascarias. A triangular cut of beef from the top of the rump where it meets the sirloin (also called top sirloin cap, rump cap, rump cover, or coulotte steak). Lean and tender, with a signature thick fat cap that bastes the steak as it cooks." },
-  { term:"Feijão Manteiguinha", def:"A tiny, delicate heirloom bean from the Amazon region (often called feijão manteiguinha de Santarém), known for its buttery texture and mild, slightly sweet flavor." },
-  { term:"Farofa", def:"A traditional Brazilian side dish and seasoning made from toasted cassava (manioc) flour." },
-  { term:"Cupuaçu", def:"A tropical rainforest tree and its melon-sized fruit, native to the Amazon basin and closely related to the cacao plant." },
-  { term:"Brigadeiro", def:"A traditional Brazilian dessert that tastes like a soft, fudgy chocolate truffle." },
+  { id:"ing-tapioca", term:"Tapioca (bite & fries)", pronunciation:"tah-pee-OH-kah", speak:"Tapioca",
+    def:"Made from cassava root starch, hardened into pearls. Milk is boiled and poured over the tapioca pearls and cheese mixture, mixed well, set on sheet trays overnight, then cut into cubes or fries." },
+  { id:"ing-jambu", term:"Amazon Jambu", pronunciation:"zhahm-BOO", speak:"Jambu",
+    def:"A leafy green herb native to the Amazon rainforest, famous for causing a tingling, numbing sensation on the tongue and lips." },
+  { id:"ing-tucupi", term:"Tucupi", pronunciation:"too-koo-PEE", speak:"Tucupi",
+    def:"A bright yellow, tangy sauce made from the fermented, extracted juice of wild manioc (cassava) root, originating from the Amazon rainforest." },
+  { id:"ing-paodequeijo", term:"Pão de Queijo", pronunciation:"pown deh KAY-zhoo", speak:"Pão de Queijo",
+    def:"Traditional Brazilian cheese bread made from cassava flour and cheese." },
+  { id:"ing-paodealho", term:"Pão de Alho", pronunciation:"pown deh AHL-yoo", speak:"Pão de Alho",
+    def:"Brazilian-style garlic bread, known for its ultra-creamy, cheesy filling and smoky flavor when grilled." },
+  { id:"ing-acai", term:"Açaí", pronunciation:"ah-sah-EE", speak:"Açaí",
+    def:"A small, dark purple drupe (pit fruit) that grows in clusters on palm trees in the Amazon rainforest. Earthy and unsweetened, tasting like a cross between wild blackberries and dark chocolate." },
+  { id:"ing-cumaru", term:"Cumaru", pronunciation:"koo-mah-ROO", speak:"Cumaru",
+    def:"The fragrant, dark seed of the Amazonian Dipteryx odorata tree, often called \"Brazilian vanilla.\"" },
+  { id:"ing-puxuri", term:"Puxuri", pronunciation:"poo-shoo-REE", speak:"Puxuri",
+    def:"An aromatic seed from an Amazonian laurel-family tree (Licaria species), widely known as \"Brazilian nutmeg.\"" },
+  { id:"ing-moqueca", term:"Moqueca (Baiana)", pronunciation:"mo-KEH-kah", speak:"Moqueca",
+    def:"A rich, vibrant fish stew from Bahia in northeastern Brazil, heavily influenced by African culinary traditions. Built on a base of coconut milk and dendê oil (red palm oil), giving it a golden-orange color and a smoky, floral flavor." },
+  { id:"ing-picanha", term:"Picanha", pronunciation:"pee-KAH-nyah", speak:"Picanha",
+    def:"Considered the \"queen of steaks\" in Brazil and the centerpiece of traditional churrascarias. A triangular cut of beef from the top of the rump where it meets the sirloin (also called top sirloin cap, rump cap, rump cover, or coulotte steak). Lean and tender, with a signature thick fat cap that bastes the steak as it cooks." },
+  { id:"ing-feijao", term:"Feijão Manteiguinha", pronunciation:"fay-ZHOW mahn-tay-GEEN-yah", speak:"Feijão Manteiguinha",
+    def:"A tiny, delicate heirloom bean from the Amazon region (often called feijão manteiguinha de Santarém), known for its buttery texture and mild, slightly sweet flavor." },
+  { id:"ing-farofa", term:"Farofa", pronunciation:"fah-ROH-fah", speak:"Farofa",
+    def:"A traditional Brazilian side dish and seasoning made from toasted cassava (manioc) flour." },
+  { id:"ing-cupuacu", term:"Cupuaçu", pronunciation:"koo-poo-ah-SOO", speak:"Cupuaçu",
+    def:"A tropical rainforest tree and its melon-sized fruit, native to the Amazon basin and closely related to the cacao plant." },
+  { id:"ing-brigadeiro", term:"Brigadeiro", pronunciation:"bree-gah-DAY-roh", speak:"Brigadeiro",
+    def:"A traditional Brazilian dessert that tastes like a soft, fudgy chocolate truffle." },
 ];
 
 /* ============================================================
@@ -1887,6 +1919,7 @@ function renderLore(){
    ============================================================ */
 var fbItems = FNB_DEFAULTS.slice();
 var fbActiveCat = "Starters";
+var fbLens = "dishes"; // "dishes" | "ingredients", two lenses on one search
 var fbAdminUnlocked = false;
 
 async function loadFbItems(){
@@ -1921,7 +1954,36 @@ function fbMatches(it, term){
   return hay.indexOf(term) !== -1;
 }
 
+function renderIngredientCards(){
+  var grid = document.getElementById("fb-grid");
+  var term = fbQuery.trim().toLowerCase();
+  var items = term
+    ? INGREDIENTS.filter(function(it){ return (it.term + " " + it.def).toLowerCase().indexOf(term) !== -1; })
+    : INGREDIENTS;
+  var fbCount = document.getElementById("fb-count");
+  if (fbCount) {
+    fbCount.hidden = !term || !items.length;
+    if (term && items.length) fbCount.textContent =
+      items.length + (items.length === 1 ? " ingredient matches" : " ingredients match");
+  }
+  var html = items.map(function(it){
+    var pron = it.pronunciation ? '<span class="pron">('+it.pronunciation+')</span>' : '';
+    var speakBtn = (it.pronunciation && it.speak) ? sayControl(it.term, it.id, it.speak) : '';
+    var used = dishesForIngredient(it).map(function(d){ return d.name; });
+    return '<article class="dish">' +
+      '<div class="dish-line"><h4>'+esc(it.term)+'</h4></div>' +
+      (pron ? '<div class="pron-line">'+speakBtn+pron+'</div>' : '') +
+      '<p class="desc">'+esc(it.def)+'</p>' +
+      (used.length ? '<p class="used-in">'+esc(used.join(", "))+'</p>' : '') +
+      '</article>';
+  }).join("");
+  grid.innerHTML = html || '<div class="empty"><p class="empty-h">No match for that.</p>' +
+    '<p class="empty-b">Try a shorter word.</p></div>';
+  bindSayButtons(grid);
+}
+
 function renderFbGrid(){
+  if (fbLens === "ingredients") { renderIngredientCards(); return; }
   var grid = document.getElementById("fb-grid");
   var term = fbQuery.trim().toLowerCase();
   var items = term
@@ -1971,11 +2033,29 @@ function renderFbGrid(){
     var ft = null;
     fq.addEventListener("input", function(){
       clearTimeout(ft);
-      ft = setTimeout(function(){ fbQuery = fq.value; renderFbGrid(); renderGlossary(); }, 120);
+      ft = setTimeout(function(){ fbQuery = fq.value; renderFbGrid(); }, 120);
     });
     fq.addEventListener("keydown", function(ev){
-      if (ev.key === "Escape") { fq.value = ""; fbQuery = ""; renderFbGrid(); renderGlossary(); fq.blur(); }
+      if (ev.key === "Escape") { fq.value = ""; fbQuery = ""; renderFbGrid(); fq.blur(); }
     });
+  }
+  var lensDishes = document.getElementById("lens-dishes");
+  var lensIngredients = document.getElementById("lens-ingredients");
+  var toolbar = document.getElementById("fb-toolbar");
+  if (lensDishes && !lensDishes.dataset.bound) {
+    lensDishes.dataset.bound = "1";
+    lensIngredients.dataset.bound = "1";
+    function setLens(which){
+      fbLens = which;
+      lensDishes.classList.toggle("active", which === "dishes");
+      lensIngredients.classList.toggle("active", which === "ingredients");
+      lensDishes.setAttribute("aria-selected", String(which === "dishes"));
+      lensIngredients.setAttribute("aria-selected", String(which === "ingredients"));
+      toolbar.hidden = which !== "dishes";
+      renderFbGrid();
+    }
+    lensDishes.addEventListener("click", function(){ setLens("dishes"); });
+    lensIngredients.addEventListener("click", function(){ setLens("ingredients"); });
   }
   if (fbAdminUnlocked) {
     var addBtn = document.getElementById("fb-add");
@@ -3073,29 +3153,6 @@ document.addEventListener("click", function(){
 });
 
 
-function renderGlossary(){
-  var wrap = document.getElementById("fb-glossary");
-  var term = (fbQuery || "").trim().toLowerCase();
-  var list = term
-    ? INGREDIENTS.filter(function(it){
-        return (it.term + " " + it.def).toLowerCase().indexOf(term) !== -1;
-      })
-    : INGREDIENTS;
-  var head = document.getElementById("gloss-head");
-  var intro = document.getElementById("gloss-intro");
-  if (head)  head.hidden  = term && !list.length;
-  if (intro) intro.hidden = !!term;
-  if (term && !list.length) { wrap.innerHTML = ""; return; }
-  wrap.innerHTML = '<dl class="gloss-list">' + list.map(function(it){
-    var used = dishesForIngredient(it).map(function(d){ return d.name; });
-    return '<div class="gloss-row">' +
-      '<dt>'+esc(it.term)+'</dt>' +
-      '<dd><p class="gloss-def">'+esc(it.def)+'</p>' +
-      (used.length ? '<p class="gloss-in">'+esc(used.join(", "))+'</p>' : '') +
-      '</dd></div>';
-  }).join("") + '</dl>';
-}
-
 /* ============================================================
    Quiz
    ============================================================ */
@@ -3556,7 +3613,6 @@ async function boot(data){
   await loadFbItems();
   renderFbTabs();
   renderFbGrid();
-  renderGlossary();
   renderQuizPicker();
 
   var existing = (data && data.profile) ? data.profile : loadProfile();
