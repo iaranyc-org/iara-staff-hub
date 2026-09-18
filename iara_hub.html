@@ -149,6 +149,39 @@
     .app-card{ padding:16px 16px; gap:12px; }
     .app-glyph{ width:38px; height:38px; font-size:17px; }
   }
+
+  /* ===================== App switch + panel ===================== */
+  .app-switch{ display:flex; gap:8px; margin-bottom:16px; }
+  .switch-btn{
+    flex:1; display:flex; align-items:center; justify-content:center; gap:9px;
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;
+    padding:13px 14px; min-height:44px; font:inherit; font-weight:700; font-size:14px;
+    color:var(--ink-soft); cursor:pointer; transition:border-color .12s ease, color .12s ease, background .12s ease;
+  }
+  .switch-btn:hover{ color:var(--ink); }
+  .switch-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .switch-btn.active{ color:var(--ink); border-color:var(--sun); background:color-mix(in srgb, var(--sun) 10%, var(--paper-raised)); }
+  .switch-glyph{
+    flex:none; width:24px; height:24px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center;
+    font-family:'Fraunces',serif; font-size:12.5px; background:var(--sun); color:var(--sun-ink);
+  }
+  .card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;
+    padding:24px 22px; box-shadow:var(--shadow); position:relative;
+  }
+  .card::before{
+    content:""; position:absolute; inset:0 0 auto 0; height:1px; border-radius:inherit;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,.10) 22%, rgba(255,255,255,.10) 78%, transparent);
+    pointer-events:none;
+  }
+  .panel-desc{ margin:0 0 20px; font-size:13.5px; color:var(--ink-soft); line-height:1.55; }
+  .panel-desc .app-badge{ margin-left:6px; vertical-align:1px; }
+  #panel-lineup .field:last-of-type{ margin-bottom:22px; }
+  .field select{
+    width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line);
+    background:var(--paper); color:var(--ink); font:inherit; font-size:15px;
+  }
+  .field select:focus{ outline:2px solid var(--river); outline-offset:1px; border-color:var(--river); }
 </style>
 <script>
   document.documentElement.classList.add("booting");
@@ -179,24 +212,50 @@
       <span class="word">Staff</span>
     </div>
 
-    <div class="apps">
-      <a class="app-card" href="/lineup">
-        <span class="app-glyph" aria-hidden="true">L</span>
-        <span class="app-body">
-          <span class="app-title">iara Lineup</span>
-          <span class="app-desc">Service manual, the menu with pronunciations, and pre-shift practice.</span>
-        </span>
-        <span class="app-arrow" aria-hidden="true">→</span>
-      </a>
+    <!-- Which app, before anything else: the two audiences want two
+         different things from this page (a shift vs. inventory), so the
+         picker decides what the rest of the panel below it asks for,
+         rather than showing both apps as identical link-out cards. -->
+    <div class="app-switch" role="tablist" aria-label="Choose an app">
+      <button class="switch-btn active" id="switch-lineup" role="tab" aria-selected="true">
+        <span class="switch-glyph" aria-hidden="true">L</span> iara Lineup
+      </button>
+      <button class="switch-btn" id="switch-ops" role="tab" aria-selected="false">
+        <span class="switch-glyph" aria-hidden="true">K</span> Kitchen Ops
+      </button>
+    </div>
 
-      <a class="app-card" href="/ops">
-        <span class="app-glyph" aria-hidden="true">K</span>
-        <span class="app-body">
-          <span class="app-title">iara Kitchen Ops <span class="app-badge">Manager</span></span>
-          <span class="app-desc">Ingredient costing, inventory counts, and purchasing.</span>
-        </span>
-        <span class="app-arrow" aria-hidden="true">→</span>
-      </a>
+    <div class="app-panel card" id="panel-lineup">
+      <p class="panel-desc">Service manual, the menu with pronunciations, and pre-shift practice.</p>
+      <form id="lineup-form">
+        <div class="field">
+          <label for="ll-name">Your name</label>
+          <input id="ll-name" type="text" required autocomplete="name" placeholder="e.g. Jordan Alves">
+        </div>
+        <div class="field">
+          <label for="ll-role">Your role</label>
+          <select id="ll-role" required>
+            <option value="" disabled selected>Choose a role</option>
+            <option>Host</option>
+            <option>Server</option>
+            <option>Busser</option>
+            <option>Bartender</option>
+            <option>Food Runner</option>
+            <option>Line Cook</option>
+            <option>Lead Line Cook</option>
+            <option>Prep Cook</option>
+            <option>Dishwasher</option>
+            <option>Barback</option>
+            <option>General Manager</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Continue to Lineup</button>
+      </form>
+    </div>
+
+    <div class="app-panel card" id="panel-ops" hidden>
+      <p class="panel-desc">Ingredient costing, inventory counts, and purchasing. <span class="app-badge">Manager</span></p>
+      <a class="btn btn-primary" href="/ops" style="text-decoration:none;">Continue to Kitchen Ops →</a>
     </div>
   </div>
 </div>
@@ -260,6 +319,46 @@
       err.hidden = false;
       pwField.select();
     });
+  });
+
+  // ---- App switch ----
+  var swLineup = document.getElementById("switch-lineup");
+  var swOps = document.getElementById("switch-ops");
+  var panelLineup = document.getElementById("panel-lineup");
+  var panelOps = document.getElementById("panel-ops");
+  function showPanel(which){
+    var isLineup = which === "lineup";
+    swLineup.classList.toggle("active", isLineup);
+    swOps.classList.toggle("active", !isLineup);
+    swLineup.setAttribute("aria-selected", String(isLineup));
+    swOps.setAttribute("aria-selected", String(!isLineup));
+    panelLineup.hidden = !isLineup;
+    panelOps.hidden = isLineup;
+  }
+  swLineup.addEventListener("click", function(){ showPanel("lineup"); });
+  swOps.addEventListener("click", function(){ showPanel("ops"); });
+
+  // ---- Hand off straight into Lineup, already signed in ----
+  //
+  // Same localStorage key and {id, name, role} shape iara_staff_hub.html's
+  // own gate writes (LS_KEY = "iara_hub_profile_v1"). Its boot() skips its
+  // gate entirely once that key holds a profile AND there is an active
+  // Firebase session - both are already true by the time this fires, since
+  // the hub's own gate just did the real sign-in. Filling this in a second
+  // time inside Lineup is exactly the redundant step this page exists to
+  // remove.
+  function uid(){
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
+  }
+  document.getElementById("lineup-form").addEventListener("submit", function(ev){
+    ev.preventDefault();
+    var name = document.getElementById("ll-name").value.trim();
+    var role = document.getElementById("ll-role").value;
+    if (!name || !role) return;
+    var profile = { id: uid(), name: name, role: role };
+    try { localStorage.setItem("iara_hub_profile_v1", JSON.stringify(profile)); } catch(e){}
+    location.href = "/lineup#/home";
   });
 })();
 </script>
