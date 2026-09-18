@@ -214,26 +214,60 @@
   }
   .topbar .word{ font-family:'Fraunces',serif; font-weight:700; font-size:17px; }
 
-  /* Quick links: Home only, per Jay's own phrasing ("home should also
-     have..."), not a global bar. Only platforms with a real, verified URL -
-     no invented phone number or address, since neither exists anywhere in
-     this app yet and there are two different real addresses depending on
-     context (see feedback_iara_205_allen note), so guessing would be a
-     genuine mistake here, not a placeholder. */
-  .quicklinks{
-    display:flex; gap:8px; flex-wrap:wrap; padding:10px 0 14px;
-    position:sticky; top:0; z-index:4; background:var(--paper);
+  /* Fast Facts: Home only, per Jay's own phrasing ("home should also
+     have..."). Every value here is sourced and verified, never guessed -
+     address and phone come from iara's own Google Business listing,
+     reservations from its live Resy venue page. The public/signage address
+     (205 Allen) is used deliberately, not the legal deed address (201 Allen -
+     see feedback_iara_205_allen note); this card is for staff wayfinding,
+     not paperwork. */
+  .fastfacts{
+    padding:10px 0 14px; position:sticky; top:0; z-index:4; background:var(--paper);
   }
-  .quicklinks a{
+  .ff-card{
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
+    padding:14px 16px;
+  }
+  .ff-title{
+    font-size:11px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 10px;
+  }
+  .ff-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:10px 18px;
+  }
+  .ff-item{ min-width:0; }
+  .ff-label{
+    font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
+    color:var(--ink-soft); margin:0 0 2px;
+  }
+  .ff-value{
+    font-size:14px; line-height:1.35; color:var(--ink); margin:0;
+  }
+  a.ff-value{
+    display:inline-flex; align-items:center; min-height:24px; text-decoration:none;
+    border-bottom:1px solid transparent;
+  }
+  a.ff-value:hover{ border-bottom-color:var(--ink-soft); }
+  a.ff-value:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .ff-btn{
+    background:none; border:none; padding:0; margin:0; font:inherit; color:var(--ink);
+    cursor:pointer; text-align:left; width:100%;
+  }
+  .ff-socials{
+    display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; padding-top:12px;
+    border-top:1px solid var(--line);
+  }
+  .ff-socials a{
     font-size:12.5px; font-weight:700; letter-spacing:.01em; color:var(--ink-soft);
-    background:var(--paper-raised); border:1px solid var(--line); border-radius:100px;
+    background:var(--paper); border:1px solid var(--line); border-radius:100px;
     padding:0 14px; min-height:44px; display:inline-flex; align-items:center;
     transition:color .12s ease, border-color .12s ease;
   }
-  .quicklinks a:hover{ color:var(--ink); border-color:var(--ink-soft); }
-  .quicklinks a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .ff-socials a:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .ff-socials a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   @media (max-width:860px){
-    .quicklinks{ position:sticky; top:48px; background:var(--paper); }
+    .fastfacts{ position:sticky; top:48px; background:var(--paper); }
+    .ff-grid{ grid-template-columns:1fr; }
   }
 
   /* Bottom tab bar (phone) */
@@ -908,11 +942,33 @@
 
     <!-- HOME -->
     <section class="view active" id="view-home">
-      <nav class="quicklinks" aria-label="Follow iara">
-        <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
-        <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
-        <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
-      </nav>
+      <section class="fastfacts" aria-label="Fast facts">
+        <div class="ff-card">
+          <p class="ff-title">Fast Facts</p>
+          <div class="ff-grid">
+            <div class="ff-item">
+              <p class="ff-label">Address</p>
+              <a class="ff-value" href="https://maps.google.com/?q=iara+205+Allen+St+New+York+NY+10002" target="_blank" rel="noopener">205 Allen Street, New York, NY 10002</a>
+            </div>
+            <div class="ff-item">
+              <p class="ff-label">Phone</p>
+              <a class="ff-value" href="tel:+18622308722">(862) 230-8722</a>
+            </div>
+            <div class="ff-item">
+              <p class="ff-label">Reservations</p>
+              <a class="ff-value" href="https://resy.com/cities/new-york-ny/venues/iara" target="_blank" rel="noopener">Resy</a>
+            </div>
+            <div class="ff-item">
+              <button class="jump ff-value ff-btn" data-view="manual">Dress code &rarr; Manual</button>
+            </div>
+          </div>
+          <nav class="ff-socials" aria-label="Follow iara">
+            <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
+            <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
+            <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
+          </nav>
+        </div>
+      </section>
       <div class="shiftcard">
         <div class="sc-head">
           <span class="sc-label">iara &middot; lineup</span>
