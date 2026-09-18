@@ -342,7 +342,7 @@ var CAT_COLOR = {"Appetizer":"var(--cat-1)","Entree":"var(--cat-2)","Side":"var(
 var CAT_COLOR_TEXT = {"Appetizer":"var(--cat-1-text)","Entree":"var(--cat-2-text)","Side":"var(--cat-3-text)","Dessert":"var(--cat-4-text)","Beverage":"var(--cat-5-text)","Prep/Batch":"var(--cat-6-text)"};
 var PO_STATUSES = ["draft","sent","received"];
 var DAY = 86400000;
-var DEPARTMENTS = ["Food","Beverage"];
+var DEPARTMENTS = ["Food","Beverage","Supplies"];
 
 var TABS = [
   {id:"dashboard", label:"Dashboard"},
@@ -414,7 +414,11 @@ function toast(msg, kind){
 /* ---------------- calc helpers ---------------- */
 function unitCostOf(ing){ var upp = num(ing.unitsPerPack); return upp>0 ? num(ing.costPerPack)/upp : 0; }
 function ingredientValue(ing){ return num(ing.onHand) * unitCostOf(ing); }
-function defaultDept(category){ return (category==='Wine' || category==='Liquor' || category==='Beer' || category==='N/A Bev') ? 'Beverage' : 'Food'; }
+function defaultDept(category){
+  if(category==='Wine' || category==='Liquor' || category==='Beer' || category==='N/A Bev') return 'Beverage';
+  if(category==='Maintenance' || category==='Non-Food/Bev' || category==='Other') return 'Supplies';
+  return 'Food';
+}
 function purchaseCategoryOf(ing){
   var cat = ing ? ing.category : null;
   switch(cat){
@@ -1133,7 +1137,7 @@ function renderDashboard(){
   over.slice(0,3).forEach(function(r){ attn.push({t:r.name, s:'Food cost ' + pct(recipeFoodCostPct(r)) + ' vs target ' + pct(r.targetFoodCostPct), tab:'recipes', badge:'warning'}); });
   incr.slice(0,3).forEach(function(x){ attn.push({t:x.ing.name, s:'Cost up ' + pct(x.pctChange,1) + ' (' + money(x.from) + ' → ' + money(x.to) + ')', tab:'ingredients', badge:'serious'}); });
 
-  var foodStats = departmentStats('Food'), bevStats = departmentStats('Beverage');
+  var foodStats = departmentStats('Food'), bevStats = departmentStats('Beverage'), supStats = departmentStats('Supplies');
 
   var html = '<div class="panel-head"><div><h2>Dashboard</h2><div class="desc">Live snapshot of iara’s kitchen costs and stock.</div></div></div>';
   html += '<div class="kpis">'+
@@ -1143,9 +1147,12 @@ function renderDashboard(){
     '<div class="kpi'+(incr.length?' alert':'')+'"><div class="label">Price increases</div><div class="value">'+incr.length+'</div><div class="foot">last 30 days</div></div>'+
   '</div>';
 
-  html += '<div class="kpis" style="grid-template-columns:repeat(2,1fr)">'+
+  html += '<div class="kpis" style="grid-template-columns:repeat(3,1fr)">'+
     '<div class="kpi"><div class="label">Food</div><div class="value">'+pct(foodStats.avgCostPct)+' <span class="hint" style="font-size:12px">cost</span></div><div class="foot">'+money(foodStats.inventoryValue)+' inventory · '+foodStats.itemCount+' items · '+foodStats.recipeCount+' recipes</div></div>'+
     '<div class="kpi"><div class="label">Beverage</div><div class="value">'+pct(bevStats.avgCostPct)+' <span class="hint" style="font-size:12px">cost</span></div><div class="foot">'+money(bevStats.inventoryValue)+' inventory · '+bevStats.itemCount+' items · '+bevStats.recipeCount+' recipes</div></div>'+
+    // Supplies (cleaning, smallwares, maintenance) never sit on a recipe, so
+    // cost-% and recipe count don't mean anything here - just spend and count.
+    '<div class="kpi"><div class="label">Supplies</div><div class="value">'+money(supStats.inventoryValue)+'</div><div class="foot">'+supStats.itemCount+' items tracked</div></div>'+
   '</div>';
 
   html += '<div class="two-col">';
