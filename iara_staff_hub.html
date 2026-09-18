@@ -214,6 +214,28 @@
   }
   .topbar .word{ font-family:'Fraunces',serif; font-weight:700; font-size:17px; }
 
+  /* Quick links: Home only, per Jay's own phrasing ("home should also
+     have..."), not a global bar. Only platforms with a real, verified URL -
+     no invented phone number or address, since neither exists anywhere in
+     this app yet and there are two different real addresses depending on
+     context (see feedback_iara_205_allen note), so guessing would be a
+     genuine mistake here, not a placeholder. */
+  .quicklinks{
+    display:flex; gap:8px; flex-wrap:wrap; padding:10px 0 14px;
+    position:sticky; top:0; z-index:4; background:var(--paper);
+  }
+  .quicklinks a{
+    font-size:12.5px; font-weight:700; letter-spacing:.01em; color:var(--ink-soft);
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:100px;
+    padding:0 14px; min-height:36px; display:inline-flex; align-items:center;
+    transition:color .12s ease, border-color .12s ease;
+  }
+  .quicklinks a:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .quicklinks a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  @media (max-width:860px){
+    .quicklinks{ position:sticky; top:64px; background:var(--paper); }
+  }
+
   /* Bottom tab bar (phone) */
   .bottom-nav{ display:none; position:fixed; left:0; right:0; bottom:0; z-index:20;
     background:var(--paper-raised); border-top:1px solid var(--line);
@@ -872,6 +894,11 @@
 
     <!-- HOME -->
     <section class="view active" id="view-home">
+      <nav class="quicklinks" aria-label="Follow iara">
+        <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
+        <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
+      </nav>
       <div class="shiftcard">
         <div class="sc-head">
           <span class="sc-label">iara &middot; lineup</span>
