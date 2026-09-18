@@ -58,7 +58,8 @@
     --rule-strong:#7a5153;
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
     color-scheme: dark;
-  }
+  
+    --font-display:forevs,'Fraunces',Georgia,serif;}
   :root[data-theme="light"]{
     --ink:#391d1f;
     --ink-soft:#6b5f5a;
@@ -127,7 +128,7 @@
     font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
     -webkit-font-smoothing:antialiased;
   }
-  h1,h2,h3,.display{ font-family:'Fraunces',Georgia,serif; font-weight:400; color:var(--display); text-wrap:balance; letter-spacing:-.01em; }
+  h1,h2,h3,.display{ font-family:var(--font-display); font-weight:700; color:var(--display); text-wrap:balance; letter-spacing:-.01em; }
   .mono{ font-family:'IBM Plex Mono',ui-monospace,monospace; font-variant-numeric:tabular-nums; }
   a{ color:var(--river); }
   button{ font-family:inherit; }
@@ -197,7 +198,7 @@
     width:230px; flex:none; background:var(--sidebar); color:var(--sidebar-ink);
     padding:24px 16px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh;
   }
-  .sb-mark .word{ font-family:'Fraunces',serif; font-weight:700; font-size:16px;
+  .sb-mark .word{ font-family:var(--font-display); font-weight:700; font-size:16px;
     letter-spacing:-.005em; color:var(--sidebar-muted); }
   .sb-mark{ display:flex; align-items:center; gap:10px; padding:4px 10px 22px; }
   .sb-mark-link{ display:inline-flex; align-items:center; gap:10px; border-radius:6px; text-decoration:none; }
@@ -223,7 +224,7 @@
     display:none; align-self:stretch; align-items:center; gap:10px; padding:12px 18px;
     border-bottom:1px solid var(--line); background:var(--paper-raised); position:sticky; top:0; z-index:5;
   }
-  .topbar .word{ font-family:'Fraunces',serif; font-weight:700; font-size:17px; }
+  .topbar .word{ font-family:var(--font-display); font-weight:700; font-size:17px; }
 
   /* Fast Facts: Home only, per Jay's own phrasing ("home should also
      have..."). Every value here is sourced and verified, never guessed -
@@ -367,7 +368,7 @@
 
   /* team bios */
   .bio{ display:grid; grid-template-columns:64px 1fr; gap:16px; padding:20px; margin-bottom:14px; }
-  .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:'Fraunces',serif; font-weight:700; font-size:22px; }
+  .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:22px; }
   .bio h3{ margin:0 0 2px; font-size:18px; }
   .bio .title{ color:var(--river); font-weight:700; font-size:13px;  letter-spacing:.01em; margin-bottom:8px; }
   .bio p{ margin:0; font-size:15.5px; line-height:1.7; color:var(--ink-mid); }
@@ -387,7 +388,7 @@
   .fb-tab.active{ background:var(--forest); color:var(--forest-ink); border-color:var(--forest); }
   .dish-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
   .dish{ padding:16px; position:relative; }
-  .dish h4{ margin:0 0 4px; font-family:'Fraunces',serif; font-size:16.5px; }
+  .dish h4{ margin:0 0 4px; font-family:var(--font-display); font-size:16.5px; }
   .dish .price{ font-family:'IBM Plex Mono',monospace; font-size:12.5px; color:var(--river); font-weight:600; }
   .dish .pron-line{ font-size:12px; color:var(--ink-soft); font-style:italic; margin:6px 0 10px; display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; }
   .say{ display:inline-flex; align-items:center; gap:8px; vertical-align:middle; }
@@ -422,7 +423,7 @@
   .allerg-result{ margin:14px 0 0; padding:16px 18px; border-radius:8px; border:1px solid var(--rule); }
   .allerg-result.is-right{ border-color:var(--sun); background:color-mix(in srgb, var(--sun) 10%, transparent); }
   .allerg-result.is-wrong{ border-color:var(--rule-strong); }
-  .allerg-verdict{ margin:0 0 6px; font-family:'Fraunces',Georgia,serif; font-size:17px; }
+  .allerg-verdict{ margin:0 0 6px; font-family:var(--font-display); font-size:17px; }
   .allerg-line{ margin:2px 0; font-size:14px; color:var(--ink-mid); }
   .dish-edit{ position:absolute; top:14px; right:14px; background:none; border:none; color:var(--ink-soft); cursor:pointer; font-size:12px; text-decoration:underline; }
   .add-dish{ border:1.5px dashed var(--line); background:none; border-radius:6px; display:flex; align-items:center; justify-content:center; min-height:120px; color:var(--ink-soft); font-weight:700; cursor:pointer; }
@@ -431,7 +432,7 @@
   .quiz-pick{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:24px;}
   .quiz-pick button{ padding:22px 16px; text-align:left; cursor:pointer; background:var(--paper-raised); border:1.5px solid var(--line); border-radius:6px; }
   .quiz-pick button:hover{ border-color:var(--river); }
-  .quiz-pick .qname{ font-family:'Fraunces',serif; font-weight:600; font-size:17px; display:block; margin-bottom:4px; }
+  .quiz-pick .qname{ font-family:var(--font-display); font-weight:700; font-size:17px; display:block; margin-bottom:4px; }
   .quiz-pick .qmeta{ font-size:12.5px; color:var(--ink-soft); }
   .qcard{ padding:26px 26px 22px; }
   .qprog{ display:flex; align-items:baseline; gap:12px; flex-wrap:wrap; }
@@ -531,7 +532,7 @@
   .bio:last-child{ border-bottom:none; }
   .avatar{ width:52px; height:52px; border-radius:3px; background:none;
     border:1px solid var(--rule-strong); color:var(--display);
-    font-family:'Fraunces',serif; font-weight:400; font-size:17px; letter-spacing:.02em; }
+    font-family:var(--font-display); font-weight:400; font-size:17px; letter-spacing:.02em; }
   .bio h3{ margin:0; font-size:20px; font-weight:400; }
   .bio .title{ margin:2px 0 8px; font-size:13px; letter-spacing:.01em;
     color:var(--sun); font-weight:600; }
@@ -569,7 +570,7 @@
   .startlist button:hover{ padding-left:10px; }
   .startlist button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
   .sl-n{ grid-row:1 / span 2; font-size:11px; color:var(--ink-soft); letter-spacing:.06em; }
-  .sl-t{ font-family:'Fraunces',Georgia,serif; font-size:23px; color:var(--display); }
+  .sl-t{ font-family:var(--font-display); font-size:23px; color:var(--display); }
   .sl-d{ font-size:14.5px; color:var(--ink-mid); }
 
   /* A rubber stamp on a docket. Physical, warm, and it does not cheer at you. */
@@ -579,7 +580,7 @@
     transform:rotate(-2.4deg); color:var(--sun); position:relative; }
   .stamp::after{ content:""; position:absolute; inset:4px; border:1px solid var(--sun);
     border-radius:6px; opacity:.5; pointer-events:none; }
-  .stamp-verdict{ font-family:'Fraunces',Georgia,serif; font-size:29px; line-height:1.05; letter-spacing:.01em; }
+  .stamp-verdict{ font-family:var(--font-display); font-size:29px; line-height:1.05; letter-spacing:.01em; }
   .stamp-score{ font-family:'IBM Plex Mono',monospace; font-size:15px; font-variant-numeric:tabular-nums; }
   .stamp-cat{ font-size:12px;  letter-spacing:.01em; margin-top:3px; opacity:.9; }
   .result-note{ margin:26px auto 0; max-width:38ch; font-size:14.5px; line-height:1.6; color:var(--ink-soft); }
@@ -597,7 +598,7 @@
   .dish{ position:relative; padding:22px 0 24px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
   .dish:last-of-type{ border-bottom:none; }
   .dish-line{ display:flex; align-items:baseline; gap:8px; }
-  .dish-line h4{ margin:0; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:22px;
+  .dish-line h4{ margin:0; font-family:var(--font-display); font-weight:400; font-size:22px;
     color:var(--display); letter-spacing:.01em; flex:none; max-width:78%; }
   .leader{ flex:1; min-width:16px; align-self:flex-end; position:relative; bottom:4px;
     border-bottom:1.5px dotted var(--rule-strong); }
@@ -617,7 +618,7 @@
 
   /* Empty states say which empty this is and what will fill it. */
   .empty{ padding:28px 0; max-width:42ch; }
-  .empty-h{ margin:0 0 6px; font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
+  .empty-h{ margin:0 0 6px; font-family:var(--font-display); font-size:17px; color:var(--display); }
   .empty-b{ margin:0; font-size:13.5px; color:var(--ink-soft); line-height:1.55; }
 
   /* Glossary: a term list you can scan, not fourteen full-width panels.
@@ -626,7 +627,7 @@
   .gloss-list{ margin:0; max-width:var(--measure); border-top:1px solid var(--rule); }
   .gloss-row{ display:grid; grid-template-columns:170px 1fr; gap:4px 24px;
     padding:14px 0; border-bottom:1px solid var(--rule); align-items:baseline; }
-  .gloss-row dt{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display);
+  .gloss-row dt{ font-family:var(--font-display); font-size:17px; color:var(--display);
     line-height:1.3; }
   .gloss-row dd{ margin:0; }
   .gloss-def{ margin:0; font-size:14.5px; line-height:1.55; color:var(--ink-mid); max-width:62ch; }
@@ -661,7 +662,7 @@
   .miss-rank .miss-q{ margin:0; font-size:15px; line-height:1.5; }
   .miss-rank .miss-meta{ margin:4px 0 0; font-size:12.5px; color:var(--ink-soft); }
   .fw-card{ padding:22px 24px; margin:0 0 30px; max-width:var(--measure); }
-  .fw-head{ font-family:'Fraunces',Georgia,serif; font-size:19px; color:var(--display); margin-bottom:4px; }
+  .fw-head{ font-family:var(--font-display); font-size:19px; color:var(--display); margin-bottom:4px; }
   .fw-lede{ margin:0 0 14px; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
   .fw-count{ font-size:15px; font-weight:700; margin-bottom:10px; }
   .fw-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:18px; }
@@ -746,7 +747,7 @@
   .fb-lens-btn{
     font:inherit; font-size:13.5px; font-weight:700; letter-spacing:.01em;
     padding:0 16px; min-height:44px; border-radius:8px; border:1px solid var(--rule-strong);
-    background:var(--paper); color:var(--ink-mid); cursor:pointer;
+    background:var(--paper-raised); color:var(--ink-mid); cursor:pointer;
     transition:border-color .12s ease, color .12s ease, background .12s ease;
   }
   .fb-lens-btn:hover{ color:var(--ink); border-color:var(--ink-soft); }
@@ -792,7 +793,7 @@
     padding:16px 2px; font:inherit; color:var(--ink); transition:padding-left .14s ease; }
   .drill-list button:hover{ padding-left:9px; }
   .drill-list button:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
-  .drill-name{ font-family:'Fraunces',Georgia,serif; font-size:23px; color:var(--display); }
+  .drill-name{ font-family:var(--font-display); font-size:23px; color:var(--display); }
   .drill-desc{ grid-column:1 / -1; font-size:14.5px; color:var(--ink-mid); line-height:1.55; }
   .drill-state{ font-size:13px; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
   .drill-state.is-good{ color:var(--sun); }
@@ -804,7 +805,7 @@
   table.progress td{ padding:14px 14px 14px 0; border-bottom:1px solid var(--rule); font-size:14.5px; }
   table.progress tr:last-child td{ border-bottom:none; }
   table.progress tbody tr:hover td{ background:color-mix(in srgb, var(--sun) 4%, transparent); }
-  table.progress td:first-child{ font-family:'Fraunces',Georgia,serif; font-size:17px; color:var(--display); }
+  table.progress td:first-child{ font-family:var(--font-display); font-size:17px; color:var(--display); }
   .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
   .qbar span{ display:block; height:100%; background:var(--sun); border-radius:3px; transition:width .25s cubic-bezier(.16,1,.3,1); }
   .opt{ display:flex; align-items:center; gap:10px; }
@@ -860,7 +861,7 @@
   .nudge-list li{ display:flex; align-items:baseline; gap:10px; flex-wrap:wrap;
     padding:11px 0; border-bottom:1px solid var(--rule); }
   .nudge-list li:last-child{ border-bottom:none; }
-  .nudge-name{ font-family:'Fraunces',Georgia,serif; font-size:15.5px; color:var(--display); }
+  .nudge-name{ font-family:var(--font-display); font-size:15.5px; color:var(--display); }
   .nudge-role{ font-size:12px; }
   .nudge-why{ margin-left:auto; font-size:12.5px; color:var(--ink-soft); }
   .sc-stats > div{ display:flex; flex-direction:column; gap:3px; }
