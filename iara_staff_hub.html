@@ -221,9 +221,7 @@
      (205 Allen) is used deliberately, not the legal deed address (201 Allen -
      see feedback_iara_205_allen note); this card is for staff wayfinding,
      not paperwork. */
-  .fastfacts{
-    padding:10px 0 14px; position:sticky; top:0; z-index:4; background:var(--paper);
-  }
+  .fastfacts{ padding:0 0 14px; }
   .ff-card{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
     padding:14px 16px;
@@ -236,6 +234,7 @@
     display:grid; grid-template-columns:1fr 1fr; gap:10px 18px;
   }
   .ff-item{ min-width:0; }
+  .ff-item-wide{ grid-column:1 / -1; }
   .ff-label{
     font-size:11px; font-weight:700; letter-spacing:.03em; text-transform:uppercase;
     color:var(--ink-soft); margin:0 0 2px;
@@ -243,6 +242,7 @@
   .ff-value{
     font-size:14px; line-height:1.35; color:var(--ink); margin:0;
   }
+  .ff-value-text{ min-height:0; padding:2px 0; }
   a.ff-value, button.ff-value{
     display:inline-flex; align-items:center; min-height:44px; text-decoration:none;
     border-bottom:1px solid transparent;
@@ -253,10 +253,24 @@
     background:none; border:none; padding:0; margin:0; font:inherit; color:var(--ink);
     cursor:pointer; text-align:left; width:100%;
   }
+  .ff-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  /* Copy affordance on every real resource (address, phone, links) so a
+     staff member can paste it elsewhere without retyping - Jay's ask. */
+  .ff-copy{
+    font-style:normal; flex:none; cursor:pointer; font-family:inherit;
+    font-size:11px; font-weight:700; letter-spacing:.02em; line-height:1;
+    background:var(--paper); border:1px solid var(--rule-strong); color:var(--ink-soft);
+    padding:0 10px; height:26px; border-radius:13px;
+    transition:color .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .ff-copy:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .ff-copy:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .ff-copy.copied{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
   .ff-socials{
     display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; padding-top:12px;
     border-top:1px solid var(--line);
   }
+  .ff-social-item{ display:inline-flex; align-items:center; gap:6px; }
   .ff-socials a{
     font-size:12.5px; font-weight:700; letter-spacing:.01em; color:var(--ink-soft);
     background:var(--paper); border:1px solid var(--line); border-radius:100px;
@@ -266,8 +280,8 @@
   .ff-socials a:hover{ color:var(--ink); border-color:var(--ink-soft); }
   .ff-socials a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   @media (max-width:860px){
-    .fastfacts{ position:sticky; top:48px; background:var(--paper); }
     .ff-grid{ grid-template-columns:1fr; }
+    .ff-copy{ height:44px; padding:0 14px; }
   }
 
   /* Bottom tab bar (phone) */
@@ -813,10 +827,11 @@
   /* The home screen is the docket you are handed at the start of a shift. */
   .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:6px;
     padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:var(--measure); }
-  .sc-head{ display:flex; justify-content:space-between; align-items:baseline; gap:12px;
-    font-size:12px; letter-spacing:.01em; color:var(--ink-soft); }
-  .sc-date{ font-variant-numeric:tabular-nums; letter-spacing:.06em; }
-  .sc-name{ margin:16px 0 6px; font-size:clamp(30px, 4.4vw, 40px); line-height:1.05; letter-spacing:-.018em; }
+  .sc-date{
+    margin:0; font-variant-numeric:tabular-nums; font-size:13px; font-weight:700;
+    letter-spacing:.08em; text-transform:uppercase; color:var(--sun);
+  }
+  .sc-name{ margin:8px 0 6px; font-size:clamp(30px, 4.4vw, 40px); line-height:1.05; letter-spacing:-.018em; }
   .sc-sub{ margin:0; color:var(--ink-mid); font-size:16.5px; line-height:1.6; max-width:44ch; }
   .sc-rule{ height:1px; background:var(--rule); margin:20px 0 16px; }
   .sc-blank{ margin:0; font-size:13.5px; color:var(--ink-soft); }
@@ -942,52 +957,71 @@
 
     <!-- HOME -->
     <section class="view active" id="view-home">
-      <section class="fastfacts" aria-label="Fast facts">
-        <div class="ff-card">
-          <p class="ff-title">Fast Facts</p>
-          <div class="ff-grid">
-            <div class="ff-item">
-              <p class="ff-label">Address</p>
-              <a class="ff-value" href="https://maps.google.com/?q=iara+205+Allen+St+New+York+NY+10002" target="_blank" rel="noopener">205 Allen Street, New York, NY 10002</a>
-            </div>
-            <div class="ff-item">
-              <p class="ff-label">Phone</p>
-              <a class="ff-value" href="tel:+18622308722">(862) 230-8722</a>
-            </div>
-            <div class="ff-item">
-              <p class="ff-label">Reservations</p>
-              <a class="ff-value" href="https://resy.com/cities/new-york-ny/venues/iara" target="_blank" rel="noopener">Resy</a>
-            </div>
-            <div class="ff-item">
-              <p class="ff-label">Hours</p>
-              <p class="ff-value">Tue&ndash;Sat, 5&ndash;11pm</p>
-            </div>
-            <div class="ff-item">
-              <button class="jump ff-value ff-btn" data-view="manual">Dress code &rarr; Manual</button>
-            </div>
-          </div>
-          <nav class="ff-socials" aria-label="Follow iara">
-            <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
-            <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
-            <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
-          </nav>
-        </div>
-      </section>
       <div class="shiftcard">
-        <div class="sc-head">
-          <span class="sc-label">iara &middot; lineup</span>
-          <span class="sc-date mono" id="home-date"></span>
-        </div>
+        <p class="sc-date mono" id="home-date"></p>
         <h1 class="sc-name">Evening, <span id="home-name">there</span>.</h1>
-        <p class="sc-sub">Manual, menu, study, then the Final Exam — aim to finish within your first week. The Lore is worth a look too, whenever you have a minute.</p>
+        <p class="sc-sub">Manual, menu, study, Final Exam &mdash; first week.</p>
         <div class="sc-rule"></div>
-        <p class="sc-blank" id="sc-blank" hidden>Your record shows up here once you have run a test.</p>
+        <p class="sc-blank" id="sc-blank" hidden>No tests run yet.</p>
         <div class="sc-stats">
           <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Tests run</span></div>
           <div><span class="num mono" id="stat-best">&mdash;</span><span class="lbl">Average score</span></div>
           <div><span class="num mono" id="stat-last">&mdash;</span><span class="lbl">Last test</span></div>
         </div>
       </div>
+
+      <section class="fastfacts" aria-label="Fast facts">
+        <div class="ff-card">
+          <p class="ff-title">Fast Facts</p>
+          <div class="ff-grid">
+            <div class="ff-item">
+              <p class="ff-label">Address</p>
+              <div class="ff-row">
+                <a class="ff-value" href="https://maps.google.com/?q=iara+205+Allen+St+New+York+NY+10002" target="_blank" rel="noopener">205 Allen Street, New York, NY 10002</a>
+                <button class="ff-copy" data-copy="205 Allen Street, New York, NY 10002" aria-label="Copy address">Copy</button>
+              </div>
+            </div>
+            <div class="ff-item">
+              <p class="ff-label">Phone</p>
+              <div class="ff-row">
+                <a class="ff-value" href="tel:+18622308722">(862) 230-8722</a>
+                <button class="ff-copy" data-copy="(862) 230-8722" aria-label="Copy phone number">Copy</button>
+              </div>
+            </div>
+            <div class="ff-item">
+              <p class="ff-label">Reservations</p>
+              <div class="ff-row">
+                <a class="ff-value" href="https://resy.com/cities/new-york-ny/venues/iara" target="_blank" rel="noopener">Resy</a>
+                <button class="ff-copy" data-copy="https://resy.com/cities/new-york-ny/venues/iara" aria-label="Copy Resy link">Copy</button>
+              </div>
+            </div>
+            <div class="ff-item">
+              <p class="ff-label">Hours</p>
+              <p class="ff-value">Tue&ndash;Sat, 5&ndash;11pm</p>
+            </div>
+            <div class="ff-item ff-item-wide">
+              <p class="ff-label">Dress code</p>
+              <p class="ff-value ff-value-text">FOH: iara tee, black bottoms. BOH: tee, iara hat. Both: closed-toe non-slip shoes.
+                <button class="jump jump-link" data-view="manual">Full uniform policy &rarr;</button>
+              </p>
+            </div>
+          </div>
+          <nav class="ff-socials" aria-label="Follow iara">
+            <div class="ff-social-item">
+              <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
+              <button class="ff-copy" data-copy="https://instagram.com/iara.nyc" aria-label="Copy Instagram link">Copy</button>
+            </div>
+            <div class="ff-social-item">
+              <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
+              <button class="ff-copy" data-copy="https://www.linkedin.com/company/iaranyc/" aria-label="Copy LinkedIn link">Copy</button>
+            </div>
+            <div class="ff-social-item">
+              <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
+              <button class="ff-copy" data-copy="https://culinaryagents.com/entities/1102076-iara/business_profile" aria-label="Copy Culinary Agents link">Copy</button>
+            </div>
+          </nav>
+        </div>
+      </section>
 
       <div id="home-firstweek"></div>
 
@@ -2446,6 +2480,44 @@ function bindSayButtons(root){
     });
   });
 }
+
+// Every real resource on Home (address, phone, links) gets a Copy button so
+// a staff member can paste it elsewhere - a phone text, a guest email -
+// without retyping it by hand.
+function bindCopyButtons(){
+  document.querySelectorAll(".ff-copy").forEach(function(b){
+    if (b.dataset.bound) return;
+    b.dataset.bound = "1";
+    b.addEventListener("click", function(){
+      var text = b.getAttribute("data-copy") || "";
+      var flash = function(){
+        clearTimeout(b._copyTimer);
+        b.textContent = "Copied";
+        b.classList.add("copied");
+        b._copyTimer = setTimeout(function(){
+          b.textContent = "Copy";
+          b.classList.remove("copied");
+        }, 1400);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(flash).catch(function(){ fallbackCopy(text); flash(); });
+      } else {
+        fallbackCopy(text); flash();
+      }
+    });
+  });
+}
+function fallbackCopy(text){
+  var ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.position = "fixed";
+  ta.style.left = "-9999px";
+  document.body.appendChild(ta);
+  ta.select();
+  try { document.execCommand("copy"); } catch (e) {}
+  document.body.removeChild(ta);
+}
+
 // Holds the clip that is currently playing so a second tap can stop it. This
 // was never declared, and under "use strict" that made every tap of Hear throw
 // before it reached the audio, or the synthesis fallback.
@@ -3674,6 +3746,7 @@ async function boot(data){
   renderFbTabs();
   renderFbGrid();
   renderQuizPicker();
+  bindCopyButtons();
 
   var existing = (data && data.profile) ? data.profile : loadProfile();
   var signedIn = !db || !firebase.auth || !!firebase.auth().currentUser;
