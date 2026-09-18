@@ -3254,14 +3254,17 @@ function applyGlossary(root){
       ev.preventDefault();
       var open = g.classList.contains("is-open");
       root.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
-      if (!open) { g.classList.add("is-open"); nudgeGloss(g); }
+      if (open) { unclipGloss(g); }
+      else { g.classList.add("is-open"); nudgeGloss(g); }
     });
     g.addEventListener("keydown", function(ev){
       if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); g.click(); }
-      if (ev.key === "Escape") g.classList.remove("is-open");
+      if (ev.key === "Escape") { g.classList.remove("is-open"); unclipGloss(g); }
     });
     g.addEventListener("mouseenter", function(){ nudgeGloss(g); });
+    g.addEventListener("mouseleave", function(){ unclipGloss(g); });
     g.addEventListener("focus", function(){ nudgeGloss(g); });
+    g.addEventListener("blur", function(){ unclipGloss(g); });
   });
 }
 // The bubble hangs from the left edge of the word, so a term late in a line
@@ -3269,6 +3272,7 @@ function applyGlossary(root){
 // the gutter by however much it overhangs.
 var GLOSS_GUTTER = 12;
 function nudgeGloss(g){
+  clipGloss(g);
   g.style.setProperty("--gloss-nudge", "0px");
   var w = 0;
   try { w = parseFloat(getComputedStyle(g, "::after").width) || 0; } catch (e) { return; }
@@ -3279,6 +3283,33 @@ function nudgeGloss(g){
     var shift = Math.min(over, Math.max(0, left - GLOSS_GUTTER));
     g.style.setProperty("--gloss-nudge", (-shift) + "px");
   }
+}
+// The bubble is an absolutely positioned pseudo-element, so any ancestor with
+// overflow:hidden (the Manual's .accordion, kept hidden so its own rounded
+// corners clip cleanly) silently truncates it. Found live: "sidework"'s
+// definition was cut off mid-word inside an open accordion card. Rather than
+// drop overflow:hidden everywhere (it earns its keep clipping the accordion's
+// own background), lift it only on the ancestors that actually clip, only
+// while this one tooltip is open.
+function clipGloss(g){
+  if (g._unclip) return;
+  var touched = [];
+  var el = g.parentElement;
+  while (el && el !== document.body) {
+    var cs = getComputedStyle(el);
+    if (cs.overflow === "hidden" || cs.overflowX === "hidden" || cs.overflowY === "hidden") {
+      touched.push({ el: el, prev: el.style.overflow });
+      el.style.overflow = "visible";
+    }
+    el = el.parentElement;
+  }
+  g._unclip = function(){
+    touched.forEach(function(t){ t.el.style.overflow = t.prev; });
+    g._unclip = null;
+  };
+}
+function unclipGloss(g){
+  if (g._unclip) g._unclip();
 }
 document.addEventListener("click", function(){
   document.querySelectorAll(".gloss.is-open").forEach(function(o){ o.classList.remove("is-open"); });
