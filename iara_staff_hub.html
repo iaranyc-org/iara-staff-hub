@@ -106,6 +106,13 @@
   }
 
   *{box-sizing:border-box;}
+  /* One shared press-feedback rule so every chip, tab, and pill in the app
+     reacts to touch the same way, instead of a handful of one-off states. */
+  .nav-btn, .fb-lens-btn, .fb-tab, .jump, .ff-socials a, .say-btn{ transition-property:color,border-color,background,transform; transition-duration:.12s; transition-timing-function:ease; }
+  .nav-btn:active, .fb-lens-btn:active, .fb-tab:active, .jump:active, .ff-socials a:active, .say-btn:active{ transform:scale(.97); }
+  @media (prefers-reduced-motion:reduce){
+    .nav-btn:active, .fb-lens-btn:active, .fb-tab:active, .jump:active, .ff-socials a:active, .say-btn:active{ transform:none; }
+  }
   html{ background:var(--paper); }
   html.booting #gate, html.booting #shell{ visibility:hidden; }
   body{
@@ -167,7 +174,11 @@
   .btn-primary:hover{ opacity:.92; }
   .btn-ghost{ background:transparent; border-color:var(--line); color:var(--ink); }
   .btn-ghost:hover{ border-color:var(--ink-soft); }
-  .btn-sun{ background:var(--sun); color:var(--sun-ink); }
+  /* Primary buttons use the real logo orange, not the gold accent - gold
+     stays for progress/status highlights (see iara-contrast-rules: forest-ink
+     on forest measures 5.07, clears AA even at this button's 14.5px bold). */
+  .btn-sun{ background:var(--forest); color:var(--forest-ink); }
+  .btn-sun:hover{ opacity:.92; }
   .btn-small{ padding:7px 12px; font-size:13px; border-radius:6px; }
   .gate-note{ margin-top:18px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
 
@@ -253,19 +264,24 @@
     background:none; border:none; padding:0; margin:0; font:inherit; color:var(--ink);
     cursor:pointer; text-align:left; width:100%;
   }
-  .ff-row{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+  .ff-row{ display:flex; align-items:center; gap:2px; flex-wrap:wrap; }
   /* Copy affordance on every real resource (address, phone, links) so a
-     staff member can paste it elsewhere without retyping - Jay's ask. */
+     staff member can paste it elsewhere without retyping - Jay's ask. A
+     plain icon reads as a standard UI control; a text pill reads as its own
+     button fighting the value next to it. */
   .ff-copy{
-    font-style:normal; flex:none; cursor:pointer; font-family:inherit;
-    font-size:11px; font-weight:700; letter-spacing:.02em; line-height:1;
-    background:var(--paper); border:1px solid var(--rule-strong); color:var(--ink-soft);
-    padding:0 10px; height:26px; border-radius:13px;
-    transition:color .12s ease, border-color .12s ease, background .12s ease;
+    flex:none; cursor:pointer; background:none; border:1px solid transparent;
+    color:var(--ink-soft); width:30px; height:30px; border-radius:7px;
+    display:inline-flex; align-items:center; justify-content:center;
+    transition:color .12s ease, background .12s ease;
   }
-  .ff-copy:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .ff-copy-ico{ width:15px; height:15px; }
+  .ff-copy-ico .check{ display:none; }
+  .ff-copy:hover{ color:var(--ink); background:var(--paper); }
   .ff-copy:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .ff-copy.copied{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
+  .ff-copy.copied{ color:var(--forest); }
+  .ff-copy.copied .ff-copy-ico .plain{ display:none; }
+  .ff-copy.copied .ff-copy-ico .check{ display:block; }
   .ff-socials{
     display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; padding-top:12px;
     border-top:1px solid var(--line);
@@ -281,7 +297,7 @@
   .ff-socials a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   @media (max-width:860px){
     .ff-grid{ grid-template-columns:1fr; }
-    .ff-copy{ height:44px; padding:0 14px; }
+    .ff-copy{ width:44px; height:44px; }
   }
 
   /* Bottom tab bar (phone) */
@@ -978,21 +994,21 @@
               <p class="ff-label">Address</p>
               <div class="ff-row">
                 <a class="ff-value" href="https://maps.google.com/?q=iara+205+Allen+St+New+York+NY+10002" target="_blank" rel="noopener">205 Allen Street, New York, NY 10002</a>
-                <button class="ff-copy" data-copy="205 Allen Street, New York, NY 10002" aria-label="Copy address">Copy</button>
+                <button class="ff-copy" data-copy="205 Allen Street, New York, NY 10002" aria-label="Copy address"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
               </div>
             </div>
             <div class="ff-item">
               <p class="ff-label">Phone</p>
               <div class="ff-row">
                 <a class="ff-value" href="tel:+18622308722">(862) 230-8722</a>
-                <button class="ff-copy" data-copy="(862) 230-8722" aria-label="Copy phone number">Copy</button>
+                <button class="ff-copy" data-copy="(862) 230-8722" aria-label="Copy phone number"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
               </div>
             </div>
             <div class="ff-item">
               <p class="ff-label">Reservations</p>
               <div class="ff-row">
                 <a class="ff-value" href="https://resy.com/cities/new-york-ny/venues/iara" target="_blank" rel="noopener">Resy</a>
-                <button class="ff-copy" data-copy="https://resy.com/cities/new-york-ny/venues/iara" aria-label="Copy Resy link">Copy</button>
+                <button class="ff-copy" data-copy="https://resy.com/cities/new-york-ny/venues/iara" aria-label="Copy Resy link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
               </div>
             </div>
             <div class="ff-item">
@@ -1009,15 +1025,15 @@
           <nav class="ff-socials" aria-label="Follow iara">
             <div class="ff-social-item">
               <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
-              <button class="ff-copy" data-copy="https://instagram.com/iara.nyc" aria-label="Copy Instagram link">Copy</button>
+              <button class="ff-copy" data-copy="https://instagram.com/iara.nyc" aria-label="Copy Instagram link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
             </div>
             <div class="ff-social-item">
               <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
-              <button class="ff-copy" data-copy="https://www.linkedin.com/company/iaranyc/" aria-label="Copy LinkedIn link">Copy</button>
+              <button class="ff-copy" data-copy="https://www.linkedin.com/company/iaranyc/" aria-label="Copy LinkedIn link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
             </div>
             <div class="ff-social-item">
               <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
-              <button class="ff-copy" data-copy="https://culinaryagents.com/entities/1102076-iara/business_profile" aria-label="Copy Culinary Agents link">Copy</button>
+              <button class="ff-copy" data-copy="https://culinaryagents.com/entities/1102076-iara/business_profile" aria-label="Copy Culinary Agents link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
             </div>
           </nav>
         </div>
@@ -2490,13 +2506,14 @@ function bindCopyButtons(){
     b.dataset.bound = "1";
     b.addEventListener("click", function(){
       var text = b.getAttribute("data-copy") || "";
+      var baseLabel = b.getAttribute("aria-label") || "Copy";
       var flash = function(){
         clearTimeout(b._copyTimer);
-        b.textContent = "Copied";
         b.classList.add("copied");
+        b.setAttribute("aria-label", "Copied");
         b._copyTimer = setTimeout(function(){
-          b.textContent = "Copy";
           b.classList.remove("copied");
+          b.setAttribute("aria-label", baseLabel);
         }, 1400);
       };
       if (navigator.clipboard && navigator.clipboard.writeText) {
