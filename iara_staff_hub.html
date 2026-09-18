@@ -139,7 +139,10 @@
     border-radius:10px; padding:36px 32px; box-shadow:var(--shadow);
   }
   .gate-mark{ display:flex; align-items:center; gap:14px; margin-bottom:22px; flex-wrap:wrap; }
-  .gate-mark .word{ font-family:'Instrument Sans',sans-serif; font-weight:800; font-size:14px; letter-spacing:.14em; color:var(--forest); }
+  /* Plain --forest measures 3.8 here (14px never clears the "large text"
+     bar, even bold) against the card's paper-raised ground - brightened
+     just for this small-text use, same hue. */
+  .gate-mark .word{ font-family:'Instrument Sans',sans-serif; font-weight:800; font-size:14px; letter-spacing:.14em; color:#e57b5d; }
   .logo-img{ display:block; object-fit:contain; }
   .logo-img-lg{ width:150px; height:auto; }
   .logo-img-md{ width:108px; height:auto; }
