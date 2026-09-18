@@ -237,8 +237,13 @@
 
   // Same-origin: a session from Lineup or Ops already carries over here via
   // Firebase's own persistence, so a returning device skips the prompt.
+  // Firebase always fires this once at load (null first if signed out), so
+  // it is also what has to reveal the gate, not just react once signed in -
+  // leaving #gate's default [hidden] alone here left a signed-out visitor
+  // looking at a blank page.
   firebase.auth().onAuthStateChanged(function(user){
     if (user) unlock();
+    else { gate.hidden = false; launcher.hidden = true; }
   });
 
   form.addEventListener("submit", function(ev){
