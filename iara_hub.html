@@ -201,41 +201,60 @@
   </div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
 (function(){
-  // Same shared password and localStorage key ("iara_pw") that iara_staff_hub.html
-  // uses to sign in to Firebase. Unlocking here means Lineup finds it already
-  // cached and skips its own password prompt - name/role only, per Jay's call
-  // that the hub is the one real gate and the rest shouldn't ask twice.
-  var PW = "iara2026";
+  // The typed password is checked against Firebase for real, the same way
+  // iara_staff_hub.html itself does it. A hardcoded string comparison here
+  // would mean the actual password sits in plain text in this file's own
+  // source - readable by anyone who views it, no login required, which is
+  // strictly worse than not having a gate at all. This must never go back
+  // to a client-side string compare.
+  var STAFF_EMAIL = "staff@iara.nyc";
   var LS_PW = "iara_pw";
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE",
+    authDomain: "iara-lineup.firebaseapp.com",
+    projectId: "iara-lineup",
+    storageBucket: "iara-lineup.firebasestorage.app",
+    messagingSenderId: "840712867607",
+    appId: "1:840712867607:web:2003c145731aa85a13b152"
+  };
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+
   var gate = document.getElementById("gate");
   var launcher = document.getElementById("launcher");
+  var form = document.getElementById("gate-form");
+  var pwField = document.getElementById("hub-pw");
+  var err = document.getElementById("hub-err");
+  var submitBtn = form.querySelector("button[type=submit]");
 
   function unlock(){
     gate.hidden = true;
     launcher.hidden = false;
   }
 
-  var saved = null;
-  try { saved = localStorage.getItem(LS_PW); } catch(e){}
-  if (saved === PW) {
-    unlock();
-  } else {
-    gate.hidden = false;
-  }
+  // Same-origin: a session from Lineup or Ops already carries over here via
+  // Firebase's own persistence, so a returning device skips the prompt.
+  firebase.auth().onAuthStateChanged(function(user){
+    if (user) unlock();
+  });
 
-  document.getElementById("gate-form").addEventListener("submit", function(ev){
+  form.addEventListener("submit", function(ev){
     ev.preventDefault();
-    var pw = document.getElementById("hub-pw").value;
-    var err = document.getElementById("hub-err");
-    if (pw !== PW) {
-      err.hidden = false;
-      return;
-    }
     err.hidden = true;
-    try { localStorage.setItem(LS_PW, PW); } catch(e){}
-    unlock();
+    submitBtn.disabled = true;
+    var pw = pwField.value;
+    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, pw).then(function(){
+      try { localStorage.setItem(LS_PW, pw); } catch(e){}
+      submitBtn.disabled = false;
+      unlock();
+    }).catch(function(){
+      submitBtn.disabled = false;
+      err.hidden = false;
+      pwField.select();
+    });
   });
 })();
 </script>

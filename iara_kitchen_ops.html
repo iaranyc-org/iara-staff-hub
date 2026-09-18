@@ -777,22 +777,16 @@ function subscribeCollection(name){
   });
 }
 
-function seedIfEmpty(){
-  var marker = db.doc('meta/seed');
-  marker.get().then(function(snap){
-    if(snap.exists){ return; }
-    return marker.set({startedAt: isoNow()}).then(function(){
-      var seed = buildSeed();
-      var batches = [];
-      seed.ingredients.forEach(function(i){ var body = Object.assign({}, i); var id = body.id; delete body.id; batches.push(db.collection('ingredients').doc(id).set(body)); });
-      seed.recipes.forEach(function(r){ var body = Object.assign({}, r); var id = body.id; delete body.id; batches.push(db.collection('recipes').doc(id).set(body)); });
-      seed.counts.forEach(function(c){ var body = Object.assign({}, c); var id = body.id; delete body.id; batches.push(db.collection('counts').doc(id).set(body)); });
-      seed.pos.forEach(function(p){ var body = Object.assign({}, p); var id = body.id; delete body.id; batches.push(db.collection('pos').doc(id).set(body)); });
-      seed.sales.forEach(function(s){ var body = Object.assign({}, s); var id = body.id; delete body.id; batches.push(db.collection('sales').doc(id).set(body)); });
-      return Promise.all(batches);
-    });
-  }).catch(function(e){ console.error('seed check failed', e); });
-}
+// There is deliberately no seedIfEmpty() that writes buildSeed()'s fabricated
+// example data into the real database. That data is invented for the preview
+// screen only - it doesn't match iara's real menu (checked against
+// iara_staff_hub.html's actual dish list: names, prices, even which dishes
+// exist all differ) - and Firestore has no way to tell "real empty database"
+// from "empty because nobody has entered real data yet". Auto-writing on
+// first manager sign-in would have made the fake data permanent production
+// data the moment anyone signed in. Real ingredients/recipes/counts get
+// entered by hand or via a real reconciliation pipeline, never by a client
+// script guessing the database is ready to be filled.
 
 function loadLocalFallback(){
   var seed = buildSeed();
@@ -806,7 +800,6 @@ function startSync(){
   updateSyncChip(true);
   hideAuthGate();
   ['ingredients','recipes','counts','pos','sales'].forEach(subscribeCollection);
-  seedIfEmpty();
 }
 
 async function initApp(){
