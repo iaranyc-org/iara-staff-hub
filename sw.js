@@ -8,13 +8,17 @@
  * Strategy, chosen per resource rather than one rule for everything:
  *   the page      network first, cache as fallback, so a deploy is picked up
  *                 immediately when there is signal and still opens without it
- *   own assets    cache first, since audio and images never change in place;
- *                 a new clip ships under a new name
+ *   own assets    cache first, for speed - most files really don't change in
+ *                 place. Team headshots are the one exception (same filename,
+ *                 new photo, e.g. img/vitor.jpg), so replacing one needs a
+ *                 VERSION bump here too, or an installed PWA keeps the old
+ *                 photo indefinitely. Bump VERSION on any image swap, not
+ *                 just markup/script changes.
  *   cross-origin  fonts are cached as they are fetched, best effort
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v3';
+const VERSION = 'iara-lineup-v4';
 const CORE = [
   './',
   './iara_hub.html',
