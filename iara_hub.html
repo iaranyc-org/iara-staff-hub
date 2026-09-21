@@ -311,7 +311,17 @@
   // the hub's own gate just did the real sign-in. Filling this in a second
   // time inside Lineup is exactly the redundant step this page exists to
   // remove.
-  function uid(){
+  // Same stableId contract as Lineup's own copy (iara_staff_hub.html) - the
+  // Firestore doc is keyed by this id, so it must stay identical in both
+  // places or the hub and a direct /lineup sign-in would fork the same
+  // person into two records again.
+  function stableId(name, role){
+    var slug = (String(name || "") + "-" + String(role || ""))
+      .toLowerCase()
+      .normalize("NFD").replace(/[̀-ͯ]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    if (slug) return slug;
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
   }
@@ -320,7 +330,7 @@
     var name = document.getElementById("ll-name").value.trim();
     var role = document.getElementById("ll-role").value;
     if (!name || !role) return;
-    var profile = { id: uid(), name: name, role: role };
+    var profile = { id: stableId(name, role), name: name, role: role };
     try { localStorage.setItem("iara_hub_profile_v1", JSON.stringify(profile)); } catch(e){}
     location.href = "/lineup#/home";
   });
