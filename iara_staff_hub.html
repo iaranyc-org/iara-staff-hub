@@ -31,7 +31,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#391d1f">
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
   /* ===================== Design tokens ===================== */
   :root{
@@ -150,7 +150,7 @@
   /* Same lockup as the sidebar and the OG cards everywhere else in the
      family (Fraunces, cream) - this used to be a third, unrelated style
      (uppercase tracked Instrument Sans). */
-  .gate-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:32px; letter-spacing:-.005em; color:var(--river); }
+  .gate-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:32px; letter-spacing:-.005em; color:var(--river); }
   .logo-img{ display:block; object-fit:contain; }
   .logo-img-lg{ width:150px; height:auto; }
   .logo-img-md{ width:108px; height:auto; }
@@ -200,7 +200,7 @@
   }
   /* Matches the supplied OG card lockup (Fraunces, not Forevs - the sidebar
      had drifted onto the wrong title face somewhere along the way). */
-  .sb-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:19px;
+  .sb-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:19px;
     letter-spacing:-.005em; color:var(--river); }
   .sb-mark{ display:flex; align-items:center; gap:10px; padding:4px 10px 22px; }
   .sb-mark-link{ display:inline-flex; align-items:center; gap:10px; border-radius:6px; text-decoration:none; }
@@ -226,7 +226,7 @@
     display:none; align-self:stretch; align-items:center; gap:10px; padding:12px 18px;
     border-bottom:1px solid var(--line); background:var(--paper-raised); position:sticky; top:0; z-index:5;
   }
-  .topbar .word{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:19px; color:var(--river); }
+  .topbar .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:19px; color:var(--river); }
 
   /* Fast Facts: Home only, per Jay's own phrasing ("home should also
      have..."). Every value here is sourced and verified, never guessed -
