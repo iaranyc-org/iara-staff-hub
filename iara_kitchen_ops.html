@@ -147,16 +147,22 @@
   .panel-head .desc{font-size:13px; color:var(--ink-muted); margin-top:2px;}
 
   .btn{
-    display:inline-flex; align-items:center; gap:6px; border-radius:8px; border:1px solid transparent;
-    padding:8px 14px; font-size:13.5px; font-weight:600; cursor:pointer; background:var(--surface-raised);
-    border-color:var(--border); color:var(--ink);
+    display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:8px; border:1px solid transparent;
+    padding:8px 14px; min-height:40px; font-size:13.5px; font-weight:600; cursor:pointer; background:var(--surface-raised);
+    border-color:var(--border); color:var(--ink); transition:transform .08s ease, filter .08s ease;
   }
   .btn:hover{filter:brightness(0.97);}
+  .btn:active{transform:scale(0.97);}
   :root[data-theme="dark"] .btn:hover{filter:brightness(1.15);}
   @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .btn:hover{filter:brightness(1.15);} }
   .btn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
   .btn.ghost{background:transparent;}
-  .btn.small{padding:5px 10px; font-size:12.5px;}
+  /* Every "small" button (table row actions, filter pills) used to have no
+     minimum height - about 26px tall in practice, well under a comfortable
+     tap target, and the single biggest reason the app read as fiddly to use.
+     36px keeps them visibly lighter than a full .btn while staying easy to
+     hit; the row's own padding already gives it room. */
+  .btn.small{padding:6px 12px; min-height:36px; font-size:12.5px;}
   .btn.danger{color:var(--critical); border-color:var(--critical-soft);}
   .btn:disabled{opacity:0.45; cursor:not-allowed;}
 
@@ -185,7 +191,7 @@
   tbody tr:last-child td{border-bottom:none;}
   tbody tr:hover{background:var(--accent-soft);}
   td.num, th.num{text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
-  .row-actions{display:flex; gap:6px; justify-content:flex-end;}
+  .row-actions{display:flex; gap:8px; justify-content:flex-end;}
   .empty-state{padding:36px 20px; text-align:center; color:var(--ink-muted); font-size:13.5px;}
   .section-title{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-secondary); margin-bottom:8px;}
 
@@ -212,7 +218,12 @@
     display:flex; flex-direction:column;
   }
   #modalRoot h2{font-size:17px;}
-  form label{display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--ink-secondary);}
+  /* Every form row was a direct block child of <form> with zero rule
+     spacing them apart - labels measured back-to-back at 0px gap, touching
+     edge to edge despite looking "roomy enough" in a screenshot. This is
+     what actually read as cramped/hard-to-use, more than any single field. */
+  form{display:flex; flex-direction:column; gap:16px;}
+  form label{display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:600; color:var(--ink-secondary);}
   .qmark{
     display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%;
     background:var(--surface-raised); border:1px solid var(--border); color:var(--ink-secondary);
@@ -220,8 +231,9 @@
   }
   .label-row{display:inline-flex; align-items:center; gap:5px;}
   form input, form select, form textarea{
-    border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--surface); color:var(--ink); font-size:13.5px; width:100%;
+    border:1px solid var(--border); border-radius:8px; padding:9px 12px; min-height:40px; background:var(--surface); color:var(--ink); font-size:13.5px; width:100%;
   }
+  form textarea{min-height:80px;}
   form input:focus, form select:focus, form textarea:focus{outline:2px solid var(--accent); outline-offset:1px;}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
