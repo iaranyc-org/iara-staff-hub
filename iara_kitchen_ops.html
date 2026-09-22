@@ -213,6 +213,12 @@
   }
   #modalRoot h2{font-size:17px;}
   form label{display:flex; flex-direction:column; gap:5px; font-size:12.5px; font-weight:600; color:var(--ink-secondary);}
+  .qmark{
+    display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%;
+    background:var(--surface-raised); border:1px solid var(--border); color:var(--ink-secondary);
+    font-size:10px; font-weight:700; cursor:help; flex:none;
+  }
+  .label-row{display:inline-flex; align-items:center; gap:5px;}
   form input, form select, form textarea{
     border:1px solid var(--border); border-radius:8px; padding:8px 10px; background:var(--surface); color:var(--ink); font-size:13.5px; width:100%;
   }
@@ -1712,8 +1718,16 @@ function openModal(html, wide){
   var root = $('#modalRoot');
   root.innerHTML = '<div class="modal-backdrop" data-action="closeModal"></div><div class="modal-card'+(wide?' wide':'')+'" role="dialog" aria-modal="true">'+html+'</div>';
   root.hidden = false;
+  // Land the cursor in the first real field instead of making every modal
+  // start with an extra, easy-to-forget click - one line here fixes it for
+  // every form in the app instead of once per form.
+  var first = root.querySelector('input:not([type=hidden]), select, textarea');
+  if(first) first.focus();
 }
 function closeModal(){ var root = $('#modalRoot'); root.hidden = true; root.innerHTML=''; state.tempLines=null; }
+document.addEventListener('keydown', function(e){
+  if(e.key === 'Escape' && !$('#modalRoot').hidden) closeModal();
+});
 
 function ingredientOptionsHtml(selectedId){
   return state.ingredients.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(i){
@@ -1746,18 +1760,19 @@ function openIngredientModal(existing){
     '<label>Name<input required name="name" value="'+esc(existing?existing.name:'')+'"></label>'+
     '<div class="grid3">'+
       '<label>Category<select name="category" id="ingCategorySelect">'+ING_CATS.map(function(c){return '<option '+(existing&&existing.category===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
-      '<label>Department<select name="department" id="ingDeptSelect">'+DEPARTMENTS.map(function(d){return '<option '+((existing?ingDept(existing):defaultDept(existing?existing.category:'Protein'))===d?'selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
+      '<label><span class="label-row">Department <span class="qmark" title="Which cost report this rolls into: Food, Beverage, or Supplies. Set automatically from Category, but you can override it here.">?</span></span><select name="department" id="ingDeptSelect">'+DEPARTMENTS.map(function(d){return '<option '+((existing?ingDept(existing):defaultDept(existing?existing.category:'Protein'))===d?'selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
       '<label>Storage area<select name="storageArea">'+STORAGE_AREAS.map(function(c){return '<option '+(existing&&existing.storageArea===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
     '</div>'+
     '<label>Vendor<input name="vendor" value="'+esc(existing?existing.vendor:'')+'" placeholder="e.g. Baldor"></label>'+
+    '<div class="hint" style="margin:-4px 0 2px">How you count it, what comes in a pack when you buy it, and what that pack costs - e.g. you count in <strong>lb</strong>, a case has <strong>25</strong> lb, and the case costs <strong>$30</strong>.</div>'+
     '<div class="grid3">'+
-      '<label>Count unit<select name="invUnit">'+UNITS.map(function(u){return '<option '+(existing&&existing.invUnit===u?'selected':'')+'>'+u+'</option>';}).join('')+'</select></label>'+
-      '<label>Units per pack<input type="number" step="0.0001" min="0.0001" name="unitsPerPack" required value="'+(existing?existing.unitsPerPack:1)+'"></label>'+
-      '<label>Cost per pack ($)<input type="number" step="0.01" min="0" name="costPerPack" required value="'+(existing?existing.costPerPack:'')+'"></label>'+
+      '<label><span class="label-row">Count unit <span class="qmark" title="The unit you count stock in on the shelf - lb, each, fl oz, etc.">?</span></span><select name="invUnit" id="ingInvUnitSelect">'+UNITS.map(function(u){return '<option '+(existing&&existing.invUnit===u?'selected':'')+'>'+u+'</option>';}).join('')+'</select></label>'+
+      '<label><span class="label-row">Units per pack <span class="qmark" title="How many count units come in one pack/case as purchased. If you buy and count the same way (e.g. one bottle = one bottle), leave this at 1.">?</span></span><input type="number" step="0.0001" min="0.0001" name="unitsPerPack" required value="'+(existing?existing.unitsPerPack:1)+'"></label>'+
+      '<label><span class="label-row">Cost per pack ($) <span class="qmark" title="What you paid for the whole pack/case, not the per-unit price.">?</span></span><input type="number" step="0.01" min="0" name="costPerPack" required value="'+(existing?existing.costPerPack:'')+'"></label>'+
     '</div>'+
     '<div class="grid2">'+
-      '<label>Par level (count units)<input type="number" step="0.01" min="0" name="parLevel" value="'+(existing?existing.parLevel:0)+'"></label>'+
-      '<label>On hand (count units)<input type="number" step="0.01" min="0" name="onHand" value="'+(existing?existing.onHand:0)+'"></label>'+
+      '<label id="ingParLabel">Par level<input type="number" step="0.01" min="0" name="parLevel" value="'+(existing?existing.parLevel:0)+'"></label>'+
+      '<label id="ingOnHandLabel">On hand<input type="number" step="0.01" min="0" name="onHand" value="'+(existing?existing.onHand:0)+'"></label>'+
     '</div>'+
     '<div class="cost-preview"><span>Cost per count unit</span><strong id="unitCostPreview">'+money(existing?unitCostOf(existing):0)+'</strong></div>'+
     '<div class="modal-actions">'+
@@ -1767,11 +1782,18 @@ function openIngredientModal(existing){
   '</form>';
   openModal(h);
   var form = $('#modalRoot form');
+  function syncUnitLabels(){
+    var unit = form.invUnit.value || 'unit';
+    $('#ingParLabel').firstChild.textContent = 'Par level (' + unit + ')';
+    $('#ingOnHandLabel').firstChild.textContent = 'On hand (' + unit + ')';
+  }
+  syncUnitLabels();
   form.addEventListener('input', function(e){
     var fd = new FormData(form);
     var cpp = parseFloat(fd.get('costPerPack'))||0, upp = parseFloat(fd.get('unitsPerPack'))||0;
     $('#unitCostPreview').textContent = money(upp>0?cpp/upp:0);
     if(e.target.id === 'ingCategorySelect'){ $('#ingDeptSelect').value = defaultDept(e.target.value); }
+    if(e.target.id === 'ingInvUnitSelect'){ syncUnitLabels(); }
   });
 }
 
@@ -1808,13 +1830,13 @@ function openRecipeModal(existing){
     '<label>Name<input required name="name" value="'+esc(existing?existing.name:'')+'"></label>'+
     '<div class="grid3">'+
       '<label>Category<select name="category" id="recCategorySelect">'+RECIPE_CATS.map(function(c){return '<option '+(existing&&existing.category===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
-      '<label>Department<select name="department" id="recDeptSelect">'+DEPARTMENTS.map(function(d){return '<option '+((existing?recipeDept(existing):defaultRecipeDept(existing?existing.category:'Entree'))===d?'selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
-      '<label>Yield qty<input type="number" step="0.01" min="0.01" name="yieldQty" value="'+(existing?existing.yieldQty:1)+'"></label>'+
+      '<label><span class="label-row">Department <span class="qmark" title="Which cost report this rolls into: Food or Beverage. Set automatically from Category, but you can override it here.">?</span></span><select name="department" id="recDeptSelect">'+DEPARTMENTS.map(function(d){return '<option '+((existing?recipeDept(existing):defaultRecipeDept(existing?existing.category:'Entree'))===d?'selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
+      '<label><span class="label-row">Yield qty <span class="qmark" title="How many portions one batch of this recipe makes.">?</span></span><input type="number" step="0.01" min="0.01" name="yieldQty" value="'+(existing?existing.yieldQty:1)+'"></label>'+
     '</div>'+
     '<div class="grid3">'+
       '<label>Yield unit<input name="yieldUnit" value="'+esc(existing?existing.yieldUnit:'plate')+'"></label>'+
       '<label>Menu price ($)<input type="number" step="0.01" min="0" name="menuPrice" value="'+(existing?existing.menuPrice:'')+'"></label>'+
-      '<label>Target food cost %<input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
+      '<label><span class="label-row">Target food cost % <span class="qmark" title="Your goal ceiling for this dish - ingredient cost as a share of menu price. Recipes over target get flagged on the Dashboard and in Reports.">?</span></span><input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
     '</div>'+
     '<div><div class="section-title">Ingredient lines</div><div class="lines-box" id="linesBox">'+recipeLinesHtml(state.tempLines)+'</div>'+
     '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add ingredient line</button></div>'+
