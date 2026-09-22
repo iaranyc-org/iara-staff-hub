@@ -272,7 +272,32 @@
   .legend .swatch{width:10px; height:10px; border-radius:3px; flex:none;}
   .two-col{display:grid; grid-template-columns:1.3fr 1fr; gap:14px;}
   @media (max-width:860px){ .two-col{grid-template-columns:1fr;} }
-  .attn-item{display:flex; align-items:center; justify-content:space-between; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); font-size:13px;}
+  .attn-item{display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); font-size:13px;}
+  .attn-item:last-child{border-bottom:none;}
+  .attn-card{border-color:var(--warning);}
+  .attn-dot{width:8px; height:8px; border-radius:50%; flex:none; background:var(--ink-muted);}
+  .attn-dot.critical{background:var(--critical);}
+  .attn-dot.serious{background:var(--serious);}
+  .attn-dot.warning{background:var(--warning);}
+  .attn-body{flex:1; min-width:0;}
+  .attn-item .t{font-weight:600; color:var(--ink);}
+  .attn-item .s{color:var(--ink-secondary); font-size:12px; margin-top:1px;}
+
+  .dept-bar{display:flex; height:10px; border-radius:100px; overflow:hidden; background:var(--border); margin:4px 0 16px;}
+  .dept-bar .seg{height:100%;}
+  .dept-bar .seg.food{background:var(--accent);}
+  .dept-bar .seg.bev{background:color-mix(in srgb, var(--accent) 62%, var(--ink-muted));}
+  .dept-bar .seg.sup{background:var(--ink-muted);}
+  .dept-rows{display:flex; flex-direction:column; gap:10px;}
+  .dept-row{display:grid; grid-template-columns:12px auto 1fr auto; align-items:center; gap:8px; font-size:13px;}
+  .dept-dot{width:8px; height:8px; border-radius:50%;}
+  .dept-dot.food{background:var(--accent);}
+  .dept-dot.bev{background:color-mix(in srgb, var(--accent) 62%, var(--ink-muted));}
+  .dept-dot.sup{background:var(--ink-muted);}
+  .dept-name{font-weight:600; color:var(--ink);}
+  .dept-num{font-family:var(--font-mono); font-variant-numeric:tabular-nums; font-weight:600; text-align:right;}
+  .dept-sub{color:var(--ink-secondary); font-size:12px; text-align:right; white-space:nowrap;}
+  @media (max-width:480px){ .dept-row{grid-template-columns:12px auto auto; grid-template-areas:"dot name num" ". sub sub"; row-gap:2px;} .dept-sub{grid-area:sub; text-align:left;} }
   .attn-item:last-child{border-bottom:none;}
   .attn-item .t{font-weight:600;}
   .attn-item .s{color:var(--ink-muted); font-size:12px;}
@@ -1194,6 +1219,14 @@ function renderDashboard(){
   var foodStats = departmentStats('Food'), bevStats = departmentStats('Beverage'), supStats = departmentStats('Supplies');
 
   var html = '<div class="panel-head"><div><h2>Dashboard</h2><div class="desc">Live snapshot of iara’s kitchen costs and stock.</div></div></div>';
+
+  // Needs Attention leads the page - it's the only section that changes
+  // what someone does next, so it shouldn't be buried under four KPI tiles
+  // and a chart first. An all-clear state still gets a card, not nothing.
+  html += '<div class="card'+(attn.length?' attn-card':'')+'"><div class="section-title">Needs attention</div>' + (attn.length ? attn.slice(0,6).map(function(a){
+    return '<div class="attn-item"><span class="attn-dot '+esc(a.badge)+'"></span><div class="attn-body"><div class="t">'+esc(a.t)+'</div><div class="s">'+esc(a.s)+'</div></div><button class="btn small ghost" data-action="setTab" data-tab="'+a.tab+'">View</button></div>';
+  }).join('') : '<div class="empty-state">Nothing needs attention right now.</div>') + '</div>';
+
   html += '<div class="kpis">'+
     '<div class="kpi"><div class="label">Inventory value</div><div class="value">'+money(invVal)+'</div><div class="foot">'+plural(state.ingredients.length,'item')+' tracked</div></div>'+
     '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Avg. cost %</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+plural(state.recipes.length,'recipe')+'</div></div>'+
@@ -1201,20 +1234,29 @@ function renderDashboard(){
     '<div class="kpi'+(incr.length?' alert':'')+'"><div class="label">Price increases</div><div class="value">'+incr.length+'</div><div class="foot">last 30 days</div></div>'+
   '</div>';
 
-  html += '<div class="kpis" style="grid-template-columns:repeat(3,1fr)">'+
-    '<div class="kpi"><div class="label">Food</div><div class="value">'+pct(foodStats.avgCostPct)+' <span class="hint" style="font-size:12px">cost</span></div><div class="foot">'+money(foodStats.inventoryValue)+' inventory · '+plural(foodStats.itemCount,'item')+' · '+plural(foodStats.recipeCount,'recipe')+'</div></div>'+
-    '<div class="kpi"><div class="label">Beverage</div><div class="value">'+pct(bevStats.avgCostPct)+' <span class="hint" style="font-size:12px">cost</span></div><div class="foot">'+money(bevStats.inventoryValue)+' inventory · '+plural(bevStats.itemCount,'item')+' · '+plural(bevStats.recipeCount,'recipe')+'</div></div>'+
-    // Supplies (cleaning, smallwares, maintenance) never sit on a recipe, so
-    // cost-% and recipe count don't mean anything here - just spend and count.
-    '<div class="kpi"><div class="label">Supplies</div><div class="value">'+money(supStats.inventoryValue)+'</div><div class="foot">'+plural(supStats.itemCount,'item')+' tracked</div></div>'+
-  '</div>';
-
   html += '<div class="two-col">';
   chartPointsMap.dashboardTrend = trend.points;
   html += '<div class="card chart-card" data-chart-id="dashboardTrend"><div class="section-title">Inventory value over time</div><div class="chart-wrap">'+trend.svg+'</div></div>';
-  html += '<div class="card"><div class="section-title">Needs attention</div>' + (attn.length ? attn.map(function(a){
-    return '<div class="attn-item"><div><div class="t">'+esc(a.t)+'</div><div class="s">'+esc(a.s)+'</div></div><button class="btn small ghost" data-action="setTab" data-tab="'+a.tab+'">View</button></div>';
-  }).join('') : '<div class="empty-state">Nothing needs attention right now.</div>') + '</div>';
+
+  // One card instead of three separate KPI-weight tiles: a single
+  // proportional bar shows the $ split at a glance, then compact rows carry
+  // the detail. Department is a breakdown of the inventory-value KPI above,
+  // not three more headline numbers competing for the same attention.
+  var deptTotal = Math.max(0.01, foodStats.inventoryValue + bevStats.inventoryValue + supStats.inventoryValue);
+  var fPct = foodStats.inventoryValue/deptTotal*100, bPct = bevStats.inventoryValue/deptTotal*100, sPct = supStats.inventoryValue/deptTotal*100;
+  html += '<div class="card">'+
+    '<div class="section-title">By department</div>'+
+    '<div class="dept-bar">'+
+      (fPct>0?'<div class="seg food" style="width:'+fPct+'%" title="Food '+pct(fPct,0)+'"></div>':'')+
+      (bPct>0?'<div class="seg bev" style="width:'+bPct+'%" title="Beverage '+pct(bPct,0)+'"></div>':'')+
+      (sPct>0?'<div class="seg sup" style="width:'+sPct+'%" title="Supplies '+pct(sPct,0)+'"></div>':'')+
+    '</div>'+
+    '<div class="dept-rows">'+
+      '<div class="dept-row"><span class="dept-dot food"></span><span class="dept-name">Food</span><span class="dept-num">'+pct(foodStats.avgCostPct)+' cost</span><span class="dept-sub">'+money(foodStats.inventoryValue)+' · '+plural(foodStats.itemCount,'item')+'</span></div>'+
+      '<div class="dept-row"><span class="dept-dot bev"></span><span class="dept-name">Beverage</span><span class="dept-num">'+pct(bevStats.avgCostPct)+' cost</span><span class="dept-sub">'+money(bevStats.inventoryValue)+' · '+plural(bevStats.itemCount,'item')+'</span></div>'+
+      '<div class="dept-row"><span class="dept-dot sup"></span><span class="dept-name">Supplies</span><span class="dept-num">'+money(supStats.inventoryValue)+'</span><span class="dept-sub">'+plural(supStats.itemCount,'item')+'</span></div>'+
+    '</div>'+
+  '</div>';
   html += '</div>';
 
   return html;
