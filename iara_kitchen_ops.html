@@ -92,7 +92,7 @@
   #app{min-height:100%; display:flex; flex-direction:column;}
   button, input, select, textarea{font:inherit; color:inherit;}
   h1,h2,h3,h4{margin:0; text-wrap:balance; font-weight:700;}
-  h1,h2{font-family:var(--font-display); font-weight:600; color:var(--display); letter-spacing:-.01em;}
+  h1,h2{font-family:var(--font-display); font-weight:600; color:var(--display); letter-spacing:-.01em; line-height:1.15;}
   p{margin:0;}
   a{color:var(--accent);}
   .num{font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
@@ -143,7 +143,11 @@
   @media (max-width:640px){ main{padding:14px;} header.topbar{padding:12px 14px;} nav.tabs{padding:8px 10px; top:calc(env(safe-area-inset-top,0px) + 58px);} }
 
   .panel-head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
-  .panel-head h2{font-size:23px;}
+  /* Page titles were 23px/600 against 13.5px body - only a ~1.7x ratio,
+     and close enough to the 24px KPI numbers below them that neither one
+     clearly led. Widening the jump (not adding another size step) is what
+     actually reads as intentional hierarchy rather than timid. */
+  .panel-head h2{font-size:30px; letter-spacing:-.015em;}
   .panel-head .desc{font-size:13px; color:var(--ink-muted); margin-top:2px;}
 
   .btn{
