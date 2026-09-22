@@ -225,7 +225,15 @@
   .modal-actions .right{display:flex; gap:8px;}
   .line-row{display:grid; grid-template-columns:1fr 110px 90px auto; gap:8px; align-items:end; padding:8px 0; border-bottom:1px solid var(--border);}
   .line-row:last-child{border-bottom:none;}
-  @media (max-width:480px){ .line-row{grid-template-columns:1fr 1fr; grid-template-areas:"a a" "b c" "d d";} }
+  @media (max-width:480px){
+    /* Several call sites set grid-template-columns inline (JS-built rows with
+       varying field counts), which always wins over a stylesheet rule - even
+       one in a media query - so this narrow-screen fallback needs !important
+       to actually override them. Without it, an invoice/PO line row keeps its
+       5-column desktop grid on a phone and the ingredient picker shrinks to
+       a few unreadable characters instead of wrapping. */
+    .line-row{grid-template-columns:1fr 1fr!important; grid-template-areas:"a a" "b c" "d d";}
+  }
   .line-total{font-family:var(--font-mono); font-size:13px; color:var(--ink-secondary); align-self:center; text-align:right;}
   .lines-box{border:1px solid var(--border); border-radius:10px; padding:10px 12px; max-height:280px; overflow-y:auto;}
   .cost-preview{display:flex; justify-content:space-between; align-items:center; background:var(--accent-soft); border-radius:10px; padding:10px 14px; font-size:13px;}
