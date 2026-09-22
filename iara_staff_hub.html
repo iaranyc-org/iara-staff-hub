@@ -198,8 +198,10 @@
     width:230px; flex:none; background:var(--sidebar); color:var(--sidebar-ink);
     padding:24px 16px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh;
   }
-  .sb-mark .word{ font-family:var(--font-display); font-weight:700; font-size:16px;
-    letter-spacing:-.005em; color:var(--sidebar-muted); }
+  /* Matches the supplied OG card lockup (Fraunces, not Forevs - the sidebar
+     had drifted onto the wrong title face somewhere along the way). */
+  .sb-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:19px;
+    letter-spacing:-.005em; color:var(--river); }
   .sb-mark{ display:flex; align-items:center; gap:10px; padding:4px 10px 22px; }
   .sb-mark-link{ display:inline-flex; align-items:center; gap:10px; border-radius:6px; text-decoration:none; }
   .sb-mark-link:focus-visible{ outline:2px solid var(--sun); outline-offset:3px; }
@@ -224,7 +226,7 @@
     display:none; align-self:stretch; align-items:center; gap:10px; padding:12px 18px;
     border-bottom:1px solid var(--line); background:var(--paper-raised); position:sticky; top:0; z-index:5;
   }
-  .topbar .word{ font-family:var(--font-display); font-weight:700; font-size:17px; }
+  .topbar .word{ font-family:'Fraunces',Georgia,serif; font-weight:500; font-size:19px; color:var(--river); }
 
   /* Fast Facts: Home only, per Jay's own phrasing ("home should also
      have..."). Every value here is sourced and verified, never guessed -
@@ -897,7 +899,13 @@
   .manual-read-row{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin:9px 0 0; }
   .manual-read{ margin:0; font-size:13px; color:var(--ink-soft); }
   .manual-read-row .linkish{ margin:0; font-size:13px; }
-  .accordion.is-read .acc-num::after{ content:"\2713"; margin-left:6px; color:var(--sun); }
+  /* A checkmark tacked onto the tiny section number was too easy to miss.
+     A plain "Read" tag next to the title, same pill language as the
+     checklist's Optional/Automatic tags, reads at a glance. */
+  .acc-read-tag{ display:none; font-size:11.5px; font-weight:700; letter-spacing:.02em;
+    color:var(--sun); border:1px solid var(--sun); border-radius:4px; padding:1px 7px;
+    margin-right:10px; flex:none; }
+  .accordion.is-read .acc-read-tag{ display:inline-block; }
   mark{ background:color-mix(in srgb, var(--sun) 30%, transparent); color:var(--ink);
     border-radius:2px; padding:0 1px; }
 </style>
@@ -1077,7 +1085,6 @@
     <!-- TEAM -->
     <section class="view" id="view-team">
       <h1>Team</h1>
-      <p class="view-intro">Who you are working with.</p>
       <div id="team-bios"></div>
     </section>
 
@@ -1093,7 +1100,6 @@
     <!-- FOOD & BEVERAGE -->
     <section class="view" id="view-fnb">
       <h1>The Menu</h1>
-      <p class="view-intro">Every dish, what is in it, and what it sets off — or switch to Ingredients for the Amazonian and Brazilian staples behind them. Look it up mid-service. Study is where you practice it card by card. <span class="badge badge-example">Example</span> items are stand-ins until the chef confirms the menu.</p>
 
       <div id="fb-browse">
         <!-- Dishes vs Ingredients: two lenses on one search and one card
@@ -1940,7 +1946,7 @@ function renderManual(){
     var extra = sec.id === "loop" ? loopDiagram() : "";
     return '<div class="card accordion" data-i="'+i+'" data-sec="'+esc(sec.id||String(i))+'">' +
       '<button class="acc-head"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
-        '<h3>'+sec.title+'</h3><span class="chev">▾</span></button>' +
+        '<h3>'+sec.title+'</h3><span class="acc-read-tag">Read</span><span class="chev">▾</span></button>' +
       '<div class="acc-body"><ul>'+items+'</ul>'+extra+'</div></div>';
   }).join("");
   wrap.querySelectorAll(".acc-head").forEach(function(h){
