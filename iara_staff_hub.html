@@ -143,7 +143,7 @@
 
   /* ===================== Gate (name entry) ===================== */
   #gate{
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    min-height:100vh; min-height:100dvh; display:flex; align-items:center; justify-content:center;
     padding: 48px 20px;
     background:
       linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
@@ -199,11 +199,11 @@
      shell is the standard fix: past this width the dead space becomes
      small, even margins on the true window edges instead of one
      lopsided gap after the content column. */
-  #shell{ display:none; min-height:100vh; }
+  #shell{ display:none; min-height:100vh; min-height:100dvh; }
   #shell.active{ display:flex; max-width:1560px; margin:0 auto; }
   .sidebar{
     width:230px; flex:none; background:var(--sidebar); color:var(--sidebar-ink);
-    padding:24px 16px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh;
+    padding:24px 16px; display:flex; flex-direction:column; gap:4px; position:sticky; top:0; height:100vh; height:100dvh;
   }
   /* Matches the supplied OG card lockup (Fraunces, not Forevs - the sidebar
      had drifted onto the wrong title face somewhere along the way). */
@@ -890,9 +890,12 @@
   .sr-only{ position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden;
     clip:rect(0 0 0 0); white-space:nowrap; border:0; }
   .manual-search{ max-width:var(--measure); margin:0 0 20px; }
+  /* -webkit-appearance:none strips iOS's own rounded-pill chrome for
+     type="search", which otherwise fights this 6px radius and padding -
+     the box looks like two different shapes stacked on a real iPhone. */
   .manual-search input{ width:100%; padding:13px 15px; border-radius:6px;
     border:1.5px solid var(--line); background:var(--paper-raised); color:var(--ink);
-    font:inherit; font-size:15px; }
+    font:inherit; font-size:15px; -webkit-appearance:none; appearance:none; }
   .manual-search input::placeholder{ color:var(--ink-soft); }
   .manual-search input:focus{ outline:none; border-color:var(--sun); }
   .manual-count{ margin:9px 0 0; font-size:13px; color:var(--ink-soft); }

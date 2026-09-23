@@ -40,7 +40,7 @@
   html{ background:var(--paper); }
   html.booting #gate, html.booting #launcher{ visibility:hidden; }
   body{
-    margin:0; min-height:100vh;
+    margin:0; min-height:100vh; min-height:100dvh;
     color:var(--ink);
     font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
     -webkit-font-smoothing:antialiased;
@@ -56,7 +56,7 @@
 
   /* ===================== Gate ===================== */
   #gate{
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    min-height:100vh; min-height:100dvh; display:flex; align-items:center; justify-content:center;
     padding:48px 20px;
     background:
       linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
@@ -91,7 +91,7 @@
 
   /* ===================== Launcher ===================== */
   #launcher{
-    min-height:100vh; display:flex; align-items:center; justify-content:center;
+    min-height:100vh; min-height:100dvh; display:flex; align-items:center; justify-content:center;
     padding:48px 20px;
     background:
       linear-gradient(160deg,
