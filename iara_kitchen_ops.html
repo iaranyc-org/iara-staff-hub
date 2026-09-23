@@ -80,14 +80,13 @@
     color:var(--ink); font-family:var(--font-sans); padding-inline:0;
     -webkit-font-smoothing:antialiased;
   }
-  /* Same grain recipe as Lineup and the hub, so all three read as one
-     house rather than three separately-styled tools. */
-  body::before{
-    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    filter:contrast(170%) brightness(1000%); mix-blend-mode:overlay;
-  }
-  :root[data-theme="light"] body::before{ opacity:.12; }
+  /* The grain overlay that used to live here (feTurbulence + mix-blend-mode
+     :overlay on a position:fixed body::before) is a known-bad combination on
+     real iOS Safari - it stops blending and paints as a blown-out solid
+     color across the whole page instead. Confirmed live on Lineup's Menu
+     view (same recipe, same file family) as a wash of neon pink covering
+     everything, not reproducible in any simulated/desktop browser. Removed
+     here too rather than re-tuned. */
   #app, #modalRoot, #authGate, .toast-stack{ position:relative; z-index:1; }
   #app{min-height:100%; display:flex; flex-direction:column;}
   button, input, select, textarea{font:inherit; color:inherit;}

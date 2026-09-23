@@ -116,6 +116,13 @@
   }
   html{ background:var(--paper); }
   html.booting #gate, html.booting #shell{ visibility:hidden; }
+  /* The grain texture that used to live here (body::before, feTurbulence,
+     mix-blend-mode:overlay on position:fixed) is a known-bad combination on
+     real iOS Safari: instead of blending subtly it stops blending and paints
+     as a blown-out solid color across the whole page. Confirmed live - a
+     real phone showed the entire Menu view as neon pink, not reproducible in
+     any simulated or desktop browser. Removed rather than re-tuned, since a
+     production bug like that isn't worth a texture no one asked to keep. */
   body{
     margin:0;
     background:
@@ -449,13 +456,6 @@
   .opt.wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
   .opt[disabled]{ cursor:default; }
   .qexplain{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
-  /* Grain. A large flat maroon field bands badly and reads as dead space; a
-     little noise gives it a printed, paper-like surface. House premium touch.
-     contrast/brightness amplify the low-alpha turbulence into visible grain. */
-  body::before{
-    content:""; position:fixed; inset:0; z-index:0; pointer-events:none; opacity:.28;
-    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-    filter:contrast(170%) brightness(1000%); mix-blend-mode:overlay; }
   #shell, #gate{ position:relative; z-index:1; }
 
   /* Cards sat flat on a same-tone ground. A hairline top highlight is what
