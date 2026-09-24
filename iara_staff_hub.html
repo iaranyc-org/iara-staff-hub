@@ -2069,15 +2069,24 @@ var fbAdminUnlocked = false;
 // hides a default that was deleted without ever being edited first.
 async function loadFbItems(){
   if (!db) { fbItems = FNB_DEFAULTS.slice(); return; }
+  var byId = {};
+  FNB_DEFAULTS.forEach(function(d){ byId[d.id] = d; });
+  // Each read stands on its own. menu_deleted_defaults needs its own
+  // firestore.rules entry deployed (a separate manual step from pushing this
+  // file - see saveDish/deleteDish), and while it is missing that read
+  // fails with a permissions error. That must never take the real
+  // menu_items edits down with it in one shared try/catch, which is exactly
+  // what happened here: a saved edit sat correctly in Firestore while every
+  // page load silently discarded it and re-showed the untouched default.
   try {
-    var byId = {};
-    FNB_DEFAULTS.forEach(function(d){ byId[d.id] = d; });
     var deletedSnap = await db.collection("menu_deleted_defaults").get();
     deletedSnap.docs.forEach(function(d){ delete byId[d.id]; });
+  } catch(e) { /* rules not deployed yet, or offline - defaults just won't be hideable */ }
+  try {
     var snap = await db.collection("menu_items").get();
     snap.docs.forEach(function(d){ var v = d.data(); v.id = d.id; byId[d.id] = v; });
-    fbItems = Object.keys(byId).map(function(id){ return byId[id]; });
-  } catch(e) { fbItems = FNB_DEFAULTS.slice(); }
+  } catch(e) { /* offline or genuinely no access - defaults still render */ }
+  fbItems = Object.keys(byId).map(function(id){ return byId[id]; });
 }
 
 function renderFbTabs(){
