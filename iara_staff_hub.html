@@ -2058,15 +2058,25 @@ var fbActiveCat = "Starters";
 var fbLens = "dishes"; // "dishes" | "ingredients", two lenses on one search
 var fbAdminUnlocked = false;
 
+// FNB_DEFAULTS are the starting menu, not test data - most dishes are never
+// individually edited, so most never get a Firestore document at all. The
+// old logic here switched entirely to Firestore the moment ANY document
+// existed there, which meant the very first successful save of a single
+// dish (see saveDish's fix note) would have dropped the other 25 default
+// dishes from the menu outright. Merge instead: defaults are the base,
+// Firestore documents override a default with the same id (an edit) or
+// append a new one (an addition), and a tombstone in menu_deleted_defaults
+// hides a default that was deleted without ever being edited first.
 async function loadFbItems(){
   if (!db) { fbItems = FNB_DEFAULTS.slice(); return; }
   try {
+    var byId = {};
+    FNB_DEFAULTS.forEach(function(d){ byId[d.id] = d; });
+    var deletedSnap = await db.collection("menu_deleted_defaults").get();
+    deletedSnap.docs.forEach(function(d){ delete byId[d.id]; });
     var snap = await db.collection("menu_items").get();
-    if (snap.docs.length) {
-      fbItems = snap.docs.map(function(d){ var v = d.data(); v.id = d.id; return v; });
-    } else {
-      fbItems = FNB_DEFAULTS.slice();
-    }
+    snap.docs.forEach(function(d){ var v = d.data(); v.id = d.id; byId[d.id] = v; });
+    fbItems = Object.keys(byId).map(function(id){ return byId[id]; });
   } catch(e) { fbItems = FNB_DEFAULTS.slice(); }
 }
 
@@ -2325,8 +2335,17 @@ var pendingDelete = null;
 async function deleteDish(item){
   if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
   var snapshot = Object.assign({}, item);
+  // A default's id (d1, d2, ...) has no Firestore doc behind it until it is
+  // edited, so deleting one is not "remove a document" - it is "make
+  // loadFbItems stop re-adding this default from FNB_DEFAULTS." The
+  // tombstone in menu_deleted_defaults is what actually suppresses it;
+  // wiping menu_items/{id} too covers the case where it had already been
+  // edited (and so had a real override document) before this delete.
+  var isDefault = FNB_DEFAULTS.some(function(d){ return d.id === item.id; });
   try {
-    await (adminDb || db).doc("menu_items/" + item.id).delete();
+    var ops = [(adminDb || db).doc("menu_items/" + item.id).delete()];
+    if (isDefault) ops.push((adminDb || db).doc("menu_deleted_defaults/" + item.id).set({ deletedAt: new Date().toISOString() }));
+    await Promise.all(ops);
     await loadFbItems(); renderFbGrid();
   } catch(err) { toast("Could not delete that item. Try again."); return; }
 
@@ -2334,7 +2353,9 @@ async function deleteDish(item){
   toast("Deleted " + snapshot.name + ".", "Undo", async function(){
     var restore = Object.assign({}, pendingDelete); delete restore.id;
     try {
-      await (adminDb || db).collection("menu_items").add(restore);
+      var ops = [(adminDb || db).doc("menu_items/" + snapshot.id).set(restore)];
+      if (isDefault) ops.push((adminDb || db).doc("menu_deleted_defaults/" + snapshot.id).delete());
+      await Promise.all(ops);
       await loadFbItems(); renderFbGrid();
       toast("Restored " + snapshot.name + ".");
     } catch(err) { toast("Could not restore that item."); }
@@ -2370,7 +2391,16 @@ async function saveDish(id, item){
   if (!db) { toast("Menu editing needs the shared database, which is not connected yet."); return; }
   try {
     if (id) {
-      await (adminDb || db).doc("menu_items/" + id).update(item);
+      // The real bug: until a dish has been edited once, its "id" (d1, d2,
+      // ...) only exists in the FNB_DEFAULTS fallback array, not as an
+      // actual Firestore document - loadFbItems only reads from Firestore
+      // when the menu_items collection is non-empty. update() requires the
+      // document to already exist, so every first edit of any un-migrated
+      // dish threw a silent not-found error and the toast just said "try
+      // again," which retried the exact same failing update. set(...,
+      // {merge:true}) creates the document if it is missing and updates it
+      // if it is not, so both cases work the same way.
+      await (adminDb || db).doc("menu_items/" + id).set(item, { merge: true });
     } else {
       await (adminDb || db).collection("menu_items").add(item);
     }

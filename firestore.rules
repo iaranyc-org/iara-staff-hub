@@ -59,6 +59,15 @@ service cloud.firestore {
       allow write: if isManager();
     }
 
+    // Tombstones for deleted default dishes (loadFbItems merges FNB_DEFAULTS
+    // with Firestore rather than replacing it, so deleting a never-edited
+    // default needs a marker here rather than a menu_items document to
+    // delete). Same read/write shape as menu_items itself.
+    match /menu_deleted_defaults/{itemId} {
+      allow read: if signedIn();
+      allow write: if isManager();
+    }
+
     // Kitchen Ops (iara_kitchen_ops.html): costing, inventory, POs, sales.
     // Manager-only in both directions — this is financial/business data,
     // not something the shared staff session should see.
