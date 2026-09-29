@@ -114,7 +114,11 @@
   @media (prefers-reduced-motion:reduce){
     .nav-btn:active, .fb-lens-btn:active, .fb-tab:active, .jump:active, .ff-socials a:active, .say-btn:active{ transform:none; }
   }
-  html{ background:var(--paper); }
+  /* Without this, Safari's own text-inflation heuristic can blow up font
+     sizes on a long, text-dense page like Admin - independent of the
+     viewport meta tag, and not reproducible in any simulated browser since
+     it is a real-device-only WebKit behavior. */
+  html{ background:var(--paper); -webkit-text-size-adjust:100%; text-size-adjust:100%; }
   html.booting #gate, html.booting #shell{ visibility:hidden; }
   /* The grain texture that used to live here (body::before, feTurbulence,
      mix-blend-mode:overlay on position:fixed) is a known-bad combination on
@@ -784,6 +788,8 @@
     color:var(--sun); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
   .jump-link:hover{ color:var(--display); }
   .jump-link:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; border-radius:2px; }
+  .danger-link{ color:var(--ink-soft); font-size:13px; }
+  .danger-link:hover{ color:var(--clay); }
   .linkish{ display:block; margin-top:18px; background:none; border:none; color:var(--ink-soft);
     font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
   .linkish:hover{ color:var(--ink); }
@@ -3766,6 +3772,7 @@ async function renderProgress(){
         });
       });
       rows.push({
+        id: d.id, quizIds: qSnap.docs.map(function(qd){ return qd.id; }),
         name: s.name, role: s.role, count: attempts.length, avg: overallAvg, byCat: byCat,
         last: s.lastActive, created: s.createdAt,
         // Undefined means this person has not opened First Week since the
@@ -3902,6 +3909,7 @@ function renderProgressTable(){
   var html = '<div class="table-wrap"><table class="progress"><thead><tr>' +
     th("name", "Name") + th("role", "Role") + th("onboarding", "Onboarding", true) +
     catHeaders + th("overall", "Overall", true) + th("last", "Last active", true) +
+    '<th></th>' +
     '</tr></thead><tbody>';
   rows.forEach(function(r){
     var catCells = progressCats.map(function(c){
@@ -3915,7 +3923,8 @@ function renderProgressTable(){
       '<td class="mono num">'+clCell+'</td>' +
       catCells +
       '<td class="mono num">'+(r.avg===null?'—':r.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+r.count+')</span>')+'</td>' +
-      '<td class="mono num">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—')+'</td></tr>';
+      '<td class="mono num">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—')+'</td>' +
+      '<td class="num"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete</button></td></tr>';
   });
   html += '</tbody></table></div>';
   wrap.innerHTML = html;
@@ -3928,6 +3937,40 @@ function renderProgressTable(){
       renderProgressTable();
     });
   });
+
+  wrap.querySelectorAll("[data-del-id]").forEach(function(btn){
+    btn.addEventListener("click", function(){
+      var id = btn.getAttribute("data-del-id");
+      var row = progressRows.find(function(r){ return r.id === id; });
+      if (!row) return;
+      confirmDialog({
+        title: "Delete " + row.name + "?",
+        body: "Removes their record and test history from Admin. This does not touch anything on their own device, so if they open the app again they will show up as a new entry.",
+        confirm: "Delete", cancel: "Cancel"
+      }, function(){ deleteStaffRow(row); });
+    });
+  });
+}
+
+// Manager-only cleanup for test/duplicate rows (see stableId fix - old
+// pre-fix accounts and one-off QA runs both leave rows like this). Deletes
+// the staff doc plus its quizzes subcollection, since Firestore does not
+// cascade-delete subcollections on its own and an orphaned one would still
+// count toward nothing visible but real storage.
+async function deleteStaffRow(row){
+  try {
+    var batch = (adminDb || db).batch();
+    (row.quizIds || []).forEach(function(qid){
+      batch.delete((adminDb || db).doc("staff/" + row.id + "/quizzes/" + qid));
+    });
+    batch.delete((adminDb || db).doc("staff/" + row.id));
+    await batch.commit();
+    progressRows = progressRows.filter(function(r){ return r.id !== row.id; });
+    renderProgressTable();
+    toast("Deleted " + row.name + ".");
+  } catch(e){
+    toast("Could not delete that record. Try again.");
+  }
 }
 
 /* ============================================================
