@@ -808,6 +808,12 @@
   table.progress tr:last-child td{ border-bottom:none; }
   table.progress tbody tr:hover td{ background:color-mix(in srgb, var(--sun) 4%, transparent); }
   table.progress td:first-child{ font-family:var(--font-display); font-size:17px; color:var(--display); }
+  /* Numeric columns read as a column of numbers, not a ragged left edge -
+     the single biggest thing making this table look unkempt before. */
+  table.progress th.num, table.progress td.num{ text-align:right; }
+  table.progress th.sortable{ cursor:pointer; user-select:none; white-space:nowrap; }
+  table.progress th.sortable:hover{ color:var(--ink); }
+  .sort-arrow{ color:var(--sun); font-size:11px; }
   .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
   .qbar span{ display:block; height:100%; background:var(--sun); border-radius:3px; transition:width .25s cubic-bezier(.16,1,.3,1); }
   .opt{ display:flex; align-items:center; gap:10px; }
@@ -878,7 +884,11 @@
   .misses li{ counter-increment:miss; padding:16px 0; border-bottom:1px solid var(--rule); }
   .misses li:last-child{ border-bottom:none; }
   .miss-q{ margin:0 0 8px; font-size:15.5px; line-height:1.5; color:var(--ink); }
-  .miss-q::before{ content:counter(miss) ". "; color:var(--ink-soft);
+  /* Scoped to .misses specifically - .miss-q is reused by Admin's
+     "What the team keeps missing" (.miss-rank), which has no counter-reset
+     of its own, so this rule used to print a bare, permanently-zero "0."
+     in front of every row there. */
+  .misses .miss-q::before{ content:counter(miss) ". "; color:var(--ink-soft);
     font-family:'IBM Plex Mono',monospace; font-size:12.5px; }
   .miss-a, .miss-c{ margin:0; font-size:14px; line-height:1.55; }
   .miss-a{ color:var(--ink-mid); }
@@ -1642,6 +1652,19 @@ async function touchStaffDoc(){
     var now = new Date().toISOString();
     if (snap.exists) {
       await ref.update({ name: profile.name, role: profile.role, lastActive: now });
+      // Resuming on a new device (or after clearing this one): the stable id
+      // means this is genuinely the same person's doc, but their checklist
+      // has only ever lived in this browser's localStorage, so a fresh
+      // device always looked like day one even after finishing half of
+      // First Week elsewhere. Hydrate from the cloud copy exactly once,
+      // only when the local copy is actually empty, so nothing overwrites
+      // real local progress with a stale cloud snapshot.
+      var cloudState = snap.data().checklistState;
+      if (cloudState && Object.keys(cloudState).length && !Object.keys(loadChecklist()).length) {
+        saveChecklist(cloudState);
+        renderHomeFirstWeek();
+        if (document.getElementById("checklist-area")) renderChecklist();
+      }
     } else {
       await ref.set({ name: profile.name, role: profile.role, createdAt: now, lastActive: now });
     }
@@ -1651,11 +1674,16 @@ async function touchStaffDoc(){
 // Denormalized so Admin can see who has finished First Week without a
 // manager standing next to that person's phone. Best-effort, same as
 // touchStaffDoc: the checklist itself is still authoritative locally.
+// checklistState (the actual per-item checkboxes, not just the counts) is
+// what lets touchStaffDoc() resume someone's progress on a new device - see
+// the note there. Auto-completed items are never in `state`, so they simply
+// re-derive from autoChecks() again on the new device; nothing to carry.
 async function syncChecklistToCloud(p){
   if (!db || !profile) return;
   try {
     await db.doc("staff/" + profile.id).set({
-      checklistDone: p.done, checklistTotal: p.total, checklistComplete: p.complete
+      checklistDone: p.done, checklistTotal: p.total, checklistComplete: p.complete,
+      checklistState: p.state
     }, { merge: true });
   } catch(e){ /* non-fatal */ }
 }
@@ -3683,6 +3711,12 @@ async function refreshHomeStats(){
    Progress dashboard (manager PIN gated)
    ============================================================ */
 var progressUnlocked = false;
+// Cached so a header click can re-sort and redraw just the table, not
+// refetch every staff doc and its quiz history again.
+var progressRows = null;
+var progressCats = null;
+var progressSort = { key: "name", dir: "asc" };
+
 async function renderProgress(){
   var area = document.getElementById("progress-area");
   if (!progressUnlocked) {
@@ -3812,28 +3846,14 @@ async function renderProgress(){
     }
 
     // ---- full roster ----
+    progressRows = rows;
+    progressCats = CATS;
     html += '<h2 class="admin-h2">Whole team</h2>' +
-      '<p class="placeholder-note" style="margin-bottom:10px;">Each test section shows average score across attempts, with the number of attempts in parentheses.</p>';
-    var catHeaders = CATS.map(function(c){ return '<th>'+c.name+'</th>'; }).join("");
-    html += '<div class="table-wrap"><table class="progress"><thead><tr>' +
-      '<th>Name</th><th>Role</th><th>Onboarding</th>' + catHeaders + '<th>Overall</th><th>Last active</th></tr></thead><tbody>';
-    rows.forEach(function(r){
-      var catCells = CATS.map(function(c){
-        var cell = r.byCat[c.key];
-        return '<td class="mono">' + (cell.avg===null ? '\u2014' : cell.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+cell.count+')</span>') + '</td>';
-      }).join("");
-      var clCell = r.clTotal === null ? '<span class="placeholder-note">not yet</span>'
-        : (r.clComplete ? 'Done' : r.clDone+' of '+r.clTotal);
-      html += '<tr' + (r.clComplete === false && r.hireDays !== null && r.hireDays >= 7 ? ' class="row-flag"' : '') + '>' +
-        '<td>'+esc(r.name)+'</td><td>'+esc(r.role||"")+'</td>' +
-        '<td class="mono">'+clCell+'</td>' +
-        catCells +
-        '<td class="mono">'+(r.avg===null?'\u2014':r.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+r.count+')</span>')+'</td>' +
-        '<td class="mono">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '\u2014')+'</td></tr>';
-    });
-    html += '</tbody></table></div>';
+      '<p class="placeholder-note" style="margin-bottom:10px;">Each test section shows average score across attempts, with the number of attempts in parentheses. Click a column to sort.</p>' +
+      '<div id="progress-table-wrap"></div>';
 
     area.innerHTML = html;
+    renderProgressTable();
     var out = document.getElementById("mg-out");
     if (out) out.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
   } catch(e) {
@@ -3843,6 +3863,71 @@ async function renderProgress(){
     var o2 = document.getElementById("mg-out");
     if (o2) o2.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
   }
+}
+
+// One value per sortable column, null-safe so nobody-started/never-tested
+// rows sort consistently to one end instead of scattering wherever a bare
+// null happens to fall in a string/number comparison.
+function progressSortValue(r, key){
+  if (key === "name") return (r.name || "").toLowerCase();
+  if (key === "role") return (r.role || "").toLowerCase();
+  if (key === "onboarding") return r.clTotal === null ? -1 : (r.clComplete ? 999 : r.clDone);
+  if (key === "overall") return r.avg === null ? -1 : r.avg;
+  if (key === "last") return r.lastDays === null ? Infinity : r.lastDays;
+  var cell = r.byCat && r.byCat[key];
+  return (!cell || cell.avg === null) ? -1 : cell.avg;
+}
+
+// Re-sorts and redraws only the table - renderProgress() already fetched
+// everything into progressRows, so a header click never re-hits Firestore.
+function renderProgressTable(){
+  var wrap = document.getElementById("progress-table-wrap");
+  if (!wrap || !progressRows) return;
+  var sort = progressSort;
+  var rows = progressRows.slice().sort(function(a, b){
+    var va = progressSortValue(a, sort.key), vb = progressSortValue(b, sort.key);
+    var cmp = va < vb ? -1 : va > vb ? 1 : 0;
+    return sort.dir === "asc" ? cmp : -cmp;
+  });
+
+  function sortArrow(key){
+    if (sort.key !== key) return "";
+    return ' <span class="sort-arrow">' + (sort.dir === "asc" ? "↑" : "↓") + '</span>';
+  }
+  function th(key, label, numeric){
+    return '<th class="sortable' + (numeric ? " num" : "") + '" data-sort="' + esc(key) + '">' + esc(label) + sortArrow(key) + '</th>';
+  }
+
+  var catHeaders = progressCats.map(function(c){ return th(c.key, c.name, true); }).join("");
+  var html = '<div class="table-wrap"><table class="progress"><thead><tr>' +
+    th("name", "Name") + th("role", "Role") + th("onboarding", "Onboarding", true) +
+    catHeaders + th("overall", "Overall", true) + th("last", "Last active", true) +
+    '</tr></thead><tbody>';
+  rows.forEach(function(r){
+    var catCells = progressCats.map(function(c){
+      var cell = r.byCat[c.key];
+      return '<td class="mono num">' + (cell.avg===null ? '—' : cell.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+cell.count+')</span>') + '</td>';
+    }).join("");
+    var clCell = r.clTotal === null ? '<span class="placeholder-note">not yet</span>'
+      : (r.clComplete ? 'Done' : r.clDone+' of '+r.clTotal);
+    html += '<tr' + (r.clComplete === false && r.hireDays !== null && r.hireDays >= 7 ? ' class="row-flag"' : '') + '>' +
+      '<td>'+esc(r.name)+'</td><td>'+esc(r.role||"")+'</td>' +
+      '<td class="mono num">'+clCell+'</td>' +
+      catCells +
+      '<td class="mono num">'+(r.avg===null?'—':r.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+r.count+')</span>')+'</td>' +
+      '<td class="mono num">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : '—')+'</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  wrap.innerHTML = html;
+
+  wrap.querySelectorAll("th.sortable").forEach(function(header){
+    header.addEventListener("click", function(){
+      var key = header.getAttribute("data-sort");
+      if (progressSort.key === key) progressSort.dir = progressSort.dir === "asc" ? "desc" : "asc";
+      else progressSort = { key: key, dir: "asc" };
+      renderProgressTable();
+    });
+  });
 }
 
 /* ============================================================
