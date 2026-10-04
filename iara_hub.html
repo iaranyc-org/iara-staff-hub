@@ -184,6 +184,7 @@
     <div class="app-switch" role="tablist" aria-label="Choose an app">
       <button class="switch-btn active" id="switch-lineup" role="tab" aria-selected="true">Lineup</button>
       <button class="switch-btn" id="switch-ops" role="tab" aria-selected="false">Kitchen Ops</button>
+      <button class="switch-btn" id="switch-inbox" role="tab" aria-selected="false">iara Inbox</button>
     </div>
 
     <div class="app-panel card" id="panel-lineup">
@@ -217,6 +218,11 @@
     <div class="app-panel card" id="panel-ops" hidden>
       <p class="panel-desc">Ingredient costing, inventory counts, and purchasing. <span class="app-badge">Manager</span></p>
       <a class="btn btn-primary" href="/ops" style="text-decoration:none;">Continue to Kitchen Ops →</a>
+    </div>
+
+    <div class="app-panel card" id="panel-inbox" hidden>
+      <p class="panel-desc">Guest texts, emails and DMs in one place, with drafted replies to approve. <span class="app-badge">Manager</span></p>
+      <a class="btn btn-primary" href="https://iara-inbox.vercel.app" target="_blank" rel="noopener noreferrer" style="text-decoration:none;">Continue to iara Inbox →</a>
     </div>
   </div>
 </div>
@@ -283,21 +289,19 @@
   });
 
   // ---- App switch ----
-  var swLineup = document.getElementById("switch-lineup");
-  var swOps = document.getElementById("switch-ops");
-  var panelLineup = document.getElementById("panel-lineup");
-  var panelOps = document.getElementById("panel-ops");
+  var APPS = ["lineup", "ops", "inbox"];
   function showPanel(which){
-    var isLineup = which === "lineup";
-    swLineup.classList.toggle("active", isLineup);
-    swOps.classList.toggle("active", !isLineup);
-    swLineup.setAttribute("aria-selected", String(isLineup));
-    swOps.setAttribute("aria-selected", String(!isLineup));
-    panelLineup.hidden = !isLineup;
-    panelOps.hidden = isLineup;
+    APPS.forEach(function(name){
+      var on = name === which;
+      var sw = document.getElementById("switch-" + name);
+      sw.classList.toggle("active", on);
+      sw.setAttribute("aria-selected", String(on));
+      document.getElementById("panel-" + name).hidden = !on;
+    });
   }
-  swLineup.addEventListener("click", function(){ showPanel("lineup"); });
-  swOps.addEventListener("click", function(){ showPanel("ops"); });
+  APPS.forEach(function(name){
+    document.getElementById("switch-" + name).addEventListener("click", function(){ showPanel(name); });
+  });
 
   // ---- Hand off straight into Lineup, already signed in ----
   //
