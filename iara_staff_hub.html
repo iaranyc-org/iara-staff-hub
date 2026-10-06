@@ -976,6 +976,7 @@
   .ms-dish h3{ font-size:19px; margin:0 0 6px; }
   .ms-dish p{ margin:0; font-size:15.5px; line-height:1.7; color:var(--ink-mid); max-width:62ch; }
   .ms-room{ margin-top:36px; }
+  .ms-intro{ margin:10px 0 4px; font-size:15px; line-height:1.65; color:var(--ink-soft); font-style:italic; max-width:62ch; }
   @media (max-width:860px){ .ms-jump{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; } .ms-jump::-webkit-scrollbar{ display:none; }
     .ms-jump a{ flex:none; min-height:40px; display:inline-flex; align-items:center; } }
   [hidden]{ display:none !important; }
@@ -1453,6 +1454,7 @@ var LORE = [
 ];
 
 // The Menu Story (shown on The Menu, Stories tab), verbatim from the "iara Menu Story - Master" Google Doc
+// and, for Cocktails, the "iara Drinks Story - Master" doc (1fPuoLbQjZZq2q3R3xphx86ztRnITePz-vNCPrXJljMc)
 // (docs.google.com/document/d/1dTTvKnWx9sM3F1rXejv1ecp8PyPieKYdoFHYm_ZxTUo).
 // Update it from that doc; never paraphrase or add detail here.
 var MENU_STORY = [
@@ -1571,6 +1573,33 @@ var MENU_STORY = [
     "story": "Brazil's classic chocolate fudge bonbon, made the traditional way and rolled in large chunks of cacao nibs."
    }
   ]
+ },
+ {
+  "course": "Coquetéis",
+  "en": "Cocktails",
+  "intro": "Calvin Czypinski keeps the drinks simple and sources as close to the origin as he can. He peels the limes himself, tastes every spice before using it, makes nothing from a premix, and buys spirits from producers who show where they come from.",
+  "dishes": [
+   {
+    "name": "Classic Caipirinha",
+    "story": "Brazil's national cocktail: cachaça, lime, and sugar. We use Novo Fogo Bar Strength, whose higher proof carries the character of the sugarcane and where it's grown. A caipirinha gets its bright, candy-like fruitiness from the oil in the lime peel, so instead of muddling lime and sugar in the glass, we make an oleo saccharum by macerating lime peels in sugar until the oil becomes a syrup. We shake the syrup hard with the cachaça, fresh lime wedges, and a little extra lime juice to replace the acid lost to the peels. The shake expresses the oil in the wedges and leaves the drink cold and frothy. Balancing the sugar and lime oil in advance keeps every caipirinha consistent."
+   },
+   {
+    "name": "Batida de Coco",
+    "story": "A batida is a Brazilian cachaça drink, often made with fruit or coconut. Ours stays close to tradition: sweetened condensed milk, house-made coconut cream (coconut milk and sugar), and Seleta Gold cachaça, whose soft vanilla finish blends into the richness while still giving the drink backbone. We throw it back and forth between tins to chill and aerate, then serve it without ice so it warms slightly in the glass and opens up instead of diluting. The rim is coconut, sugar, and puxuri, the Amazonian seed known as Brazilian nutmeg, whose perfumed lift cuts the creaminess."
+   },
+   {
+    "name": "iara",
+    "story": "Our house cocktail began as a riff on a pornstar martini that Calvin created with a friend at a summer pop-up. The base is pox, a Mexican ancestral spirit distilled from cane, wheat, and corn. Cupuaçu, a cacao relative with bright acidity and a lychee-like finish, replaces the original kiwi, and Brazilian vanilla honey rounds it out. A tincture of jiquitaia, the Amazonian pepper blend used throughout the kitchen, adds heat, and Chef Vitor's Amazon spice blend on the rim adds more. We milk-punch it with coconut milk: the acid curdles the milk, the curd pulls out color and harshness, and straining it through cloth leaves a clear, smooth, stable cocktail with a hint of coconut. Because the curd is strained out, the drink is dairy-free."
+   },
+   {
+    "name": "Tucupi Martini",
+    "story": "We infuse Amázzoni, a Brazilian gin made with Amazonian botanicals, with tucupi spice, the fermented cassava flavor behind several dishes on the food menu. Tucupi adds a savory depth dirty martini fans will recognize. Tokki soju adds a floral note, and preserved lemon brine brings salinity, body, and a little acidity without citrus juice, which keeps the martini stable. A lemon twist softens the tucupi's strong aroma on the first sip."
+   },
+   {
+    "name": "Romeo and Juliet Martini",
+    "story": "In Brazil, \"Romeu e Julieta\" is the classic pairing of guava paste and cheese. When the team wanted an agave cocktail, Chef Vitor asked for guava and cheese, and the result is an agave martini. The base is Claridad Espadín, a mezcal Calvin wouldn't usually mix with, but its minerality and clarity support the drink while letting the salinity and sweetness of the other ingredients take shape. We wash it with queijo minas, a fresh Brazilian cheese whose salinity carries into the spirit, and pair it with Rhine Hall guava eau de vie, which holds its own next to the mezcal. Blanc vermouth ties the two together, and a little saline brings the cheese forward. It went from idea to finished drink in about four hours and worked on the first try."
+   }
+  ]
  }
 ];
 
@@ -1588,7 +1617,7 @@ var FNB_DEFAULTS = [
   { id:"d4", category:"Starters", name:"Ceviche com Tucupi", pronunciation:"sə-VEE-chay kohm too-koo-PEE", speak:"Ceviche com Tucupi", price:"$21", desc:"Black bass in fermented manioc juice with burnt plantain and herbs.", allergens:["Fish","Allium","Coconut","Citrus"], example:false },
   { id:"d5", category:"Starters", name:"Pão de Queijo", pronunciation:"pown deh KAY-zhoo", speak:"Pão de Queijo", price:"$14", desc:"Cassava cheese bread with a smoky eggplant dip.", allergens:["Dairy"], example:false },
   { id:"d6", category:"Starters", name:"Pão de Alho", pronunciation:"pown deh AHL-yoo", speak:"Pão de Alho", price:"$14", desc:"Charcoal-grilled bread stuffed with roasted garlic.", allergens:["Allium","Gluten"], example:false },
-  { id:"d7", category:"Starters", name:"Salada da Estação", pronunciation:"sah-LAH-dah dah es-tah-SOWN", speak:"Salada da Estação", price:"$18", desc:"Market lettuces with brazil nut and cumaru dressing.", allergens:["Tree nut"], example:false },
+  { id:"d7", category:"Starters", name:"Salada da Estação", pronunciation:"sah-LAH-dah dah es-tah-SOWN", speak:"Salada da Estação", price:"$18", desc:"Red and green gem lettuce, candied Brazil nuts, heart of palm, basil-dill dressing.", allergens:["Tree nut"], example:false },
   { id:"d8", category:"Starters", name:"Caranguejo na Moranga", pronunciation:"kah-rahn-GAY-zhoo nah moh-RAHN-gah", speak:"", price:"$24", desc:"Jonah crab, honeynut squash, parmesan foam, Amazon-spiced pumpkin seeds.", allergens:["Dairy","Shellfish","Seeds","Allium"], example:false },
   { id:"d9", category:"Starters", name:"Vegetais Grelhados", pronunciation:"veh-zheh-TICE grel-YAH-dooss", speak:"Vegetais Grelhados", price:"$22", desc:"Charcoal-grilled seasonal vegetables.", allergens:[], example:false },
   /* --- Pratos Principais --- */
@@ -1609,8 +1638,8 @@ var FNB_DEFAULTS = [
   /* --- Cocktails --- */
   { id:"d22", category:"Cocktails", name:"Classic Caipirinha", price:"$18", pronunciation:"kai-pee-REEN-yah", speak:"Caipirinha", desc:"Novo Fogo bar-strength cachaça, oleo saccharum, lime juice, lime wedges.", allergens:[], example:false },
   { id:"d23", category:"Cocktails", name:"Batida de Coco", price:"$18", pronunciation:"bah-CHEE-dah jee KOH-koo", speak:"Batida de Coco", desc:"Seleta Gold cachaça, cream of coconut, sweetened condensed milk, lime juice, coconut-puxuri rim.", allergens:["Coconut","Dairy"], example:false },
-  { id:"d24", category:"Cocktails", name:"iara", price:"$19", pronunciation:"ee-AH-rah", speak:"iara", desc:"Cupuaçu, Pox, cumaru vanilla honey, blanc vermouth, Chartreuse, lime juice, coconut milk. The restaurant's namesake cocktail.", allergens:["Coconut"], example:false },
-  { id:"d25", category:"Cocktails", name:"Tucupi Martini", price:"$20", pronunciation:"too-koo-PEE", speak:"Tucupi", desc:"Amazzoni gin, tucupi-infused gin, rice soju, Cocchi, preserved lemon brine, water.", allergens:[], example:false },
+  { id:"d24", category:"Cocktails", name:"iara", price:"$19", pronunciation:"ee-AH-rah", speak:"iara", desc:"Pox, cupuaçu, Brazilian vanilla honey, jiquitaia tincture, Amazon spice rim. Milk-punched with coconut milk and strained clear. The restaurant's namesake cocktail.", allergens:["Coconut"], example:false },
+  { id:"d25", category:"Cocktails", name:"Tucupi Martini", price:"$20", pronunciation:"too-koo-PEE", speak:"Tucupi", desc:"Amázzoni gin infused with tucupi spice, Tokki soju, preserved lemon brine, lemon twist.", allergens:[], example:false },
   { id:"d26", category:"Cocktails", name:"Romeo and Juliet Martini", price:"$20", desc:"Mezcal, Queijo Minas–washed vermouth, guava eau de vie, blanc vermouth, Lillet, saline.", allergens:["Dairy"], example:false },
   /* --- Wine & Beer (list still being finalized) --- */
 ];
@@ -2463,6 +2492,7 @@ function renderStoryCards(){
     if (!dishes.length) return '';
     return '<section class="ms-course" id="ms-'+i+'"><h2 class="ms-course-h">'+esc(c.course)+
       ' <span class="ms-course-en">'+esc(c.en)+'</span></h2>' +
+      (c.intro && !term ? '<p class="ms-intro">'+esc(c.intro)+'</p>' : '') +
       dishes.map(function(d){ return '<article class="ms-dish"><h3>'+esc(d.name)+'</h3><p>'+esc(d.story)+'</p></article>'; }).join('') +
       '</section>';
   }).join('');
@@ -5452,7 +5482,7 @@ var QUIZ_BEVERAGE = [
   { q:"The \"iara\" cocktail is named after:", a:["The chef's hometown","The restaurant itself","A type of cachaça","A cocktail competition"], c:1 },
   { q:"What tropical Amazonian fruit stars in the \"iara\" cocktail?", a:["Guava","Cupuaçu","Passion fruit","Pineapple"], c:1 },
   { q:"What agave spirit from Chiapas, Mexico appears in the \"iara\" cocktail?", a:["Mezcal","Pox","Tequila","Raicilla"], c:1 },
-  { q:"What Amazonian seed, sometimes called \"Brazilian vanilla,\" flavors the honey in the \"iara\" cocktail?", a:["Puxuri","Cumaru","Jambu","Guarana"], c:1 },
+  { q:"What Amazonian pepper blend is added as a tincture to the \"iara\" cocktail for heat?", a:["Puxuri","Jiquitaia","Jambu","Guaraná"], c:1 },
   { q:"What two clear spirits are shaken together in the Tucupi Martini?", a:["Vodka and sake","Gin and soju","Tequila and shochu","Rum and soju"], c:1 },
   { q:"What Amazonian ingredient lends its name and tang to the Tucupi Martini, via an infused gin?", a:["Cassava","Tucupi","Jambu","Farofa"], c:1 },
   { q:"What briny ingredient rounds out the Tucupi Martini?", a:["Olive brine","Preserved lemon brine","Caper brine","Pickle brine"], c:1 },
