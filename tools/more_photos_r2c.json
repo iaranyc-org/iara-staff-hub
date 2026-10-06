@@ -1,0 +1,56 @@
+[
+ {
+  "slug": "priya-krishna",
+  "file": "img/watch_more2/priya-krishna/5.jpg",
+  "source_page": "https://www.youtube.com/watch?v=Vk5g7ha2Njc",
+  "image_url": "https://i.ytimg.com/vi/Vk5g7ha2Njc/maxres2.jpg",
+  "evidence": "NYT Cooking video \"Inside Priya Krishna's Kitchen\"; she is sole on-camera host",
+  "year": "~2021",
+  "notes": "face matched against existing img/watch photos"
+ },
+ {
+  "slug": "stephanie-wu",
+  "file": "img/watch_more2/stephanie-wu/5.jpg",
+  "source_page": "https://www.youtube.com/watch?v=mn_zu-c9zB4",
+  "image_url": "https://i.ytimg.com/vi/mn_zu-c9zB4/maxresdefault.jpg",
+  "evidence": "Culinary Characters Unlocked EP74 thumbnail captioned \"Eater Editor-in-Chief Stephanie Wu\"; right-side portrait",
+  "year": "~2024",
+  "notes": "face matched against existing img/watch photos"
+ },
+ {
+  "slug": "keith-lee",
+  "file": "img/watch_more2/keith-lee/5.jpg",
+  "source_page": "https://www.youtube.com/watch?v=S96cU2HCbHQ",
+  "image_url": "https://i.ytimg.com/vi/S96cU2HCbHQ/maxresdefault.jpg",
+  "evidence": "The Angie Martinez Show \"Keith Lee on Changing Careers...\" thumbnail; Keith is left of Angie",
+  "year": "~2025",
+  "notes": "face matched against existing img/watch photos"
+ },
+ {
+  "slug": "brian-lindo",
+  "file": "img/watch_more2/brian-lindo/5.jpg",
+  "source_page": "https://www.youtube.com/watch?v=33jnNwz4rnM",
+  "image_url": "https://i.ytimg.com/vi/33jnNwz4rnM/maxres1.jpg",
+  "evidence": "Brian Lindo channel video \"I Tried The Cheesesteak Michelin Actually Recommends\"; sole host on camera",
+  "year": "~2025",
+  "notes": "face matched against existing img/watch photos"
+ },
+ {
+  "slug": "jeremy-jacobowitz",
+  "file": "img/watch_more2/jeremy-jacobowitz/5.jpg",
+  "source_page": "https://www.youtube.com/watch?v=Sx-7kdQJeFA",
+  "image_url": "https://i.ytimg.com/vi/Sx-7kdQJeFA/maxres1.jpg",
+  "evidence": "Jeremy Jacobowitz channel \"11 MUST EAT London England Restaurants\"; sole host on camera at Beigel Bake",
+  "year": "~2024",
+  "notes": "face matched against existing img/watch photos"
+ },
+ {
+  "slug": "pete-wells",
+  "file": "img/watch_more2/pete-wells/4.jpg",
+  "source_page": "https://www.youtube.com/watch?v=Ase4Ki2qwRA",
+  "image_url": "https://i.ytimg.com/vi/Ase4Ki2qwRA/maxres1.jpg",
+  "evidence": "Hard Fork (NYT) \"Pete Wells on How Chefs Are Using A.I. | Interview\"; Wells is the guest panel (hosts wear headphones in own panels)",
+  "year": "2025",
+  "notes": "face matched against existing img/watch photos"
+ }
+]

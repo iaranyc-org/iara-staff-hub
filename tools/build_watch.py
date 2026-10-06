@@ -142,7 +142,8 @@ for f in sorted(glob.glob(T('more_photos_*.json'))):
                 more_meta[os.path.normpath(os.path.join(ROOT, m['file']) if not os.path.isabs(m['file']) else m['file'])] = m
     except Exception as e:
         print('skip', f, e)
-REJECT_EXTRA = {'hunter-lewis/3.jpg', 'morgan-carter/2.jpg', 'morgan-carter/3.jpg'}  # 'slug/n.jpg' entries rejected on visual review
+PRIMARY = {'morgan-carter': 'img/watch/morgan-carter-r2-2.jpg'}  # clearest captioned face leads
+REJECT_EXTRA = {'hunter-lewis/3.jpg', 'molly-fitzpatrick/r2-2.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' entries rejected on visual review
 for s_, p in roster.items():
     files = sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg'))) + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
     photos = []
@@ -150,10 +151,10 @@ for s_, p in roster.items():
         photos.append({'src': p['photo'], 'credit': (p.get('photoCredit') or {}).get('text', '')})
     for src in files:
         n = os.path.splitext(os.path.basename(src))[0]
-        if f'{s_}/{n}.jpg' in REJECT_EXTRA:
-            continue
         if 'watch_more2' in src:
             n = 'r2-' + n
+        if f'{s_}/{n}.jpg' in REJECT_EXTRA:
+            continue
         dst_rel = f'img/watch/{s_}-{n}.jpg'
         if any(x['src'] == dst_rel for x in photos):
             continue
@@ -166,6 +167,11 @@ for s_, p in roster.items():
             photos.insert(0, {'src': dst_rel, 'credit': credit})
         else:
             photos.append({'src': dst_rel, 'credit': credit})
+    lead = PRIMARY.get(s_)
+    if lead and any(x['src'] == lead for x in photos):
+        photos.sort(key=lambda x: x['src'] != lead)
+        p['photo'] = lead
+        p['photoCredit'] = {'text': photos[0]['credit']}
     p['photos'] = photos[:5]
 
 OVERRIDES = {
