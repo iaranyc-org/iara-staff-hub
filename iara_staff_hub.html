@@ -1900,16 +1900,23 @@ document.getElementById("sb-switch").addEventListener("click", function(){
    ============================================================ */
 var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", watch:"Watch List", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
 
-/* Hash routing. Without it a refresh, or the phone reloading the tab in the
-   background, dumps you back on Home and loses your place mid-manual. It also
-   makes the back button work and lets a manager send a link to one section. */
+/* Path routing: /lineup/<view>/<section>. A refresh, or the phone reloading
+   the tab in the background, keeps your place; back works; a manager can send
+   a link to one section. Old #/view links still resolve and get rewritten. */
 var VIEW_NAMES = ["home","manual","team","fnb","lore","study","watch","quiz","checklist","progress"];
+var BASE_PATH = "/lineup";
 
-function parseHash(){
-  var raw = (location.hash || "").replace(/^#\/?/, "");
+function parseRoute(){
+  var raw;
+  if (/^#\//.test(location.hash || "")) raw = location.hash.replace(/^#\/?/, "");
+  else raw = location.pathname.indexOf(BASE_PATH) === 0 ? location.pathname.slice(BASE_PATH.length) : "";
   var parts = raw.split("/").filter(Boolean);
   var name = VIEW_NAMES.indexOf(parts[0]) !== -1 ? parts[0] : "home";
   return { view: name, section: parts[1] || null };
+}
+function pathFor(name, section){
+  if (name === "home") return BASE_PATH;
+  return BASE_PATH + "/" + name + (section ? "/" + encodeURIComponent(section) : "");
 }
 
 function showView(name, opts){
@@ -1931,15 +1938,17 @@ function showView(name, opts){
   if (name === "progress") renderProgress();
   if (name === "home") refreshHomeStats();
 
-  var want = "#/" + name + (opts.section ? "/" + opts.section : "");
-  if (!opts.fromHash && location.hash !== want) {
-    history.pushState(null, "", want);
+  var want = pathFor(name, opts.section);
+  if (location.pathname !== want || location.hash) {
+    // Arriving from a route (load, back, old #/ link) rewrites in place;
+    // a click adds a history entry.
+    history[opts.fromHash ? "replaceState" : "pushState"](null, "", want + location.search);
   }
   if (opts.section && name === "manual") openManualSection(opts.section);
   else window.scrollTo(0,0);
 }
 
-// Deep link straight to one manual section, e.g. #/manual/loop
+// Deep link straight to one manual section, e.g. /lineup/manual/loop
 function openManualSection(id){
   var idx = -1;
   MANUAL.forEach(function(sec, i){ if (sec.id === id) idx = i; });
@@ -1953,7 +1962,7 @@ function openManualSection(id){
 }
 
 function routeFromHash(){
-  var r = parseHash();
+  var r = parseRoute();
   showView(r.view, { fromHash: true, section: r.section });
 }
 window.addEventListener("popstate", routeFromHash);
@@ -3245,7 +3254,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Ligaya_Mishan"
   ],
   "anonymous": false,
-  "photo": "img/watch/ligaya-mishan.jpg",
+  "photo": "/img/watch/ligaya-mishan.jpg",
   "photoCredit": {
    "text": "NYT author page (nytimes.com/by/ligaya-mishan)"
   },
@@ -3280,23 +3289,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/ligaya-mishan.jpg",
+    "src": "/img/watch/ligaya-mishan.jpg",
     "credit": "NYT author page (nytimes.com/by/ligaya-mishan)"
    },
    {
-    "src": "img/watch/ligaya-mishan-2.jpg",
+    "src": "/img/watch/ligaya-mishan-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/ligaya-mishan-3.jpg",
+    "src": "/img/watch/ligaya-mishan-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/ligaya-mishan-4.jpg",
+    "src": "/img/watch/ligaya-mishan-4.jpg",
     "credit": "bulletin.punahou.edu"
    },
    {
-    "src": "img/watch/ligaya-mishan-5.jpg",
+    "src": "/img/watch/ligaya-mishan-5.jpg",
     "credit": "hawaiipublicradio.org"
    }
   ],
@@ -3313,7 +3322,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Tejal_Rao"
   ],
   "anonymous": false,
-  "photo": "img/watch/tejal-rao.jpg",
+  "photo": "/img/watch/tejal-rao.jpg",
   "photoCredit": {
    "text": "NYT author page (nytimes.com/by/tejal-rao)"
   },
@@ -3348,23 +3357,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/tejal-rao.jpg",
+    "src": "/img/watch/tejal-rao.jpg",
     "credit": "NYT author page (nytimes.com/by/tejal-rao)"
    },
    {
-    "src": "img/watch/tejal-rao-2.jpg",
+    "src": "/img/watch/tejal-rao-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/tejal-rao-3.jpg",
+    "src": "/img/watch/tejal-rao-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/tejal-rao-4.jpg",
+    "src": "/img/watch/tejal-rao-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/tejal-rao-r2-5.jpg",
+    "src": "/img/watch/tejal-rao-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -3381,7 +3390,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://talkhouse.com/748-new-york-magazine-restaurant-reviewing-with-matthew-schneier"
   ],
   "anonymous": false,
-  "photo": "img/watch/matthew-schneier.jpg",
+  "photo": "/img/watch/matthew-schneier.jpg",
   "photoCredit": {
    "text": "Cultured magazine interview, cross-checked with Cultured group portrait"
   },
@@ -3416,23 +3425,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/matthew-schneier.jpg",
+    "src": "/img/watch/matthew-schneier.jpg",
     "credit": "Cultured magazine interview, cross-checked with Cultured group portrait"
    },
    {
-    "src": "img/watch/matthew-schneier-2.jpg",
+    "src": "/img/watch/matthew-schneier-2.jpg",
     "credit": "cfda.com"
    },
    {
-    "src": "img/watch/matthew-schneier-3.jpg",
+    "src": "/img/watch/matthew-schneier-3.jpg",
     "credit": "culturedmag.com"
    },
    {
-    "src": "img/watch/matthew-schneier-4.jpg",
+    "src": "/img/watch/matthew-schneier-4.jpg",
     "credit": "culturedmag.com"
    },
    {
-    "src": "img/watch/matthew-schneier-5.jpg",
+    "src": "/img/watch/matthew-schneier-5.jpg",
     "credit": "nymag.com"
    }
   ],
@@ -3449,7 +3458,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Helen_Rosner"
   ],
   "anonymous": false,
-  "photo": "img/watch/helen-rosner.jpg",
+  "photo": "/img/watch/helen-rosner.jpg",
   "photoCredit": {
    "text": "Uses This interview portrait (usesthis.com)"
   },
@@ -3472,23 +3481,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/helen-rosner.jpg",
+    "src": "/img/watch/helen-rosner.jpg",
     "credit": "Uses This interview portrait (usesthis.com)"
    },
    {
-    "src": "img/watch/helen-rosner-2.jpg",
+    "src": "/img/watch/helen-rosner-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/helen-rosner-3.jpg",
+    "src": "/img/watch/helen-rosner-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/helen-rosner-4.jpg",
+    "src": "/img/watch/helen-rosner-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/helen-rosner-5.jpg",
+    "src": "/img/watch/helen-rosner-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -3505,7 +3514,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.nybooks.com/contributors/hannah-goldfield/"
   ],
   "anonymous": false,
-  "photo": "img/watch/hannah-goldfield.jpg",
+  "photo": "/img/watch/hannah-goldfield.jpg",
   "photoCredit": {
    "text": "wesleyanargus.com"
   },
@@ -3518,23 +3527,23 @@ var WATCH = /*WATCH_DATA*/[
   "relevanceToIara": "Medium. Covers NYC restaurants and bars.",
   "photos": [
    {
-    "src": "img/watch/hannah-goldfield.jpg",
+    "src": "/img/watch/hannah-goldfield.jpg",
     "credit": "wesleyanargus.com"
    },
    {
-    "src": "img/watch/hannah-goldfield-2.jpg",
+    "src": "/img/watch/hannah-goldfield-2.jpg",
     "credit": "jewishinsider.com"
    },
    {
-    "src": "img/watch/hannah-goldfield-3.jpg",
+    "src": "/img/watch/hannah-goldfield-3.jpg",
     "credit": "nytimes.com"
    },
    {
-    "src": "img/watch/hannah-goldfield-4.jpg",
+    "src": "/img/watch/hannah-goldfield-4.jpg",
     "credit": "permanentcollection.com"
    },
    {
-    "src": "img/watch/hannah-goldfield-5.jpg",
+    "src": "/img/watch/hannah-goldfield-5.jpg",
     "credit": "writersblocpresents.com"
    }
   ],
@@ -3584,7 +3593,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Pete_Wells"
   ],
   "anonymous": false,
-  "photo": "img/watch/pete-wells.jpg",
+  "photo": "/img/watch/pete-wells.jpg",
   "photoCredit": {
    "text": "youtube.com"
   },
@@ -3606,19 +3615,19 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/pete-wells.jpg",
+    "src": "/img/watch/pete-wells.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/pete-wells-2.jpg",
+    "src": "/img/watch/pete-wells-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/pete-wells-3.jpg",
+    "src": "/img/watch/pete-wells-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/pete-wells-r2-4.jpg",
+    "src": "/img/watch/pete-wells-r2-4.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -3635,7 +3644,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.nytimes.com/by/florence-fabricant"
   ],
   "anonymous": false,
-  "photo": "img/watch/florence-fabricant.jpg",
+  "photo": "/img/watch/florence-fabricant.jpg",
   "photoCredit": {
    "text": "NYT author page"
   },
@@ -3648,23 +3657,23 @@ var WATCH = /*WATCH_DATA*/[
   "relevanceToIara": "High for PR. A listing there announces a new restaurant.",
   "photos": [
    {
-    "src": "img/watch/florence-fabricant.jpg",
+    "src": "/img/watch/florence-fabricant.jpg",
     "credit": "NYT author page"
    },
    {
-    "src": "img/watch/florence-fabricant-2.jpg",
+    "src": "/img/watch/florence-fabricant-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/florence-fabricant-3.jpg",
+    "src": "/img/watch/florence-fabricant-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/florence-fabricant-4.jpg",
+    "src": "/img/watch/florence-fabricant-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/florence-fabricant-r2-5.jpg",
+    "src": "/img/watch/florence-fabricant-r2-5.jpg",
     "credit": "gettyimages.com"
    }
   ],
@@ -3681,7 +3690,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Priya_Krishna_(journalist)"
   ],
   "anonymous": false,
-  "photo": "img/watch/priya-krishna.jpg",
+  "photo": "/img/watch/priya-krishna.jpg",
   "photoCredit": {
    "text": "NYT author page"
   },
@@ -3696,23 +3705,23 @@ var WATCH = /*WATCH_DATA*/[
   "relevanceToIara": "Medium. Covers food culture stories, not starred reviews now.",
   "photos": [
    {
-    "src": "img/watch/priya-krishna.jpg",
+    "src": "/img/watch/priya-krishna.jpg",
     "credit": "NYT author page"
    },
    {
-    "src": "img/watch/priya-krishna-2.jpg",
+    "src": "/img/watch/priya-krishna-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/priya-krishna-3.jpg",
+    "src": "/img/watch/priya-krishna-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/priya-krishna-4.jpg",
+    "src": "/img/watch/priya-krishna-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/priya-krishna-r2-5.jpg",
+    "src": "/img/watch/priya-krishna-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -3729,7 +3738,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://tastecooking.com/this-is-taste-479-the-future-of-restaurant-criticism-is-in-your-inbox-with-ryan-sutton/"
   ],
   "anonymous": false,
-  "photo": "img/watch/ryan-sutton-1.jpg",
+  "photo": "/img/watch/ryan-sutton-1.jpg",
   "photoCredit": {
    "text": "messaging-custom-newsletters.nytimes.com"
   },
@@ -3764,19 +3773,19 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/ryan-sutton-1.jpg",
+    "src": "/img/watch/ryan-sutton-1.jpg",
     "credit": "messaging-custom-newsletters.nytimes.com"
    },
    {
-    "src": "img/watch/ryan-sutton-2.jpg",
+    "src": "/img/watch/ryan-sutton-2.jpg",
     "credit": "muckrack.com"
    },
    {
-    "src": "img/watch/ryan-sutton-3.jpg",
+    "src": "/img/watch/ryan-sutton-3.jpg",
     "credit": "thelotimes.com"
    },
    {
-    "src": "img/watch/ryan-sutton-r2-4.jpg",
+    "src": "/img/watch/ryan-sutton-r2-4.jpg",
     "credit": "verified source"
    }
   ],
@@ -3837,7 +3846,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Eater_(website)"
   ],
   "anonymous": false,
-  "photo": "img/watch/stephanie-wu.jpg",
+  "photo": "/img/watch/stephanie-wu.jpg",
   "photoCredit": {
    "text": "Eater (photo: Shannon Sturgis)"
   },
@@ -3846,23 +3855,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "photos": [
    {
-    "src": "img/watch/stephanie-wu.jpg",
+    "src": "/img/watch/stephanie-wu.jpg",
     "credit": "Eater (photo: Shannon Sturgis)"
    },
    {
-    "src": "img/watch/stephanie-wu-2.jpg",
+    "src": "/img/watch/stephanie-wu-2.jpg",
     "credit": "goldhouse.org"
    },
    {
-    "src": "img/watch/stephanie-wu-3.jpg",
+    "src": "/img/watch/stephanie-wu-3.jpg",
     "credit": "nyunews.com"
    },
    {
-    "src": "img/watch/stephanie-wu-4.jpg",
+    "src": "/img/watch/stephanie-wu-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/stephanie-wu-r2-5.jpg",
+    "src": "/img/watch/stephanie-wu-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -3879,7 +3888,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.timeout.com/newyork/news/let-me-tell-youim-time-out-new-yorks-new-food-and-drink-editor-071024"
   ],
   "anonymous": false,
-  "photo": "img/watch/morgan-carter-r2-2.jpg",
+  "photo": "/img/watch/morgan-carter-r2-2.jpg",
   "photoCredit": {
    "text": "youtube.com"
   },
@@ -3888,23 +3897,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "photos": [
    {
-    "src": "img/watch/morgan-carter-r2-2.jpg",
+    "src": "/img/watch/morgan-carter-r2-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/morgan-carter.jpg",
+    "src": "/img/watch/morgan-carter.jpg",
     "credit": "timeout.com"
    },
    {
-    "src": "img/watch/morgan-carter-2.jpg",
+    "src": "/img/watch/morgan-carter-2.jpg",
     "credit": "linkedin.com"
    },
    {
-    "src": "img/watch/morgan-carter-3.jpg",
+    "src": "/img/watch/morgan-carter-3.jpg",
     "credit": "muckrack.com"
    },
    {
-    "src": "img/watch/morgan-carter-r2-3.jpg",
+    "src": "/img/watch/morgan-carter-r2-3.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -3921,7 +3930,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Steve_Cuozzo"
   ],
   "anonymous": false,
-  "photo": "img/watch/steve-cuozzo.jpg",
+  "photo": "/img/watch/steve-cuozzo.jpg",
   "photoCredit": {
    "text": "nypost.com"
   },
@@ -3956,23 +3965,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [
    {
-    "src": "img/watch/steve-cuozzo.jpg",
+    "src": "/img/watch/steve-cuozzo.jpg",
     "credit": "nypost.com"
    },
    {
-    "src": "img/watch/steve-cuozzo-2.jpg",
+    "src": "/img/watch/steve-cuozzo-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/steve-cuozzo-3.jpg",
+    "src": "/img/watch/steve-cuozzo-3.jpg",
     "credit": "nypost.com"
    },
    {
-    "src": "img/watch/steve-cuozzo-4.jpg",
+    "src": "/img/watch/steve-cuozzo-4.jpg",
     "credit": "nypost.com"
    },
    {
-    "src": "img/watch/steve-cuozzo-5.jpg",
+    "src": "/img/watch/steve-cuozzo-5.jpg",
     "credit": "nypost.com"
    }
   ],
@@ -3989,7 +3998,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://en.wikipedia.org/wiki/Keith_Lee_(food_critic)"
   ],
   "anonymous": false,
-  "photo": "img/watch/keith-lee.jpg",
+  "photo": "/img/watch/keith-lee.jpg",
   "photoCredit": {
    "text": "Kirby Taylor, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Keith_Lee_at_Essence_Festival_of_Culture_2025_(4).jpg"
   },
@@ -4004,23 +4013,23 @@ var WATCH = /*WATCH_DATA*/[
   "relevanceToIara": "Medium. NYC picks so far are casual spots.",
   "photos": [
    {
-    "src": "img/watch/keith-lee.jpg",
+    "src": "/img/watch/keith-lee.jpg",
     "credit": "Kirby Taylor, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Keith_Lee_at_Essence_Festival_of_Culture_2025_(4).jpg"
    },
    {
-    "src": "img/watch/keith-lee-2.jpg",
+    "src": "/img/watch/keith-lee-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/keith-lee-3.jpg",
+    "src": "/img/watch/keith-lee-3.jpg",
     "credit": "commons.wikimedia.org"
    },
    {
-    "src": "img/watch/keith-lee-4.jpg",
+    "src": "/img/watch/keith-lee-4.jpg",
     "credit": "commons.wikimedia.org"
    },
    {
-    "src": "img/watch/keith-lee-r2-5.jpg",
+    "src": "/img/watch/keith-lee-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -4038,7 +4047,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.theinfatuation.com/contributor/sonal-shah"
   ],
   "anonymous": false,
-  "photo": "img/watch/sonal-shah.jpg",
+  "photo": "/img/watch/sonal-shah.jpg",
   "photoCredit": {
    "text": "theinfatuation.com"
   },
@@ -4046,19 +4055,19 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "photos": [
    {
-    "src": "img/watch/sonal-shah.jpg",
+    "src": "/img/watch/sonal-shah.jpg",
     "credit": "theinfatuation.com"
    },
    {
-    "src": "img/watch/sonal-shah-2.jpg",
+    "src": "/img/watch/sonal-shah-2.jpg",
     "credit": "muckrack.com"
    },
    {
-    "src": "img/watch/sonal-shah-r2-3.jpg",
+    "src": "/img/watch/sonal-shah-r2-3.jpg",
     "credit": "verified source"
    },
    {
-    "src": "img/watch/sonal-shah-r2-4.jpg",
+    "src": "/img/watch/sonal-shah-r2-4.jpg",
     "credit": "verified source"
    }
   ],
@@ -4076,7 +4085,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://blog.resy.com/author/paolo/"
   ],
   "anonymous": false,
-  "photo": "img/watch/paolo-lucchesi.jpg",
+  "photo": "/img/watch/paolo-lucchesi.jpg",
   "photoCredit": {
    "text": "blog.resy.com"
   },
@@ -4084,19 +4093,19 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "photos": [
    {
-    "src": "img/watch/paolo-lucchesi.jpg",
+    "src": "/img/watch/paolo-lucchesi.jpg",
     "credit": "blog.resy.com"
    },
    {
-    "src": "img/watch/paolo-lucchesi-2.jpg",
+    "src": "/img/watch/paolo-lucchesi-2.jpg",
     "credit": "heritageradionetwork.org"
    },
    {
-    "src": "img/watch/paolo-lucchesi-3.jpg",
+    "src": "/img/watch/paolo-lucchesi-3.jpg",
     "credit": "drewaltizer.com"
    },
    {
-    "src": "img/watch/paolo-lucchesi-4.jpg",
+    "src": "/img/watch/paolo-lucchesi-4.jpg",
     "credit": "sfgate.com"
    }
   ],
@@ -4114,7 +4123,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://jeremyjacobowitz.substack.com/p/chicago-travel-guide-32-must-eat"
   ],
   "anonymous": false,
-  "photo": "img/watch/jeremy-jacobowitz.jpg",
+  "photo": "/img/watch/jeremy-jacobowitz.jpg",
   "photoCredit": {
    "text": "substack.com"
   },
@@ -4122,23 +4131,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Creator",
   "photos": [
    {
-    "src": "img/watch/jeremy-jacobowitz.jpg",
+    "src": "/img/watch/jeremy-jacobowitz.jpg",
     "credit": "substack.com"
    },
    {
-    "src": "img/watch/jeremy-jacobowitz-2.jpg",
+    "src": "/img/watch/jeremy-jacobowitz-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/jeremy-jacobowitz-3.jpg",
+    "src": "/img/watch/jeremy-jacobowitz-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/jeremy-jacobowitz-4.jpg",
+    "src": "/img/watch/jeremy-jacobowitz-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/jeremy-jacobowitz-r2-5.jpg",
+    "src": "/img/watch/jeremy-jacobowitz-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -4156,7 +4165,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.finedininglovers.com/explore/lists/brian-lindo-james-beard-awards-top-bites"
   ],
   "anonymous": false,
-  "photo": "img/watch/brian-lindo.jpg",
+  "photo": "/img/watch/brian-lindo.jpg",
   "photoCredit": {
    "text": "finedininglovers.com"
   },
@@ -4164,23 +4173,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Creator",
   "photos": [
    {
-    "src": "img/watch/brian-lindo.jpg",
+    "src": "/img/watch/brian-lindo.jpg",
     "credit": "finedininglovers.com"
    },
    {
-    "src": "img/watch/brian-lindo-2.jpg",
+    "src": "/img/watch/brian-lindo-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/brian-lindo-3.jpg",
+    "src": "/img/watch/brian-lindo-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/brian-lindo-4.jpg",
+    "src": "/img/watch/brian-lindo-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/brian-lindo-r2-5.jpg",
+    "src": "/img/watch/brian-lindo-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -4198,7 +4207,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://ny.eater.com/authors/melissa-mccart"
   ],
   "anonymous": false,
-  "photo": "img/watch/melissa-mccart.jpg",
+  "photo": "/img/watch/melissa-mccart.jpg",
   "photoCredit": {
    "text": "ny.eater.com"
   },
@@ -4206,11 +4215,11 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "photos": [
    {
-    "src": "img/watch/melissa-mccart.jpg",
+    "src": "/img/watch/melissa-mccart.jpg",
     "credit": "ny.eater.com"
    },
    {
-    "src": "img/watch/melissa-mccart-2.jpg",
+    "src": "/img/watch/melissa-mccart-2.jpg",
     "credit": "penguinrandomhouse.com"
    }
   ],
@@ -4228,7 +4237,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.grubstreet.com/article/anne-burrell-food-tv-legacy.html"
   ],
   "anonymous": false,
-  "photo": "img/watch/alan-sytsma.jpg",
+  "photo": "/img/watch/alan-sytsma.jpg",
   "photoCredit": {
    "text": "heritageradionetwork.org"
   },
@@ -4236,19 +4245,19 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "photos": [
    {
-    "src": "img/watch/alan-sytsma.jpg",
+    "src": "/img/watch/alan-sytsma.jpg",
     "credit": "heritageradionetwork.org"
    },
    {
-    "src": "img/watch/alan-sytsma-2.jpg",
+    "src": "/img/watch/alan-sytsma-2.jpg",
     "credit": "thecut.com"
    },
    {
-    "src": "img/watch/alan-sytsma-r2-3.jpg",
+    "src": "/img/watch/alan-sytsma-r2-3.jpg",
     "credit": "gettyimages.com"
    },
    {
-    "src": "img/watch/alan-sytsma-r2-4.jpg",
+    "src": "/img/watch/alan-sytsma-r2-4.jpg",
     "credit": "gettyimages.com"
    }
   ],
@@ -4266,7 +4275,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.grubstreet.com/article/2025-james-beard-awards.html"
   ],
   "anonymous": false,
-  "photo": "img/watch/chris-crowley.jpg",
+  "photo": "/img/watch/chris-crowley.jpg",
   "photoCredit": {
    "text": "staycurrant.com"
   },
@@ -4274,19 +4283,19 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Food Writer",
   "photos": [
    {
-    "src": "img/watch/chris-crowley.jpg",
+    "src": "/img/watch/chris-crowley.jpg",
     "credit": "staycurrant.com"
    },
    {
-    "src": "img/watch/chris-crowley-2.jpg",
+    "src": "/img/watch/chris-crowley-2.jpg",
     "credit": "grubstreet.com"
    },
    {
-    "src": "img/watch/chris-crowley-r2-3.jpg",
+    "src": "/img/watch/chris-crowley-r2-3.jpg",
     "credit": "verified source"
    },
    {
-    "src": "img/watch/chris-crowley-r2-4.jpg",
+    "src": "/img/watch/chris-crowley-r2-4.jpg",
     "credit": "verified source"
    }
   ],
@@ -4304,7 +4313,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.grubstreet.com/article/askili-orchard-georgian-underground-gourmet-nyc.html"
   ],
   "anonymous": false,
-  "photo": "img/watch/tammie-teclemariam.jpg",
+  "photo": "/img/watch/tammie-teclemariam.jpg",
   "photoCredit": {
    "text": "cjr.org"
   },
@@ -4312,23 +4321,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "photos": [
    {
-    "src": "img/watch/tammie-teclemariam.jpg",
+    "src": "/img/watch/tammie-teclemariam.jpg",
     "credit": "cjr.org"
    },
    {
-    "src": "img/watch/tammie-teclemariam-2.jpg",
+    "src": "/img/watch/tammie-teclemariam-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/tammie-teclemariam-3.jpg",
+    "src": "/img/watch/tammie-teclemariam-3.jpg",
     "credit": "splendidtable.org"
    },
    {
-    "src": "img/watch/tammie-teclemariam-4.jpg",
+    "src": "/img/watch/tammie-teclemariam-4.jpg",
     "credit": "magzter.com"
    },
    {
-    "src": "img/watch/tammie-teclemariam-5.jpg",
+    "src": "/img/watch/tammie-teclemariam-5.jpg",
     "credit": "nytimes.com"
    }
   ],
@@ -4346,7 +4355,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.theinfatuation.com/contributor/bryan-kim"
   ],
   "anonymous": false,
-  "photo": "img/watch/bryan-kim.jpg",
+  "photo": "/img/watch/bryan-kim.jpg",
   "photoCredit": {
    "text": "theinfatuation.com"
   },
@@ -4354,23 +4363,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "photos": [
    {
-    "src": "img/watch/bryan-kim.jpg",
+    "src": "/img/watch/bryan-kim.jpg",
     "credit": "theinfatuation.com"
    },
    {
-    "src": "img/watch/bryan-kim-2.jpg",
+    "src": "/img/watch/bryan-kim-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/bryan-kim-3.jpg",
+    "src": "/img/watch/bryan-kim-3.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/bryan-kim-4.jpg",
+    "src": "/img/watch/bryan-kim-4.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/bryan-kim-r2-5.jpg",
+    "src": "/img/watch/bryan-kim-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -4388,7 +4397,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.theinfatuation.com/contributor/molly-fitzpatrick"
   ],
   "anonymous": false,
-  "photo": "img/watch/molly-fitzpatrick.jpg",
+  "photo": "/img/watch/molly-fitzpatrick.jpg",
   "photoCredit": {
    "text": "theinfatuation.com"
   },
@@ -4396,23 +4405,23 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "photos": [
    {
-    "src": "img/watch/molly-fitzpatrick.jpg",
+    "src": "/img/watch/molly-fitzpatrick.jpg",
     "credit": "theinfatuation.com"
    },
    {
-    "src": "img/watch/molly-fitzpatrick-r2-2.jpg",
+    "src": "/img/watch/molly-fitzpatrick-r2-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/molly-fitzpatrick-r2-3.jpg",
+    "src": "/img/watch/molly-fitzpatrick-r2-3.jpg",
     "credit": "verified source"
    },
    {
-    "src": "img/watch/molly-fitzpatrick-r2-4.jpg",
+    "src": "/img/watch/molly-fitzpatrick-r2-4.jpg",
     "credit": "verified source"
    },
    {
-    "src": "img/watch/molly-fitzpatrick-r2-5.jpg",
+    "src": "/img/watch/molly-fitzpatrick-r2-5.jpg",
     "credit": "verified source"
    }
   ],
@@ -4430,7 +4439,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.theinfatuation.com/contributor/will-hartman"
   ],
   "anonymous": false,
-  "photo": "img/watch/will-hartman.jpg",
+  "photo": "/img/watch/will-hartman.jpg",
   "photoCredit": {
    "text": "theinfatuation.com"
   },
@@ -4438,7 +4447,7 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "photos": [
    {
-    "src": "img/watch/will-hartman.jpg",
+    "src": "/img/watch/will-hartman.jpg",
     "credit": "theinfatuation.com"
    }
   ],
@@ -4456,7 +4465,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://www.theinfatuation.com/contributor/willa-moore"
   ],
   "anonymous": false,
-  "photo": "img/watch/willa-moore.jpg",
+  "photo": "/img/watch/willa-moore.jpg",
   "photoCredit": {
    "text": "theinfatuation.com"
   },
@@ -4464,15 +4473,15 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "photos": [
    {
-    "src": "img/watch/willa-moore.jpg",
+    "src": "/img/watch/willa-moore.jpg",
     "credit": "theinfatuation.com"
    },
    {
-    "src": "img/watch/willa-moore-2.jpg",
+    "src": "/img/watch/willa-moore-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/willa-moore-3.jpg",
+    "src": "/img/watch/willa-moore-3.jpg",
     "credit": "web.archive.org"
    }
   ],
@@ -4490,7 +4499,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://blog.resy.com/2026/09/iara-nyc/"
   ],
   "anonymous": false,
-  "photo": "img/watch/ellie-plass.jpg",
+  "photo": "/img/watch/ellie-plass.jpg",
   "photoCredit": {
    "text": "blog.resy.com"
   },
@@ -4498,15 +4507,15 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Food Writer",
   "photos": [
    {
-    "src": "img/watch/ellie-plass.jpg",
+    "src": "/img/watch/ellie-plass.jpg",
     "credit": "blog.resy.com"
    },
    {
-    "src": "img/watch/ellie-plass-2.jpg",
+    "src": "/img/watch/ellie-plass-2.jpg",
     "credit": "muckrack.com"
    },
    {
-    "src": "img/watch/ellie-plass-r2-3.jpg",
+    "src": "/img/watch/ellie-plass-r2-3.jpg",
     "credit": "verified source"
    }
   ],
@@ -4524,7 +4533,7 @@ var WATCH = /*WATCH_DATA*/[
    "https://tastecooking.com/this-is-taste-704-the-year-in-nyc-restaurants-with-alan-sytsma-of-new-york-magazine-mahira-rivers-of-the-new-york-times/"
   ],
   "anonymous": false,
-  "photo": "img/watch/mahira-rivers.jpg",
+  "photo": "/img/watch/mahira-rivers.jpg",
   "photoCredit": {
    "text": "nytimes.com byline page"
   },
@@ -4533,19 +4542,19 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "photos": [
    {
-    "src": "img/watch/mahira-rivers.jpg",
+    "src": "/img/watch/mahira-rivers.jpg",
     "credit": "nytimes.com byline page"
    },
    {
-    "src": "img/watch/mahira-rivers-2.jpg",
+    "src": "/img/watch/mahira-rivers-2.jpg",
     "credit": "youtube.com"
    },
    {
-    "src": "img/watch/mahira-rivers-3.jpg",
+    "src": "/img/watch/mahira-rivers-3.jpg",
     "credit": "ice.edu"
    },
    {
-    "src": "img/watch/mahira-rivers-4.jpg",
+    "src": "/img/watch/mahira-rivers-4.jpg",
     "credit": "messaging-custom-newsletters.nytimes.com"
    }
   ],

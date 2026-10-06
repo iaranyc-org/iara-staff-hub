@@ -203,7 +203,7 @@ page = os.path.join(ROOT, 'iara_staff_hub.html')
 s = open(page, encoding='utf-8').read()
 a = s.index('/*WATCH_DATA*/') + len('/*WATCH_DATA*/')
 b = s.index('/*END_WATCH_DATA*/')
-s = s[:a] + json.dumps(out, ensure_ascii=False, indent=1).replace('</', '<\\/') + s[b:]
+s = s[:a] + json.dumps(out, ensure_ascii=False, indent=1).replace('</', '<\\/').replace('"img/watch/', '"/img/watch/') + s[b:]
 open(page, 'w', encoding='utf-8').write(s)
 
 from collections import Counter

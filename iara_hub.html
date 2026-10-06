@@ -334,7 +334,7 @@
     if (!name || !role) return;
     var profile = { id: stableId(name, role), name: name, role: role };
     try { localStorage.setItem("iara_hub_profile_v1", JSON.stringify(profile)); } catch(e){}
-    location.href = "/lineup#/home";
+    location.href = "/lineup";
   });
 })();
 </script>
