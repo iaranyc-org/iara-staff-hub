@@ -859,7 +859,6 @@
   .wl-grid{ list-style:none; margin:0; padding:0; display:grid;
     grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); grid-auto-flow:dense; gap:14px; max-width:var(--measure-wide); }
   .wl-card{ scroll-margin-top:72px; background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
-  .wl-card.is-open{ grid-column:1 / -1; }
   .wl-hit{ all:unset; box-sizing:border-box; display:block; width:100%; cursor:pointer; }
   .wl-hit:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
   .wl-photo{ display:block; aspect-ratio:4 / 5; background:var(--paper); overflow:hidden; position:relative; }
@@ -873,7 +872,6 @@
   .wl-tag{ display:inline-block; margin-bottom:7px; padding:3px 7px; border-radius:3px; font-size:10.5px; font-weight:700;
     letter-spacing:.05em; text-transform:uppercase; color:var(--ink-soft); border:1px solid var(--line); }
   .wl-tag.is-hot{ color:var(--sun-ink); background:var(--sun); border-color:var(--sun); }
-  .wl-detail{ padding:0 13px 14px; color:var(--ink-mid); }
   .wl-rows{ margin:0; }
   .wl-row{ padding:9px 0; border-top:1px solid var(--rule); }
   .wl-row:first-child{ border-top:none; padding-top:2px; }
@@ -882,13 +880,38 @@
   .wl-reviews{ margin:0; padding-left:18px; }
   .wl-reviews li{ margin:2px 0; }
   .wl-fine{ font-size:12px; line-height:1.5; color:var(--ink-soft); margin:10px 0 0; }
-  .wl-detail a{ color:var(--display); }
-  .wl-card.is-open{ display:grid; grid-template-columns:minmax(130px,220px) 1fr; align-items:start; }
-  .wl-card.is-open .wl-hit{ display:contents; }
-  .wl-card.is-open .wl-photo{ grid-row:1 / span 2; align-self:start; width:100%; aspect-ratio:4 / 5; }
-  .wl-card.is-open .wl-meta{ padding:16px 18px 6px; }
-  .wl-card.is-open .wl-name{ font-size:19px; }
-  .wl-card.is-open .wl-detail{ padding:4px 18px 16px; }
+  .wl-panel a{ color:var(--display); }
+  /* Profile opens beside the grid on wide screens, as a sheet on narrow ones,
+     so the grid itself never reflows. */
+  #view-watch{ max-width:none; }
+  .wl-layout{ display:block; }
+  .wl-card.is-selected{ border-color:var(--sun); box-shadow:0 0 0 1px var(--sun); }
+  .wl-panel{ background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; color:var(--ink-mid); }
+  .wl-panel-head{ display:grid; grid-template-columns:120px minmax(0,1fr); gap:16px; align-items:start; padding:18px 18px 6px; }
+  .wl-panel-photo{ aspect-ratio:4 / 5; border-radius:6px; overflow:hidden; background:var(--paper); position:relative; }
+  .wl-panel-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 18%; display:block; }
+  .wl-panel .wl-name{ font-size:20px; }
+  .wl-panel-body{ padding:6px 18px 18px; }
+  .wl-close{ font:inherit; font-size:14px; font-weight:700; background:none; border:none; color:var(--ink-soft);
+    cursor:pointer; padding:10px 12px; min-height:44px; float:right; margin:4px 4px 0 0; }
+  .wl-close:hover{ color:var(--ink); }
+  .wl-close:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .wl-backdrop{ display:none; }
+  @media (min-width:1180px){
+    .wl-layout{ display:grid; grid-template-columns:minmax(0,var(--measure-wide)) 380px; gap:28px; align-items:start; }
+    .wl-panel{ position:sticky; top:24px; max-height:calc(100vh - 48px); max-height:calc(100dvh - 48px); overflow:auto; }
+    .wl-panel-empty{ padding:28px 22px; font-size:14.5px; line-height:1.6; color:var(--ink-soft); }
+  }
+  @media (max-width:1179px){
+    .wl-panel.is-empty{ display:none; }
+    .wl-panel{ position:fixed; left:0; right:0; bottom:0; top:56px; z-index:40; border-radius:14px 14px 0 0;
+      overflow:auto; overscroll-behavior:contain; padding-bottom:env(safe-area-inset-bottom, 0px);
+      box-shadow:0 -12px 40px rgba(0,0,0,.45); animation:wl-up .18s ease-out; }
+    .wl-backdrop.is-on{ display:block; position:fixed; inset:0; z-index:39; background:rgba(0,0,0,.45); }
+    html.wl-locked, html.wl-locked body{ overflow:hidden; }
+  }
+  @keyframes wl-up{ from{ transform:translateY(24px); opacity:.6; } to{ transform:none; opacity:1; } }
+  @media (prefers-reduced-motion:reduce){ .wl-panel{ animation:none; } }
   .wl-face{ width:100%; max-width:300px; aspect-ratio:4 / 5; border-radius:8px; overflow:hidden;
     margin:0 auto 14px; background:var(--paper); }
   .wl-face img{ width:100%; height:100%; object-fit:cover; object-position:50% 18%; display:block; }
@@ -907,10 +930,6 @@
   .wl-empty{ color:var(--ink-soft); font-size:15px; }
   @media (max-width:860px){
     .wl-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
-    .wl-card.is-open{ grid-template-columns:118px minmax(0,1fr); }
-    .wl-card.is-open .wl-meta{ padding:12px 14px 4px; }
-    .wl-card.is-open .wl-detail{ grid-column:1 / -1; padding:12px 14px 14px; }
-    .wl-card.is-open .wl-photo{ grid-row:auto; }
     .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
     .wl-filters::-webkit-scrollbar{ display:none; }
   }
@@ -1886,6 +1905,7 @@ function showView(name, opts){
   document.title = (VIEW_TITLES[name] ? VIEW_TITLES[name] + " \u00b7 " : "") + "iara Lineup";
   if (name === "quiz" && !activeQuiz) renderQuizPicker();
   if (name === "study" && !studyDeck) renderStudyPicker();
+  if (name !== "watch" && WL) { WL.open = null; document.documentElement.classList.remove("wl-locked"); }
   if (name === "watch") renderWatch();
   if (name === "checklist") renderChecklist();
   if (name === "home") renderHomeFirstWeek();
@@ -4421,15 +4441,19 @@ function renderWatchRoster(){
     '<div class="wl-filters" role="tablist" aria-label="Filter by outlet group">' +
     ["All"].concat(outlets).map(function(o){
       return '<button class="fb-tab'+(WL.outlet === o ? ' active' : '')+'" data-outlet="'+esc(o)+'">'+esc(o)+'</button>';
-    }).join('') + '</div><div id="wl-list"></div>';
+    }).join('') + '</div><div class="wl-layout"><div id="wl-list"></div>' +
+    '<aside id="wl-panel" class="wl-panel is-empty"></aside></div><div id="wl-backdrop" class="wl-backdrop"></div>';
   area.innerHTML = html;
   area.querySelectorAll("[data-outlet]").forEach(function(b){
-    b.addEventListener("click", function(){ WL.outlet = b.getAttribute("data-outlet"); WL.open = null; renderWatchRoster(); });
+    b.addEventListener("click", function(){ WL.outlet = b.getAttribute("data-outlet"); renderWatchRoster(); });
   });
   document.getElementById("wl-q").addEventListener("input", function(e){
-    WL.q = e.target.value; WL.open = null; renderWatchList();
+    WL.q = e.target.value; renderWatchList();
   });
   renderWatchList();
+  renderWatchPanel();
+  var bd = document.getElementById("wl-backdrop");
+  if (bd) bd.addEventListener("click", closeWatchProfile);
 }
 
 var WL_STATUS_ORDER = ["Reviews Restaurants","Inspector","Editor","Food Writer","Creator","Former Critic"];
@@ -4450,46 +4474,94 @@ function renderWatchList(){
   var host = document.getElementById("wl-list");
   if (!rows.length) { host.innerHTML = '<p class="wl-empty">Nobody matches that.</p>'; return; }
   host.innerHTML = '<ul class="wl-grid">' + rows.map(function(p){
-    var open = WL.open === p.slug;
     var photo = p.photo
       ? '<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy" width="320" height="400">'
       : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous. No photo exists.' : 'No reliable photo yet.') + '</span>';
     var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
-    var detail = '';
-    if (open) {
-      var reviews = (p.recentReviews || []).filter(function(r){ return r && r.restaurant; }).slice(0, 3).map(function(r){
-        return esc(r.restaurant) + (r.verdict ? ': ' + esc(r.verdict) : '') + (r.date ? ' <span class="wl-fine">(' + esc(r.date) + ')</span>' : '');
-      });
-      detail = '<div class="wl-detail"><dl class="wl-rows">' +
-        wlRow("Why It Matters", p.whyItMatters || p.note) +
-        wlRow("How They Dine", p.howTheyDine) +
-        wlRow("Recognize By", p.recognizeBy) +
-        wlRow("Rating System", p.ratingSystem) +
-        wlRow("Cares About", p.caresAbout) +
-        wlRow("Beat", p.beat) +
-        (reviews.length ? '<div class="wl-row"><dt>Recent Reviews</dt><dd><ul class="wl-reviews"><li>'+reviews.join('</li><li>')+'</li></ul></dd></div>' : '') +
-        '</dl><p class="wl-fine">' + esc(p.role) +
-        (p.photoCredit ? '. Photo: ' + esc(p.photoCredit.text || "") : '') +
-        ((p.sources && p.sources[0]) ? '. <a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source</a>' : '') +
-        '</p></div>';
-    }
-    return '<li class="wl-card'+(open ? ' is-open' : '')+'">' +
-      '<button class="wl-hit" data-slug="'+esc(p.slug)+'" aria-expanded="'+open+'">' +
+    return '<li class="wl-card'+(WL.open === p.slug ? ' is-selected' : '')+'">' +
+      '<button class="wl-hit" data-slug="'+esc(p.slug)+'" aria-controls="wl-panel">' +
         '<span class="wl-photo">'+photo+'</span>' +
         '<span class="wl-meta">'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
         '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
-        '<span class="wl-outlet">'+esc(p.outlet)+'</span></span></button>' + detail + '</li>';
+        '<span class="wl-outlet">'+esc(p.outlet)+'</span></span></button></li>';
   }).join('') + '</ul>';
   host.querySelectorAll(".wl-hit").forEach(function(b){
-    b.addEventListener("click", function(){
-      var slug = b.getAttribute("data-slug");
-      WL.open = (WL.open === slug) ? null : slug;
-      renderWatchList();
-      var el = host.querySelector('[data-slug="'+slug+'"]');
-      if (el && WL.open) el.scrollIntoView({ block:"nearest" });
-    });
+    b.addEventListener("click", function(){ openWatchProfile(b.getAttribute("data-slug"), b); });
   });
 }
+
+var wlReturnFocus = null;
+function wlIsSheet(){ return window.matchMedia("(max-width:1179px)").matches; }
+
+function openWatchProfile(slug, fromBtn){
+  WL.open = slug;
+  wlReturnFocus = fromBtn || null;
+  document.querySelectorAll(".wl-card").forEach(function(li){
+    var btn = li.querySelector(".wl-hit");
+    li.classList.toggle("is-selected", !!btn && btn.getAttribute("data-slug") === slug);
+  });
+  renderWatchPanel();
+  var close = document.getElementById("wl-close");
+  if (close && wlIsSheet()) close.focus({ preventScroll:true });
+}
+
+function closeWatchProfile(){
+  WL.open = null;
+  document.querySelectorAll(".wl-card.is-selected").forEach(function(li){ li.classList.remove("is-selected"); });
+  renderWatchPanel();
+  if (wlReturnFocus && document.body.contains(wlReturnFocus)) wlReturnFocus.focus({ preventScroll:true });
+  wlReturnFocus = null;
+}
+
+function renderWatchPanel(){
+  var panel = document.getElementById("wl-panel");
+  var backdrop = document.getElementById("wl-backdrop");
+  if (!panel) return;
+  var p = WL.open ? WATCH.filter(function(x){ return x.slug === WL.open; })[0] : null;
+  var sheet = wlIsSheet();
+  document.documentElement.classList.toggle("wl-locked", !!p && sheet);
+  if (backdrop) backdrop.classList.toggle("is-on", !!p && sheet);
+  panel.classList.toggle("is-empty", !p);
+  if (!p) {
+    panel.removeAttribute("role"); panel.removeAttribute("aria-modal");
+    panel.innerHTML = '<p class="wl-panel-empty">Pick anyone to see how they dine, how to spot them, and why they matter.</p>';
+    return;
+  }
+  if (sheet) { panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); }
+  else { panel.setAttribute("role", "region"); panel.removeAttribute("aria-modal"); }
+  panel.setAttribute("aria-label", p.name);
+  var photo = p.photo
+    ? '<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" width="320" height="400">'
+    : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous.' : 'No reliable photo yet.') + '</span>';
+  var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
+  var reviews = (p.recentReviews || []).filter(function(r){ return r && r.restaurant; }).slice(0, 3).map(function(r){
+    return esc(r.restaurant) + (r.verdict ? ': ' + esc(r.verdict) : '') + (r.date ? ' <span class="wl-fine">(' + esc(r.date) + ')</span>' : '');
+  });
+  panel.innerHTML = '<button class="wl-close" id="wl-close" aria-label="Close profile">Close</button>' +
+    '<div class="wl-panel-head"><div class="wl-panel-photo">'+photo+'</div>' +
+      '<div>'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
+      '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
+      '<span class="wl-outlet">'+esc(p.outlet)+'</span></div></div>' +
+    '<div class="wl-panel-body"><dl class="wl-rows">' +
+      wlRow("Why It Matters", p.whyItMatters || p.note) +
+      wlRow("How They Dine", p.howTheyDine) +
+      wlRow("Recognize By", p.recognizeBy) +
+      wlRow("Rating System", p.ratingSystem) +
+      wlRow("Cares About", p.caresAbout) +
+      wlRow("Beat", p.beat) +
+      (reviews.length ? '<div class="wl-row"><dt>Recent Reviews</dt><dd><ul class="wl-reviews"><li>'+reviews.join('</li><li>')+'</li></ul></dd></div>' : '') +
+    '</dl><p class="wl-fine">' + esc(p.role) +
+      (p.photoCredit ? '. Photo: ' + esc(p.photoCredit.text || "") : '') +
+      ((p.sources && p.sources[0]) ? '. <a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source</a>' : '') +
+    '</p></div>';
+  panel.scrollTop = 0;
+  document.getElementById("wl-close").addEventListener("click", closeWatchProfile);
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.key === "Escape" && WL.open && document.getElementById("view-watch").classList.contains("active")) closeWatchProfile();
+});
+window.addEventListener("resize", function(){ if (document.getElementById("wl-panel")) renderWatchPanel(); });
 
 /* --- Drill --- */
 function wlDecks(){
@@ -4623,7 +4695,7 @@ function renderWatchDone(){
 }
 
 document.getElementById("wl-tab-roster").addEventListener("click", function(){ WL.tab = "roster"; WL.deck = null; renderWatch(); });
-document.getElementById("wl-tab-study").addEventListener("click", function(){ WL.tab = "study"; renderWatch(); });
+document.getElementById("wl-tab-study").addEventListener("click", function(){ WL.tab = "study"; WL.open = null; document.documentElement.classList.remove("wl-locked"); renderWatch(); });
 
 /* ============================================================
    First week checklist
