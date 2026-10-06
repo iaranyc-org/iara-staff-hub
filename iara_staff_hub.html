@@ -961,6 +961,23 @@
   }
   @media (hover:none){ .wl-flip{ height:44px; width:30px; } }
   @media (max-width:360px){ .bottom-nav .nav-btn{ font-size:9.5px; letter-spacing:.01em; } }
+  /* Lore: the Menu Story */
+  .ms-jump{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; }
+  .ms-jump a{ font-size:13px; font-weight:700; padding:8px 12px; border:1.5px solid var(--line); border-radius:999px;
+    color:var(--ink-mid); text-decoration:none; background:var(--paper-raised); }
+  .ms-jump a:hover{ border-color:var(--display); color:var(--ink); }
+  .ms-jump a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .ms-course{ max-width:var(--measure); margin:0 0 30px; scroll-margin-top:72px; }
+  .ms-course-h{ font-size:24px; margin:0 0 6px; padding-bottom:8px; border-bottom:1px solid var(--rule); }
+  .ms-course-en{ font-family:inherit; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase;
+    color:var(--ink-soft); margin-left:6px; }
+  .ms-dish{ padding:14px 0; border-bottom:1px solid var(--rule); }
+  .ms-dish:last-child{ border-bottom:none; }
+  .ms-dish h3{ font-size:19px; margin:0 0 6px; }
+  .ms-dish p{ margin:0; font-size:15.5px; line-height:1.7; color:var(--ink-mid); max-width:62ch; }
+  .ms-room{ margin-top:36px; }
+  @media (max-width:860px){ .ms-jump{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; } .ms-jump::-webkit-scrollbar{ display:none; }
+    .ms-jump a{ flex:none; min-height:40px; display:inline-flex; align-items:center; } }
   [hidden]{ display:none !important; }
 
   /* The home screen is the docket you are handed at the start of a shift. */
@@ -1218,12 +1235,11 @@
       <div id="team-bios"></div>
     </section>
 
-    <!-- LORE: the stories behind the room itself, not the food or the team.
-         Empty until Vitor supplies it; never invent what a piece of art or a
-         plate actually means to him. -->
+    <!-- LORE: the Menu Story (verbatim from Vitor's master doc), then the
+         room itself. Never invent what a dish or a piece means to him. -->
     <section class="view" id="view-lore">
       <h1>The Lore</h1>
-      <p class="view-intro">The plates, the art, the decoration, and the brief story behind each one, so you can actually answer when a guest asks.</p>
+      <p class="view-intro">The story behind every dish, in Vitor's words, so you can actually answer when a guest asks.</p>
       <div id="lore-cards"></div>
     </section>
 
@@ -1429,6 +1445,130 @@ var TEAM = [
 // in for it.
 var LORE = [
 ];
+
+// The Menu Story, verbatim from the "iara Menu Story - Master" Google Doc
+// (docs.google.com/document/d/1dTTvKnWx9sM3F1rXejv1ecp8PyPieKYdoFHYm_ZxTUo).
+// Update it from that doc; never paraphrase or add detail here.
+var MENU_STORY = [
+ {
+  "course": "Pão",
+  "en": "Bread",
+  "dishes": [
+   {
+    "name": "Pão de Queijo",
+    "story": "Our pão de queijo starts with tapioca starch, the starch of cassava, mixed with eggs, milk, and oil, then enriched with smoked Gouda and Parmesan. The traditional recipe doesn't use smoked Gouda. It's served with a smoky charred eggplant dip and a guava glaze."
+   },
+   {
+    "name": "Pão de Alho",
+    "story": "Garlic bread is a classic at Sunday barbecues across Brazil. Ours is charcoal-grilled and stuffed with requeijão (Brazilian cream cheese) and roasted garlic. Sesame seeds on top are our New York touch."
+   }
+  ]
+ },
+ {
+  "course": "Petiscos",
+  "en": "Small Plates",
+  "dishes": [
+   {
+    "name": "Tacacá",
+    "story": "In the Amazon, tacacá is a hot broth of tucupi (fermented cassava juice) served in a bowl with jambu leaves (the numbing herb) and dried salted river shrimp. At iara we serve the broth with herb oil, plantain coconut cream, and jambu leaves."
+   },
+   {
+    "name": "Dadinho de Tapioca",
+    "story": "A tapioca fritter made with a medium-grain tapioca flour found only in Brazil; no other flour gives this texture. We cook it with milk, cotija, Parmesan, and paneer to form the batter. We layer it with smoked trout mousse, biquinho pepper, and pickled onion in the middle, top it with yellowfin tuna, and finish with jambu, the Amazonian herb that tingles and lightly numbs the mouth with each bite."
+   },
+   {
+    "name": "Crocante de Mandioca",
+    "story": "We mix a specific cassava flour with nothing but water, form a dough, and bake it into a crisp, naturally gluten-free cassava tostada. We top it with pineapple grilled over the wood fire, a smoky honey habanero sauce, pickled onions, and fresh Atlantic scallops, seared and sliced."
+   },
+   {
+    "name": "Ceviche com Tucupi",
+    "story": "We marinate dry-aged hiramasa in Amazonian powders (tucupi, Amazonian Yanomami mushroom, and tomato) and finish it with a tucupi vinaigrette, cashew nut, charred plantain, and herbs. Tucupi is fermented cassava juice from the Amazon."
+   }
+  ]
+ },
+ {
+  "course": "Vegetais",
+  "en": "Vegetables",
+  "dishes": [
+   {
+    "name": "Salada da Estação",
+    "story": "Red and green gem lettuce with crisp candied Brazil nuts and a basil-dill dressing. It highlights heart of palm, a staple across Brazil."
+   },
+   {
+    "name": "Caranguejo na Moranga",
+    "story": "Our take on a heartwarming dish from southern Brazil, where Chef Vitor grew up: crab cooked inside a pumpkin with cheese. This version celebrates New York in the fall with honeynut squash, Jonah crab, Parmesan, and Amazonian spiced pumpkin seeds."
+   },
+   {
+    "name": "Vegetais Grelhados",
+    "story": "Market vegetables from New York State farms, grilled over charcoal and served with a kumquat guava dressing and farofa."
+   }
+  ]
+ },
+ {
+  "course": "Pratos Principais",
+  "en": "Mains",
+  "dishes": [
+   {
+    "name": "Moqueca",
+    "story": "Moqueca is a classic from Bahia in northeast Brazil, shaped by African culinary traditions brought over on Portuguese slave ships. We build the sauce on dendê (red palm oil) with onions, peppers, tomatoes, and coconut, then season it with tucupi, the Amazon's fermented cassava juice. Pairing dendê with tucupi is what makes it an Amazonian moqueca. It's finished with mint, basil, dill, and cilantro and garnished with jambu leaves. We serve it with local tilefish, dry-aged in-house, and Hudson Valley rice."
+   },
+   {
+    "name": "Picanha com Fritas",
+    "story": "Picanha is Brazil's classic cut: the rump cap, at the tip of the sirloin. We serve a 12-ounce prime picanha with jiquitaia au poivre, tapioca fries, and açaí ketchup, our take on the steak frites at New York's French bistros. In the Amazon, açaí is eaten savory, morning, noon, and night, with fried fish or cassava flour; the rest of Brazil only knows it sweet."
+   },
+   {
+    "name": "Frango Amazonas",
+    "story": "We marinate Amish chicken from Pennsylvania in Amazonian spices (cupuaçu, tucupi, and Yanomami mushroom powders) and grill it over fire. It's served over stewed manteiguinha beans (small butter beans from Santarém in the Amazon) seasoned with a sofrito of garlic, serrano, and ginger, and finished with salsa verde."
+   }
+  ]
+ },
+ {
+  "course": "Acompanhamentos",
+  "en": "Sides",
+  "dishes": [
+   {
+    "name": "Tapioca Fries",
+    "story": "Our version of French fries. Brazilians cut tapioca into cubes for dadinho; nobody thought to cut it into sticks. Served with açaí ketchup."
+   },
+   {
+    "name": "Arroz",
+    "story": "Hudson Valley rice from Great Joy Farms in upstate New York, cooked with a Brazilian sofrito."
+   },
+   {
+    "name": "Feijão Manteiguinha",
+    "story": "The manteiguinha beans from our Frango Amazonas: small butter beans from Santarém in the Amazon, stewed with garlic, serrano, and ginger."
+   },
+   {
+    "name": "Farofa",
+    "story": "Toasted cassava flour, Brazil's essential condiment. We bring a small cup to every table alongside entrées."
+   }
+  ]
+ },
+ {
+  "course": "Sobremesas",
+  "en": "Desserts",
+  "dishes": [
+   {
+    "name": "Pudim",
+    "story": "A traditional Brazilian flan made with milk, eggs, and condensed milk, baked in classic Brazilian flan tins. Sesame seeds on top are our New York touch."
+   },
+   {
+    "name": "Bolo de Mandioca",
+    "story": "A classic Brazilian cake of cassava, coconut, and Parmesan, sweetened with condensed milk. We finish it with an Amazonian puxuri caramel sauce and coconut-lime sorbet on top."
+   },
+   {
+    "name": "Sorvete",
+    "story": "Cupuaçu ice cream with tapioca, lemon verbena, and a sweet farofa made from cassava flour."
+   },
+   {
+    "name": "Brigadeiro",
+    "story": "Brazil's classic chocolate fudge bonbon, made the traditional way and rolled in large chunks of cacao nibs."
+   }
+  ]
+ }
+];
+
+
 
 /* ============================================================
    DATA: Food & Beverage defaults (used until admin edits are saved to the shared menu)
@@ -2188,16 +2328,36 @@ function renderTeam(){
   });
 }
 
+function bindLoreJump(wrap){
+  wrap.querySelectorAll("[data-ms]").forEach(function(a){
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById("ms-" + a.getAttribute("data-ms"));
+      if (t) t.scrollIntoView({ block:"start", behavior:"smooth" });
+    });
+  });
+}
 function renderLore(){
   var wrap = document.getElementById("lore-cards");
   if (!wrap) return;
+  var html = '<nav class="ms-jump" aria-label="Jump to a course">' + MENU_STORY.map(function(c, i){
+      return '<a href="#ms-'+i+'" data-ms="'+i+'">'+esc(c.en)+'</a>';
+    }).join('') + '</nav>' +
+    MENU_STORY.map(function(c, i){
+      return '<section class="ms-course" id="ms-'+i+'"><h2 class="ms-course-h">'+esc(c.course)+
+        ' <span class="ms-course-en">'+esc(c.en)+'</span></h2>' +
+        c.dishes.map(function(d){
+          return '<article class="ms-dish"><h3>'+esc(d.name)+'</h3><p>'+esc(d.story)+'</p></article>';
+        }).join('') + '</section>';
+    }).join('') +
+    '<h2 class="ms-course-h ms-room">The Room</h2>';
   if (!LORE.length) {
-    wrap.innerHTML = '<div class="empty"><p class="empty-h">Nothing here yet.</p>' +
-      '<p class="empty-b">The stories behind the plates, the art, and the decoration around the room ' +
+    wrap.innerHTML = html + '<div class="empty"><p class="empty-b">The stories behind the art and the decoration around the room ' +
       'will show up here once Vitor adds them.</p></div>';
+    bindLoreJump(wrap);
     return;
   }
-  wrap.innerHTML = LORE.map(function(p){
+  wrap.innerHTML = html + LORE.map(function(p){
     return '<div class="card bio">' +
       (p.photo
         ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.title)+'" loading="lazy">'
@@ -2217,6 +2377,7 @@ function renderLore(){
       b.setAttribute("aria-expanded", String(open));
     });
   });
+  bindLoreJump(wrap);
 }
 
 /* ============================================================
