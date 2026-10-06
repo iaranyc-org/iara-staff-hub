@@ -56,7 +56,6 @@ NEW_STATUS = {
 }
 REJECT_PHOTO = {'jay-cheshes', 'julia-moskin'}  # Cheshes: unverified avatar. Moskin: keep NYT byline portrait.
 NO_PHOTO_NOTE = {
-    'ryan-sutton': 'Showed his face publicly in Nov 2025, but no captioned solo photo exists yet. Pays by Apple Pay, so no name on the card.',
     'robert-sietsema': 'Hides his face in photos (a devil mask, a camera). Treat any regular solo diner taking notes seriously.',
 }
 
@@ -154,6 +153,8 @@ for s_, p in roster.items():
         if f'{s_}/{n}.jpg' in REJECT_EXTRA:
             continue
         dst_rel = f'img/watch/{s_}-{n}.jpg'
+        if any(x['src'] == dst_rel for x in photos):
+            continue
         shutil.copyfile(src, os.path.join(ROOT, dst_rel))
         m = more_meta.get(os.path.normpath(src), {})
         credit = host(m.get('source_page') or '') or 'verified source'
@@ -166,6 +167,7 @@ for s_, p in roster.items():
     p['photos'] = photos[:5]
 
 OVERRIDES = {
+    'ryan-sutton': {'note': 'NYT contributing critic since Nov 2025; also runs The Lo Times newsletter.'},
     'mahira-rivers': {'recognizeBy': 'Public NYT byline photo since Dec 2025. Former Michelin inspector, so expect a quiet, observant diner.',
                       'photoCredit': {'text': 'nytimes.com byline page'}},
 }

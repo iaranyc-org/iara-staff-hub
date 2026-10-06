@@ -1,0 +1,308 @@
+[
+  {
+    "slug": "ligaya-mishan",
+    "file": "img/watch_more/ligaya-mishan/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=mY2ZVuiXKuc",
+    "image_url": "https://i.ytimg.com/vi/mY2ZVuiXKuc/maxresdefault.jpg",
+    "evidence": "YouTube title \"Ligaya Mishan & Tejal Rao, The Modern Restaurant Critics Of The New York Times\"; thumbnail text \"Ligaya Mishan & Tejal Rao\" left-to-right",
+    "year": 2025,
+    "notes": "Radio Cherry Bombe thumbnail; cropped left woman"
+  },
+  {
+    "slug": "ligaya-mishan",
+    "file": "img/watch_more/ligaya-mishan/3.jpg",
+    "source_page": "https://www.youtube.com/watch?v=-3qkHt_hlK8",
+    "image_url": "https://i.ytimg.com/vi/-3qkHt_hlK8/maxresdefault.jpg",
+    "evidence": "TODAY \"NYT Food Critics Open Up About Choice to Reveal Their Identities\" (description names Tejal Rao and Ligaya Mishan)",
+    "year": 2025,
+    "notes": "Right woman (green top); position matched via Cherry Bombe captioned pair + primary"
+  },
+  {
+    "slug": "ligaya-mishan",
+    "file": "img/watch_more/ligaya-mishan/4.jpg",
+    "source_page": "https://bulletin.punahou.edu/",
+    "image_url": "http://bulletin.punahou.edu/wp-content/uploads/2024/04/Punahou_Writer-in-Residence_Ligaya-Mishan_rb_06a3344.jpg",
+    "evidence": "filename \"Punahou_Writer-in-Residence_Ligaya-Mishan\"; Bing title \"New York Times Food Journalist Ligaya...\"",
+    "year": 2024,
+    "notes": "Outdoor, denim shirt"
+  },
+  {
+    "slug": "ligaya-mishan",
+    "file": "img/watch_more/ligaya-mishan/5.jpg",
+    "source_page": "https://www.hawaiipublicradio.org/the-conversation/2024-01-11/nytimes-food-writer-and-punahou-alum-returns-for-culinary-storytelling-event",
+    "image_url": "http://npr-brightspot.s3.amazonaws.com/49/68/78a0d7674c369f511819979c4f1c/img-2898.jpg",
+    "evidence": "HPR page \"NYTimes food writer and Punahou alum returns...\" solely about Mishan, one person",
+    "year": 2024,
+    "notes": "At HPR studio, floral dress"
+  },
+  {
+    "slug": "tejal-rao",
+    "file": "img/watch_more/tejal-rao/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=mY2ZVuiXKuc",
+    "image_url": "https://i.ytimg.com/vi/mY2ZVuiXKuc/maxresdefault.jpg",
+    "evidence": "thumbnail text \"Ligaya Mishan & Tejal Rao\" left-to-right",
+    "year": 2025,
+    "notes": "Right woman"
+  },
+  {
+    "slug": "tejal-rao",
+    "file": "img/watch_more/tejal-rao/3.jpg",
+    "source_page": "https://www.youtube.com/watch?v=-3qkHt_hlK8",
+    "image_url": "https://i.ytimg.com/vi/-3qkHt_hlK8/maxresdefault.jpg",
+    "evidence": "TODAY video description names Tejal Rao and Ligaya Mishan",
+    "year": 2025,
+    "notes": "Left woman, zebra print, shorter hair"
+  },
+  {
+    "slug": "tejal-rao",
+    "file": "img/watch_more/tejal-rao/4.jpg",
+    "source_page": "https://www.youtube.com/watch?v=9sz1lT7o2zU",
+    "image_url": "https://i.ytimg.com/vi/9sz1lT7o2zU/maxresdefault.jpg",
+    "evidence": "title \"Tejal Rao on Restaurant Reviews and Writing Warmly\"; thumbnail text \"Tejal Rao, Chief Restaurant Critic\"",
+    "year": 2025,
+    "notes": "Podcast thumbnail, single person"
+  },
+  {
+    "slug": "matthew-schneier",
+    "file": "img/watch_more/matthew-schneier/2.jpg",
+    "source_page": "https://cfda.com/news/the-fashion-critic-matthew-schneier/",
+    "image_url": "https://cfda.com/wp-content/uploads/2016/10/Matthew_Schneier_029.jpg",
+    "evidence": "page \"The Fashion Critic: Matthew Schneier\"; filename Matthew_Schneier_029",
+    "year": 2016,
+    "notes": "B&W, younger, NYT fashion era"
+  },
+  {
+    "slug": "matthew-schneier",
+    "file": "img/watch_more/matthew-schneier/3.jpg",
+    "source_page": "https://www.culturedmag.com/article/2025/07/17/food-critic-reviews-interview/",
+    "image_url": "https://culturedmag.nyc3.digitaloceanspaces.com/uploads/2025/07/14171312/Matthew-Schneier-by-Marisa-Langley.jpg",
+    "evidence": "filename \"Matthew-Schneier-by-Marisa-Langley\"",
+    "year": 2025,
+    "notes": "Seated in restaurant, white shirt"
+  },
+  {
+    "slug": "matthew-schneier",
+    "file": "img/watch_more/matthew-schneier/4.jpg",
+    "source_page": "https://www.culturedmag.com/",
+    "image_url": "https://sistaticv2.blob.core.windows.net/cultured-mag/img/library/matthew-schneier-food-critic-2-1696271085986.jpg",
+    "evidence": "filename \"matthew-schneier-food-critic-2\"",
+    "year": 2023,
+    "notes": "Candid at dinner table, night; source page via Bing, not opened"
+  },
+  {
+    "slug": "matthew-schneier",
+    "file": "img/watch_more/matthew-schneier/5.jpg",
+    "source_page": "https://nymag.com/",
+    "image_url": "https://pyxis.nymag.com/v1/imgs/285/d00/ca18bfb77008e47694470553294cd0558c-matthew.rvertical.w600.jpg",
+    "evidence": "Bing result for \"Matthew Schneier\" on nymag CDN, filename \"matthew\"",
+    "year": null,
+    "notes": "B&W portrait; identity rests on face match + nymag CDN, weaker caption"
+  },
+  {
+    "slug": "helen-rosner",
+    "file": "img/watch_more/helen-rosner/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=2TZvf1rcQfw",
+    "image_url": "https://i.ytimg.com/vi/2TZvf1rcQfw/maxresdefault.jpg",
+    "evidence": "title \"Helen Rosner, Writer/Editor - XOXO Festival (2018)\"",
+    "year": 2018,
+    "notes": "On stage"
+  },
+  {
+    "slug": "helen-rosner",
+    "file": "img/watch_more/helen-rosner/3.jpg",
+    "source_page": "https://www.youtube.com/watch?v=A73peC7o55o",
+    "image_url": "https://i.ytimg.com/vi/A73peC7o55o/maxresdefault.jpg",
+    "evidence": "title \"The New Yorker's Helen Rosner | ...\"; thumbnail text \"HELEN ROSNER\"",
+    "year": null,
+    "notes": "Podcast, headphones"
+  },
+  {
+    "slug": "helen-rosner",
+    "file": "img/watch_more/helen-rosner/4.jpg",
+    "source_page": "https://www.youtube.com/watch?v=NRv95lE05ao",
+    "image_url": "https://i.ytimg.com/vi/NRv95lE05ao/maxresdefault.jpg",
+    "evidence": "title \"The BEST Sandwich in NYC, According to a New Yorker Mag Restaurant Critic\"",
+    "year": null,
+    "notes": "Gray hair, black glasses; single person, face-matched"
+  },
+  {
+    "slug": "helen-rosner",
+    "file": "img/watch_more/helen-rosner/5.jpg",
+    "source_page": "https://www.youtube.com/watch?v=6mD3lvuhARA",
+    "image_url": "https://i.ytimg.com/vi/6mD3lvuhARA/maxresdefault.jpg",
+    "evidence": "title \"3 Questions for Helen Rosner, Executive Digital Editor, Saveur Magazine\"",
+    "year": 2014,
+    "notes": "Older look, brown hair"
+  },
+  {
+    "slug": "elazar-sontag",
+    "file": "img/watch_more/elazar-sontag/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=WcPRY9wmhb4",
+    "image_url": "https://i.ytimg.com/vi/WcPRY9wmhb4/hqdefault.jpg",
+    "evidence": "title \"Why the Washington Post's new food critic isn't anonymous | NBC4 Washington\"",
+    "year": 2025,
+    "notes": "Low-res (hq thumbnail)"
+  },
+  {
+    "slug": "elazar-sontag",
+    "file": "img/watch_more/elazar-sontag/3.jpg",
+    "source_page": "https://www.bonappetit.com/contributor/elazar-sontag",
+    "image_url": "https://assets.bonappetit.com/photos/631a69ac08414db0dbc0b6a5/1:1/w_800,c_limit/20220811-HEADSHOTS-ELAZAR-6289.jpg",
+    "evidence": "BA contributor page; filename \"HEADSHOTS-ELAZAR\"",
+    "year": 2022,
+    "notes": "Mustache only, shaved head"
+  },
+  {
+    "slug": "elazar-sontag",
+    "file": "img/watch_more/elazar-sontag/4.jpg",
+    "source_page": "https://oaklandside.org/2022/03/22/elazar-sontag-bon-appetit-eater-oakland/",
+    "image_url": "https://newspack-berkeleyside-cityside.s3.amazonaws.com/wp-content/uploads/2022/03/sontag_lede.jpeg",
+    "evidence": "Oaklandside article about Elazar Sontag; filename sontag_lede",
+    "year": 2022,
+    "notes": "Clean-shaven, outdoors"
+  },
+  {
+    "slug": "elazar-sontag",
+    "file": "img/watch_more/elazar-sontag/5.jpg",
+    "source_page": "https://www.bonappetit.com/contributor/elazar-sontag",
+    "image_url": "https://assets.bonappetit.com/photos/66a2debcf7e9931014d9498b/1:1/w_800,c_limit/elazar-sontag_061224_3712_VOG_final.jpg",
+    "evidence": "filename \"elazar-sontag_061224\"",
+    "year": 2024,
+    "notes": "Curly hair, full beard"
+  },
+  {
+    "slug": "ryan-sutton",
+    "file": "img/watch_more/ryan-sutton/1.jpg",
+    "source_page": "https://messaging-custom-newsletters.nytimes.com/dynamic/render?isViewInBrowser=true&productCode=WTE&sendId=210340&uri=nyt://newsletter/f6c4f50f-e953-5c01-80cc-a3ea5c2b9d8a",
+    "image_url": "https://static01.nyt.com/images/2025/11/10/multimedia/00wte-brief-announcement-04-lvtq/00wte-brief-announcement-04-lvtq-jumbo.jpg",
+    "evidence": "NYT Where to Eat Nov 10 2025 alt: \"Ryan Sutton, wearing a dark blue blazer and a white T-shirt, sits at a table at Superiority Burger.\"",
+    "year": 2025,
+    "notes": "PRIMARY candidate (Colin Clark shoot)"
+  },
+  {
+    "slug": "ryan-sutton",
+    "file": "img/watch_more/ryan-sutton/2.jpg",
+    "source_page": "https://muckrack.com/qualityrye",
+    "image_url": "https://media.muckrack.com/profile/images/6518/ryan-sutton.JPG",
+    "evidence": "Muck Rack \"Ryan Sutton's Profile | The New York Times, The LO Times\"",
+    "year": 2025,
+    "notes": "Same NYT shoot (blazer/tee), different pose, closer"
+  },
+  {
+    "slug": "ryan-sutton",
+    "file": "img/watch_more/ryan-sutton/3.jpg",
+    "source_page": "https://www.thelotimes.com/p/nyt-new-contributing-restaurant-critics-mahira-rivers-ryan-sutton",
+    "image_url": "https://substack-post-media.s3.amazonaws.com/public/images/a4a8f0f8-9ced-4ed2-9f5e-f771387d9e54_2316x3088.jpeg",
+    "evidence": "Uncaptioned selfie in his own post; bearded man at right confirmed by face match to NYT-captioned photo",
+    "year": 2025,
+    "notes": "Candid, messier hair, grey beard"
+  },
+  {
+    "slug": "steve-cuozzo",
+    "file": "img/watch_more/steve-cuozzo/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=CLPkWLEQAck",
+    "image_url": "https://i.ytimg.com/vi/CLPkWLEQAck/maxresdefault.jpg",
+    "evidence": "title \"A Helluva Town: New York Wisdom From Longtime Pundit Steve Cuozzo\"",
+    "year": null,
+    "notes": "Single person, purple shirt"
+  },
+  {
+    "slug": "steve-cuozzo",
+    "file": "img/watch_more/steve-cuozzo/3.jpg",
+    "source_page": "https://nypost.com/",
+    "image_url": "https://nypost.com/wp-content/uploads/sites/2/2023/01/Steve-Cuozzo-01.jpg",
+    "evidence": "filename Steve-Cuozzo-01; Bing title \"The New York Post's Steve Cuozzo recalls 50 y[ears]\"",
+    "year": null,
+    "notes": "Archival B&W, younger, dark hair"
+  },
+  {
+    "slug": "steve-cuozzo",
+    "file": "img/watch_more/steve-cuozzo/4.jpg",
+    "source_page": "https://nypost.com/",
+    "image_url": "https://nypost.com/wp-content/uploads/sites/2/2023/01/Steve-Cuozzo-07.jpg",
+    "evidence": "filename Steve-Cuozzo-07, same NYPost 50-years story",
+    "year": null,
+    "notes": "Grumpy face holding wraps"
+  },
+  {
+    "slug": "steve-cuozzo",
+    "file": "img/watch_more/steve-cuozzo/5.jpg",
+    "source_page": "https://nypost.com/",
+    "image_url": "https://nypost.com/wp-content/uploads/sites/2/2023/01/Steve-Cuozzo-08.jpg",
+    "evidence": "filename Steve-Cuozzo-08, same NYPost 50-years story",
+    "year": null,
+    "notes": "Fedora hat, suit, red tie"
+  },
+  {
+    "slug": "tammie-teclemariam",
+    "file": "img/watch_more/tammie-teclemariam/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=fhNw1twW0D4",
+    "image_url": "https://i.ytimg.com/vi/fhNw1twW0D4/maxresdefault.jpg",
+    "evidence": "title \"New York Magazine's Tammie Teclemariam on the Fro-Yo Boom, Being the Underground Gourmet\"",
+    "year": 2025,
+    "notes": "Only woman in 2-shot (other is male host); cropped"
+  },
+  {
+    "slug": "tammie-teclemariam",
+    "file": "img/watch_more/tammie-teclemariam/3.jpg",
+    "source_page": "https://www.splendidtable.org/episode/2022/04/05/tammie-teclemariams-minty-pork-meatballs",
+    "image_url": "https://img.apmcdn.org/1c3809168c59e28c446d47cc7bdc105cd0d4784f/uncropped/21bf67-20220404-tammie-teclemariam-episode-tile-1000.jpg",
+    "evidence": "filename \"tammie-teclemariam-episode-tile\"; episode about her",
+    "year": 2022,
+    "notes": "Collage tile; cropped her panel (left), other panel is a different person"
+  },
+  {
+    "slug": "tammie-teclemariam",
+    "file": "img/watch_more/tammie-teclemariam/4.jpg",
+    "source_page": "https://www.magzter.com/stories/Lifestyle/New-York-magazine/126-MINUTES-WITH-Tammie-Teclemariam",
+    "image_url": "https://magarticles.magzter.com/articles/3858/501750/5f3a836f1fc72/Tammie-Teclemariam.jpg",
+    "evidence": "\"126 Minutes With… Tammie Teclemariam\"; filename Tammie-Teclemariam",
+    "year": 2020,
+    "notes": "Lounging with wine"
+  },
+  {
+    "slug": "tammie-teclemariam",
+    "file": "img/watch_more/tammie-teclemariam/5.jpg",
+    "source_page": "https://www.nytimes.com/2020/06/29/dining/drinks/black-wine-professionals-sommeliers.html",
+    "image_url": "https://static01.nyt.com/images/2020/06/29/dining/29pour7/29pour7-jumbo.jpg",
+    "evidence": "NYT caption \"Tammie Teclemariam, a food and drinks writer, is used to having her opinions about wine questioned.\"",
+    "year": 2020,
+    "notes": "Profile view, natural hair"
+  },
+  {
+    "slug": "mahira-rivers",
+    "file": "img/watch_more/mahira-rivers/2.jpg",
+    "source_page": "https://www.youtube.com/watch?v=Bbn0d_C1yS0",
+    "image_url": "https://i.ytimg.com/vi/Bbn0d_C1yS0/maxresdefault.jpg",
+    "evidence": "TASTE video; description \"we have an amazing conversation with Mahira Rivers\"",
+    "year": 2025,
+    "notes": "Only woman; other is host Matt Rodbard"
+  },
+  {
+    "slug": "mahira-rivers",
+    "file": "img/watch_more/mahira-rivers/3.jpg",
+    "source_page": "https://www.ice.edu/blog/50-anniversary-pastry-chef-connie-mcdonald-levain-bakery",
+    "image_url": "https://www.ice.edu/sites/default/files/2024-12/Mahira%201.png",
+    "evidence": "alt \"Food writer and restaurant reviewer Mahira Rivers standing and smiling beside a wall...\"",
+    "year": 2025,
+    "notes": "Long wavy hair, smiling"
+  },
+  {
+    "slug": "mahira-rivers",
+    "file": "img/watch_more/mahira-rivers/4.jpg",
+    "source_page": "https://messaging-custom-newsletters.nytimes.com/dynamic/render?isViewInBrowser=true&productCode=WTE&sendId=210340&uri=nyt://newsletter/f6c4f50f-e953-5c01-80cc-a3ea5c2b9d8a",
+    "image_url": "https://static01.nyt.com/images/2025/11/10/multimedia/00wte-brief-announcement-03-zcjl/00wte-brief-announcement-03-zcjl-jumbo.jpg",
+    "evidence": "NYT alt \"Mahira Rivers stands on Doyers Street in Chinatown in Manhattan. She's wearing a furry coat.\"",
+    "year": 2025,
+    "notes": "Full-length shot cropped; low-res face"
+  },
+  {
+    "slug": "robert-sietsema",
+    "file": null,
+    "source_page": "https://www.grubstreet.com/2013/05/robert-sietsema-viillage-voice.html; publishersweekly.com; southernfoodways.org; foodrepublic.com",
+    "image_url": null,
+    "evidence": null,
+    "year": null,
+    "notes": "Rejected: every captioned photo shows him in his red devil half-mask; upper face never visible."
+  }
+]
