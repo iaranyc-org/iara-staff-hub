@@ -1,0 +1,241 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iara Phone</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/icon-512.png">
+<meta name="theme-color" content="#391d1f">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    --ink:#faf6f0; --ink-soft:#b3a695; --paper:#391d1f; --paper-raised:#4a2528; --line:#5f3b3e;
+    --forest:#e0633f; --forest-ink:#2a1206; --sun:#fbbf56; --river:#e8cbab;
+    --c-answered:#e8cbab; --c-voicemail:#fbbf56; --c-missed:#e0633f;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{ background:var(--paper); }
+  body{ margin:0; color:var(--ink); font-family:'Instrument Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  [hidden]{ display:none !important; }
+  .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:20px; box-shadow:var(--shadow); }
+  .gate{ width:100%; max-width:380px; }
+  h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; color:var(--river); font-size:30px; margin:0; letter-spacing:-.01em; }
+  h2{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin:0 0 14px; }
+  label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
+  input{ width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:16px; margin-bottom:14px; }
+  .btn{ border-radius:6px; border:0; padding:11px 18px; min-height:44px; font:inherit; font-weight:700; font-size:14.5px; cursor:pointer; background:var(--forest); color:var(--forest-ink); width:100%; }
+  .btn-ghost{ background:transparent; border:1.5px solid var(--line); color:var(--ink); width:auto; min-height:38px; padding:7px 14px; font-size:13px; }
+  .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
+  main{ max-width:1080px; margin:0 auto; padding:28px 16px 64px; }
+  .top{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
+  .sub{ color:var(--ink-soft); font-size:13px; margin-top:6px; }
+  .back{ color:var(--ink-soft); font-size:13px; text-decoration:none; display:inline-block; margin-bottom:10px; }
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
+  .kpi .v{ font-family:'Fraunces',Georgia,serif; font-size:34px; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .kpi .l{ font-size:13px; font-weight:600; margin-top:4px; }
+  .kpi .n{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; }
+  .grid2{ display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:12px; }
+  .legend{ display:flex; gap:14px; font-size:12.5px; color:var(--ink-soft); margin:-6px 0 12px; flex-wrap:wrap; }
+  .legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
+  .bars{ display:flex; align-items:flex-end; gap:3px; height:160px; border-bottom:1px solid var(--line); }
+  .bar{ flex:1; display:flex; flex-direction:column-reverse; gap:1px; min-width:0; height:100%; justify-content:flex-start; position:relative; }
+  .bar span{ display:block; border-radius:2px 2px 0 0; }
+  .bar:hover{ outline:1px solid var(--line); outline-offset:2px; }
+  .xl{ display:flex; gap:3px; font-size:11px; color:var(--ink-soft); margin-top:6px; }
+  .xl div{ flex:1; text-align:center; white-space:nowrap; overflow:visible; }
+  .tip{ position:fixed; pointer-events:none; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-size:12.5px; box-shadow:var(--shadow); z-index:9; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th{ text-align:left; font-size:12px; color:var(--ink-soft); font-weight:700; padding:8px 8px; border-bottom:1px solid var(--line); }
+  td{ padding:10px 8px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); vertical-align:top; }
+  td.num{ font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .pill{ font-size:11.5px; font-weight:700; border-radius:100px; padding:2px 8px; white-space:nowrap; }
+  .pill.text{ background:color-mix(in srgb,var(--river) 20%,transparent); color:var(--river); }
+  .pill.voicemail{ background:color-mix(in srgb,var(--sun) 20%,transparent); color:var(--sun); }
+  .muted{ color:var(--ink-soft); }
+  .note{ font-size:12.5px; color:var(--ink-soft); margin-top:12px; line-height:1.5; }
+  .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
+  .people{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
+  .person .who{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:12px; }
+  .person .name{ font-family:'Fraunces',Georgia,serif; font-size:22px; color:var(--river); }
+  .person .role{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); }
+  .stat-row{ display:flex; gap:18px; flex-wrap:wrap; }
+  .stat-row .v{ font-family:'Fraunces',Georgia,serif; font-size:30px; line-height:1.1; font-variant-numeric:tabular-nums; }
+  .stat-row .l{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .scroll{ overflow-x:auto; }
+  #daily td, #daily th{ text-align:right; }
+  #daily td:first-child, #daily th:first-child{ text-align:left; }
+  #daily tr.closed td{ color:var(--ink-soft); }
+  @media (max-width:760px){
+    .people{ grid-template-columns:1fr; }
+    .kpis{ grid-template-columns:1fr 1fr; }
+    .grid2{ grid-template-columns:1fr; }
+    .kpi .v{ font-size:28px; }
+    td.prev{ display:none; }
+  }
+</style>
+
+<div id="gate" class="center" hidden>
+  <form class="card gate" id="gate-form">
+    <h1 style="font-size:22px;margin-bottom:18px">Phone</h1>
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
+    <p class="err" id="gate-err" hidden>That password is not right. Ask your manager.</p>
+    <button class="btn" type="submit">Enter</button>
+  </form>
+</div>
+
+<main id="app" hidden>
+  <a class="back" href="/">← Staff</a>
+  <div class="top">
+    <div>
+      <h1>Phone</h1>
+      <div class="sub" id="sub">(929) 930-5033 · last 30 days</div>
+    </div>
+    <button class="btn btn-ghost" id="refresh">Refresh</button>
+  </div>
+  <div id="loading" class="loading">Pulling calls and texts from Quo. This takes about 30 seconds…</div>
+  <div id="err" class="card" hidden></div>
+  <div id="body" hidden>
+    <div class="kpis">
+      <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls in</div><div class="n" id="k-calls-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer rate since opening</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests handled by a person</div><div class="n" id="k-handled-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on us</div><div class="n" id="k-open-n"></div></div>
+    </div>
+    <h2 style="margin:22px 0 12px">Who's carrying the line</h2>
+    <div class="people">
+      <div class="card person"><div class="who"><span class="name">Ronald</span><span class="role">Voice</span></div>
+        <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">calls answered</div></div><div><div class="v" id="r-out"></div><div class="l">calls made</div></div><div><div class="v" id="r-min"></div><div class="l">min on the phone</div></div></div></div>
+      <div class="card person"><div class="who"><span class="name">Jay</span><span class="role">Text</span></div>
+        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">texts written</div></div><div><div class="v" id="j-threads"></div><div class="l">guests replied to</div></div></div></div>
+      <div class="card person"><div class="who"><span class="name">Auto-replies</span><span class="role">System</span></div>
+        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">texts sent</div></div><div><div class="v" id="a-cov"></div><div class="l">guests fully covered</div></div></div></div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <h2>Incoming calls by day</h2>
+        <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-voicemail)"></i>Voicemail</span><span><i style="background:var(--c-missed)"></i>Missed</span></div>
+        <div class="bars" id="days"></div><div class="xl" id="days-x"></div>
+      </div>
+      <div class="card">
+        <h2>By hour (ET)</h2>
+        <div class="bars" id="hours"></div><div class="xl" id="hours-x"></div>
+        <div class="note" id="texts-note"></div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h2>Day by day</h2>
+      <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls in</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls out</th><th>Talk min</th><th>Texts in</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
+    </div>
+    <div class="card">
+      <h2>Waiting on a reply</h2>
+      <table><thead><tr><th>Number</th><th>Type</th><th>Last contact</th><th class="prev">Their last text</th></tr></thead><tbody id="open"></tbody></table>
+      <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls with no voicemail (they got the Resy link automatically), running-late notices, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. A "voicemail" can also be a caller who hung up during the greeting. Find the full number in Quo by searching the last four digits.</p>
+    </div>
+  </div>
+</main>
+<div class="tip" id="tip" hidden></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+(function(){
+  // Same shared staff account as the hub and Lineup; the password is checked
+  // by Firebase, never compared here, and the API re-verifies the token.
+  var STAFF_EMAIL = "staff@iara.nyc";
+  firebase.initializeApp({
+    apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE",
+    authDomain: "iara-lineup.firebaseapp.com",
+    projectId: "iara-lineup",
+    storageBucket: "iara-lineup.firebasestorage.app",
+    messagingSenderId: "840712867607",
+    appId: "1:840712867607:web:2003c145731aa85a13b152"
+  });
+  var $ = function(id){ return document.getElementById(id); };
+  var started = false;
+
+  firebase.auth().onAuthStateChanged(function(user){
+    if (user){ $("gate").hidden = true; $("app").hidden = false; if (!started){ started = true; load(false); } }
+    else { $("gate").hidden = false; $("app").hidden = true; }
+  });
+  $("gate-form").addEventListener("submit", function(ev){
+    ev.preventDefault(); $("gate-err").hidden = true;
+    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(){ $("gate-err").hidden = false; });
+  });
+  $("refresh").addEventListener("click", function(){ load(true); });
+
+  function load(fresh){
+    $("loading").hidden = false; $("err").hidden = true; $("refresh").disabled = true;
+    firebase.auth().currentUser.getIdToken().then(function(tok){
+      return fetch("/api/phone-stats" + (fresh ? "?refresh=1" : ""), { headers: { Authorization: "Bearer " + tok } });
+    }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
+      .then(render)
+      .catch(function(e){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; })
+      .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; });
+  }
+
+  var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
+  var when = function(t){ return new Date(t).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); };
+  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); };
+
+  function tipOn(el, html){
+    el.addEventListener("mousemove", function(e){ var t = $("tip"); t.innerHTML = html; t.hidden = false; t.style.left = (e.clientX + 12) + "px"; t.style.top = (e.clientY - 40) + "px"; });
+    el.addEventListener("mouseleave", function(){ $("tip").hidden = true; });
+  }
+
+  function render(d){
+    var c = d.calls, g = d.guests;
+    $("sub").textContent = "(929) 930-5033 · last " + d.windowDays + " days · updated " + when(d.generatedAt);
+    $("k-calls").textContent = c.total;
+    $("k-calls-n").textContent = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed";
+    $("k-ans").textContent = pct(c.sinceOpen.answered, c.sinceOpen.total);
+    $("k-ans-n").textContent = c.sinceOpen.answered + " of " + c.sinceOpen.total + " calls since Oct 2";
+    $("k-handled").textContent = pct(g.handled, g.total);
+    $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median call back " + d.medianCallbackHours + "h" : "");
+    $("k-open").textContent = g.open;
+    $("k-open-n").textContent = g.autoOnly + " more got the Resy auto-text only";
+    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " typed replies, " + d.texts.auto + " auto-replies. " + c.outbound + " calls out, " + c.talkMinutes + " min.";
+
+    var max = Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; })));
+    $("days").innerHTML = ""; $("days-x").innerHTML = "";
+    d.days.forEach(function(x, i){
+      var b = document.createElement("div"); b.className = "bar";
+      ["answered","voicemail","missed"].forEach(function(k){
+        if (!x[k]) return; var s = document.createElement("span");
+        s.style.height = (100 * x[k] / max) + "%"; s.style.background = "var(--c-" + k + ")"; b.appendChild(s);
+      });
+      tipOn(b, "<b>" + x.label + "</b><br>" + x.answered + " answered · " + x.voicemail + " voicemail · " + x.missed + " missed");
+      $("days").appendChild(b);
+      var l = document.createElement("div"); l.textContent = (d.days.length - 1 - i) % 7 === 0 ? x.label.split(" ")[1] : ""; $("days-x").appendChild(l);
+    });
+
+    var hs = d.hours.slice(8).concat(d.hours.slice(0, 1)); // 8 AM to midnight
+    var hl = ["8a","","10a","","12p","","2p","","4p","","6p","","8p","","10p","","12a"];
+    var hmax = Math.max(1, Math.max.apply(null, hs));
+    $("hours").innerHTML = ""; $("hours-x").innerHTML = "";
+    hs.forEach(function(n, i){
+      var b = document.createElement("div"); b.className = "bar";
+      var s = document.createElement("span"); s.style.height = (100 * n / hmax) + "%"; s.style.background = "var(--river)"; b.appendChild(s);
+      var h = (i + 8) % 24; tipOn(b, n + " calls · " + ((h % 12) || 12) + (h < 12 ? " AM" : " PM"));
+      $("hours").appendChild(b);
+      var l = document.createElement("div"); l.textContent = hl[i]; $("hours-x").appendChild(l);
+    });
+
+    var pp = d.people;
+    $("r-ans").textContent = pp.ronald.answered; $("r-out").textContent = pp.ronald.callsOut; $("r-min").textContent = pp.ronald.talkMin;
+    $("j-typed").textContent = pp.jay.typed; $("j-threads").textContent = pp.jay.threads;
+    $("a-texts").textContent = pp.auto.texts; $("a-cov").textContent = pp.auto.guestsCovered;
+    var rows = d.days.filter(function(x){ return x.answered + x.voicemail + x.missed + x.callsOut + x.textsIn + x.typed + x.auto > 0; }).reverse();
+    var tot = rows.reduce(function(a, x){ ["answered","voicemail","missed","callsOut","talkMin","textsIn","typed","auto"].forEach(function(k){ a[k] = (a[k] || 0) + x[k]; }); return a; }, {});
+    var dash = function(n){ return n || "<span class='muted'>–</span>"; };
+    var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + dash(x.talkMin) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
+    $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
+    $("open").innerHTML = d.open.length ? d.open.map(function(o){
+      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'>" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span></td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
+    }).join("") : "<tr><td colspan='4' class='muted'>Nobody waiting. Nice.</td></tr>";
+    $("body").hidden = false;
+  }
+})();
+</script>
