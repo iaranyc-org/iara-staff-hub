@@ -133,6 +133,38 @@ for d in dossier.get('people', []):
     if revs:
         p['recentReviews'] = revs[:3]
 
+# Extra photos: img/watch_more/<slug>/<n>.jpg, provenance in more_photos_*.json.
+import glob
+more_meta = {}
+for f in sorted(glob.glob(T('more_photos_*.json'))):
+    try:
+        for m in json.load(open(f)):
+            if isinstance(m, dict) and m.get('file'):
+                more_meta[os.path.normpath(os.path.join(ROOT, m['file']) if not os.path.isabs(m['file']) else m['file'])] = m
+    except Exception as e:
+        print('skip', f, e)
+REJECT_EXTRA = {'hunter-lewis/3.jpg', 'morgan-carter/2.jpg', 'morgan-carter/3.jpg'}  # 'slug/n.jpg' entries rejected on visual review
+for s_, p in roster.items():
+    files = sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg')))
+    photos = []
+    if p.get('photo'):
+        photos.append({'src': p['photo'], 'credit': (p.get('photoCredit') or {}).get('text', '')})
+    for src in files:
+        n = os.path.splitext(os.path.basename(src))[0]
+        if f'{s_}/{n}.jpg' in REJECT_EXTRA:
+            continue
+        dst_rel = f'img/watch/{s_}-{n}.jpg'
+        shutil.copyfile(src, os.path.join(ROOT, dst_rel))
+        m = more_meta.get(os.path.normpath(src), {})
+        credit = host(m.get('source_page') or '') or 'verified source'
+        if n == '1' and not p.get('photo'):
+            p['photo'] = dst_rel
+            p['photoCredit'] = {'text': credit}
+            photos.insert(0, {'src': dst_rel, 'credit': credit})
+        else:
+            photos.append({'src': dst_rel, 'credit': credit})
+    p['photos'] = photos[:5]
+
 OVERRIDES = {
     'mahira-rivers': {'recognizeBy': 'Public NYT byline photo since Dec 2025. Former Michelin inspector, so expect a quiet, observant diner.',
                       'photoCredit': {'text': 'nytimes.com byline page'}},
@@ -154,5 +186,6 @@ open(page, 'w', encoding='utf-8').write(s)
 from collections import Counter
 print(len(out), 'people;', sum(1 for p in out if p['photo']), 'with photo')
 print(Counter(p.get('status') for p in out))
+print('photo counts:', Counter(len(p.get('photos', [])) for p in out))
 print('no photo:', [p['name'] for p in out if not p['photo']])
 print('no status:', [p['name'] for p in out if not p.get('status')])

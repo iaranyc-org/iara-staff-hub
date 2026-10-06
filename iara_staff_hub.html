@@ -881,6 +881,7 @@
   .wl-reviews li{ margin:2px 0; }
   .wl-fine{ font-size:12px; line-height:1.5; color:var(--ink-soft); margin:10px 0 0; }
   .wl-panel a{ color:var(--display); }
+  .wl-reviews a{ font-weight:700; text-underline-offset:2px; }
   /* Profile opens beside the grid on wide screens, as a sheet on narrow ones,
      so the grid itself never reflows. */
   #view-watch{ max-width:none; }
@@ -896,6 +897,15 @@
     cursor:pointer; padding:10px 12px; min-height:44px; float:right; margin:4px 4px 0 0; }
   .wl-close:hover{ color:var(--ink); }
   .wl-close:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .wl-thumbs{ display:flex; gap:8px; padding:4px 18px 8px; overflow-x:auto; scrollbar-width:none; }
+  .wl-thumbs::-webkit-scrollbar{ display:none; }
+  .wl-thumb{ flex:none; width:56px; height:70px; padding:0; border:2px solid transparent; border-radius:5px; overflow:hidden;
+    background:var(--paper); cursor:pointer; }
+  .wl-thumb img{ width:100%; height:100%; object-fit:cover; object-position:50% 20%; display:block; }
+  .wl-thumb.is-on{ border-color:var(--sun); }
+  .wl-thumb:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .wl-photo-count{ position:absolute; right:6px; bottom:6px; font-size:11px; font-weight:700; padding:2px 6px; border-radius:3px;
+    background:rgba(0,0,0,.6); color:#fff; }
   .wl-backdrop{ display:none; }
   @media (min-width:1180px){
     .wl-layout{ display:grid; grid-template-columns:minmax(0,var(--measure-wide)) 380px; gap:28px; align-items:start; }
@@ -3258,6 +3268,12 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Four stars for its kaiseki menu.",
     "url": "https://washingtonian.com/2026/06/16/albi-is-the-first-restaurant-outside-nyc-ever-to-earn-four-stars-from-the-new-york-times/"
    }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/ligaya-mishan.jpg",
+    "credit": "NYT author page (nytimes.com/by/ligaya-mishan)"
+   }
   ]
  },
  {
@@ -3302,6 +3318,12 @@ var WATCH = /*WATCH_DATA*/[
     "date": "2025-10-07",
     "verdict": "Three stars for the revival by Emeril's son.",
     "url": "https://www.tigerdroppings.com/rant/food-and-drink/nyt-gives-emerils-3-stars/120554826/"
+   }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/tejal-rao.jpg",
+    "credit": "NYT author page (nytimes.com/by/tejal-rao)"
    }
   ]
  },
@@ -3348,6 +3370,12 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Overcurated and underwhelming.",
     "url": "https://www.grubstreet.com/article/marcel-breuer-building-sothebys-restaurant-review.html"
    }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/matthew-schneier.jpg",
+    "credit": "Cultured magazine interview, cross-checked with Cultured group portrait"
+   }
   ]
  },
  {
@@ -3381,6 +3409,12 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Very bad. All smoke, no fire. Visited days after it opened.",
     "url": "https://www.lanacion.com.ar/lifestyle/la-contundente-critica-de-the-new-yorker-al-restaurante-de-francis-mallmann-en-manhattan-nid14112025/"
    }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/helen-rosner.jpg",
+    "credit": "Uses This interview portrait (usesthis.com)"
+   }
   ]
  },
  {
@@ -3404,7 +3438,13 @@ var WATCH = /*WATCH_DATA*/[
   "whyItMatters": "2024 James Beard winner. No departure from the New Yorker found; still listed as staff writer.",
   "ratingSystem": "No stars. Writes for Tables for Two.",
   "caresAbout": "Drinking culture, mini cocktails, no-alcohol options (2026 interview).",
-  "relevanceToIara": "Medium. Covers NYC restaurants and bars."
+  "relevanceToIara": "Medium. Covers NYC restaurants and bars.",
+  "photos": [
+   {
+    "src": "img/watch/hannah-goldfield.jpg",
+    "credit": "wesleyanargus.com"
+   }
+  ]
  },
  {
   "slug": "gwendal-poullennec",
@@ -3423,7 +3463,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Michelin & Beard",
   "shortRole": "Michelin Guide Director",
-  "status": "Inspector"
+  "status": "Inspector",
+  "photos": [
+   {
+    "src": "img/watch/gwendal-poullennec.jpg",
+    "credit": "Wildbee, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Gwendal_Poullenec_Oct_2020_MICHELIN-MTP_Wildbee_f-aceto-14_(cropped).jpg"
+   }
+  ]
  },
  {
   "slug": "michelin-inspectors",
@@ -3454,7 +3500,8 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "New one stars: Bridges, Huso, Muku, Yamada.",
     "url": "https://culinaryagents.com/resources/2025-new-york-michelin-star-winners"
    }
-  ]
+  ],
+  "photos": []
  },
  {
   "slug": "elazar-sontag",
@@ -3486,6 +3533,12 @@ var WATCH = /*WATCH_DATA*/[
     "date": "2026-05-05",
     "verdict": "Four stars, his first.",
     "url": "https://www.washingtonpost.com/video/lifestyle/food/izakaya-seki-gets-our-food-critics-highest-rating/2026/05/05/cd6f3636-e629-4022-9c6e-2c4ec149bd3b_video.html"
+   }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/elazar-sontag.jpg",
+    "credit": "NPR profile, Dec 2025"
    }
   ]
  },
@@ -3519,6 +3572,12 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Two stars. Great feijoada and suckling pig; basement location hurt it.",
     "url": "https://www.thedailymeal.com/eat/pete-wells-awards-two-stars-botequim"
    }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/pete-wells.jpg",
+    "credit": "youtube.com"
+   }
   ]
  },
  {
@@ -3542,7 +3601,13 @@ var WATCH = /*WATCH_DATA*/[
   "whyItMatters": "Off the Menu is where NYT readers learn about openings.",
   "ratingSystem": "No ratings. Writes the weekly Off the Menu (openings) and Front Burner columns.",
   "caresAbout": "Restaurant news and new openings.",
-  "relevanceToIara": "High for PR. A listing there announces a new restaurant."
+  "relevanceToIara": "High for PR. A listing there announces a new restaurant.",
+  "photos": [
+   {
+    "src": "img/watch/florence-fabricant.jpg",
+    "credit": "NYT author page"
+   }
+  ]
  },
  {
   "slug": "eric-asimov",
@@ -3565,7 +3630,13 @@ var WATCH = /*WATCH_DATA*/[
   "whyItMatters": "Sets the tone on wine lists and pricing.",
   "ratingSystem": "No restaurant ratings. Chief wine critic since 2004; writes The Pour weekly.",
   "caresAbout": "Wine with food. Critical of high restaurant wine prices. Prefers good wine over trophy wine.",
-  "relevanceToIara": "Low. Know the wine list and fair pricing."
+  "relevanceToIara": "Low. Know the wine list and fair pricing.",
+  "photos": [
+   {
+    "src": "img/watch/eric-asimov.jpg",
+    "credit": "NYT author page"
+   }
+  ]
  },
  {
   "slug": "priya-krishna",
@@ -3590,7 +3661,13 @@ var WATCH = /*WATCH_DATA*/[
   "howTheyDine": "Wore wigs and costumes as a critic. Brings comedians as companions. Takes leftovers home.",
   "caresAbout": "South Asian and immigrant food; no waste.",
   "recognizeBy": "May wear a wig. Takes leftovers home.",
-  "relevanceToIara": "Medium. Covers food culture stories, not starred reviews now."
+  "relevanceToIara": "Medium. Covers food culture stories, not starred reviews now.",
+  "photos": [
+   {
+    "src": "img/watch/priya-krishna.jpg",
+    "credit": "NYT author page"
+   }
+  ]
  },
  {
   "slug": "sam-sifton",
@@ -3609,7 +3686,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "NYT",
   "shortRole": "NYT Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/sam-sifton.jpg",
+    "credit": "NYT author page"
+   }
+  ]
  },
  {
   "slug": "ryan-sutton",
@@ -3652,7 +3735,8 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Reviewed its beef rib fingers; wrote on Latin American steakhouses.",
     "url": "https://www.thelotimes.com/p/unglo-steak-review-rib-fingers-nyc-restaurants"
    }
-  ]
+  ],
+  "photos": []
  },
  {
   "slug": "robert-sietsema",
@@ -3694,7 +3778,8 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Early review of a new global Indian spot.",
     "url": "https://robertsietsema.substack.com/p/an-new-east-village-restaurants-tracks"
    }
-  ]
+  ],
+  "photos": []
  },
  {
   "slug": "stephanie-wu",
@@ -3713,7 +3798,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Food Media",
   "shortRole": "Eater Editor in Chief",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/stephanie-wu.jpg",
+    "credit": "Eater (photo: Shannon Sturgis)"
+   }
+  ]
  },
  {
   "slug": "clare-reichenbach",
@@ -3732,7 +3823,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Michelin & Beard",
   "shortRole": "James Beard CEO",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/clare-reichenbach.jpg",
+    "credit": "James Beard Foundation staff page"
+   }
+  ]
  },
  {
   "slug": "jamila-robinson",
@@ -3751,7 +3848,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Food Media",
   "shortRole": "Bon Appetit Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/jamila-robinson.jpg",
+    "credit": "Bon Appetit contributor page"
+   }
+  ]
  },
  {
   "slug": "hunter-lewis",
@@ -3770,7 +3873,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Food Media",
   "shortRole": "Food & Wine Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/hunter-lewis.jpg",
+    "credit": "Food & Wine author page"
+   }
+  ]
  },
  {
   "slug": "morgan-carter",
@@ -3789,7 +3898,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Food Media",
   "shortRole": "Time Out Food Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/morgan-carter.jpg",
+    "credit": "timeout.com"
+   }
+  ]
  },
  {
   "slug": "steve-cuozzo",
@@ -3834,6 +3949,12 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "Covered the reopening.",
     "url": "https://nypost.com/2026/09/19/us-news/nycs-carnegie-deli-reopens-after-decade-long-absence/"
    }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/steve-cuozzo.jpg",
+    "credit": "nypost.com"
+   }
   ]
  },
  {
@@ -3858,7 +3979,13 @@ var WATCH = /*WATCH_DATA*/[
   "howTheyDine": "Never booked under his name. Used many credit cards, phone numbers and 15 OpenTable accounts. At least three visits.",
   "recognizeBy": "Face public since he retired in fall 2025.",
   "whyItMatters": "25 years at WaPo; retired.",
-  "relevanceToIara": "Low."
+  "relevanceToIara": "Low.",
+  "photos": [
+   {
+    "src": "img/watch/tom-sietsema.jpg",
+    "credit": "washingtonian.com"
+   }
+  ]
  },
  {
   "slug": "adam-platt",
@@ -3882,7 +4009,13 @@ var WATCH = /*WATCH_DATA*/[
   "relevanceToIara": "Low. Not reviewing.",
   "ratingSystem": "Used New York mag stars, then paused them.",
   "howTheyDine": "Two or three visits per review. Unmasked on a New York mag cover in Jan 2014.",
-  "recognizeBy": "Face public since 2014."
+  "recognizeBy": "Face public since 2014.",
+  "photos": [
+   {
+    "src": "img/watch/adam-platt.jpg",
+    "credit": "journalism.nyu.edu"
+   }
+  ]
  },
  {
   "slug": "ruth-reichl",
@@ -3901,7 +4034,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Former Critics",
   "shortRole": "Former NYT Critic",
-  "status": "Former Critic"
+  "status": "Former Critic",
+  "photos": [
+   {
+    "src": "img/watch/ruth-reichl.jpg",
+    "credit": "Timothy Krause, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Ruth_Reichl_(cropped).jpg"
+   }
+  ]
  },
  {
   "slug": "arthur-schwartz",
@@ -3918,7 +4057,8 @@ var WATCH = /*WATCH_DATA*/[
   "photoCredit": null,
   "group": "Former Critics",
   "shortRole": "Former Daily News Critic",
-  "status": "Former Critic"
+  "status": "Former Critic",
+  "photos": []
  },
  {
   "slug": "keith-lee",
@@ -3943,7 +4083,13 @@ var WATCH = /*WATCH_DATA*/[
   "caresAbout": "Taste, how his family is treated, service, cost. Favors Black-owned and family-owned spots.",
   "recognizeBy": "Very famous face; millions of followers.",
   "whyItMatters": "One video can fill a room overnight. Hosted a 10,000-person NYC food festival in May 2025.",
-  "relevanceToIara": "Medium. NYC picks so far are casual spots."
+  "relevanceToIara": "Medium. NYC picks so far are casual spots.",
+  "photos": [
+   {
+    "src": "img/watch/keith-lee.jpg",
+    "credit": "Kirby Taylor, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Keith_Lee_at_Essence_Festival_of_Culture_2025_(4).jpg"
+   }
+  ]
  },
  {
   "slug": "dave-portnoy",
@@ -3976,6 +4122,12 @@ var WATCH = /*WATCH_DATA*/[
     "verdict": "9+, his highest since 2023. Lines formed within hours.",
     "url": "https://www.barstoolsports.com/blog/3545201/best-of-2025-dave-portnoy-just-gave-his-highest-pizza-review-score-since-2023"
    }
+  ],
+  "photos": [
+   {
+    "src": "img/watch/dave-portnoy.jpg",
+    "credit": "Zach Catanzareti Photo, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Dave_portnoy_(48571713636)_(cropped).jpg"
+   }
   ]
  },
  {
@@ -3995,7 +4147,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "group": "Creators",
   "shortRole": "Chef and Podcaster",
-  "status": "Creator"
+  "status": "Creator",
+  "photos": [
+   {
+    "src": "img/watch/david-chang.jpg",
+    "credit": "David Shankbone, CC BY 3.0, https://commons.wikimedia.org/wiki/File:David_Chang_David_Shankbone_2010_(3x4_cropped).jpg"
+   }
+  ]
  },
  {
   "slug": "sonal-shah",
@@ -4014,7 +4172,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "theinfatuation.com"
   },
   "shortRole": "Infatuation NYC Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/sonal-shah.jpg",
+    "credit": "theinfatuation.com"
+   }
+  ]
  },
  {
   "slug": "paolo-lucchesi",
@@ -4033,7 +4197,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "blog.resy.com"
   },
   "shortRole": "Head of Resy Editorial",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/paolo-lucchesi.jpg",
+    "credit": "blog.resy.com"
+   }
+  ]
  },
  {
   "slug": "beth-kracklauer",
@@ -4052,7 +4222,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "lpr.com"
   },
   "shortRole": "Freelance Food Editor",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": [
+   {
+    "src": "img/watch/beth-kracklauer.jpg",
+    "credit": "lpr.com"
+   }
+  ]
  },
  {
   "slug": "jay-cheshes",
@@ -4069,7 +4245,8 @@ var WATCH = /*WATCH_DATA*/[
   "photo": null,
   "photoCredit": null,
   "shortRole": "WSJ Contributor",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": []
  },
  {
   "slug": "brad-a-johnson",
@@ -4086,7 +4263,8 @@ var WATCH = /*WATCH_DATA*/[
   "photo": null,
   "photoCredit": null,
   "shortRole": "Independent Critic",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": []
  },
  {
   "slug": "frank-bruni",
@@ -4105,7 +4283,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "dewitt.sanford.duke.edu"
   },
   "shortRole": "Former NYT Critic",
-  "status": "Former Critic"
+  "status": "Former Critic",
+  "photos": [
+   {
+    "src": "img/watch/frank-bruni.jpg",
+    "credit": "dewitt.sanford.duke.edu"
+   }
+  ]
  },
  {
   "slug": "julia-moskin",
@@ -4124,7 +4308,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "nytimes.com byline page"
   },
   "shortRole": "NYT Food Reporter",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": [
+   {
+    "src": "img/watch/julia-moskin.jpg",
+    "credit": "nytimes.com byline page"
+   }
+  ]
  },
  {
   "slug": "nick-digiovanni",
@@ -4143,7 +4333,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "commons.wikimedia.org"
   },
   "shortRole": "Chef and Creator",
-  "status": "Creator"
+  "status": "Creator",
+  "photos": [
+   {
+    "src": "img/watch/nick-digiovanni.jpg",
+    "credit": "commons.wikimedia.org"
+   }
+  ]
  },
  {
   "slug": "jeremy-jacobowitz",
@@ -4162,7 +4358,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "substack.com"
   },
   "shortRole": "Brunch Boys Creator",
-  "status": "Creator"
+  "status": "Creator",
+  "photos": [
+   {
+    "src": "img/watch/jeremy-jacobowitz.jpg",
+    "credit": "substack.com"
+   }
+  ]
  },
  {
   "slug": "brian-lindo",
@@ -4181,7 +4383,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "finedininglovers.com"
   },
   "shortRole": "Food Creator",
-  "status": "Creator"
+  "status": "Creator",
+  "photos": [
+   {
+    "src": "img/watch/brian-lindo.jpg",
+    "credit": "finedininglovers.com"
+   }
+  ]
  },
  {
   "slug": "melissa-mccart",
@@ -4200,7 +4408,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "ny.eater.com"
   },
   "shortRole": "Eater Regional Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/melissa-mccart.jpg",
+    "credit": "ny.eater.com"
+   }
+  ]
  },
  {
   "slug": "alan-sytsma",
@@ -4219,7 +4433,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "heritageradionetwork.org"
   },
   "shortRole": "NY Mag Food Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/alan-sytsma.jpg",
+    "credit": "heritageradionetwork.org"
+   }
+  ]
  },
  {
   "slug": "chris-crowley",
@@ -4238,7 +4458,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "staycurrant.com"
   },
   "shortRole": "Grub Street Writer",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": [
+   {
+    "src": "img/watch/chris-crowley.jpg",
+    "credit": "staycurrant.com"
+   }
+  ]
  },
  {
   "slug": "tammie-teclemariam",
@@ -4257,7 +4483,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "cjr.org"
   },
   "shortRole": "Underground Gourmet",
-  "status": "Reviews Restaurants"
+  "status": "Reviews Restaurants",
+  "photos": [
+   {
+    "src": "img/watch/tammie-teclemariam.jpg",
+    "credit": "cjr.org"
+   }
+  ]
  },
  {
   "slug": "bryan-kim",
@@ -4276,7 +4508,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "theinfatuation.com"
   },
   "shortRole": "Infatuation NYC Lead",
-  "status": "Reviews Restaurants"
+  "status": "Reviews Restaurants",
+  "photos": [
+   {
+    "src": "img/watch/bryan-kim.jpg",
+    "credit": "theinfatuation.com"
+   }
+  ]
  },
  {
   "slug": "molly-fitzpatrick",
@@ -4295,7 +4533,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "theinfatuation.com"
   },
   "shortRole": "Infatuation Writer",
-  "status": "Reviews Restaurants"
+  "status": "Reviews Restaurants",
+  "photos": [
+   {
+    "src": "img/watch/molly-fitzpatrick.jpg",
+    "credit": "theinfatuation.com"
+   }
+  ]
  },
  {
   "slug": "will-hartman",
@@ -4314,7 +4558,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "theinfatuation.com"
   },
   "shortRole": "Infatuation Writer",
-  "status": "Reviews Restaurants"
+  "status": "Reviews Restaurants",
+  "photos": [
+   {
+    "src": "img/watch/will-hartman.jpg",
+    "credit": "theinfatuation.com"
+   }
+  ]
  },
  {
   "slug": "willa-moore",
@@ -4333,7 +4583,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "theinfatuation.com"
   },
   "shortRole": "Infatuation Writer",
-  "status": "Reviews Restaurants"
+  "status": "Reviews Restaurants",
+  "photos": [
+   {
+    "src": "img/watch/willa-moore.jpg",
+    "credit": "theinfatuation.com"
+   }
+  ]
  },
  {
   "slug": "ellie-plass",
@@ -4352,7 +4608,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "blog.resy.com"
   },
   "shortRole": "Resy Writer",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": [
+   {
+    "src": "img/watch/ellie-plass.jpg",
+    "credit": "blog.resy.com"
+   }
+  ]
  },
  {
   "slug": "kate-krader",
@@ -4371,7 +4633,13 @@ var WATCH = /*WATCH_DATA*/[
    "text": "talkingbiznews.com"
   },
   "shortRole": "Bloomberg Food Editor",
-  "status": "Editor"
+  "status": "Editor",
+  "photos": [
+   {
+    "src": "img/watch/kate-krader.jpg",
+    "credit": "talkingbiznews.com"
+   }
+  ]
  },
  {
   "slug": "mahira-rivers",
@@ -4391,7 +4659,13 @@ var WATCH = /*WATCH_DATA*/[
   },
   "recognizeBy": "Public NYT byline photo since Dec 2025. Former Michelin inspector, so expect a quiet, observant diner.",
   "shortRole": "NYT Contributing Critic",
-  "status": "Reviews Restaurants"
+  "status": "Reviews Restaurants",
+  "photos": [
+   {
+    "src": "img/watch/mahira-rivers.jpg",
+    "credit": "nytimes.com byline page"
+   }
+  ]
  },
  {
   "slug": "melissa-clark",
@@ -4410,12 +4684,23 @@ var WATCH = /*WATCH_DATA*/[
    "text": "verified source"
   },
   "shortRole": "NYT Food Columnist",
-  "status": "Food Writer"
+  "status": "Food Writer",
+  "photos": [
+   {
+    "src": "img/watch/melissa-clark.jpg",
+    "credit": "verified source"
+   }
+  ]
  }
 ]/*END_WATCH_DATA*/;
-var WL = { tab:"roster", outlet:"All", q:"", open:null, deck:null, picked:null };
+var WL = { tab:"roster", outlet:"All", q:"", pic:0, open:null, deck:null, picked:null };
 
 function wlArea(){ return document.getElementById("watch-area"); }
+function wlPhotos(p){
+  var list = (p.photos && p.photos.length) ? p.photos.slice() : [];
+  if (p.photo && !list.some(function(x){ return x.src === p.photo; })) list.unshift({ src:p.photo, credit:(p.photoCredit && p.photoCredit.text) || "" });
+  return list;
+}
 function wlWithPhoto(){ return WATCH.filter(function(p){ return !!p.photo; }); }
 
 function renderWatch(){
@@ -4480,7 +4765,7 @@ function renderWatchList(){
     var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
     return '<li class="wl-card'+(WL.open === p.slug ? ' is-selected' : '')+'">' +
       '<button class="wl-hit" data-slug="'+esc(p.slug)+'" aria-controls="wl-panel">' +
-        '<span class="wl-photo">'+photo+'</span>' +
+        '<span class="wl-photo">'+photo+(wlPhotos(p).length > 1 ? '<span class="wl-photo-count">'+wlPhotos(p).length+' photos</span>' : '')+'</span>' +
         '<span class="wl-meta">'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
         '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
         '<span class="wl-outlet">'+esc(p.outlet)+'</span></span></button></li>';
@@ -4494,6 +4779,7 @@ var wlReturnFocus = null;
 function wlIsSheet(){ return window.matchMedia("(max-width:1179px)").matches; }
 
 function openWatchProfile(slug, fromBtn){
+  if (WL.open !== slug) WL.pic = 0;
   WL.open = slug;
   wlReturnFocus = fromBtn || null;
   document.querySelectorAll(".wl-card").forEach(function(li){
@@ -4513,7 +4799,7 @@ function closeWatchProfile(){
   wlReturnFocus = null;
 }
 
-function renderWatchPanel(){
+function renderWatchPanel(keepScroll){
   var panel = document.getElementById("wl-panel");
   var backdrop = document.getElementById("wl-backdrop");
   if (!panel) return;
@@ -4530,18 +4816,27 @@ function renderWatchPanel(){
   if (sheet) { panel.setAttribute("role", "dialog"); panel.setAttribute("aria-modal", "true"); }
   else { panel.setAttribute("role", "region"); panel.removeAttribute("aria-modal"); }
   panel.setAttribute("aria-label", p.name);
-  var photo = p.photo
-    ? '<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" width="320" height="400">'
+  var pics = wlPhotos(p);
+  if (WL.pic == null || WL.pic >= pics.length) WL.pic = 0;
+  var cur = pics[WL.pic];
+  var photo = cur
+    ? '<img src="'+esc(cur.src)+'" alt="'+esc(p.name)+(pics.length > 1 ? ', photo '+(WL.pic+1)+' of '+pics.length : '')+'" width="320" height="400">'
     : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous.' : 'No reliable photo yet.') + '</span>';
+  var thumbs = pics.length > 1 ? '<div class="wl-thumbs" role="group" aria-label="More photos of '+esc(p.name)+'">' + pics.map(function(x, i){
+    return '<button class="wl-thumb'+(i === WL.pic ? ' is-on' : '')+'" data-pic="'+i+'" aria-label="Photo '+(i+1)+'"'+(i === WL.pic ? ' aria-current="true"' : '')+'><img src="'+esc(x.src)+'" alt="" loading="lazy" width="64" height="80"></button>';
+  }).join('') + '</div>' : '';
   var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
   var reviews = (p.recentReviews || []).filter(function(r){ return r && r.restaurant; }).slice(0, 3).map(function(r){
-    return esc(r.restaurant) + (r.verdict ? ': ' + esc(r.verdict) : '') + (r.date ? ' <span class="wl-fine">(' + esc(r.date) + ')</span>' : '');
+    var name = (r.url && /^https?:\/\//.test(r.url))
+      ? '<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.restaurant)+'<span class="sr-only"> (opens in a new tab)</span></a>'
+      : esc(r.restaurant);
+    return name + (r.verdict ? ': ' + esc(r.verdict) : '') + (r.date ? ' <span class="wl-fine">(' + esc(r.date) + ')</span>' : '');
   });
   panel.innerHTML = '<button class="wl-close" id="wl-close" aria-label="Close profile">Close</button>' +
     '<div class="wl-panel-head"><div class="wl-panel-photo">'+photo+'</div>' +
       '<div>'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
       '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
-      '<span class="wl-outlet">'+esc(p.outlet)+'</span></div></div>' +
+      '<span class="wl-outlet">'+esc(p.outlet)+'</span></div></div>' + thumbs +
     '<div class="wl-panel-body"><dl class="wl-rows">' +
       wlRow("Why It Matters", p.whyItMatters || p.note) +
       wlRow("How They Dine", p.howTheyDine) +
@@ -4551,17 +4846,25 @@ function renderWatchPanel(){
       wlRow("Beat", p.beat) +
       (reviews.length ? '<div class="wl-row"><dt>Recent Reviews</dt><dd><ul class="wl-reviews"><li>'+reviews.join('</li><li>')+'</li></ul></dd></div>' : '') +
     '</dl><p class="wl-fine">' + esc(p.role) +
-      (p.photoCredit ? '. Photo: ' + esc(p.photoCredit.text || "") : '') +
+      (cur && cur.credit ? '. Photo: ' + esc(cur.credit) : '') +
       ((p.sources && p.sources[0]) ? '. <a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source</a>' : '') +
     '</p></div>';
-  panel.scrollTop = 0;
+  if (!keepScroll) panel.scrollTop = 0;
+  panel.querySelectorAll("[data-pic]").forEach(function(b){
+    b.addEventListener("click", function(){
+      WL.pic = +b.getAttribute("data-pic");
+      renderWatchPanel(true);
+      var again = document.querySelector('#wl-panel [data-pic="'+WL.pic+'"]');
+      if (again) again.focus({ preventScroll:true });
+    });
+  });
   document.getElementById("wl-close").addEventListener("click", closeWatchProfile);
 }
 
 document.addEventListener("keydown", function(e){
   if (e.key === "Escape" && WL.open && document.getElementById("view-watch").classList.contains("active")) closeWatchProfile();
 });
-window.addEventListener("resize", function(){ if (document.getElementById("wl-panel")) renderWatchPanel(); });
+window.addEventListener("resize", function(){ if (document.getElementById("wl-panel")) renderWatchPanel(true); });
 
 /* --- Drill --- */
 function wlDecks(){
@@ -4624,6 +4927,7 @@ function renderWatchCard(){
   var html = '<div class="card studycard">' + wlHeader(d, c);
 
   if (c.kind === "face") {
+    if (!c.img) { var pics = wlPhotos(p); c.img = pics[Math.floor(Math.random() * pics.length)].src; }
     if (!c.choices) {
       var pool = shuffle(wlWithPhoto().filter(function(x){ return x.slug !== p.slug; }));
       var same = pool.filter(function(x){ return x.outlet === p.outlet; });
@@ -4633,7 +4937,7 @@ function renderWatchCard(){
       c.choices = shuffle(c.choices);
     }
     html += '<p class="study-hint">Who is this?</p>' +
-      '<div class="wl-face"><img src="'+esc(p.photo)+'" alt="Photo of a food critic to identify" width="320" height="400"></div>' +
+      '<div class="wl-face"><img src="'+esc(c.img)+'" alt="Photo of a food critic to identify" width="320" height="400"></div>' +
       '<div class="wl-choices">' + c.choices.map(function(x){
         var cls = "wl-choice";
         if (WL.picked) { if (x.slug === p.slug) cls += " is-right"; else if (x.slug === WL.picked) cls += " is-wrong"; }
