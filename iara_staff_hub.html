@@ -904,8 +904,17 @@
   .wl-thumb img{ width:100%; height:100%; object-fit:cover; object-position:50% 20%; display:block; }
   .wl-thumb.is-on{ border-color:var(--sun); }
   .wl-thumb:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .wl-photo-count{ position:absolute; right:6px; bottom:6px; font-size:11px; font-weight:700; padding:2px 6px; border-radius:3px;
-    background:rgba(0,0,0,.6); color:#fff; }
+  .wl-photo{ touch-action:pan-y; cursor:pointer; user-select:none; -webkit-user-select:none; }
+  .wl-photo img{ -webkit-user-drag:none; }
+  .wl-flip{ position:absolute; top:50%; transform:translateY(-50%); width:36px; height:44px; border:none; border-radius:6px;
+    background:rgba(0,0,0,.45); color:#fff; font-size:26px; line-height:1; cursor:pointer; opacity:0; transition:opacity .12s; }
+  .wl-prev{ left:6px; } .wl-next{ right:6px; }
+  .wl-card:hover .wl-flip, .wl-flip:focus-visible{ opacity:1; }
+  .wl-flip:focus-visible{ outline:2px solid var(--sun); outline-offset:1px; }
+  @media (hover:none){ .wl-flip{ opacity:.6; width:26px; height:34px; font-size:19px; } .wl-prev{ left:4px; } .wl-next{ right:4px; } }
+  .wl-dots{ position:absolute; left:0; right:0; bottom:7px; display:flex; justify-content:center; gap:5px; pointer-events:none; }
+  .wl-dots i{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.55); box-shadow:0 0 0 1px rgba(0,0,0,.25); }
+  .wl-dots i.on{ background:#fff; width:14px; border-radius:3px; }
   .wl-backdrop{ display:none; }
   @media (min-width:1180px){
     .wl-layout{ display:grid; grid-template-columns:minmax(0,var(--measure-wide)) 380px; gap:28px; align-items:start; }
@@ -5202,7 +5211,7 @@ var WATCH = /*WATCH_DATA*/[
   ]
  }
 ]/*END_WATCH_DATA*/;
-var WL = { tab:"roster", outlet:"All", q:"", pic:0, open:null, deck:null, picked:null };
+var WL = { tab:"roster", outlet:"All", q:"", pic:0, cardPic:{}, open:null, deck:null, picked:null };
 
 function wlArea(){ return document.getElementById("watch-area"); }
 function wlPhotos(p){
@@ -5268,13 +5277,20 @@ function renderWatchList(){
   var host = document.getElementById("wl-list");
   if (!rows.length) { host.innerHTML = '<p class="wl-empty">Nobody matches that.</p>'; return; }
   host.innerHTML = '<ul class="wl-grid">' + rows.map(function(p){
-    var photo = p.photo
-      ? '<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy" width="320" height="400">'
+    var pics = wlPhotos(p), i = WL.cardPic[p.slug] || 0;
+    if (i >= pics.length) i = 0;
+    var photo = pics.length
+      ? '<img src="'+esc(pics[i].src)+'" alt="'+esc(p.name)+'" loading="lazy" width="320" height="400" draggable="false">'
       : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous. No photo exists.' : 'No reliable photo yet.') + '</span>';
+    var flip = pics.length > 1
+      ? '<button class="wl-flip wl-prev" data-flip="-1" aria-label="Previous photo of '+esc(p.name)+'">&#8249;</button>' +
+        '<button class="wl-flip wl-next" data-flip="1" aria-label="Next photo of '+esc(p.name)+'">&#8250;</button>' +
+        '<span class="wl-dots" aria-hidden="true">' + pics.map(function(_, k){ return '<i class="'+(k === i ? 'on' : '')+'"></i>'; }).join('') + '</span>'
+      : '';
     var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
-    return '<li class="wl-card'+(WL.open === p.slug ? ' is-selected' : '')+'">' +
+    return '<li class="wl-card'+(WL.open === p.slug ? ' is-selected' : '')+'" data-card="'+esc(p.slug)+'">' +
+      '<div class="wl-photo" data-open="'+esc(p.slug)+'">'+photo+flip+'</div>' +
       '<button class="wl-hit" data-slug="'+esc(p.slug)+'" aria-controls="wl-panel">' +
-        '<span class="wl-photo">'+photo+(wlPhotos(p).length > 1 ? '<span class="wl-photo-count">'+wlPhotos(p).length+' photos</span>' : '')+'</span>' +
         '<span class="wl-meta">'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
         '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
         '<span class="wl-outlet">'+esc(p.outlet)+'</span></span></button></li>';
@@ -5282,13 +5298,48 @@ function renderWatchList(){
   host.querySelectorAll(".wl-hit").forEach(function(b){
     b.addEventListener("click", function(){ openWatchProfile(b.getAttribute("data-slug"), b); });
   });
+  host.querySelectorAll(".wl-photo[data-open]").forEach(function(box){
+    var slug = box.getAttribute("data-open");
+    var startX = null, startY = null, swiped = false;
+    box.addEventListener("click", function(e){
+      var f = e.target.closest("[data-flip]");
+      if (f) { e.stopPropagation(); wlFlipCard(slug, +f.getAttribute("data-flip")); return; }
+      if (swiped) { swiped = false; return; }
+      var hit = box.parentNode.querySelector(".wl-hit");
+      openWatchProfile(slug, hit);
+    });
+    box.addEventListener("pointerdown", function(e){ startX = e.clientX; startY = e.clientY; swiped = false; });
+    box.addEventListener("pointerup", function(e){
+      if (startX == null) return;
+      var dx = e.clientX - startX, dy = e.clientY - startY;
+      startX = null;
+      // Horizontal and deliberate only, so a vertical scroll never flips.
+      if (Math.abs(dx) > 35 && Math.abs(dx) > Math.abs(dy) * 1.5) { swiped = true; wlFlipCard(slug, dx < 0 ? 1 : -1); }
+    });
+  });
+}
+
+function wlFlipCard(slug, dir){
+  var p = WATCH.filter(function(x){ return x.slug === slug; })[0];
+  var pics = p ? wlPhotos(p) : [];
+  if (pics.length < 2) return;
+  var i = ((WL.cardPic[slug] || 0) + dir + pics.length) % pics.length;
+  WL.cardPic[slug] = i;
+  var li = document.querySelector('.wl-card[data-card="'+slug+'"]');
+  if (!li) return;
+  var img = li.querySelector(".wl-photo img");
+  if (img) { img.src = pics[i].src; img.loading = "eager"; }
+  li.querySelectorAll(".wl-dots i").forEach(function(d, k){ d.classList.toggle("on", k === i); });
+  var nxt = pics[(i + 1) % pics.length];
+  if (nxt) { var pre = new Image(); pre.src = nxt.src; }
+  if (WL.open === slug) { WL.pic = i; renderWatchPanel(true); }
 }
 
 var wlReturnFocus = null;
 function wlIsSheet(){ return window.matchMedia("(max-width:1179px)").matches; }
 
 function openWatchProfile(slug, fromBtn){
-  if (WL.open !== slug) WL.pic = 0;
+  if (WL.open !== slug) WL.pic = WL.cardPic[slug] || 0;
   WL.open = slug;
   wlReturnFocus = fromBtn || null;
   document.querySelectorAll(".wl-card").forEach(function(li){
