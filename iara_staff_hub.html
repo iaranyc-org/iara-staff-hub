@@ -952,6 +952,15 @@
     .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
     .wl-filters::-webkit-scrollbar{ display:none; }
   }
+  /* Mobile QA pass: 16px inputs stop iOS zoom-on-focus; 44px thumb targets. */
+  @media (max-width:860px){
+    .view .manual-search input{ font-size:16px; }
+    .cl-help a, .jump-link{ display:inline-flex; align-items:center; min-height:44px; }
+    .wl-reviews li{ margin:0; }
+    .wl-reviews a, .wl-fine a{ display:inline-flex; align-items:center; min-height:40px; }
+  }
+  @media (hover:none){ .wl-flip{ height:44px; width:30px; } }
+  @media (max-width:360px){ .bottom-nav .nav-btn{ font-size:9.5px; letter-spacing:.01em; } }
   [hidden]{ display:none !important; }
 
   /* The home screen is the docket you are handed at the start of a shift. */
@@ -1214,7 +1223,7 @@
          plate actually means to him. -->
     <section class="view" id="view-lore">
       <h1>The Lore</h1>
-      <p class="view-intro">The plates, the art, the decoration — and the brief story behind each one, so you can actually answer when a guest asks.</p>
+      <p class="view-intro">The plates, the art, the decoration, and the brief story behind each one, so you can actually answer when a guest asks.</p>
       <div id="lore-cards"></div>
     </section>
 
@@ -1295,7 +1304,7 @@
       <button class="nav-btn" data-view="lore">Lore</button>
       <button class="nav-btn" data-view="watch">Watch</button>
       <button class="nav-btn" data-view="study">Study</button>
-      <button class="nav-btn" data-view="quiz">Final Exam</button>
+      <button class="nav-btn" data-view="quiz">Exam</button>
     </div>
   </nav>
 </div>
