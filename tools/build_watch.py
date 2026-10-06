@@ -144,7 +144,7 @@ for f in sorted(glob.glob(T('more_photos_*.json'))):
         print('skip', f, e)
 REJECT_EXTRA = {'hunter-lewis/3.jpg', 'morgan-carter/2.jpg', 'morgan-carter/3.jpg'}  # 'slug/n.jpg' entries rejected on visual review
 for s_, p in roster.items():
-    files = sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg')))
+    files = sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg'))) + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
     photos = []
     if p.get('photo'):
         photos.append({'src': p['photo'], 'credit': (p.get('photoCredit') or {}).get('text', '')})
@@ -152,13 +152,15 @@ for s_, p in roster.items():
         n = os.path.splitext(os.path.basename(src))[0]
         if f'{s_}/{n}.jpg' in REJECT_EXTRA:
             continue
+        if 'watch_more2' in src:
+            n = 'r2-' + n
         dst_rel = f'img/watch/{s_}-{n}.jpg'
         if any(x['src'] == dst_rel for x in photos):
             continue
         shutil.copyfile(src, os.path.join(ROOT, dst_rel))
         m = more_meta.get(os.path.normpath(src), {})
         credit = host(m.get('source_page') or '') or 'verified source'
-        if n == '1' and not p.get('photo'):
+        if n in ('1', 'r2-1') and not p.get('photo'):
             p['photo'] = dst_rel
             p['photoCredit'] = {'text': credit}
             photos.insert(0, {'src': dst_rel, 'credit': credit})
@@ -175,8 +177,17 @@ for s_, o in OVERRIDES.items():
     if s_ in roster:
         roster[s_].update(o)
 
+# Cut 2026-10-05: not likely to dine at iara, or recognizing them would not change service.
+HIDE = {'gwendal-poullennec', 'clare-reichenbach', 'hunter-lewis', 'jamila-robinson', 'sam-sifton',
+        'melissa-clark', 'julia-moskin', 'eric-asimov', 'kate-krader', 'beth-kracklauer', 'jay-cheshes',
+        'brad-a-johnson', 'elazar-sontag', 'tom-sietsema', 'adam-platt', 'ruth-reichl', 'frank-bruni',
+        'arthur-schwartz', 'dave-portnoy', 'david-chang', 'nick-digiovanni'}
+for s_, p in roster.items():
+    p['hidden'] = s_ in HIDE
+
 out = list(roster.values())
 json.dump(out, open(T('watch_final.json'), 'w'), indent=1, ensure_ascii=False)
+out = [p for p in out if not p.get('hidden')]
 
 page = os.path.join(ROOT, 'iara_staff_hub.html')
 s = open(page, encoding='utf-8').read()
