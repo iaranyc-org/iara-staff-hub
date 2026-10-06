@@ -107,7 +107,7 @@
     <h2 style="margin:22px 0 12px">Who's carrying the line</h2>
     <div class="people">
       <div class="card person"><div class="who"><span class="name">Ronald</span><span class="role">Voice</span></div>
-        <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">calls answered</div></div><div><div class="v" id="r-out"></div><div class="l">calls made</div></div><div><div class="v" id="r-min"></div><div class="l">min on the phone</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">calls answered</div></div><div><div class="v" id="r-out"></div><div class="l">calls made</div></div><div><div class="v" id="r-min"></div><div class="l">on the phone</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Jay</span><span class="role">Text</span></div>
         <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">texts written</div></div><div><div class="v" id="j-threads"></div><div class="l">guests replied to</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Auto-replies</span><span class="role">System</span></div>
@@ -127,7 +127,7 @@
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2>Day by day</h2>
-      <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls in</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls out</th><th>Talk min</th><th>Texts in</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls in</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls out</th><th>Talk time</th><th>Texts in</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
       <h2>Waiting on a reply</h2>
@@ -176,6 +176,8 @@
       .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; });
   }
 
+  // 130 -> "2h 10m"; under an hour stays "45m".
+  var dur = function(m){ m = Math.round(m || 0); if (m < 60) return m + "m"; var h = Math.floor(m / 60), r = m % 60; return h + "h" + (r ? " " + r + "m" : ""); };
   var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
   var when = function(t){ return new Date(t).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); };
   var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); };
@@ -196,7 +198,7 @@
     $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median call back " + d.medianCallbackHours + "h" : "");
     $("k-open").textContent = g.open;
     $("k-open-n").textContent = g.autoOnly + " more got the Resy auto-text only";
-    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " typed replies, " + d.texts.auto + " auto-replies. " + c.outbound + " calls out, " + c.talkMinutes + " min.";
+    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " typed replies, " + d.texts.auto + " auto-replies. " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
 
     var max = Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; })));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
@@ -224,13 +226,13 @@
     });
 
     var pp = d.people;
-    $("r-ans").textContent = pp.ronald.answered; $("r-out").textContent = pp.ronald.callsOut; $("r-min").textContent = pp.ronald.talkMin;
+    $("r-ans").textContent = pp.ronald.answered; $("r-out").textContent = pp.ronald.callsOut; $("r-min").textContent = dur(pp.ronald.talkMin);
     $("j-typed").textContent = pp.jay.typed; $("j-threads").textContent = pp.jay.threads;
     $("a-texts").textContent = pp.auto.texts; $("a-cov").textContent = pp.auto.guestsCovered;
     var rows = d.days.filter(function(x){ return x.answered + x.voicemail + x.missed + x.callsOut + x.textsIn + x.typed + x.auto > 0; }).reverse();
     var tot = rows.reduce(function(a, x){ ["answered","voicemail","missed","callsOut","talkMin","textsIn","typed","auto"].forEach(function(k){ a[k] = (a[k] || 0) + x[k]; }); return a; }, {});
     var dash = function(n){ return n || "<span class='muted'>–</span>"; };
-    var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + dash(x.talkMin) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
+    var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + (x.talkMin ? dur(x.talkMin) : dash(0)) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
       return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'>" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span></td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
