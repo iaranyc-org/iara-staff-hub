@@ -11,11 +11,38 @@
   ],
   "anonymous": false,
   "photo": "img/watch/ligaya-mishan.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NYT author page (nytimes.com/by/ligaya-mishan)"
   },
-  "group": "NYT"
+  "group": "NYT",
+  "shortRole": "NYT Co-Chief Critic",
+  "status": "Reviews Restaurants",
+  "ratingSystem": "NYT stars, 0 to 4. Two stars means very good. Also Critic's Pick. Reviews nationwide. Writes the NYT 100 Best list.",
+  "howTheyDine": "Not anonymous since June 2025. Multiple visits. Times calls for fact-check and photos about a month after a visit. Booking names and party size not published.",
+  "caresAbout": "Imagination, ambience, service, technique, passion, commitment, deliciousness. Rewards places outside the usual fine-dining set (Caribbean Kabawa is No. 1 on her 2026 list).",
+  "recognizeBy": "Dines openly; public photos exist. No published habits.",
+  "whyItMatters": "Her stars are the most important review in New York.",
+  "relevanceToIara": "NYC-based, covers all boroughs and global cuisines. No Brazilian review found.",
+  "recentReviews": [
+   {
+    "restaurant": "Albi (Washington DC)",
+    "date": "2026-06-16",
+    "verdict": "Four stars. First NYT four stars outside NYC.",
+    "url": "https://washingtonian.com/2026/06/16/albi-is-the-first-restaurant-outside-nyc-ever-to-earn-four-stars-from-the-new-york-times/"
+   },
+   {
+    "restaurant": "Yamada",
+    "date": "2025",
+    "verdict": "Four stars for kaiseki tasting menu.",
+    "url": "https://washingtonian.com/2026/06/16/albi-is-the-first-restaurant-outside-nyc-ever-to-earn-four-stars-from-the-new-york-times/"
+   },
+   {
+    "restaurant": "Lungi (Upper East Side)",
+    "date": null,
+    "verdict": "Two stars, Critic's Pick.",
+    "url": "https://eastsidefeed.com/food-and-drink/this-newish-upper-east-side-restaurant-just-earned-two-stars-from-the-ny-times/"
+   }
+  ]
  },
  {
   "slug": "tejal-rao",
@@ -29,11 +56,17 @@
   ],
   "anonymous": false,
   "photo": "img/watch/tejal-rao.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NYT author page (nytimes.com/by/tejal-rao)"
   },
-  "group": "NYT"
+  "group": "NYT",
+  "shortRole": "NYT Co-Chief Critic",
+  "status": "Reviews Restaurants",
+  "ratingSystem": "NYT stars, 0 to 4, plus Critic's Pick.",
+  "howTheyDine": "Not anonymous since June 2025. Based in California; reviews nationwide.",
+  "recognizeBy": "Dines openly; public photos exist.",
+  "whyItMatters": "Same star power as Mishan, but rarely in NYC.",
+  "relevanceToIara": "Lower. She mainly covers California."
  },
  {
   "slug": "matthew-schneier",
@@ -47,11 +80,15 @@
   ],
   "anonymous": false,
   "photo": "img/watch/matthew-schneier.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Cultured magazine interview, cross-checked with Cultured group portrait"
   },
-  "group": "New York Mag"
+  "group": "New York Mag",
+  "shortRole": "New York Mag Critic",
+  "status": "Reviews Restaurants",
+  "caresAbout": "Recent pieces judged tasting menus (Cove, Saga) and the Babbo revival under Stephen Starr. Publishes a best-restaurants list.",
+  "whyItMatters": "One of the last full-time critics in America. New York mag drives downtown buzz.",
+  "relevanceToIara": "Covers new NYC openings."
  },
  {
   "slug": "helen-rosner",
@@ -65,11 +102,15 @@
   ],
   "anonymous": false,
   "photo": "img/watch/helen-rosner.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Uses This interview portrait (usesthis.com)"
   },
-  "group": "New Yorker"
+  "group": "New Yorker",
+  "shortRole": "New Yorker Food Writer",
+  "status": "Reviews Restaurants",
+  "ratingSystem": "No stars. Short Tables for Two column.",
+  "whyItMatters": "Three-time James Beard winner, including for her restaurant column.",
+  "relevanceToIara": "Writes Tables for Two on NYC restaurants."
  },
  {
   "slug": "hannah-goldfield",
@@ -83,11 +124,13 @@
   ],
   "anonymous": false,
   "photo": "img/watch/hannah-goldfield.jpg",
-  "illustration": true,
   "photoCredit": {
-   "text": "The New Yorker contributor page (illustration)"
+   "text": "wesleyanargus.com"
   },
-  "group": "New Yorker"
+  "group": "New Yorker",
+  "shortRole": "Former New Yorker Critic",
+  "status": "Former Critic",
+  "whyItMatters": "Departure not confirmed in this research."
  },
  {
   "slug": "gwendal-poullennec",
@@ -101,11 +144,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/gwendal-poullennec.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Wildbee, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Gwendal_Poullenec_Oct_2020_MICHELIN-MTP_Wildbee_f-aceto-14_(cropped).jpg"
   },
-  "group": "Michelin & Beard"
+  "group": "Michelin & Beard",
+  "shortRole": "Michelin Guide Director",
+  "status": "Inspector"
  },
  {
   "slug": "michelin-inspectors",
@@ -119,9 +163,16 @@
   ],
   "anonymous": true,
   "photo": null,
-  "illustration": false,
   "photoCredit": null,
-  "group": "Michelin & Beard"
+  "group": "Michelin & Beard",
+  "shortRole": "Michelin Guide Inspectors",
+  "status": "Inspector",
+  "ratingSystem": "Stars by team consensus. Disagreement triggers more visits.",
+  "howTheyDine": "Anonymous. Book under assumed names. Often dine alone. No notes at the table. Pay in full. May introduce themselves only after paying.",
+  "caresAbout": "Ingredient quality, technique, harmony of flavors, the chef's personality on the plate, consistency across visits.",
+  "recognizeBy": "No reliable tells. Do not guess.",
+  "whyItMatters": "Stars or a Bib Gourmand change a restaurant's fate.",
+  "relevanceToIara": "High. Consistency on every night is what they test."
  },
  {
   "slug": "elazar-sontag",
@@ -135,11 +186,18 @@
   ],
   "anonymous": false,
   "photo": "img/watch/elazar-sontag.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NPR profile, Dec 2025"
   },
-  "group": "Other Press"
+  "group": "Other Press",
+  "shortRole": "WaPo Food Critic",
+  "status": "Reviews Restaurants",
+  "ratingSystem": "Brought back WaPo stars. A counter-service spot can earn the same stars as fine dining.",
+  "howTheyDine": "Not anonymous. Never books under his own name. Pays his own way. Multiple visits.",
+  "caresAbout": "Whether a restaurant is the best version of itself.",
+  "recognizeBy": "Dines openly. Former Bon Appetit restaurant editor.",
+  "whyItMatters": "Ran Bon Appetit's Best New Restaurants list; national taste-maker.",
+  "relevanceToIara": "Low for reviews (DC beat), but well known in NYC food circles."
  },
  {
   "slug": "pete-wells",
@@ -152,10 +210,17 @@
    "https://en.wikipedia.org/wiki/Pete_Wells"
   ],
   "anonymous": false,
-  "photo": null,
-  "illustration": false,
-  "photoCredit": null,
-  "group": "NYT"
+  "photo": "img/watch/pete-wells.jpg",
+  "photoCredit": {
+   "text": "youtube.com"
+  },
+  "group": "NYT",
+  "shortRole": "Former NYT Critic",
+  "status": "Former Critic",
+  "ratingSystem": "Gave NYT stars 2011 to 2024.",
+  "howTheyDine": "Three visits per review, each with three friends.",
+  "whyItMatters": "Stepped down August 2024 for health reasons; still at the Times.",
+  "relevanceToIara": "Low. Not reviewing."
  },
  {
   "slug": "florence-fabricant",
@@ -169,11 +234,13 @@
   ],
   "anonymous": false,
   "photo": "img/watch/florence-fabricant.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NYT author page"
   },
-  "group": "NYT"
+  "group": "NYT",
+  "shortRole": "NYT Off the Menu",
+  "status": "Food Writer",
+  "whyItMatters": "Her opening column lists new restaurants; not verified in this research."
  },
  {
   "slug": "eric-asimov",
@@ -187,11 +254,13 @@
   ],
   "anonymous": false,
   "photo": "img/watch/eric-asimov.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NYT author page"
   },
-  "group": "NYT"
+  "group": "NYT",
+  "shortRole": "NYT Wine Critic",
+  "status": "Food Writer",
+  "whyItMatters": "NYT wine voice; not verified in this research."
  },
  {
   "slug": "priya-krishna",
@@ -205,11 +274,13 @@
   ],
   "anonymous": false,
   "photo": "img/watch/priya-krishna.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NYT author page"
   },
-  "group": "NYT"
+  "group": "NYT",
+  "shortRole": "NYT Food Reporter",
+  "status": "Food Writer",
+  "whyItMatters": "NYT food coverage; not verified in this research."
  },
  {
   "slug": "sam-sifton",
@@ -223,11 +294,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/sam-sifton.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "NYT author page"
   },
-  "group": "NYT"
+  "group": "NYT",
+  "shortRole": "NYT Editor",
+  "status": "Editor"
  },
  {
   "slug": "ryan-sutton",
@@ -241,9 +313,14 @@
   ],
   "anonymous": false,
   "photo": null,
-  "illustration": false,
   "photoCredit": null,
-  "group": "Independent"
+  "group": "Independent",
+  "recognizeBy": "Keeps his face out of photos on purpose. Every published image hides it.",
+  "shortRole": "Lo Times Critic",
+  "status": "Reviews Restaurants",
+  "caresAbout": "Restaurant economics and prices (for example sushi economics, slice pizza).",
+  "whyItMatters": "Former Eater NY chief critic; his Substack is read by the industry.",
+  "relevanceToIara": "Covers NYC restaurants only."
  },
  {
   "slug": "robert-sietsema",
@@ -257,9 +334,14 @@
   ],
   "anonymous": false,
   "photo": null,
-  "illustration": false,
   "photoCredit": null,
-  "group": "Independent"
+  "group": "Independent",
+  "recognizeBy": "Hides his face in photos (a devil mask, a camera). Treat any regular solo diner taking notes seriously.",
+  "shortRole": "Substack Critic",
+  "status": "Reviews Restaurants",
+  "caresAbout": "Value and good food across all neighborhoods. Openings and neighborhood walks.",
+  "whyItMatters": "35+ years covering NYC; posts three times a week.",
+  "relevanceToIara": "High. Covers openings and global food on a budget-to-mid range."
  },
  {
   "slug": "stephanie-wu",
@@ -273,11 +355,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/stephanie-wu.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Eater (photo: Shannon Sturgis)"
   },
-  "group": "Food Media"
+  "group": "Food Media",
+  "shortRole": "Eater Editor in Chief",
+  "status": "Editor"
  },
  {
   "slug": "clare-reichenbach",
@@ -291,11 +374,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/clare-reichenbach.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "James Beard Foundation staff page"
   },
-  "group": "Michelin & Beard"
+  "group": "Michelin & Beard",
+  "shortRole": "James Beard CEO",
+  "status": "Editor"
  },
  {
   "slug": "jamila-robinson",
@@ -309,11 +393,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/jamila-robinson.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Bon Appetit contributor page"
   },
-  "group": "Food Media"
+  "group": "Food Media",
+  "shortRole": "Bon Appetit Editor",
+  "status": "Editor"
  },
  {
   "slug": "hunter-lewis",
@@ -327,11 +412,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/hunter-lewis.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Food & Wine author page"
   },
-  "group": "Food Media"
+  "group": "Food Media",
+  "shortRole": "Food & Wine Editor",
+  "status": "Editor"
  },
  {
   "slug": "morgan-carter",
@@ -344,10 +430,13 @@
    "https://www.timeout.com/newyork/news/let-me-tell-youim-time-out-new-yorks-new-food-and-drink-editor-071024"
   ],
   "anonymous": false,
-  "photo": null,
-  "illustration": false,
-  "photoCredit": null,
-  "group": "Food Media"
+  "photo": "img/watch/morgan-carter.jpg",
+  "photoCredit": {
+   "text": "timeout.com"
+  },
+  "group": "Food Media",
+  "shortRole": "Time Out Food Editor",
+  "status": "Editor"
  },
  {
   "slug": "steve-cuozzo",
@@ -360,10 +449,14 @@
    "https://en.wikipedia.org/wiki/Steve_Cuozzo"
   ],
   "anonymous": false,
-  "photo": null,
-  "illustration": false,
-  "photoCredit": null,
-  "group": "Other Press"
+  "photo": "img/watch/steve-cuozzo.jpg",
+  "photoCredit": {
+   "text": "nypost.com"
+  },
+  "group": "Other Press",
+  "shortRole": "NY Post Critic",
+  "status": "Reviews Restaurants",
+  "whyItMatters": "Longtime NY Post restaurant critic with a big mass audience."
  },
  {
   "slug": "tom-sietsema",
@@ -376,10 +469,18 @@
    "https://breadfurst.com/2026/01/16/a-critic-retires-and-another-is-born/"
   ],
   "anonymous": true,
-  "photo": null,
-  "illustration": false,
-  "photoCredit": null,
-  "group": "Former Critics"
+  "photo": "img/watch/tom-sietsema.jpg",
+  "photoCredit": {
+   "text": "washingtonian.com"
+  },
+  "group": "Former Critics",
+  "shortRole": "Former WaPo Critic",
+  "status": "Former Critic",
+  "ratingSystem": "Dropped WaPo stars in 2022.",
+  "howTheyDine": "Tried to stay anonymous; revealed his face when he left in fall 2025.",
+  "recognizeBy": "Face now public.",
+  "whyItMatters": "25 years at WaPo; retired.",
+  "relevanceToIara": "Low."
  },
  {
   "slug": "adam-platt",
@@ -393,11 +494,14 @@
   ],
   "anonymous": false,
   "photo": "img/watch/adam-platt.jpg",
-  "illustration": true,
   "photoCredit": {
-   "text": "Grub Street author page (illustration)"
+   "text": "journalism.nyu.edu"
   },
-  "group": "Former Critics"
+  "group": "Former Critics",
+  "shortRole": "Former NY Mag Critic",
+  "status": "Former Critic",
+  "whyItMatters": "Stepped down after 22 years; farewell essay I'm Full.",
+  "relevanceToIara": "Low. Not reviewing."
  },
  {
   "slug": "ruth-reichl",
@@ -411,11 +515,12 @@
   ],
   "anonymous": false,
   "photo": "img/watch/ruth-reichl.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Timothy Krause, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Ruth_Reichl_(cropped).jpg"
   },
-  "group": "Former Critics"
+  "group": "Former Critics",
+  "shortRole": "Former NYT Critic",
+  "status": "Former Critic"
  },
  {
   "slug": "arthur-schwartz",
@@ -429,9 +534,10 @@
   ],
   "anonymous": false,
   "photo": null,
-  "illustration": false,
   "photoCredit": null,
-  "group": "Former Critics"
+  "group": "Former Critics",
+  "shortRole": "Former Daily News Critic",
+  "status": "Former Critic"
  },
  {
   "slug": "keith-lee",
@@ -445,11 +551,18 @@
   ],
   "anonymous": false,
   "photo": "img/watch/keith-lee.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Kirby Taylor, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Keith_Lee_at_Essence_Festival_of_Culture_2025_(4).jpg"
   },
-  "group": "Creators"
+  "group": "Creators",
+  "shortRole": "TikTok Food Critic",
+  "status": "Creator",
+  "ratingSystem": "Scores 1 to 10 on TikTok.",
+  "howTheyDine": "Usually orders anonymously, often takeout, reviews in his car. Often with family.",
+  "caresAbout": "Taste, how his family was treated, customer service, cost.",
+  "recognizeBy": "Very famous face; millions of followers.",
+  "whyItMatters": "One video can fill a dining room overnight.",
+  "relevanceToIara": "Medium. NYC visits so far were mostly casual spots like pizza."
  },
  {
   "slug": "dave-portnoy",
@@ -463,11 +576,18 @@
   ],
   "anonymous": false,
   "photo": "img/watch/dave-portnoy.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "Zach Catanzareti Photo, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Dave_portnoy_(48571713636)_(cropped).jpg"
   },
-  "group": "Creators"
+  "group": "Creators",
+  "shortRole": "One Bite Reviewer",
+  "status": "Creator",
+  "ratingSystem": "0 to 10 decimal score, mostly pizza. Above 7 is respectable.",
+  "howTheyDine": "Films a single-bite review, usually outside a pizzeria.",
+  "caresAbout": "Crust, sauce, cheese, overall vibe. Leans New York thin crust.",
+  "recognizeBy": "Famous face; often has a camera crew.",
+  "whyItMatters": "Huge audience, but pizza-focused.",
+  "relevanceToIara": "Low. iara is not a pizza shop."
  },
  {
   "slug": "david-chang",
@@ -481,10 +601,424 @@
   ],
   "anonymous": false,
   "photo": "img/watch/david-chang.jpg",
-  "illustration": false,
   "photoCredit": {
    "text": "David Shankbone, CC BY 3.0, https://commons.wikimedia.org/wiki/File:David_Chang_David_Shankbone_2010_(3x4_cropped).jpg"
   },
-  "group": "Creators"
+  "group": "Creators",
+  "shortRole": "Chef and Podcaster",
+  "status": "Creator"
+ },
+ {
+  "slug": "sonal-shah",
+  "name": "Sonal Shah",
+  "outlet": "The Infatuation",
+  "role": "NYC Editor",
+  "beat": "NYC restaurants and bars",
+  "note": "She runs The Infatuation's New York coverage, including its new-bar and best-of guides.",
+  "group": "Food Media",
+  "sources": [
+   "https://www.theinfatuation.com/contributor/sonal-shah"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/sonal-shah.jpg",
+  "photoCredit": {
+   "text": "theinfatuation.com"
+  },
+  "shortRole": "Infatuation NYC Editor",
+  "status": "Editor"
+ },
+ {
+  "slug": "paolo-lucchesi",
+  "name": "Paolo Lucchesi",
+  "outlet": "Resy",
+  "role": "Head of Resy Editorial",
+  "beat": "Restaurant features and dining culture (national)",
+  "note": "He leads Resy's editorial team, which publishes restaurant features read by Resy diners nationwide.",
+  "group": "Food Media",
+  "sources": [
+   "https://blog.resy.com/author/paolo/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/paolo-lucchesi.jpg",
+  "photoCredit": {
+   "text": "blog.resy.com"
+  },
+  "shortRole": "Head of Resy Editorial",
+  "status": "Editor"
+ },
+ {
+  "slug": "beth-kracklauer",
+  "name": "Beth Kracklauer",
+  "outlet": "Freelance (formerly The Wall Street Journal Off Duty)",
+  "role": "Freelance writer and editor; former WSJ Off Duty food and drinks editor (2012-2026)",
+  "beat": "Food and drink",
+  "note": "She edited WSJ Off Duty food and drink coverage for over a decade and is now writing freelance, including for Outside in 2026.",
+  "group": "Other Press",
+  "sources": [
+   "https://www.outsideonline.com/magazine-issues/summer-2026/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/beth-kracklauer.jpg",
+  "photoCredit": {
+   "text": "lpr.com"
+  },
+  "shortRole": "Freelance Food Editor",
+  "status": "Food Writer"
+ },
+ {
+  "slug": "jay-cheshes",
+  "name": "Jay Cheshes",
+  "outlet": "The Wall Street Journal / WSJ Magazine (contributor); Smithsonian",
+  "role": "Contributing food and travel writer",
+  "beat": "Food, travel, culture",
+  "note": "Former Gourmet New York critic and Time Out NY reviewer who still writes food features for the WSJ and, in 2026, Smithsonian.",
+  "group": "Other Press",
+  "sources": [
+   "https://www.smithsonianmag.com/author/jay-cheshes/"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "photoCredit": null,
+  "shortRole": "WSJ Contributor",
+  "status": "Food Writer"
+ },
+ {
+  "slug": "brad-a-johnson",
+  "name": "Brad A. Johnson",
+  "outlet": "Independent (frequent Robb Report contributor per his bio)",
+  "role": "Food and travel writer and critic",
+  "beat": "Restaurants, food and travel",
+  "note": "James Beard Award-winning restaurant critic who published restaurant rankings in 2025 and is listed in his bio as a frequent Robb Report contributor.",
+  "group": "Independent",
+  "sources": [
+   "https://bradajohnson.net/2025/05/25/brad-a-johnsons-best-places-to-eat-in-orange-county-2025/"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "photoCredit": null,
+  "shortRole": "Independent Critic",
+  "status": "Food Writer"
+ },
+ {
+  "slug": "frank-bruni",
+  "name": "Frank Bruni",
+  "outlet": "Duke University / The New York Times Opinion",
+  "role": "Patterson Professor of the Practice of Journalism and Public Policy at Duke; contributing Opinion writer at NYT",
+  "beat": "Politics and culture (former NYT chief restaurant critic)",
+  "note": "He was the NYT's chief restaurant critic before Sam Sifton and Pete Wells and is still a widely recognized food-world name.",
+  "group": "Former Critics",
+  "sources": [
+   "https://dewitt.sanford.duke.edu/people/frank-bruni"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/frank-bruni.jpg",
+  "photoCredit": {
+   "text": "dewitt.sanford.duke.edu"
+  },
+  "shortRole": "Former NYT Critic",
+  "status": "Former Critic"
+ },
+ {
+  "slug": "julia-moskin",
+  "name": "Julia Moskin",
+  "outlet": "The New York Times",
+  "role": "Food reporter",
+  "beat": "Restaurant industry, food news and investigations",
+  "note": "Her March 2026 Noma investigation led to René Redzepi stepping down, and she shared a 2018 Pulitzer for restaurant-industry reporting.",
+  "group": "NYT",
+  "sources": [
+   "https://talkhouse.com/747-julia-moskin-broke-the-noma-story-and-possibly-broke-noma"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/julia-moskin.jpg",
+  "photoCredit": {
+   "text": "nytimes.com byline page"
+  },
+  "shortRole": "NYT Food Reporter",
+  "status": "Food Writer"
+ },
+ {
+  "slug": "nick-digiovanni",
+  "name": "Nick DiGiovanni",
+  "outlet": "YouTube / Nick's Kitchen",
+  "role": "Chef and content creator (MasterChef S10 finalist)",
+  "beat": "Cooking and food video",
+  "note": "He became YouTube's most-subscribed cooking creator in March 2026 and signed a Netflix content deal in July 2026.",
+  "group": "Creators",
+  "sources": [
+   "https://deadline.com/2026/07/netflix-video-youtube-deal-chef-nick-digiovanni-1236981885/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/nick-digiovanni.jpg",
+  "photoCredit": {
+   "text": "commons.wikimedia.org"
+  },
+  "shortRole": "Chef and Creator",
+  "status": "Creator"
+ },
+ {
+  "slug": "jeremy-jacobowitz",
+  "name": "Jeremy Jacobowitz",
+  "outlet": "Brunch Boys / Eating Journey Substack",
+  "role": "Food creator (Brunch Boys)",
+  "beat": "NYC restaurants, food travel",
+  "note": "NYC food creator behind Brunch Boys who posts restaurant guides on Substack every week, most recently on Oct 5, 2026.",
+  "group": "Creators",
+  "sources": [
+   "https://jeremyjacobowitz.substack.com/p/chicago-travel-guide-32-must-eat"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/jeremy-jacobowitz.jpg",
+  "photoCredit": {
+   "text": "substack.com"
+  },
+  "shortRole": "Brunch Boys Creator",
+  "status": "Creator"
+ },
+ {
+  "slug": "brian-lindo",
+  "name": "Brian Lindo",
+  "outlet": "BrianCantStopEating (Instagram/TikTok/YouTube)",
+  "role": "Food creator",
+  "beat": "NYC restaurants, food and culture",
+  "note": "NYC food creator with 550K+ Instagram followers who covered the 2025 James Beard Awards and set a Guinness coffee-shop record in 2026.",
+  "group": "Creators",
+  "sources": [
+   "https://www.finedininglovers.com/explore/lists/brian-lindo-james-beard-awards-top-bites"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/brian-lindo.jpg",
+  "photoCredit": {
+   "text": "finedininglovers.com"
+  },
+  "shortRole": "Food Creator",
+  "status": "Creator"
+ },
+ {
+  "slug": "melissa-mccart",
+  "name": "Melissa McCart",
+  "outlet": "Eater",
+  "role": "Lead editor, Northeast region (Eater NY)",
+  "beat": "NYC restaurant news and dining reports",
+  "note": "She runs Eater NY coverage and still files her own dining reports, including one dated Sept 23, 2026.",
+  "group": "Food Media",
+  "sources": [
+   "https://ny.eater.com/authors/melissa-mccart"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/melissa-mccart.jpg",
+  "photoCredit": {
+   "text": "ny.eater.com"
+  },
+  "shortRole": "Eater Regional Editor",
+  "status": "Editor"
+ },
+ {
+  "slug": "alan-sytsma",
+  "name": "Alan Sytsma",
+  "outlet": "New York Magazine / Grub Street",
+  "role": "Food Editor, New York Magazine",
+  "beat": "Oversees Grub Street and the magazine's best-new-restaurants coverage",
+  "note": "He edits all of New York magazine's food coverage, including its annual best-new-restaurants list (discussed on TASTE, Dec 19, 2025).",
+  "group": "New York Mag",
+  "sources": [
+   "https://www.grubstreet.com/article/anne-burrell-food-tv-legacy.html"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/alan-sytsma.jpg",
+  "photoCredit": {
+   "text": "heritageradionetwork.org"
+  },
+  "shortRole": "NY Mag Food Editor",
+  "status": "Editor"
+ },
+ {
+  "slug": "chris-crowley",
+  "name": "Chris Crowley",
+  "outlet": "New York Magazine / Grub Street",
+  "role": "Senior Writer, Grub Street",
+  "beat": "NYC restaurant reporting, openings, industry stories",
+  "note": "He is New York magazine's senior food writer and covers new NYC openings (Beard Awards piece June 17, 2025; TASTE interview Nov 30, 2025).",
+  "group": "New York Mag",
+  "sources": [
+   "https://www.grubstreet.com/article/2025-james-beard-awards.html"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/chris-crowley.jpg",
+  "photoCredit": {
+   "text": "staycurrant.com"
+  },
+  "shortRole": "Grub Street Writer",
+  "status": "Food Writer"
+ },
+ {
+  "slug": "tammie-teclemariam",
+  "name": "Tammie Teclemariam",
+  "outlet": "New York Magazine",
+  "role": "Underground Gourmet columnist",
+  "beat": "Affordable and neighborhood restaurant reviews",
+  "note": "She writes New York magazine's Underground Gourmet review column (byline Oct 28, 2025), the slot most likely to cover an upscale-casual LES opening.",
+  "group": "New York Mag",
+  "sources": [
+   "https://www.grubstreet.com/article/askili-orchard-georgian-underground-gourmet-nyc.html"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/tammie-teclemariam.jpg",
+  "photoCredit": {
+   "text": "cjr.org"
+  },
+  "shortRole": "Underground Gourmet",
+  "status": "Reviews Restaurants"
+ },
+ {
+  "slug": "bryan-kim",
+  "name": "Bryan Kim",
+  "outlet": "The Infatuation",
+  "role": "Editorial Lead, NYC",
+  "beat": "Restaurant reviews and NYC guides",
+  "note": "He leads The Infatuation's NYC editorial team and reviews restaurants himself (Cafe Charmant review, Sept 8, 2026).",
+  "group": "Food Media",
+  "sources": [
+   "https://www.theinfatuation.com/contributor/bryan-kim"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/bryan-kim.jpg",
+  "photoCredit": {
+   "text": "theinfatuation.com"
+  },
+  "shortRole": "Infatuation NYC Lead",
+  "status": "Reviews Restaurants"
+ },
+ {
+  "slug": "molly-fitzpatrick",
+  "name": "Molly Fitzpatrick",
+  "outlet": "The Infatuation",
+  "role": "Senior Staff Writer, NYC",
+  "beat": "Restaurant reviews",
+  "note": "She is a senior NYC reviewer for The Infatuation (review published Oct 1, 2026).",
+  "group": "Food Media",
+  "sources": [
+   "https://www.theinfatuation.com/contributor/molly-fitzpatrick"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/molly-fitzpatrick.jpg",
+  "photoCredit": {
+   "text": "theinfatuation.com"
+  },
+  "shortRole": "Infatuation Writer",
+  "status": "Reviews Restaurants"
+ },
+ {
+  "slug": "will-hartman",
+  "name": "Will Hartman",
+  "outlet": "The Infatuation",
+  "role": "Staff Writer, NYC",
+  "beat": "Restaurant reviews",
+  "note": "He reviews NYC restaurants for The Infatuation (Table Mercato review, Oct 1, 2026).",
+  "group": "Food Media",
+  "sources": [
+   "https://www.theinfatuation.com/contributor/will-hartman"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/will-hartman.jpg",
+  "photoCredit": {
+   "text": "theinfatuation.com"
+  },
+  "shortRole": "Infatuation Writer",
+  "status": "Reviews Restaurants"
+ },
+ {
+  "slug": "willa-moore",
+  "name": "Willa Moore",
+  "outlet": "The Infatuation",
+  "role": "Staff Writer, NYC",
+  "beat": "Restaurant reviews",
+  "note": "She reviews NYC restaurants for The Infatuation (Faux review, Sept 3, 2026).",
+  "group": "Food Media",
+  "sources": [
+   "https://www.theinfatuation.com/contributor/willa-moore"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/willa-moore.jpg",
+  "photoCredit": {
+   "text": "theinfatuation.com"
+  },
+  "shortRole": "Infatuation Writer",
+  "status": "Reviews Restaurants"
+ },
+ {
+  "slug": "ellie-plass",
+  "name": "Ellie Plass",
+  "outlet": "Resy Editorial",
+  "role": "Freelance New York contributor",
+  "beat": "Resy features on NYC openings",
+  "note": "She wrote Resy's feature on iara itself (Sept 25, 2026), so she may come in to follow up.",
+  "group": "Food Media",
+  "sources": [
+   "https://blog.resy.com/2026/09/iara-nyc/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/ellie-plass.jpg",
+  "photoCredit": {
+   "text": "blog.resy.com"
+  },
+  "shortRole": "Resy Writer",
+  "status": "Food Writer"
+ },
+ {
+  "slug": "kate-krader",
+  "name": "Kate Krader",
+  "outlet": "Bloomberg Pursuits",
+  "role": "Food Editor",
+  "beat": "High-end restaurants and global dining",
+  "note": "She is Bloomberg's food editor and writes its global restaurant coverage (Pursuits newsletter, Feb 22, 2025).",
+  "group": "Other Press",
+  "sources": [
+   "https://www.bloomberg.com/news/newsletters/2025-02-22/the-best-food-city-in-the-world-according-to-a-food-editor"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/kate-krader.jpg",
+  "photoCredit": {
+   "text": "talkingbiznews.com"
+  },
+  "shortRole": "Bloomberg Food Editor",
+  "status": "Editor"
+ },
+ {
+  "slug": "mahira-rivers",
+  "name": "Mahira Rivers",
+  "outlet": "The New York Times (freelance) / Sweet City",
+  "role": "Freelance restaurant critic; former Michelin inspector",
+  "beat": "Restaurant reviews, NYC desserts (Sweet City newsletter)",
+  "note": "She is a former anonymous Michelin inspector who now reviews NYC restaurants for the NYT (TASTE, Dec 19, 2025), so she is trained to dine without being noticed.",
+  "group": "NYT",
+  "sources": [
+   "https://tastecooking.com/this-is-taste-704-the-year-in-nyc-restaurants-with-alan-sytsma-of-new-york-magazine-mahira-rivers-of-the-new-york-times/"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "photoCredit": null,
+  "recognizeBy": "Former anonymous Michelin inspector. Trained not to be noticed.",
+  "shortRole": "NYT Freelance Critic",
+  "status": "Reviews Restaurants"
+ },
+ {
+  "slug": "melissa-clark",
+  "name": "Melissa Clark",
+  "outlet": "The New York Times",
+  "role": "Food columnist, NYT Food and Cooking",
+  "beat": "Recipes and home cooking; filled in on restaurant reviews in 2024",
+  "note": "Longtime NYT food columnist; widely recognized from NYT Cooking videos.",
+  "group": "NYT",
+  "sources": [
+   "https://www.nytimes.com/by/melissa-clark"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/melissa-clark.jpg",
+  "photoCredit": {
+   "text": "verified source"
+  },
+  "shortRole": "NYT Food Columnist",
+  "status": "Food Writer"
  }
 ]
