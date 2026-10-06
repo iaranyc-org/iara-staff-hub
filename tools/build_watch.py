@@ -143,7 +143,7 @@ for f in sorted(glob.glob(T('more_photos_*.json'))):
     except Exception as e:
         print('skip', f, e)
 PRIMARY = {'morgan-carter': 'img/watch/morgan-carter-r2-2.jpg'}  # clearest captioned face leads
-REJECT_EXTRA = {'hunter-lewis/3.jpg', 'molly-fitzpatrick/r2-2.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' entries rejected on visual review
+REJECT_EXTRA = {'hunter-lewis/3.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' entries rejected on visual review
 for s_, p in roster.items():
     files = sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg'))) + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
     photos = []
@@ -175,6 +175,10 @@ for s_, p in roster.items():
     p['photos'] = photos[:5]
 
 OVERRIDES = {
+    'chris-crowley': {'outlet': 'Caper Media (formerly Grub Street)', 'role': 'Food writer at Caper Media; formerly Grub Street senior writer',
+                      'shortRole': 'Independent Food Writer', 'group': 'Independent',
+                      'note': 'Left New York magazine for Caper Media (Instagram bio, Oct 2026). Follows iara on Instagram.'},
+    'sonal-shah': {'note': 'Infatuation NYC editor. Follows iara on Instagram.'},
     'ryan-sutton': {'note': 'NYT contributing critic since Nov 2025; also runs The Lo Times newsletter.'},
     'mahira-rivers': {'recognizeBy': 'Public NYT byline photo since Dec 2025. Former Michelin inspector, so expect a quiet, observant diner.',
                       'photoCredit': {'text': 'nytimes.com byline page'}},
