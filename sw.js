@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v16';
+const VERSION = 'iara-lineup-v17';
 const CORE = [
   './',
   './iara_hub.html',

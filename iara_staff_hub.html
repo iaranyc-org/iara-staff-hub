@@ -961,7 +961,7 @@
   }
   @media (hover:none){ .wl-flip{ height:44px; width:30px; } }
   @media (max-width:360px){ .bottom-nav .nav-btn{ font-size:9.5px; letter-spacing:.01em; } }
-  /* Lore: the Menu Story */
+  /* Menu: Stories lens */
   .ms-jump{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; }
   .ms-jump a{ font-size:13px; font-weight:700; padding:8px 12px; border:1.5px solid var(--line); border-radius:999px;
     color:var(--ink-mid); text-decoration:none; background:var(--paper-raised); }
@@ -1235,11 +1235,12 @@
       <div id="team-bios"></div>
     </section>
 
-    <!-- LORE: the Menu Story (verbatim from Vitor's master doc), then the
-         room itself. Never invent what a dish or a piece means to him. -->
+    <!-- LORE: the stories behind the room itself, not the food or the team.
+         Empty until Vitor supplies it; never invent what a piece of art or a
+         plate actually means to him. -->
     <section class="view" id="view-lore">
       <h1>The Lore</h1>
-      <p class="view-intro">The story behind every dish, in Vitor's words, so you can actually answer when a guest asks.</p>
+      <p class="view-intro">The plates, the art, the decoration, and the brief story behind each one, so you can actually answer when a guest asks.</p>
       <div id="lore-cards"></div>
     </section>
 
@@ -1252,9 +1253,10 @@
              design, not a 7th tab next to Starters/Mains/etc - ingredients
              aren't orderable, and folding them into the course strip would
              read as if they were. -->
-        <div class="fb-lens" role="tablist" aria-label="Browse dishes or ingredients">
+        <div class="fb-lens" role="tablist" aria-label="Browse dishes, ingredients, or the story behind each dish">
           <button class="fb-lens-btn active" id="lens-dishes" role="tab" aria-selected="true">Dishes</button>
           <button class="fb-lens-btn" id="lens-ingredients" role="tab" aria-selected="false">Ingredients</button>
+          <button class="fb-lens-btn" id="lens-stories" role="tab" aria-selected="false">Stories</button>
         </div>
         <div class="manual-search">
           <label class="sr-only" for="fb-q">Search the menu</label>
@@ -1446,7 +1448,7 @@ var TEAM = [
 var LORE = [
 ];
 
-// The Menu Story, verbatim from the "iara Menu Story - Master" Google Doc
+// The Menu Story (shown on The Menu, Stories tab), verbatim from the "iara Menu Story - Master" Google Doc
 // (docs.google.com/document/d/1dTTvKnWx9sM3F1rXejv1ecp8PyPieKYdoFHYm_ZxTUo).
 // Update it from that doc; never paraphrase or add detail here.
 var MENU_STORY = [
@@ -1576,24 +1578,24 @@ var MENU_STORY = [
 var FNB_CATEGORIES = ["Starters","Mains","Sides","Desserts","Cocktails","Wine & Beer"];
 var FNB_DEFAULTS = [
   /* --- Petiscos / Pão / Vegetais (opening menu, "Menu Master 9/5") --- */
-  { id:"d1", category:"Starters", name:"Tucupi Shots with Herb Oil", pronunciation:"too-koo-PEE", speak:"Tucupi", price:"Amuse", desc:"Fermented cassava broth, served as a warm welcome shot with herb oil.", allergens:["Allium","Cilantro"], example:false },
-  { id:"d2", category:"Starters", name:"Dadinho de Tapioca", pronunciation:"dah-DEEN-yoo duh tah-pee-OH-kuh", speak:"Dadinho de Tapioca", price:"$8/pc", desc:"Crispy tapioca cubes with smoked fish, biquinho pepper, and jambu.", allergens:["Fish","Dairy"], example:false },
-  { id:"d3", category:"Starters", name:"Crocante de Mandioca", pronunciation:"kroh-KAHN-chee jee mahn-jee-OH-kah", speak:"Crocante de Mandioca", price:"$18", desc:"Cassava tostada with fresh sardine, chilies, and pineapple.", allergens:[], example:false },
-  { id:"d4", category:"Starters", name:"Ceviche com Tucupi", pronunciation:"sə-VEE-chay kohm too-koo-PEE", speak:"Ceviche com Tucupi", price:"$18", desc:"Black bass in fermented manioc juice with burnt plantain and herbs.", allergens:["Fish","Allium","Coconut","Citrus"], example:false },
-  { id:"d5", category:"Starters", name:"Pão de Queijo", pronunciation:"pown deh KAY-zhoo", speak:"Pão de Queijo", price:"$12", desc:"Cassava cheese bread with a smoky eggplant dip.", allergens:["Dairy"], example:false },
-  { id:"d6", category:"Starters", name:"Pão de Alho", pronunciation:"pown deh AHL-yoo", speak:"Pão de Alho", price:"$12", desc:"Charcoal-grilled bread stuffed with roasted garlic.", allergens:["Allium","Gluten"], example:false },
-  { id:"d7", category:"Starters", name:"Salada da Estação", pronunciation:"sah-LAH-dah dah es-tah-SOWN", speak:"Salada da Estação", price:"$16", desc:"Market lettuces with brazil nut and cumaru dressing.", allergens:["Tree nut"], example:false },
-  { id:"d8", category:"Starters", name:"Camarão na Moranga", pronunciation:"kah-mah-ROWW-nuh moh-RAHN-gah", speak:"Camarão na Moranga", price:"$24", desc:"Blue crab, delicata squash, parmesan foam, Amazon-spiced pumpkin seeds.", allergens:["Dairy","Shellfish","Seeds","Allium"], example:false },
-  { id:"d9", category:"Starters", name:"Vegetais Grelhados", pronunciation:"veh-zheh-TICE grel-YAH-dooss", speak:"Vegetais Grelhados", price:"$18", desc:"Charcoal-grilled seasonal vegetables.", allergens:[], example:false },
+  { id:"d1", category:"Starters", name:"Tucupi Shots with Herb Oil", pronunciation:"too-koo-PEE", speak:"Tucupi", price:"$8", desc:"Fermented cassava broth, served as a warm welcome shot with herb oil.", allergens:["Allium","Cilantro"], example:false },
+  { id:"d2", category:"Starters", name:"Dadinho de Tapioca", pronunciation:"dah-DEEN-yoo duh tah-pee-OH-kuh", speak:"Dadinho de Tapioca", price:"$16", desc:"Crispy tapioca cubes with smoked fish, biquinho pepper, and jambu.", allergens:["Fish","Dairy"], example:false },
+  { id:"d3", category:"Starters", name:"Crocante de Mandioca", pronunciation:"kroh-KAHN-chee jee mahn-jee-OH-kah", speak:"Crocante de Mandioca", price:"$17", desc:"Cassava tostada with fresh sardine, chilies, and pineapple.", allergens:[], example:false },
+  { id:"d4", category:"Starters", name:"Ceviche com Tucupi", pronunciation:"sə-VEE-chay kohm too-koo-PEE", speak:"Ceviche com Tucupi", price:"$21", desc:"Black bass in fermented manioc juice with burnt plantain and herbs.", allergens:["Fish","Allium","Coconut","Citrus"], example:false },
+  { id:"d5", category:"Starters", name:"Pão de Queijo", pronunciation:"pown deh KAY-zhoo", speak:"Pão de Queijo", price:"$14", desc:"Cassava cheese bread with a smoky eggplant dip.", allergens:["Dairy"], example:false },
+  { id:"d6", category:"Starters", name:"Pão de Alho", pronunciation:"pown deh AHL-yoo", speak:"Pão de Alho", price:"$14", desc:"Charcoal-grilled bread stuffed with roasted garlic.", allergens:["Allium","Gluten"], example:false },
+  { id:"d7", category:"Starters", name:"Salada da Estação", pronunciation:"sah-LAH-dah dah es-tah-SOWN", speak:"Salada da Estação", price:"$18", desc:"Market lettuces with brazil nut and cumaru dressing.", allergens:["Tree nut"], example:false },
+  { id:"d8", category:"Starters", name:"Caranguejo na Moranga", pronunciation:"kah-rahn-GAY-zhoo nah moh-RAHN-gah", speak:"", price:"$24", desc:"Jonah crab, honeynut squash, parmesan foam, Amazon-spiced pumpkin seeds.", allergens:["Dairy","Shellfish","Seeds","Allium"], example:false },
+  { id:"d9", category:"Starters", name:"Vegetais Grelhados", pronunciation:"veh-zheh-TICE grel-YAH-dooss", speak:"Vegetais Grelhados", price:"$22", desc:"Charcoal-grilled seasonal vegetables.", allergens:[], example:false },
   /* --- Pratos Principais --- */
   { id:"d10", category:"Mains", name:"Moqueca", pronunciation:"mo-KEH-kah", speak:"Moqueca", price:"$48", desc:"Striped bass simmered in tucupi with vegetables, coconut, rice, and dendê oil. Secret vegan option available.", allergens:["Coconut","Allium","Capsicum","Dairy"], example:false },
   { id:"d11", category:"Mains", name:"Picanha com Fritas", pronunciation:"pee-KAH-nyah kohn FREE-tahs", speak:"Picanha com Fritas", price:"$68", desc:"10oz Brazilian-cut sirloin steak with tapioca fries and housemade açaí ketchup.", allergens:["Allium"], example:false },
-  { id:"d12", category:"Mains", name:"Frango Amazonas", pronunciation:"FRAHN-goo ah-mah-ZOH-nahs", speak:"Frango Amazonas", price:"$42", desc:"Charcoal-grilled chicken marinated in tucupi and Amazonian spices.", allergens:[], example:false },
+  { id:"d12", category:"Mains", name:"Frango Amazonas", pronunciation:"FRAHN-goo ah-mah-ZOH-nahs", speak:"Frango Amazonas", price:"$38", desc:"Charcoal-grilled chicken marinated in tucupi and Amazonian spices.", allergens:[], example:false },
   { id:"d13", category:"Mains", name:"Tambaqui Grelhado", pronunciation:"tahm-bah-KEE grel-YAH-doo", speak:"Tambaqui Grelhado", price:"Market Price", desc:"Dry-aged Amazonian fish grilled over charcoal with rice, beans, and farofa.", allergens:["Fish"], example:false },
   /* --- Acompanhamentos --- */
-  { id:"d14", category:"Sides", name:"Tapioca Fries", pronunciation:"tah-pee-OH-kah", speak:"Tapioca", price:"$12", desc:"With housemade açaí ketchup.", allergens:[], example:false },
-  { id:"d15", category:"Sides", name:"Arroz", pronunciation:"ah-HOHZ", speak:"Arroz", price:"$6", desc:"Long-grain upstate rice with Brazilian sofrito.", allergens:["Allium"], example:false },
-  { id:"d16", category:"Sides", name:"Feijão Manteiguinha", pronunciation:"fay-ZHOW mahn-tay-GEEN-yah", speak:"Feijão Manteiguinha", price:"$9", desc:"Small white Amazonian beans served cold with herbs and vinaigrette.", allergens:[], example:false },
+  { id:"d14", category:"Sides", name:"Tapioca Fries", pronunciation:"tah-pee-OH-kah", speak:"Tapioca", price:"$14", desc:"With housemade açaí ketchup.", allergens:[], example:false },
+  { id:"d15", category:"Sides", name:"Arroz", pronunciation:"ah-HOHZ", speak:"Arroz", price:"$10", desc:"Long-grain upstate rice with Brazilian sofrito.", allergens:["Allium"], example:false },
+  { id:"d16", category:"Sides", name:"Feijão Manteiguinha", pronunciation:"fay-ZHOW mahn-tay-GEEN-yah", speak:"Feijão Manteiguinha", price:"$8", desc:"Small white Amazonian beans served cold with herbs and vinaigrette.", allergens:[], example:false },
   { id:"d17", category:"Sides", name:"Farofa", pronunciation:"fah-ROH-fah", speak:"Farofa", price:"$6", desc:"Toasted and seasoned cassava flour.", allergens:[], example:false },
   /* --- Sobremesas --- */
   { id:"d18", category:"Desserts", name:"Pudim", pronunciation:"poo-DJEEN", speak:"Pudim", price:"$14", desc:"Flan with toasted sesame seeds.", allergens:["Egg","Dairy","Sesame"], example:false },
@@ -1647,26 +1649,25 @@ var INGREDIENTS = [
    DATA: Fixed quiz pools
    ============================================================ */
 var QUIZ_FOOD_EXTRA = [
-  { q:"What's the price of Dadinho de Tapioca?", a:["$6/pc","$8/pc","$10/pc","$12/pc"], c:1 },
-  { q:"Besides black bass, what does Ceviche com Tucupi include?", a:["Burnt plantain and herbs","Grilled corn","Fried plantain chips","Pickled onions"], c:0 },
-  { q:"What is Tambaqui Grelhado served with?", a:["Fries and salad","Rice, beans, and farofa","Mashed potatoes","Just charred lemon"], c:1 },
-  { q:"What is the main protein in Moqueca?", a:["Shrimp","Striped bass","Chicken","Picanha"], c:1 },
+  { q:"What's the price of Dadinho de Tapioca?", a:["$12","$14","$16","$18"], c:2 },
+  { q:"Besides dry-aged hiramasa, what does Ceviche com Tucupi include?", a:["Charred plantain and herbs","Grilled corn","Fried plantain chips","Pickled onions"], c:0 },
+  { q:"What is the main protein in Moqueca?", a:["Shrimp","Dry-aged tilefish","Chicken","Picanha"], c:1 },
   { q:"What oil gives Moqueca its signature color?", a:["Olive oil","Dendê (palm) oil","Sesame oil","Coconut oil"], c:1 },
   { q:"What condiment comes with the fries in Picanha com Fritas?", a:["Ranch","Housemade açaí ketchup","Chimichurri","Aioli"], c:1 },
-  { q:"What size is the Picanha com Fritas steak?", a:["8oz","10oz","12oz","14oz"], c:1 },
-  { q:"Which dessert is a flourless cassava coconut toffee cake?", a:["Pudim","Bolo de Mandioca","Sorvete","Brigadeiro"], c:1 },
+  { q:"What size is the Picanha com Fritas steak?", a:["8oz","10oz","12oz","14oz"], c:2 },
+  { q:"Which dessert is a cassava and coconut cake with puxuri caramel?", a:["Pudim","Bolo de Mandioca","Sorvete","Brigadeiro"], c:1 },
   { q:"What is Sorvete's flavor?", a:["Vanilla bean","Cupuaçu","Chocolate","Coconut"], c:1 },
   { q:"What dairy-free substitution is offered for Brigadeiro?", a:["Almond butter cups","Açaí pâte de fruit or toasted cassava","Coconut candy","Fruit leather"], c:1 },
   { q:"What is Farofa made from?", a:["Toasted, seasoned cassava flour","Toasted breadcrumbs","Ground corn meal","Rice flour"], c:0 },
-  { q:"How is Feijão Manteiguinha served?", a:["Hot and mashed","Cold, with herbs and vinaigrette","Fried into cakes","Pureed into a soup"], c:1 },
+  { q:"How is Feijão Manteiguinha served?", a:["Hot and mashed","Stewed with garlic, serrano, and ginger","Fried into cakes","Pureed into a soup"], c:1 },
   { q:"What makes iara's Arroz distinctive?", a:["It's fried rice","Long-grain upstate rice with Brazilian sofrito","It's black rice","It's coconut rice only"], c:1 },
-  { q:"What dressing is on the Salada da Estação?", a:["Balsamic vinaigrette","Brazil nut and cumaru dressing","Caesar dressing","Citrus vinaigrette"], c:1 },
-  { q:"What shellfish is featured in Camarão na Moranga?", a:["Shrimp","Blue crab","Lobster","Scallops"], c:1 },
-  { q:"What squash is used in Camarão na Moranga?", a:["Butternut","Delicata","Acorn","Kabocha"], c:1 },
-  { q:"What is Crocante de Mandioca topped with?", a:["Fresh sardine, chilies, and pineapple","Smoked salmon and capers","Tuna tartare","Shaved ham"], c:0 },
+  { q:"What dressing is on the Salada da Estação?", a:["Balsamic vinaigrette","Basil-dill dressing","Caesar dressing","Citrus vinaigrette"], c:1 },
+  { q:"What shellfish is featured in Caranguejo na Moranga?", a:["Shrimp","Jonah crab","Lobster","Scallops"], c:1 },
+  { q:"What squash is used in Caranguejo na Moranga?", a:["Butternut","Honeynut","Acorn","Kabocha"], c:1 },
+  { q:"What is Crocante de Mandioca topped with?", a:["Atlantic scallops, charred pineapple, and honey habanero","Smoked salmon and capers","Tuna tartare","Shaved ham"], c:0 },
   { q:"What dip is served with Pão de Queijo?", a:["Smoky eggplant dip","Marinara","Garlic aioli","Honey butter"], c:0 },
   { q:"What is Pão de Alho stuffed with?", a:["Roasted garlic","Melted mozzarella only","Herb butter","Sun-dried tomatoes"], c:0 },
-  { q:"What is the amuse-bouche shot served at the start of the meal?", a:["Tucupi Shots with Herb Oil","Ceviche shot","Caipirinha shot","Farofa crumble"], c:0 },
+  { q:"Which petisco is a hot Amazonian broth of tucupi with jambu leaves?", a:["Tacacá","Moqueca","Caldo verde","Feijoada"], c:0 },
 ];
 
 var QUIZ_BEVERAGE_MORE = [
@@ -1752,10 +1753,9 @@ var QUIZ_GENERAL_EXTRA = [
   { q:"What Brazilian spirit is iara's cocktail program built around?", a:["Rum","Cachaça","Pisco","Tequila"], c:1 },
   { q:"Which ingredient \"grows everywhere\" in the Amazon and turns into bread dough, tucupi broth, hot sauces, and farofa?", a:["Corn","Cassava","Rice","Wheat"], c:1 },
   { q:"What is iara's printed toast to guests at the bottom of the menu?", a:["Cheers!","Saúde!","Viva!","À sua!"], c:1 },
-  { q:"Which Amazonian fish appears on the menu as a market-price, charcoal-grilled main?", a:["Snapper","Tambaqui","Salmon","Branzino"], c:1 },
   { q:"Which fruit does iara's menu note is used in both savory and sweet applications in the Amazon?", a:["Guava","Açaí","Papaya","Passion fruit"], c:1 },
   { q:"What does \"restaurante brasileiro,\" printed on the menu cover, mean?", a:["Brazilian bar","Brazilian restaurant","Brazilian bakery","Brazilian steakhouse"], c:1 },
-  { q:"Which of these is NOT one of the unique herbs/spices iara calls out on its menu?", a:["Jambu","Cumaru","Puxuri","Saffron"], c:3 },
+  { q:"Which of these is NOT one of the unique herbs/spices iara calls out on its menu?", a:["Jambu","Jiquitaia","Puxuri","Saffron"], c:3 },
 ];
 
 var QUIZ_GENERAL_MORE = [
@@ -2328,36 +2328,16 @@ function renderTeam(){
   });
 }
 
-function bindLoreJump(wrap){
-  wrap.querySelectorAll("[data-ms]").forEach(function(a){
-    a.addEventListener("click", function(e){
-      e.preventDefault();
-      var t = document.getElementById("ms-" + a.getAttribute("data-ms"));
-      if (t) t.scrollIntoView({ block:"start", behavior:"smooth" });
-    });
-  });
-}
 function renderLore(){
   var wrap = document.getElementById("lore-cards");
   if (!wrap) return;
-  var html = '<nav class="ms-jump" aria-label="Jump to a course">' + MENU_STORY.map(function(c, i){
-      return '<a href="#ms-'+i+'" data-ms="'+i+'">'+esc(c.en)+'</a>';
-    }).join('') + '</nav>' +
-    MENU_STORY.map(function(c, i){
-      return '<section class="ms-course" id="ms-'+i+'"><h2 class="ms-course-h">'+esc(c.course)+
-        ' <span class="ms-course-en">'+esc(c.en)+'</span></h2>' +
-        c.dishes.map(function(d){
-          return '<article class="ms-dish"><h3>'+esc(d.name)+'</h3><p>'+esc(d.story)+'</p></article>';
-        }).join('') + '</section>';
-    }).join('') +
-    '<h2 class="ms-course-h ms-room">The Room</h2>';
   if (!LORE.length) {
-    wrap.innerHTML = html + '<div class="empty"><p class="empty-b">The stories behind the art and the decoration around the room ' +
+    wrap.innerHTML = '<div class="empty"><p class="empty-h">Nothing here yet.</p>' +
+      '<p class="empty-b">The stories behind the plates, the art, and the decoration around the room ' +
       'will show up here once Vitor adds them.</p></div>';
-    bindLoreJump(wrap);
     return;
   }
-  wrap.innerHTML = html + LORE.map(function(p){
+  wrap.innerHTML = LORE.map(function(p){
     return '<div class="card bio">' +
       (p.photo
         ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.title)+'" loading="lazy">'
@@ -2377,7 +2357,6 @@ function renderLore(){
       b.setAttribute("aria-expanded", String(open));
     });
   });
-  bindLoreJump(wrap);
 }
 
 /* ============================================================
@@ -2385,7 +2364,7 @@ function renderLore(){
    ============================================================ */
 var fbItems = FNB_DEFAULTS.slice();
 var fbActiveCat = "Starters";
-var fbLens = "dishes"; // "dishes" | "ingredients", two lenses on one search
+var fbLens = "dishes"; // "dishes" | "ingredients" | "stories", lenses on one search
 var fbAdminUnlocked = false;
 
 // FNB_DEFAULTS are the starting menu, not test data - most dishes are never
@@ -2467,8 +2446,40 @@ function renderIngredientCards(){
   bindSayButtons(grid);
 }
 
+// Stories lens: the Menu Story by course, filtered by the same search box.
+function renderStoryCards(){
+  var grid = document.getElementById("fb-grid");
+  var term = fbQuery.trim().toLowerCase();
+  var count = 0;
+  var html = MENU_STORY.map(function(c, i){
+    var dishes = c.dishes.filter(function(d){
+      return !term || (d.name + " " + d.story).toLowerCase().indexOf(term) !== -1;
+    });
+    count += dishes.length;
+    if (!dishes.length) return '';
+    return '<section class="ms-course" id="ms-'+i+'"><h2 class="ms-course-h">'+esc(c.course)+
+      ' <span class="ms-course-en">'+esc(c.en)+'</span></h2>' +
+      dishes.map(function(d){ return '<article class="ms-dish"><h3>'+esc(d.name)+'</h3><p>'+esc(d.story)+'</p></article>'; }).join('') +
+      '</section>';
+  }).join('');
+  var jump = term ? '' : '<nav class="ms-jump" aria-label="Jump to a course">' + MENU_STORY.map(function(c, i){
+    return '<a href="#ms-'+i+'" data-ms="'+i+'">'+esc(c.en)+'</a>';
+  }).join('') + '</nav>';
+  var fbCount = document.getElementById("fb-count");
+  if (fbCount) { fbCount.hidden = !term || !count; if (term && count) fbCount.textContent = count + (count === 1 ? " story matches" : " stories match"); }
+  grid.innerHTML = count ? jump + html : '<div class="empty"><p class="empty-h">No match for that.</p><p class="empty-b">Try a shorter word.</p></div>';
+  grid.querySelectorAll("[data-ms]").forEach(function(a){
+    a.addEventListener("click", function(e){
+      e.preventDefault();
+      var t = document.getElementById("ms-" + a.getAttribute("data-ms"));
+      if (t) t.scrollIntoView({ block:"start", behavior:"smooth" });
+    });
+  });
+}
+
 function renderFbGrid(){
   if (fbLens === "ingredients") { renderIngredientCards(); return; }
+  if (fbLens === "stories") { renderStoryCards(); return; }
   var grid = document.getElementById("fb-grid");
   var term = fbQuery.trim().toLowerCase();
   var items = term
@@ -2528,19 +2539,21 @@ function renderFbGrid(){
   var lensIngredients = document.getElementById("lens-ingredients");
   var toolbar = document.getElementById("fb-toolbar");
   if (lensDishes && !lensDishes.dataset.bound) {
+    var lensStories = document.getElementById("lens-stories");
     lensDishes.dataset.bound = "1";
     lensIngredients.dataset.bound = "1";
     function setLens(which){
       fbLens = which;
-      lensDishes.classList.toggle("active", which === "dishes");
-      lensIngredients.classList.toggle("active", which === "ingredients");
-      lensDishes.setAttribute("aria-selected", String(which === "dishes"));
-      lensIngredients.setAttribute("aria-selected", String(which === "ingredients"));
+      [[lensDishes,"dishes"],[lensIngredients,"ingredients"],[lensStories,"stories"]].forEach(function(p){
+        p[0].classList.toggle("active", which === p[1]);
+        p[0].setAttribute("aria-selected", String(which === p[1]));
+      });
       toolbar.hidden = which !== "dishes";
       renderFbGrid();
     }
     lensDishes.addEventListener("click", function(){ setLens("dishes"); });
     lensIngredients.addEventListener("click", function(){ setLens("ingredients"); });
+    lensStories.addEventListener("click", function(){ setLens("stories"); });
   }
   if (fbAdminUnlocked) {
     var addBtn = document.getElementById("fb-add");
