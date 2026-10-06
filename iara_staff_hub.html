@@ -853,6 +853,58 @@
     .quiz-pick{ grid-template-columns:1fr; }
     .bio{ grid-template-columns:52px 1fr; }
   }
+
+  /* Watch List */
+  .wl-filters{ display:flex; gap:0; flex-wrap:wrap; margin:0 0 16px; }
+  .wl-grid{ list-style:none; margin:0; padding:0; display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(168px,1fr)); grid-auto-flow:dense; gap:14px; max-width:var(--measure-wide); }
+  .wl-card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+  .wl-card.is-open{ grid-column:1 / -1; }
+  .wl-hit{ all:unset; box-sizing:border-box; display:block; width:100%; cursor:pointer; }
+  .wl-hit:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
+  .wl-photo{ display:block; aspect-ratio:4 / 5; background:var(--paper); overflow:hidden; position:relative; }
+  .wl-photo img{ width:100%; height:100%; object-fit:cover; object-position:50% 18%; display:block; }
+  .wl-nophoto{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    text-align:center; padding:12px; font-size:12.5px; line-height:1.4; color:var(--ink-soft); }
+  .wl-meta{ display:block; padding:11px 13px 13px; }
+  .wl-name{ display:block; font-weight:700; font-size:15px; line-height:1.25; color:var(--ink); }
+  .wl-outlet{ display:block; margin-top:3px; font-size:12.5px; font-weight:700; color:var(--river); letter-spacing:.01em; }
+  .wl-role{ display:block; margin-top:2px; font-size:12.5px; line-height:1.4; color:var(--ink-soft); }
+  .wl-detail{ padding:0 13px 14px; font-size:14.5px; line-height:1.6; color:var(--ink-mid); }
+  .wl-detail p{ margin:0 0 8px; }
+  .wl-detail .wl-credit{ font-size:12px; color:var(--ink-soft); }
+  .wl-detail a{ color:var(--display); }
+  .wl-card.is-open{ display:grid; grid-template-columns:minmax(130px,220px) 1fr; align-items:start; }
+  .wl-card.is-open .wl-hit{ display:contents; }
+  .wl-card.is-open .wl-photo{ grid-row:1 / span 2; align-self:start; width:100%; aspect-ratio:4 / 5; }
+  .wl-card.is-open .wl-meta{ padding:16px 18px 6px; }
+  .wl-card.is-open .wl-name{ font-size:19px; }
+  .wl-card.is-open .wl-detail{ padding:4px 18px 16px; }
+  .wl-face{ width:100%; max-width:300px; aspect-ratio:4 / 5; border-radius:8px; overflow:hidden;
+    margin:0 auto 14px; background:var(--paper); }
+  .wl-face img{ width:100%; height:100%; object-fit:cover; object-position:50% 18%; display:block; }
+  .wl-choices{ display:grid; gap:10px; margin-top:6px; }
+  .wl-choice{ font:inherit; font-size:15px; font-weight:600; text-align:left; padding:12px 14px; min-height:48px;
+    border:1.5px solid var(--line); border-radius:6px; background:var(--paper-raised); color:var(--ink); cursor:pointer; }
+  .wl-choice:hover:not(:disabled){ border-color:var(--display); }
+  .wl-choice:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .wl-choice.is-right{ border-color:var(--forest); background:color-mix(in srgb, var(--forest) 14%, var(--paper)); }
+  .wl-choice.is-wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
+  .wl-choice.is-right::after{ content:"  \2713  Correct"; font-weight:700; color:var(--forest); }
+  .wl-choice.is-wrong::after{ content:"  Your pick"; font-weight:700; color:var(--clay); }
+  .wl-verdict{ margin:14px 0 0; font-weight:700; font-size:16px; color:var(--display); }
+  .wl-choice:disabled{ cursor:default; }
+  .wl-reveal{ margin-top:14px; font-size:15px; line-height:1.55; color:var(--ink-mid); }
+  .wl-empty{ color:var(--ink-soft); font-size:15px; }
+  @media (max-width:860px){
+    .wl-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .wl-card.is-open{ grid-template-columns:118px minmax(0,1fr); }
+    .wl-card.is-open .wl-meta{ padding:12px 14px 4px; }
+    .wl-card.is-open .wl-detail{ grid-column:1 / -1; padding:12px 14px 14px; }
+    .wl-card.is-open .wl-photo{ grid-row:auto; }
+    .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+    .wl-filters::-webkit-scrollbar{ display:none; }
+  }
   [hidden]{ display:none !important; }
 
   /* The home screen is the docket you are handed at the start of a shift. */
@@ -951,6 +1003,7 @@
           <option>Bartender</option>
           <option>Food Runner</option>
           <option>Line Cook</option>
+          <option>Executive Sous Chef</option>
           <option>Lead Line Cook</option>
           <option>Prep Cook</option>
           <option>Dishwasher</option>
@@ -983,6 +1036,7 @@
     <button class="nav-btn" data-view="lore">The Lore</button>
     <div class="nav-rule"></div>
     <button class="nav-btn" data-view="study">Study</button>
+    <button class="nav-btn" data-view="watch">Watch List</button>
     <button class="nav-btn" data-view="quiz">Final Exam</button>
     <div class="sb-spacer"></div>
     <div class="sb-user">
@@ -1152,6 +1206,18 @@
       <div id="study-area"></div>
     </section>
 
+    <!-- WATCH LIST: the critics and press who might be at any table. Faces,
+         outlets, and a drill. Photos are credited on each card. -->
+    <section class="view" id="view-watch">
+      <h1>Watch List</h1>
+      <p class="view-intro">The critics and press who could be at any table. Learn the faces and the outlets, then drill them.</p>
+      <div class="fb-lens" role="tablist" aria-label="Watch List mode">
+        <button class="fb-lens-btn active" id="wl-tab-roster" role="tab" aria-selected="true">Who's Who</button>
+        <button class="fb-lens-btn" id="wl-tab-study" role="tab" aria-selected="false">Drill</button>
+      </div>
+      <div id="watch-area"></div>
+    </section>
+
     <!-- QUIZ -->
     <section class="view" id="view-quiz">
       <h1>Final Exam</h1>
@@ -1181,6 +1247,7 @@
       <button class="nav-btn" data-view="team">Team</button>
       <button class="nav-btn" data-view="lore">Lore</button>
       <button class="nav-btn" data-view="study">Study</button>
+      <button class="nav-btn" data-view="watch">Watch</button>
       <button class="nav-btn" data-view="quiz">Final Exam</button>
     </div>
   </nav>
@@ -1290,8 +1357,8 @@ var TEAM = [
     bio:"Chef-Owner of iara. Brazilian-American, Vitor started working in restaurants at 15 to help support his family and found his calling almost immediately. He enrolled at the Institute of Culinary Education and spent over a decade in some of New York's most demanding kitchens: Theodora, Frevo, the Fulton by Jean-Georges, and Chef's Table at Brooklyn Fare. After his father's passing he returned to Brazil in 2021 and cooked across the country for the first time. Everything shifted deep in the Amazon, where he spent a month learning the ingredients and the culture around them. He was a finalist in the S.Pellegrino Young Chef Academy Competition in 2022, was recruited by chef Tomer Blechman to take the reins at Theodora in 2023, and was named a StarChefs NYC Rising Star in 2025. iara is his first restaurant as founder, where the precision of his fine-dining years meets the ingredient-led cooking he found in the Amazon." },
   { name:"Ronald Rufino", title:"General Manager", initials:"RR", photo:"/img/ronald.jpg",
     bio:"General Manager of iara. Ronald most recently served as General Manager of Little Maven, overseeing daily operations and the beverage program, while also serving as Head Sommelier &amp; Wine Buyer for Flyfish Club, a Members Club. His background spans some of New York's most respected dining rooms, including Captain &amp; Service Manager at the Michelin-starred Blue Hill at Stone Barns, Service Director at the Michelin-starred Frevo, Captain at the Michelin-starred SHO Shaun Hergatt, and a spot on the opening team at Upland. After the pandemic, he co-founded a kombucha company called Feel Good Booch. Ronald is a Certified Sommelier with a particular love of mezcal." },
-  { name:"Eli Gitelman", title:"Lead Line Cook", initials:"EG", photo:"/img/eli.jpg",
-    bio:"Lead Line Cook at iara. A Daniel Boulud alum, Eli trained at Restaurant Daniel and was selected for the opening team at Le Pavillon. He then joined the opening team at Al Coro, which earned two Michelin stars within three months, among the fastest in New York City history. He went on to work alongside Chef Dave Santos at Foxface, helping the restaurant earn three stars from Pete Wells at The New York Times. Eli specializes in fermentation and wood-fire cooking." },
+  { name:"Eli Gitelman", title:"Executive Sous Chef", initials:"EG", photo:"/img/eli.jpg",
+    bio:"Executive Sous Chef at iara. A Daniel Boulud alum, Eli trained at Restaurant Daniel and was selected for the opening team at Le Pavillon. He then joined the opening team at Al Coro, which earned two Michelin stars within three months, among the fastest in New York City history. He went on to work alongside Chef Dave Santos at Foxface, helping the restaurant earn three stars from Pete Wells at The New York Times. Eli specializes in fermentation and wood-fire cooking." },
   { name:"Calvin Czypinski", title:"Head Bartender", initials:"CC", photo:"/img/calvin.jpg",
     bio:"Head Bartender at iara. Originally from Wisconsin, Calvin got his start at River Park before moving to Miss Ada, where he first built out a bar program, and then to Theodora, where he was promoted to Head Bartender and ran the bar program there as well. Most recently, he ran the bar program at Theodora Beach Club, where he hosted collaborations including Mirate, Sunken Harbor, Bangkok Supper Club, Bar Madonna, Bar Francis, and Dolores. Calvin was named VinePair's Best New Bartender this year." },
 ];
@@ -1466,9 +1533,9 @@ var QUIZ_GENERAL = [
   { q:"Who is iara's Chef-Owner?", a:["Daniel Babis","Vitor Mendes","Gerardo Estevez","Tomer Blechman"], c:1 },
   { q:"Who is iara's Head Bartender?", a:["Calvin Czypinski","Vitor Mendes","Daniel Babis","Tomer Blechman"], c:0 },
   { q:"Where was Head Bartender Calvin Czypinski's first restaurant job?", a:["Miss Ada","Theodora","River Park","Dolores"], c:2 },
-  { q:"Who is iara's Lead Line Cook?", a:["Calvin Czypinski","Eli Gitelman","Vitor Mendes","Franco Sampogna"], c:1 },
-  { q:"Which restaurant did Lead Line Cook Eli Gitelman help earn two Michelin stars within three months of opening?", a:["Le Pavillon","Restaurant Daniel","Al Coro","Foxface"], c:2 },
-  { q:"What is Lead Line Cook Eli Gitelman's culinary specialty?", a:["Pastry and baking","Fermentation and wood-fire cooking","Raw bar and seafood","Pasta making"], c:1 },
+  { q:"Who is iara's Executive Sous Chef?", a:["Calvin Czypinski","Eli Gitelman","Vitor Mendes","Franco Sampogna"], c:1 },
+  { q:"Which restaurant did Executive Sous Chef Eli Gitelman help earn two Michelin stars within three months of opening?", a:["Le Pavillon","Restaurant Daniel","Al Coro","Foxface"], c:2 },
+  { q:"What is Executive Sous Chef Eli Gitelman's culinary specialty?", a:["Pastry and baking","Fermentation and wood-fire cooking","Raw bar and seafood","Pasta making"], c:1 },
   { q:"Who is iara's General Manager?", a:["Calvin Czypinski","Eli Gitelman","Ronald Rufino","Vitor Mendes"], c:2 },
   { q:"At which world-renowned working-farm restaurant did GM Ronald Rufino serve as Captain &amp; Service Manager?", a:["Blue Hill at Stone Barns","SHO Shaun Hergatt","The Finch","Frevo"], c:0 },
   { q:"Which Michelin-starred restaurant did GM Ronald Rufino work at as Captain?", a:["SHO Shaun Hergatt","The Modern","Al Coro","Le Pavillon"], c:0 },
@@ -1499,8 +1566,8 @@ var QUIZ_GENERAL_MORE = [
   { q:"What award did Head Bartender Calvin Czypinski win this year?", a:["James Beard Award","VinePair's Best New Bartender","Michelin Guide Sommelier of the Year","Tales of the Cocktail Spirited Award"], c:1 },
   { q:"At which restaurant was Calvin Czypinski promoted to Head Bartender?", a:["Miss Ada","Theodora","River Park","Dolores"], c:1 },
   { q:"Which venue did Calvin most recently run the bar program for, hosting pop-ups like Sunken Harbor and Bangkok Supper Club?", a:["Theodora Beach Club","Dolores","Bar Francis","Miss Ada"], c:0 },
-  { q:"Where did Lead Line Cook Eli Gitelman train early in his career, under Daniel Boulud?", a:["Le Bernardin","Restaurant Daniel","Per Se","Eleven Madison Park"], c:1 },
-  { q:"Who did Lead Line Cook Eli Gitelman partner with at Foxface to help earn 3 NYT stars?", a:["Franco Sampogna","Dave Santos","Daniel Boulud","Vitor Mendes"], c:1 },
+  { q:"Where did Executive Sous Chef Eli Gitelman train early in his career, under Daniel Boulud?", a:["Le Bernardin","Restaurant Daniel","Per Se","Eleven Madison Park"], c:1 },
+  { q:"Who did Executive Sous Chef Eli Gitelman partner with at Foxface to help earn 3 NYT stars?", a:["Franco Sampogna","Dave Santos","Daniel Boulud","Vitor Mendes"], c:1 },
   { q:"What was GM Ronald Rufino's most recent General Manager role before iara?", a:["Little Maven","Blue Hill at Stone Barns","SHO Shaun Hergatt","Frevo"], c:0 },
   { q:"GM Ronald Rufino served as Head Sommelier &amp; Wine Buyer for which Members Club?", a:["Flyfish Club","Casa Cipriani","The Grill Club","Norwood Club"], c:0 },
   { q:"What beverage does GM Ronald Rufino especially enjoy?", a:["Whiskey","Mezcal","Sake","Port wine"], c:1 },
@@ -1784,12 +1851,12 @@ document.getElementById("sb-switch").addEventListener("click", function(){
 /* ============================================================
    Nav
    ============================================================ */
-var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
+var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", watch:"Watch List", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
 
 /* Hash routing. Without it a refresh, or the phone reloading the tab in the
    background, dumps you back on Home and loses your place mid-manual. It also
    makes the back button work and lets a manager send a link to one section. */
-var VIEW_NAMES = ["home","manual","team","fnb","lore","study","quiz","checklist","progress"];
+var VIEW_NAMES = ["home","manual","team","fnb","lore","study","watch","quiz","checklist","progress"];
 
 function parseHash(){
   var raw = (location.hash || "").replace(/^#\/?/, "");
@@ -1810,6 +1877,7 @@ function showView(name, opts){
   document.title = (VIEW_TITLES[name] ? VIEW_TITLES[name] + " \u00b7 " : "") + "iara Lineup";
   if (name === "quiz" && !activeQuiz) renderQuizPicker();
   if (name === "study" && !studyDeck) renderStudyPicker();
+  if (name === "watch") renderWatch();
   if (name === "checklist") renderChecklist();
   if (name === "home") renderHomeFirstWeek();
   if (name === "progress") renderProgress();
@@ -3107,6 +3175,719 @@ function renderStudyDone(){
 }
 
 
+
+
+/* ============================================================
+   Watch List: the critics and press who could be at any table.
+   Data is embedded (works offline). Each photo comes from a page tied to that
+   person (byline page, own site, Commons category) and is credited on the
+   card. Illustrations are kept out of the face drill. Anyone anonymous is
+   flagged, never guessed at.
+   Drill progress shares the Study mastery store under "wl:" ids.
+   ============================================================ */
+var WATCH = /*WATCH_DATA*/[
+ {
+  "slug": "ligaya-mishan",
+  "name": "Ligaya Mishan",
+  "outlet": "The New York Times",
+  "role": "Co-chief restaurant critic (appointed June 2025)",
+  "beat": "NYC-focused restaurant criticism, with some national reach",
+  "note": "NYT dropped critic anonymity with this appointment, so her identity is public; NYT also adds brief starred reviews from other writers.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Ligaya_Mishan"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/ligaya-mishan.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page (nytimes.com/by/ligaya-mishan)"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "tejal-rao",
+  "name": "Tejal Rao",
+  "outlet": "The New York Times",
+  "role": "Co-chief restaurant critic (appointed June 2025)",
+  "beat": "Nationwide restaurant criticism; California-based, travels often",
+  "note": "Former NYT California critic (since 2018), James Beard award winner; no longer anonymous.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Tejal_Rao"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/tejal-rao.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page (nytimes.com/by/tejal-rao)"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "matthew-schneier",
+  "name": "Matthew Schneier",
+  "outlet": "New York magazine / Grub Street",
+  "role": "Chief restaurant critic (took over from Adam Platt, Aug 2023)",
+  "beat": "NYC restaurant reviews",
+  "note": "Former fashion/culture writer (The Cut, NYT) turned critic; reviews run on Grub Street.",
+  "sources": [
+   "https://talkhouse.com/748-new-york-magazine-restaurant-reviewing-with-matthew-schneier"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/matthew-schneier.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Cultured magazine interview, cross-checked with Cultured group portrait"
+  },
+  "group": "New York Mag"
+ },
+ {
+  "slug": "helen-rosner",
+  "name": "Helen Rosner",
+  "outlet": "The New Yorker",
+  "role": "Food correspondent / staff writer; writes the Tables for Two restaurant column (took over from Hannah Goldfield by Sept 2025)",
+  "beat": "Restaurant reviews and food profiles",
+  "note": "Won the 2024 James Beard Craig Claiborne Distinguished Criticism Award; ex-Eater and Saveur editor.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Helen_Rosner"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/helen-rosner.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Uses This interview portrait (usesthis.com)"
+  },
+  "group": "New Yorker"
+ },
+ {
+  "slug": "hannah-goldfield",
+  "name": "Hannah Goldfield",
+  "outlet": "The New Yorker",
+  "role": "Staff writer; former Tables for Two critic (first full-time New Yorker restaurant critic, 2018)",
+  "beat": "Restaurants and food culture",
+  "note": "Stepped down from the Tables for Two column; Helen Rosner now writes it. Exact step-down date not verified.",
+  "sources": [
+   "https://www.nybooks.com/contributors/hannah-goldfield/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/hannah-goldfield.jpg",
+  "illustration": true,
+  "photoCredit": {
+   "text": "The New Yorker contributor page (illustration)"
+  },
+  "group": "New Yorker"
+ },
+ {
+  "slug": "gwendal-poullennec",
+  "name": "Gwendal Poullennec",
+  "outlet": "Michelin Guide",
+  "role": "International Director of the MICHELIN Guides",
+  "beat": "Oversees all Guide selections worldwide, including North America",
+  "note": "The Guide's public face; inspectors themselves are anonymous. 2026 Northeast Cities ceremony (incl. NYC) is Dec 14 at the Glasshouse, Manhattan.",
+  "sources": [
+   "https://www.bostonglobe.com/2025/11/19/lifestyle/philadelphia-new-york-michelin-guide"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/gwendal-poullennec.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Wildbee, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Gwendal_Poullenec_Oct_2020_MICHELIN-MTP_Wildbee_f-aceto-14_(cropped).jpg"
+  },
+  "group": "Michelin & Beard"
+ },
+ {
+  "slug": "michelin-inspectors",
+  "name": "Michelin Guide inspectors (anonymous)",
+  "outlet": "Michelin Guide",
+  "role": "Full-time inspectors (identities not public)",
+  "beat": "Anonymous multi-visit evaluation of restaurants",
+  "note": "Book under assumed names and pay in full; cannot be identified by face or name. Treat every table equally.",
+  "sources": [
+   "https://guide.michelin.com/us/en/article/features/everything-you-want-to-know-about-the-michelin-guide-inspectors"
+  ],
+  "anonymous": true,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Michelin & Beard"
+ },
+ {
+  "slug": "elazar-sontag",
+  "name": "Elazar Sontag",
+  "outlet": "The Washington Post",
+  "role": "Food critic (started Nov 2025)",
+  "beat": "National-profile critic based in DC; former Bon Appetit restaurant editor",
+  "note": "Publicly shows his face and restored star ratings; still avoids reserving under his own name. Could visit NYC.",
+  "sources": [
+   "https://washingtonian.com/2025/11/10/elazar-sontag-is-the-washington-posts-new-food-critic/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/elazar-sontag.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NPR profile, Dec 2025"
+  },
+  "group": "Other Press"
+ },
+ {
+  "slug": "pete-wells",
+  "name": "Pete Wells",
+  "outlet": "The New York Times",
+  "role": "Reporter covering food (former chief restaurant critic, 2012 to Aug 2024)",
+  "beat": "Food reporting; no longer reviews",
+  "note": "Kept his face out of print for his whole run as critic, so there is no reliable photo. Booked under fake names.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Pete_Wells"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "NYT"
+ },
+ {
+  "slug": "florence-fabricant",
+  "name": "Florence Fabricant",
+  "outlet": "The New York Times",
+  "role": "Food and wine writer; Off the Menu column on new openings",
+  "beat": "New restaurant openings and food news",
+  "note": "Her Off the Menu column is where NYC openings get announced.",
+  "sources": [
+   "https://www.nytimes.com/by/florence-fabricant"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/florence-fabricant.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "eric-asimov",
+  "name": "Eric Asimov",
+  "outlet": "The New York Times",
+  "role": "Chief wine critic",
+  "beat": "Wine, including restaurant wine lists",
+  "note": "Likely to notice the wine program as much as the food.",
+  "sources": [
+   "https://www.nytimes.com/by/eric-asimov"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/eric-asimov.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "priya-krishna",
+  "name": "Priya Krishna",
+  "outlet": "The New York Times",
+  "role": "Food staff reporter; interim restaurant critic from July 2024",
+  "beat": "Food reporting and cooking video",
+  "note": "Filled in as critic alongside Melissa Clark after Wells. Whether she still reviews after June 2025 is unverified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Priya_Krishna_(journalist)"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/priya-krishna.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "sam-sifton",
+  "name": "Sam Sifton",
+  "outlet": "The New York Times",
+  "role": "Assistant managing editor; founder of NYT Cooking, former food editor",
+  "beat": "Newsroom food and cooking leadership",
+  "note": "Influences NYT food coverage decisions. Exact 2026 portfolio unverified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Sam_Sifton"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/sam-sifton.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "ryan-sutton",
+  "name": "Ryan Sutton",
+  "outlet": "The Lo Times (Substack)",
+  "role": "Chief critic and editor; formerly Eater NY chief critic (position eliminated)",
+  "beat": "Independent NYC restaurant reviews",
+  "note": "Longtime star-rating-style critic; now self-published, so he may dine on his own account.",
+  "sources": [
+   "https://tastecooking.com/this-is-taste-479-the-future-of-restaurant-criticism-is-in-your-inbox-with-ryan-sutton/"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Independent"
+ },
+ {
+  "slug": "robert-sietsema",
+  "name": "Robert Sietsema",
+  "outlet": "Robert Sietsema's New York (Substack)",
+  "role": "Independent writer; laid off from Eater Dec 2024, started Substack in 2025",
+  "beat": "Cheap eats and neighborhood NYC dining",
+  "note": "Decades-long NYC dining chronicler (ex-Village Voice, Eater) who writes about LES-type neighborhood places.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Robert_Sietsema"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Independent"
+ },
+ {
+  "slug": "stephanie-wu",
+  "name": "Stephanie Wu",
+  "outlet": "Eater",
+  "role": "Editor-in-chief (since March 2022); Eater now owned by PMX / Penske Media",
+  "beat": "Runs Eater nationally",
+  "note": "Eater cut 15 staff in Aug 2025 incl. Northeast deputy editor Erika Adams; current Eater NY editor could not be verified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Eater_(website)"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/stephanie-wu.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Eater (photo: Shannon Sturgis)"
+  },
+  "group": "Food Media"
+ },
+ {
+  "slug": "clare-reichenbach",
+  "name": "Clare Reichenbach",
+  "outlet": "James Beard Foundation",
+  "role": "Chief executive officer",
+  "beat": "Runs the JBF Awards, JBF House and programs",
+  "note": "Her organization names the Restaurant & Chef Awards (Rising Star, Best New Restaurant), which iara is eligible for after opening.",
+  "sources": [
+   "https://www.jamesbeard.org/about-us/our-people/clare-reichenbach"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/clare-reichenbach.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "James Beard Foundation staff page"
+  },
+  "group": "Michelin & Beard"
+ },
+ {
+  "slug": "jamila-robinson",
+  "name": "Jamila Robinson",
+  "outlet": "Bon Appetit / Epicurious",
+  "role": "Editor-in-chief (since Sept 2023)",
+  "beat": "Leads both titles; Bon Appetit publishes the Best New Restaurants list",
+  "note": "Former Philadelphia Inquirer food editor and ex-JBF journalism chair.",
+  "sources": [
+   "https://www.mediapost.com/publications/article/388628/jamila-robinson-named-eic-of-bon-appetit.html"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/jamila-robinson.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Bon Appetit contributor page"
+  },
+  "group": "Food Media"
+ },
+ {
+  "slug": "hunter-lewis",
+  "name": "Hunter Lewis",
+  "outlet": "Food & Wine",
+  "role": "Editor-in-chief (since 2017)",
+  "beat": "Leads F&W, incl. Best New Chefs",
+  "note": "Runs the Best New Chefs program.",
+  "sources": [
+   "https://www.talkhouse.com/636-life-at-the-top-of-the-masthead-with-food-wine-editor-in-chief-hunter-lewis"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/hunter-lewis.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Food & Wine author page"
+  },
+  "group": "Food Media"
+ },
+ {
+  "slug": "morgan-carter",
+  "name": "Morgan Carter",
+  "outlet": "Time Out New York",
+  "role": "Food and Drink Editor (announced July 2024)",
+  "beat": "NYC food and drink coverage",
+  "note": "Ex-Denver food writer; leads Time Out NY's restaurant coverage.",
+  "sources": [
+   "https://www.timeout.com/newyork/news/let-me-tell-youim-time-out-new-yorks-new-food-and-drink-editor-071024"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Food Media"
+ },
+ {
+  "slug": "steve-cuozzo",
+  "name": "Steve Cuozzo",
+  "outlet": "New York Post",
+  "role": "Restaurant critic, real estate columnist (per Wikipedia, which lists him as living)",
+  "beat": "Blunt, opinionated NYC reviews",
+  "note": "Veteran tabloid critic known for harsh pans. Whether he still reviews in 2026 is unverified. Still publishing at the Post as of Sept 2026.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Steve_Cuozzo"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Other Press"
+ },
+ {
+  "slug": "tom-sietsema",
+  "name": "Tom Sietsema",
+  "outlet": "NOTUS / Next Course newsletter (formerly The Washington Post)",
+  "role": "Food correspondent at NOTUS; retired as WaPo critic Oct 2025",
+  "beat": "Newsletter and travel",
+  "note": "25 years as the Post's critic; famous for disguises and anonymity (now retired from that role).",
+  "sources": [
+   "https://breadfurst.com/2026/01/16/a-critic-retires-and-another-is-born/"
+  ],
+  "anonymous": true,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Former Critics"
+ },
+ {
+  "slug": "adam-platt",
+  "name": "Adam Platt",
+  "outlet": "New York magazine (retired critic)",
+  "role": "Former chief restaurant critic (22 years, to 2023); NYU journalism faculty",
+  "beat": "Historic NYC criticism",
+  "note": "Reviewed NYC for New York magazine for 22 years before Matthew Schneier took over; not currently reviewing.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Adam_Platt"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/adam-platt.jpg",
+  "illustration": true,
+  "photoCredit": {
+   "text": "Grub Street author page (illustration)"
+  },
+  "group": "Former Critics"
+ },
+ {
+  "slug": "ruth-reichl",
+  "name": "Ruth Reichl",
+  "outlet": "Former NYT chief critic; Gourmet editor",
+  "role": "Author and Substack writer; former NYT critic (1993-99) and Gourmet editor",
+  "beat": "Food writing and commentary",
+  "note": "Famous for wearing disguises while reviewing; still widely recognized in NYC.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Ruth_Reichl"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/ruth-reichl.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Timothy Krause, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Ruth_Reichl_(cropped).jpg"
+  },
+  "group": "Former Critics"
+ },
+ {
+  "slug": "arthur-schwartz",
+  "name": "Arthur Schwartz",
+  "outlet": "Podcast (Food Maven / Food Mensch); formerly NY Daily News",
+  "role": "Former NY Daily News restaurant critic and food editor; active podcaster in 2026",
+  "beat": "Old-school NYC food",
+  "note": "Longtime radio/podcast voice, still publishing 2026 episodes.",
+  "sources": [
+   "https://arthur-schwartz-the-food-maven.castos.com/episodes/arthur-schwartz-the-food-mensch-myths-and-lies-february-24-2026"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Former Critics"
+ },
+ {
+  "slug": "keith-lee",
+  "name": "Keith Lee",
+  "outlet": "TikTok / Instagram",
+  "role": "Food reviewer, Las Vegas-based",
+  "beat": "10-point scale reviews, often takeout, favors Black- and family-owned spots",
+  "note": "About 17M TikTok followers (May 2025); his visits create the 'Keith Lee effect' and he says he pays and has family pick up to avoid VIP treatment.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Keith_Lee_(food_critic)"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/keith-lee.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Kirby Taylor, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Keith_Lee_at_Essence_Festival_of_Culture_2025_(4).jpg"
+  },
+  "group": "Creators"
+ },
+ {
+  "slug": "dave-portnoy",
+  "name": "Dave Portnoy",
+  "outlet": "Barstool Sports (One Bite pizza reviews)",
+  "role": "Founder; pizza reviewer",
+  "beat": "One Bite scored pizza reviews",
+  "note": "One of the most visible NYC pizza reviewers by reach; role from general knowledge, not re-verified here.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Dave_Portnoy"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/dave-portnoy.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Zach Catanzareti Photo, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Dave_portnoy_(48571713636)_(cropped).jpg"
+  },
+  "group": "Creators"
+ },
+ {
+  "slug": "david-chang",
+  "name": "David Chang",
+  "outlet": "Momofuku / The Dave Chang Show",
+  "role": "Chef-founder, host of a podcast",
+  "beat": "NYC restaurants and food media",
+  "note": "Industry heavyweight whose opinions travel; role from general knowledge, photo is from 2010.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/David_Chang"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/david-chang.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "David Shankbone, CC BY 3.0, https://commons.wikimedia.org/wiki/File:David_Chang_David_Shankbone_2010_(3x4_cropped).jpg"
+  },
+  "group": "Creators"
+ }
+]/*END_WATCH_DATA*/;
+var WL = { tab:"roster", outlet:"All", q:"", open:null, deck:null, picked:null };
+
+function wlArea(){ return document.getElementById("watch-area"); }
+function wlWithPhoto(){ return WATCH.filter(function(p){ return !!p.photo && !p.illustration; }); }
+
+function renderWatch(){
+  var rosterTab = document.getElementById("wl-tab-roster"), studyTab = document.getElementById("wl-tab-study");
+  var isRoster = WL.tab === "roster";
+  rosterTab.classList.toggle("active", isRoster); rosterTab.setAttribute("aria-selected", isRoster);
+  studyTab.classList.toggle("active", !isRoster); studyTab.setAttribute("aria-selected", !isRoster);
+  if (isRoster) renderWatchRoster(); else if (WL.deck) renderWatchCard(); else renderWatchPicker();
+}
+
+function wlOutlets(){
+  var counts = {};
+  WATCH.forEach(function(p){ counts[p.group] = (counts[p.group] || 0) + 1; });
+  var order = ["NYT","New Yorker","New York Mag","Michelin & Beard","Food Media","Other Press","Independent","Creators","Former Critics"];
+  return order.filter(function(g){ return counts[g]; });
+}
+
+function renderWatchRoster(){
+  var area = wlArea();
+  var outlets = wlOutlets();
+  var html = '<div class="manual-search"><label class="sr-only" for="wl-q">Search the Watch List</label>' +
+    '<input id="wl-q" type="search" autocomplete="off" placeholder="Search by name, outlet, or beat" value="'+esc(WL.q)+'"></div>' +
+    '<div class="wl-filters" role="tablist" aria-label="Filter by outlet group">' +
+    ["All"].concat(outlets).map(function(o){
+      return '<button class="fb-tab'+(WL.outlet === o ? ' active' : '')+'" data-outlet="'+esc(o)+'">'+esc(o)+'</button>';
+    }).join('') + '</div><div id="wl-list"></div>';
+  area.innerHTML = html;
+  area.querySelectorAll("[data-outlet]").forEach(function(b){
+    b.addEventListener("click", function(){ WL.outlet = b.getAttribute("data-outlet"); WL.open = null; renderWatchRoster(); });
+  });
+  document.getElementById("wl-q").addEventListener("input", function(e){
+    WL.q = e.target.value; WL.open = null; renderWatchList();
+  });
+  renderWatchList();
+}
+
+function renderWatchList(){
+  var q = WL.q.trim().toLowerCase();
+  var rows = WATCH.filter(function(p){
+    if (WL.outlet !== "All" && p.group !== WL.outlet) return false;
+    if (!q) return true;
+    return (p.name + " " + p.outlet + " " + p.role + " " + (p.beat || "")).toLowerCase().indexOf(q) !== -1;
+  });
+  var host = document.getElementById("wl-list");
+  if (!rows.length) { host.innerHTML = '<p class="wl-empty">Nobody matches that.</p>'; return; }
+  host.innerHTML = '<ul class="wl-grid">' + rows.map(function(p){
+    var open = WL.open === p.slug;
+    var photo = p.photo
+      ? '<img src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy" width="320" height="400">'
+      : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous. No photo exists.' : 'No reliable photo yet.') + '</span>';
+    var detail = '';
+    if (open) {
+      detail = '<div class="wl-detail">' +
+        (p.beat ? '<p><strong>Beat:</strong> '+esc(p.beat)+'</p>' : '') +
+        (p.note ? '<p>'+esc(p.note)+'</p>' : '') +
+        (p.photoCredit ? '<p class="wl-credit">Photo: '+esc(p.photoCredit.text || p.photoCredit)+'</p>' : '') +
+        ((p.sources && p.sources[0]) ? '<p class="wl-credit"><a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source</a></p>' : '') +
+        '</div>';
+    }
+    return '<li class="wl-card'+(open ? ' is-open' : '')+'">' +
+      '<button class="wl-hit" data-slug="'+esc(p.slug)+'" aria-expanded="'+open+'">' +
+        '<span class="wl-photo">'+photo+'</span>' +
+        '<span class="wl-meta"><span class="wl-name">'+esc(p.name)+'</span>' +
+        '<span class="wl-outlet">'+esc(p.outlet)+'</span>' +
+        '<span class="wl-role">'+esc(p.role)+'</span></span></button>' + detail + '</li>';
+  }).join('') + '</ul>';
+  host.querySelectorAll(".wl-hit").forEach(function(b){
+    b.addEventListener("click", function(){
+      var slug = b.getAttribute("data-slug");
+      WL.open = (WL.open === slug) ? null : slug;
+      renderWatchList();
+      var el = host.querySelector('[data-slug="'+slug+'"]');
+      if (el && WL.open) el.scrollIntoView({ block:"nearest" });
+    });
+  });
+}
+
+/* --- Drill --- */
+function wlDecks(){
+  return [
+    { key:"faces",   label:"Name the Face",  cards: wlWithPhoto().length },
+    { key:"outlets", label:"Name to Outlet", cards: WATCH.length }
+  ];
+}
+function wlBuild(key){
+  if (key === "faces") return wlWithPhoto().map(function(p){ return { id:"wl:"+p.slug+":face", kind:"face", p:p }; });
+  return WATCH.map(function(p){ return { id:"wl:"+p.slug+":outlet", kind:"outlet", p:p }; });
+}
+function wlDeckPct(key){
+  var cards = wlBuild(key), m = loadMastery();
+  if (!cards.length) return 0;
+  var t = cards.reduce(function(s,c){ return s + Math.min(MASTERY_MAX, masteryOf(m, c.id)); }, 0);
+  return Math.round(t / (cards.length * MASTERY_MAX) * 100);
+}
+
+function renderWatchPicker(){
+  var area = wlArea();
+  var html = '<h2 class="drill-head">Pick a drill</h2><div class="deck-grid">';
+  wlDecks().forEach(function(d){
+    var pct = wlDeckPct(d.key);
+    html += '<button class="deck" data-wl-deck="'+d.key+'"'+(d.cards ? '' : ' disabled')+'>' +
+      '<span class="deck-name">'+esc(d.label)+'</span>' +
+      '<span class="deck-meta">'+d.cards+(d.cards === 1 ? ' card' : ' cards')+'</span>' +
+      '<span class="deck-bar"><span style="width:'+pct+'%"></span></span>' +
+      (pct ? '<span class="deck-pct mono">'+pct+'% mastered</span>' : '') + '</button>';
+  });
+  html += '</div>';
+  area.innerHTML = html;
+  area.querySelectorAll("[data-wl-deck]").forEach(function(b){
+    b.addEventListener("click", function(){ startWatchDrill(b.getAttribute("data-wl-deck")); });
+  });
+}
+
+function startWatchDrill(key){
+  var cards = shuffle(wlBuild(key));
+  if (!cards.length) return;
+  var label = wlDecks().filter(function(d){ return d.key === key; })[0].label;
+  WL.deck = { key:key, label:label, cards:cards, idx:0, revealed:false, right:0, wrong:0 };
+  WL.picked = null;
+  renderWatchCard();
+}
+function exitWatchDrill(){ WL.deck = null; WL.picked = null; renderWatchPicker(); }
+
+function wlHeader(d, c){
+  var m = masteryOf(loadMastery(), c.id), pips = "";
+  for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
+  return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
+    '<span class="qprog-m">'+esc(d.label)+'</span> <span class="pips" title="'+esc(masteryLabel(m))+'">'+pips+'</span></div>' +
+    '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>';
+}
+
+function renderWatchCard(){
+  var d = WL.deck;
+  if (d.idx >= d.cards.length) return renderWatchDone();
+  var c = d.cards[d.idx], p = c.p, area = wlArea();
+  var html = '<div class="card studycard">' + wlHeader(d, c);
+
+  if (c.kind === "face") {
+    if (!c.choices) {
+      var pool = shuffle(wlWithPhoto().filter(function(x){ return x.slug !== p.slug; }));
+      var same = pool.filter(function(x){ return x.outlet === p.outlet; });
+      var others = pool.filter(function(x){ return x.outlet !== p.outlet; });
+      c.choices = shuffle([p].concat(same.slice(0,1), others).slice(0,4));
+      if (c.choices.indexOf(p) === -1) c.choices[0] = p;
+      c.choices = shuffle(c.choices);
+    }
+    html += '<p class="study-hint">Who is this?</p>' +
+      '<div class="wl-face"><img src="'+esc(p.photo)+'" alt="Photo of a food critic to identify" width="320" height="400"></div>' +
+      '<div class="wl-choices">' + c.choices.map(function(x){
+        var cls = "wl-choice";
+        if (WL.picked) { if (x.slug === p.slug) cls += " is-right"; else if (x.slug === WL.picked) cls += " is-wrong"; }
+        return '<button class="'+cls+'" data-pick="'+esc(x.slug)+'"'+(WL.picked ? ' disabled' : '')+'>'+esc(x.name)+'</button>';
+      }).join('') + '</div>';
+    if (WL.picked) {
+      html += '<p class="wl-verdict">'+(WL.picked === p.slug ? "Correct." : "Not quite.")+'</p>' +
+        '<p class="wl-reveal"><strong>'+esc(p.name)+'</strong>, '+esc(p.role)+', '+esc(p.outlet)+'.</p>' +
+        '<button class="btn btn-sun" id="wl-next" style="margin-top:14px;">Continue</button>';
+    }
+  } else {
+    html += '<h3 class="study-front">'+esc(p.name)+'</h3>';
+    if (!d.revealed) {
+      html += '<p class="study-hint">Where do they write, and what do they cover?</p><button class="btn btn-sun" id="wl-show">Show Answer</button>';
+    } else {
+      html += '<div class="study-back"><p><strong>'+esc(p.outlet)+'</strong>. '+esc(p.role)+'.</p>' +
+        (p.beat ? '<p class="study-extra">'+esc(p.beat)+'</p>' : '') + '</div>' +
+        '<div class="study-grade"><button class="btn btn-ghost" id="wl-miss">Missed It</button>' +
+        '<button class="btn btn-sun" id="wl-got">Got It</button></div>';
+    }
+  }
+  html += '<button class="linkish" id="wl-quit">Back to Drill</button></div>';
+  area.innerHTML = html;
+
+  area.querySelectorAll("[data-pick]").forEach(function(b){
+    b.addEventListener("click", function(){
+      WL.picked = b.getAttribute("data-pick");
+      var ok = WL.picked === p.slug;
+      bumpMastery(c.id, ok);
+      if (ok) d.right++; else { d.wrong++; d.cards.push({ id:c.id, kind:c.kind, p:p }); }
+      renderWatchCard();
+    });
+  });
+  var next = document.getElementById("wl-next");
+  if (next) next.addEventListener("click", function(){ d.idx++; WL.picked = null; renderWatchCard(); });
+  var show = document.getElementById("wl-show");
+  if (show) show.addEventListener("click", function(){ d.revealed = true; renderWatchCard(); });
+  [["wl-got", true], ["wl-miss", false]].forEach(function(pair){
+    var b = document.getElementById(pair[0]);
+    if (b) b.addEventListener("click", function(){
+      bumpMastery(c.id, pair[1]);
+      if (pair[1]) d.right++; else { d.wrong++; d.cards.push({ id:c.id, kind:c.kind, p:p }); }
+      d.idx++; d.revealed = false; renderWatchCard();
+    });
+  });
+  document.getElementById("wl-quit").addEventListener("click", exitWatchDrill);
+}
+
+function renderWatchDone(){
+  var d = WL.deck, pct = wlDeckPct(d.key);
+  wlArea().innerHTML = '<div class="card result-wrap"><div class="eyebrow">'+esc(d.label)+'</div>' +
+    '<div class="result-num mono">'+pct+'%</div>' +
+    '<p class="result-note">mastered. '+d.right+' first try, '+d.wrong+' to revisit.</p>' +
+    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
+    '<button class="btn btn-sun" id="wl-redo">Drill Again</button>' +
+    '<button class="btn btn-ghost" id="wl-decks">Pick Another Drill</button></div></div>';
+  document.getElementById("wl-redo").addEventListener("click", function(){ startWatchDrill(d.key); });
+  document.getElementById("wl-decks").addEventListener("click", exitWatchDrill);
+}
+
+document.getElementById("wl-tab-roster").addEventListener("click", function(){ WL.tab = "roster"; WL.deck = null; renderWatch(); });
+document.getElementById("wl-tab-study").addEventListener("click", function(){ WL.tab = "study"; renderWatch(); });
 
 /* ============================================================
    First week checklist

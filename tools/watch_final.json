@@ -1,0 +1,490 @@
+[
+ {
+  "slug": "ligaya-mishan",
+  "name": "Ligaya Mishan",
+  "outlet": "The New York Times",
+  "role": "Co-chief restaurant critic (appointed June 2025)",
+  "beat": "NYC-focused restaurant criticism, with some national reach",
+  "note": "NYT dropped critic anonymity with this appointment, so her identity is public; NYT also adds brief starred reviews from other writers.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Ligaya_Mishan"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/ligaya-mishan.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page (nytimes.com/by/ligaya-mishan)"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "tejal-rao",
+  "name": "Tejal Rao",
+  "outlet": "The New York Times",
+  "role": "Co-chief restaurant critic (appointed June 2025)",
+  "beat": "Nationwide restaurant criticism; California-based, travels often",
+  "note": "Former NYT California critic (since 2018), James Beard award winner; no longer anonymous.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Tejal_Rao"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/tejal-rao.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page (nytimes.com/by/tejal-rao)"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "matthew-schneier",
+  "name": "Matthew Schneier",
+  "outlet": "New York magazine / Grub Street",
+  "role": "Chief restaurant critic (took over from Adam Platt, Aug 2023)",
+  "beat": "NYC restaurant reviews",
+  "note": "Former fashion/culture writer (The Cut, NYT) turned critic; reviews run on Grub Street.",
+  "sources": [
+   "https://talkhouse.com/748-new-york-magazine-restaurant-reviewing-with-matthew-schneier"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/matthew-schneier.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Cultured magazine interview, cross-checked with Cultured group portrait"
+  },
+  "group": "New York Mag"
+ },
+ {
+  "slug": "helen-rosner",
+  "name": "Helen Rosner",
+  "outlet": "The New Yorker",
+  "role": "Food correspondent / staff writer; writes the Tables for Two restaurant column (took over from Hannah Goldfield by Sept 2025)",
+  "beat": "Restaurant reviews and food profiles",
+  "note": "Won the 2024 James Beard Craig Claiborne Distinguished Criticism Award; ex-Eater and Saveur editor.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Helen_Rosner"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/helen-rosner.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Uses This interview portrait (usesthis.com)"
+  },
+  "group": "New Yorker"
+ },
+ {
+  "slug": "hannah-goldfield",
+  "name": "Hannah Goldfield",
+  "outlet": "The New Yorker",
+  "role": "Staff writer; former Tables for Two critic (first full-time New Yorker restaurant critic, 2018)",
+  "beat": "Restaurants and food culture",
+  "note": "Stepped down from the Tables for Two column; Helen Rosner now writes it. Exact step-down date not verified.",
+  "sources": [
+   "https://www.nybooks.com/contributors/hannah-goldfield/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/hannah-goldfield.jpg",
+  "illustration": true,
+  "photoCredit": {
+   "text": "The New Yorker contributor page (illustration)"
+  },
+  "group": "New Yorker"
+ },
+ {
+  "slug": "gwendal-poullennec",
+  "name": "Gwendal Poullennec",
+  "outlet": "Michelin Guide",
+  "role": "International Director of the MICHELIN Guides",
+  "beat": "Oversees all Guide selections worldwide, including North America",
+  "note": "The Guide's public face; inspectors themselves are anonymous. 2026 Northeast Cities ceremony (incl. NYC) is Dec 14 at the Glasshouse, Manhattan.",
+  "sources": [
+   "https://www.bostonglobe.com/2025/11/19/lifestyle/philadelphia-new-york-michelin-guide"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/gwendal-poullennec.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Wildbee, CC BY-SA 4.0, https://commons.wikimedia.org/wiki/File:Gwendal_Poullenec_Oct_2020_MICHELIN-MTP_Wildbee_f-aceto-14_(cropped).jpg"
+  },
+  "group": "Michelin & Beard"
+ },
+ {
+  "slug": "michelin-inspectors",
+  "name": "Michelin Guide inspectors (anonymous)",
+  "outlet": "Michelin Guide",
+  "role": "Full-time inspectors (identities not public)",
+  "beat": "Anonymous multi-visit evaluation of restaurants",
+  "note": "Book under assumed names and pay in full; cannot be identified by face or name. Treat every table equally.",
+  "sources": [
+   "https://guide.michelin.com/us/en/article/features/everything-you-want-to-know-about-the-michelin-guide-inspectors"
+  ],
+  "anonymous": true,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Michelin & Beard"
+ },
+ {
+  "slug": "elazar-sontag",
+  "name": "Elazar Sontag",
+  "outlet": "The Washington Post",
+  "role": "Food critic (started Nov 2025)",
+  "beat": "National-profile critic based in DC; former Bon Appetit restaurant editor",
+  "note": "Publicly shows his face and restored star ratings; still avoids reserving under his own name. Could visit NYC.",
+  "sources": [
+   "https://washingtonian.com/2025/11/10/elazar-sontag-is-the-washington-posts-new-food-critic/"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/elazar-sontag.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NPR profile, Dec 2025"
+  },
+  "group": "Other Press"
+ },
+ {
+  "slug": "pete-wells",
+  "name": "Pete Wells",
+  "outlet": "The New York Times",
+  "role": "Reporter covering food (former chief restaurant critic, 2012 to Aug 2024)",
+  "beat": "Food reporting; no longer reviews",
+  "note": "Kept his face out of print for his whole run as critic, so there is no reliable photo. Booked under fake names.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Pete_Wells"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "NYT"
+ },
+ {
+  "slug": "florence-fabricant",
+  "name": "Florence Fabricant",
+  "outlet": "The New York Times",
+  "role": "Food and wine writer; Off the Menu column on new openings",
+  "beat": "New restaurant openings and food news",
+  "note": "Her Off the Menu column is where NYC openings get announced.",
+  "sources": [
+   "https://www.nytimes.com/by/florence-fabricant"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/florence-fabricant.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "eric-asimov",
+  "name": "Eric Asimov",
+  "outlet": "The New York Times",
+  "role": "Chief wine critic",
+  "beat": "Wine, including restaurant wine lists",
+  "note": "Likely to notice the wine program as much as the food.",
+  "sources": [
+   "https://www.nytimes.com/by/eric-asimov"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/eric-asimov.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "priya-krishna",
+  "name": "Priya Krishna",
+  "outlet": "The New York Times",
+  "role": "Food staff reporter; interim restaurant critic from July 2024",
+  "beat": "Food reporting and cooking video",
+  "note": "Filled in as critic alongside Melissa Clark after Wells. Whether she still reviews after June 2025 is unverified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Priya_Krishna_(journalist)"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/priya-krishna.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "sam-sifton",
+  "name": "Sam Sifton",
+  "outlet": "The New York Times",
+  "role": "Assistant managing editor; founder of NYT Cooking, former food editor",
+  "beat": "Newsroom food and cooking leadership",
+  "note": "Influences NYT food coverage decisions. Exact 2026 portfolio unverified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Sam_Sifton"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/sam-sifton.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "NYT author page"
+  },
+  "group": "NYT"
+ },
+ {
+  "slug": "ryan-sutton",
+  "name": "Ryan Sutton",
+  "outlet": "The Lo Times (Substack)",
+  "role": "Chief critic and editor; formerly Eater NY chief critic (position eliminated)",
+  "beat": "Independent NYC restaurant reviews",
+  "note": "Longtime star-rating-style critic; now self-published, so he may dine on his own account.",
+  "sources": [
+   "https://tastecooking.com/this-is-taste-479-the-future-of-restaurant-criticism-is-in-your-inbox-with-ryan-sutton/"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Independent"
+ },
+ {
+  "slug": "robert-sietsema",
+  "name": "Robert Sietsema",
+  "outlet": "Robert Sietsema's New York (Substack)",
+  "role": "Independent writer; laid off from Eater Dec 2024, started Substack in 2025",
+  "beat": "Cheap eats and neighborhood NYC dining",
+  "note": "Decades-long NYC dining chronicler (ex-Village Voice, Eater) who writes about LES-type neighborhood places.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Robert_Sietsema"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Independent"
+ },
+ {
+  "slug": "stephanie-wu",
+  "name": "Stephanie Wu",
+  "outlet": "Eater",
+  "role": "Editor-in-chief (since March 2022); Eater now owned by PMX / Penske Media",
+  "beat": "Runs Eater nationally",
+  "note": "Eater cut 15 staff in Aug 2025 incl. Northeast deputy editor Erika Adams; current Eater NY editor could not be verified.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Eater_(website)"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/stephanie-wu.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Eater (photo: Shannon Sturgis)"
+  },
+  "group": "Food Media"
+ },
+ {
+  "slug": "clare-reichenbach",
+  "name": "Clare Reichenbach",
+  "outlet": "James Beard Foundation",
+  "role": "Chief executive officer",
+  "beat": "Runs the JBF Awards, JBF House and programs",
+  "note": "Her organization names the Restaurant & Chef Awards (Rising Star, Best New Restaurant), which iara is eligible for after opening.",
+  "sources": [
+   "https://www.jamesbeard.org/about-us/our-people/clare-reichenbach"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/clare-reichenbach.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "James Beard Foundation staff page"
+  },
+  "group": "Michelin & Beard"
+ },
+ {
+  "slug": "jamila-robinson",
+  "name": "Jamila Robinson",
+  "outlet": "Bon Appetit / Epicurious",
+  "role": "Editor-in-chief (since Sept 2023)",
+  "beat": "Leads both titles; Bon Appetit publishes the Best New Restaurants list",
+  "note": "Former Philadelphia Inquirer food editor and ex-JBF journalism chair.",
+  "sources": [
+   "https://www.mediapost.com/publications/article/388628/jamila-robinson-named-eic-of-bon-appetit.html"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/jamila-robinson.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Bon Appetit contributor page"
+  },
+  "group": "Food Media"
+ },
+ {
+  "slug": "hunter-lewis",
+  "name": "Hunter Lewis",
+  "outlet": "Food & Wine",
+  "role": "Editor-in-chief (since 2017)",
+  "beat": "Leads F&W, incl. Best New Chefs",
+  "note": "Runs the Best New Chefs program.",
+  "sources": [
+   "https://www.talkhouse.com/636-life-at-the-top-of-the-masthead-with-food-wine-editor-in-chief-hunter-lewis"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/hunter-lewis.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Food & Wine author page"
+  },
+  "group": "Food Media"
+ },
+ {
+  "slug": "morgan-carter",
+  "name": "Morgan Carter",
+  "outlet": "Time Out New York",
+  "role": "Food and Drink Editor (announced July 2024)",
+  "beat": "NYC food and drink coverage",
+  "note": "Ex-Denver food writer; leads Time Out NY's restaurant coverage.",
+  "sources": [
+   "https://www.timeout.com/newyork/news/let-me-tell-youim-time-out-new-yorks-new-food-and-drink-editor-071024"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Food Media"
+ },
+ {
+  "slug": "steve-cuozzo",
+  "name": "Steve Cuozzo",
+  "outlet": "New York Post",
+  "role": "Restaurant critic, real estate columnist (per Wikipedia, which lists him as living)",
+  "beat": "Blunt, opinionated NYC reviews",
+  "note": "Veteran tabloid critic known for harsh pans. Whether he still reviews in 2026 is unverified. Still publishing at the Post as of Sept 2026.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Steve_Cuozzo"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Other Press"
+ },
+ {
+  "slug": "tom-sietsema",
+  "name": "Tom Sietsema",
+  "outlet": "NOTUS / Next Course newsletter (formerly The Washington Post)",
+  "role": "Food correspondent at NOTUS; retired as WaPo critic Oct 2025",
+  "beat": "Newsletter and travel",
+  "note": "25 years as the Post's critic; famous for disguises and anonymity (now retired from that role).",
+  "sources": [
+   "https://breadfurst.com/2026/01/16/a-critic-retires-and-another-is-born/"
+  ],
+  "anonymous": true,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Former Critics"
+ },
+ {
+  "slug": "adam-platt",
+  "name": "Adam Platt",
+  "outlet": "New York magazine (retired critic)",
+  "role": "Former chief restaurant critic (22 years, to 2023); NYU journalism faculty",
+  "beat": "Historic NYC criticism",
+  "note": "Reviewed NYC for New York magazine for 22 years before Matthew Schneier took over; not currently reviewing.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Adam_Platt"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/adam-platt.jpg",
+  "illustration": true,
+  "photoCredit": {
+   "text": "Grub Street author page (illustration)"
+  },
+  "group": "Former Critics"
+ },
+ {
+  "slug": "ruth-reichl",
+  "name": "Ruth Reichl",
+  "outlet": "Former NYT chief critic; Gourmet editor",
+  "role": "Author and Substack writer; former NYT critic (1993-99) and Gourmet editor",
+  "beat": "Food writing and commentary",
+  "note": "Famous for wearing disguises while reviewing; still widely recognized in NYC.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Ruth_Reichl"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/ruth-reichl.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Timothy Krause, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Ruth_Reichl_(cropped).jpg"
+  },
+  "group": "Former Critics"
+ },
+ {
+  "slug": "arthur-schwartz",
+  "name": "Arthur Schwartz",
+  "outlet": "Podcast (Food Maven / Food Mensch); formerly NY Daily News",
+  "role": "Former NY Daily News restaurant critic and food editor; active podcaster in 2026",
+  "beat": "Old-school NYC food",
+  "note": "Longtime radio/podcast voice, still publishing 2026 episodes.",
+  "sources": [
+   "https://arthur-schwartz-the-food-maven.castos.com/episodes/arthur-schwartz-the-food-mensch-myths-and-lies-february-24-2026"
+  ],
+  "anonymous": false,
+  "photo": null,
+  "illustration": false,
+  "photoCredit": null,
+  "group": "Former Critics"
+ },
+ {
+  "slug": "keith-lee",
+  "name": "Keith Lee",
+  "outlet": "TikTok / Instagram",
+  "role": "Food reviewer, Las Vegas-based",
+  "beat": "10-point scale reviews, often takeout, favors Black- and family-owned spots",
+  "note": "About 17M TikTok followers (May 2025); his visits create the 'Keith Lee effect' and he says he pays and has family pick up to avoid VIP treatment.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Keith_Lee_(food_critic)"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/keith-lee.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Kirby Taylor, CC BY 4.0, https://commons.wikimedia.org/wiki/File:Keith_Lee_at_Essence_Festival_of_Culture_2025_(4).jpg"
+  },
+  "group": "Creators"
+ },
+ {
+  "slug": "dave-portnoy",
+  "name": "Dave Portnoy",
+  "outlet": "Barstool Sports (One Bite pizza reviews)",
+  "role": "Founder; pizza reviewer",
+  "beat": "One Bite scored pizza reviews",
+  "note": "One of the most visible NYC pizza reviewers by reach; role from general knowledge, not re-verified here.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/Dave_Portnoy"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/dave-portnoy.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "Zach Catanzareti Photo, CC BY 2.0, https://commons.wikimedia.org/wiki/File:Dave_portnoy_(48571713636)_(cropped).jpg"
+  },
+  "group": "Creators"
+ },
+ {
+  "slug": "david-chang",
+  "name": "David Chang",
+  "outlet": "Momofuku / The Dave Chang Show",
+  "role": "Chef-founder, host of a podcast",
+  "beat": "NYC restaurants and food media",
+  "note": "Industry heavyweight whose opinions travel; role from general knowledge, photo is from 2010.",
+  "sources": [
+   "https://en.wikipedia.org/wiki/David_Chang"
+  ],
+  "anonymous": false,
+  "photo": "img/watch/david-chang.jpg",
+  "illustration": false,
+  "photoCredit": {
+   "text": "David Shankbone, CC BY 3.0, https://commons.wikimedia.org/wiki/File:David_Chang_David_Shankbone_2010_(3x4_cropped).jpg"
+  },
+  "group": "Creators"
+ }
+]
