@@ -30,7 +30,7 @@ NEW_STATUS = {
     'willa-moore': ('Infatuation Writer', 'Reviews Restaurants'),
     'ellie-plass': ('Resy Writer', 'Food Writer'),
     'kate-krader': ('Bloomberg Food Editor', 'Editor'),
-    'mahira-rivers': ('NYT Freelance Critic', 'Reviews Restaurants'),
+    'mahira-rivers': ('NYT Contributing Critic', 'Reviews Restaurants'),
     'sonal-shah': ('Infatuation NYC Editor', 'Editor'),
     'paolo-lucchesi': ('Head of Resy Editorial', 'Editor'),
     'beth-kracklauer': ('Freelance Food Editor', 'Food Writer'),
@@ -56,9 +56,8 @@ NEW_STATUS = {
 }
 REJECT_PHOTO = {'jay-cheshes', 'julia-moskin'}  # Cheshes: unverified avatar. Moskin: keep NYT byline portrait.
 NO_PHOTO_NOTE = {
-    'ryan-sutton': 'Keeps his face out of photos on purpose. Every published image hides it.',
+    'ryan-sutton': 'Showed his face publicly in Nov 2025, but no captioned solo photo exists yet. Pays by Apple Pay, so no name on the card.',
     'robert-sietsema': 'Hides his face in photos (a devil mask, a camera). Treat any regular solo diner taking notes seriously.',
-    'mahira-rivers': 'Former anonymous Michelin inspector. Trained not to be noticed.',
 }
 
 for f in ['photo_staging_C_partA.json', 'photo_staging_C_partB.json']:
@@ -86,6 +85,8 @@ for f in ['photo_staging_A.json', 'photo_staging_B.json']:
             roster[p['slug']]['_credit'] = p.get('source_page_url') or ''
 
 roster.get('julia-moskin', {}).update({'group': 'NYT'})
+roster.get('mahira-rivers', {}).update({'outlet': 'The New York Times', 'group': 'NYT', 'role': 'Contributing restaurant critic (since Nov 2025); former Michelin inspector'})
+roster.get('ryan-sutton', {}).update({'outlet': 'The New York Times / The Lo Times', 'group': 'NYT', 'role': 'NYT contributing critic (since Nov 2025); runs The Lo Times'})
 roster.setdefault('melissa-clark', {'slug': 'melissa-clark', 'name': 'Melissa Clark', 'outlet': 'The New York Times',
     'role': 'Food columnist, NYT Food and Cooking', 'beat': 'Recipes and home cooking; filled in on restaurant reviews in 2024',
     'note': 'Longtime NYT food columnist; widely recognized from NYT Cooking videos.', 'group': 'NYT',
@@ -109,7 +110,7 @@ for s, p in roster.items():
             p['photoCredit'] = {'text': host(credit) or 'verified source'}
     if not p.get('photo') and os.path.exists(os.path.join(ROOT, 'img', 'watch', s + '.jpg')):
         p['photo'] = 'img/watch/' + s + '.jpg'
-        p['photoCredit'] = {'text': 'nytimes.com byline page' if s == 'julia-moskin' else 'verified source'}
+        p['photoCredit'] = {'text': 'nytimes.com byline page' if s in ('julia-moskin', 'mahira-rivers') else 'verified source'}
     if not p.get('photo'):
         p['photo'] = None
         p['photoCredit'] = None
@@ -131,6 +132,14 @@ for d in dossier.get('people', []):
     revs = [r for r in (d.get('recentReviews') or []) if isinstance(r, dict) and r.get('restaurant')]
     if revs:
         p['recentReviews'] = revs[:3]
+
+OVERRIDES = {
+    'mahira-rivers': {'recognizeBy': 'Public NYT byline photo since Dec 2025. Former Michelin inspector, so expect a quiet, observant diner.',
+                      'photoCredit': {'text': 'nytimes.com byline page'}},
+}
+for s_, o in OVERRIDES.items():
+    if s_ in roster:
+        roster[s_].update(o)
 
 out = list(roster.values())
 json.dump(out, open(T('watch_final.json'), 'w'), indent=1, ensure_ascii=False)

@@ -17,12 +17,12 @@
   "group": "NYT",
   "shortRole": "NYT Co-Chief Critic",
   "status": "Reviews Restaurants",
-  "ratingSystem": "NYT stars, 0 to 4. Two stars means very good. Also Critic's Pick. Reviews nationwide. Writes the NYT 100 Best list.",
-  "howTheyDine": "Not anonymous since June 2025. Multiple visits. Times calls for fact-check and photos about a month after a visit. Booking names and party size not published.",
-  "caresAbout": "Imagination, ambience, service, technique, passion, commitment, deliciousness. Rewards places outside the usual fine-dining set (Caribbean Kabawa is No. 1 on her 2026 list).",
-  "recognizeBy": "Dines openly; public photos exist. No published habits.",
+  "ratingSystem": "NYT stars, 0 to 4, plus Critic's Pick. Gave only two four-star reviews so far (Yamada, Albi). Also writes the NYT 100 Best list.",
+  "howTheyDine": "Face is public since June 2025. Books under aliases; the Times pays. Up to three visits per restaurant. Sat with her back to the room in low light on her first assignment.",
+  "caresAbout": "Imagination, ambience, service, technique, passion and deliciousness. Loves immigrant-run and hole-in-the-wall places. Judges a place for what it is, not against fine dining.",
+  "recognizeBy": "Public face; appears in NYT videos. May sit with her back to the room.",
   "whyItMatters": "Her stars are the most important review in New York.",
-  "relevanceToIara": "NYC-based, covers all boroughs and global cuisines. No Brazilian review found.",
+  "relevanceToIara": "High. NYC-based and drawn to immigrant cooking. No Brazilian review by her found.",
   "recentReviews": [
    {
     "restaurant": "Albi (Washington DC)",
@@ -31,16 +31,16 @@
     "url": "https://washingtonian.com/2026/06/16/albi-is-the-first-restaurant-outside-nyc-ever-to-earn-four-stars-from-the-new-york-times/"
    },
    {
-    "restaurant": "Yamada",
-    "date": "2025",
-    "verdict": "Four stars for kaiseki tasting menu.",
-    "url": "https://washingtonian.com/2026/06/16/albi-is-the-first-restaurant-outside-nyc-ever-to-earn-four-stars-from-the-new-york-times/"
+    "restaurant": "Lungi (Upper East Side)",
+    "date": "2026-06",
+    "verdict": "Two stars, Critic's Pick. Praised heat used as one flavor among many.",
+    "url": "https://eastsidefeed.com/food-and-drink/this-newish-upper-east-side-restaurant-just-earned-two-stars-from-the-ny-times/"
    },
    {
-    "restaurant": "Lungi (Upper East Side)",
-    "date": null,
-    "verdict": "Two stars, Critic's Pick.",
-    "url": "https://eastsidefeed.com/food-and-drink/this-newish-upper-east-side-restaurant-just-earned-two-stars-from-the-ny-times/"
+    "restaurant": "Yamada",
+    "date": "2025",
+    "verdict": "Four stars for its kaiseki menu.",
+    "url": "https://washingtonian.com/2026/06/16/albi-is-the-first-restaurant-outside-nyc-ever-to-earn-four-stars-from-the-new-york-times/"
    }
   ]
  },
@@ -62,11 +62,32 @@
   "group": "NYT",
   "shortRole": "NYT Co-Chief Critic",
   "status": "Reviews Restaurants",
-  "ratingSystem": "NYT stars, 0 to 4, plus Critic's Pick.",
-  "howTheyDine": "Not anonymous since June 2025. Based in California; reviews nationwide.",
-  "recognizeBy": "Dines openly; public photos exist.",
-  "whyItMatters": "Same star power as Mishan, but rarely in NYC.",
-  "relevanceToIara": "Lower. She mainly covers California."
+  "ratingSystem": "NYT stars, 0 to 4, plus Critic's Pick. Reviews nationwide.",
+  "howTheyDine": "Based in California and travels to review. Face public since June 2025. Books under aliases; the Times pays. Says perfect anonymity was never realistic.",
+  "recognizeBy": "Public face; appears in NYT videos.",
+  "whyItMatters": "Same NYT stars as Mishan, but mostly outside NYC.",
+  "relevanceToIara": "Low to medium. Mishan covers NYC; Rao covers the rest of the country.",
+  "caresAbout": "Small places and overlooked workers. Sharp on fine dining. Will give a $3 bread as much attention as a tasting menu.",
+  "recentReviews": [
+   {
+    "restaurant": "Off Alley (Seattle)",
+    "date": "2026-04",
+    "verdict": "Two stars, Critic's Pick. Called the tiny spot one that goes big.",
+    "url": "https://hoodline.com/2026/04/shoebox-columbia-city-bistro-snags-rare-new-york-times-rave/"
+   },
+   {
+    "restaurant": "ChopnBlok (Houston)",
+    "date": "2025-12-16",
+    "verdict": "Two stars. Lively, clear vision of modern Black diaspora food.",
+    "url": "https://houston.culturemap.com/news/restaurants-bars/chopnblok-new-york-times-review/"
+   },
+   {
+    "restaurant": "Emeril's (New Orleans)",
+    "date": "2025-10-07",
+    "verdict": "Three stars for the revival by Emeril's son.",
+    "url": "https://www.tigerdroppings.com/rant/food-and-drink/nyt-gives-emerils-3-stars/120554826/"
+   }
+  ]
  },
  {
   "slug": "matthew-schneier",
@@ -86,9 +107,32 @@
   "group": "New York Mag",
   "shortRole": "New York Mag Critic",
   "status": "Reviews Restaurants",
-  "caresAbout": "Recent pieces judged tasting menus (Cove, Saga) and the Babbo revival under Stephen Starr. Publishes a best-restaurants list.",
-  "whyItMatters": "One of the last full-time critics in America. New York mag drives downtown buzz.",
-  "relevanceToIara": "Covers new NYC openings."
+  "caresAbout": "Value, not price. Judges a place by its own ambitions. Picks hyped, high-profile openings and mixes price points.",
+  "whyItMatters": "One of the last full-time critics in America. Drives downtown buzz.",
+  "relevanceToIara": "High. Reviewed a South American grill (Graciela) favorably and covers new Manhattan openings.",
+  "ratingSystem": "No stars. New York magazine paused its rating scale; reviews are prose. Also writes short First Taste pieces and best-of lists.",
+  "howTheyDine": "Books under assumed names or has friends book. Several visits on different days, hours and group sizes. Skips disguises.",
+  "recognizeBy": "No published tells. His face is not hidden.",
+  "recentReviews": [
+   {
+    "restaurant": "Graciela",
+    "date": "2026-08-20",
+    "verdict": "Win for Argentina; maybe the best new steakhouse in NYC.",
+    "url": "https://www.grubstreet.com/article/graciela-steakhouse-nyc-review.html"
+   },
+   {
+    "restaurant": "Oriana",
+    "date": "2026-07-09",
+    "verdict": "Positive. The sequel to Noortwyck fans the fire.",
+    "url": "https://www.grubstreet.com/article/oriana-nyc-restaurant-review.html"
+   },
+   {
+    "restaurant": "Marcel (Sotheby's)",
+    "date": "2026-05-28",
+    "verdict": "Overcurated and underwhelming.",
+    "url": "https://www.grubstreet.com/article/marcel-breuer-building-sothebys-restaurant-review.html"
+   }
+  ]
  },
  {
   "slug": "helen-rosner",
@@ -108,9 +152,20 @@
   "group": "New Yorker",
   "shortRole": "New Yorker Food Writer",
   "status": "Reviews Restaurants",
-  "ratingSystem": "No stars. Short Tables for Two column.",
-  "whyItMatters": "Three-time James Beard winner, including for her restaurant column.",
-  "relevanceToIara": "Writes Tables for Two on NYC restaurants."
+  "ratingSystem": "No stars. Weekly review column The Food Scene, which won a 2024 James Beard Award.",
+  "whyItMatters": "Three-time James Beard winner; big national readership.",
+  "relevanceToIara": "Medium. Reviewed a South American fire restaurant soon after opening.",
+  "howTheyDine": "First visit is a normal meal with a non-food friend she likes, to judge the vibe. Little research before going.",
+  "caresAbout": "Feel and vibe first, then the food. Will pan a big name: she said she could not recommend La Boca.",
+  "recognizeBy": "Usually dines with a friend who is not in food. No other published tells.",
+  "recentReviews": [
+   {
+    "restaurant": "La Boca (Francis Mallmann, Faena)",
+    "date": "2025-11",
+    "verdict": "Very bad. All smoke, no fire. Visited days after it opened.",
+    "url": "https://www.lanacion.com.ar/lifestyle/la-contundente-critica-de-the-new-yorker-al-restaurante-de-francis-mallmann-en-manhattan-nid14112025/"
+   }
+  ]
  },
  {
   "slug": "hannah-goldfield",
@@ -128,9 +183,12 @@
    "text": "wesleyanargus.com"
   },
   "group": "New Yorker",
-  "shortRole": "Former New Yorker Critic",
-  "status": "Former Critic",
-  "whyItMatters": "Departure not confirmed in this research."
+  "shortRole": "New Yorker Food Writer",
+  "status": "Food Writer",
+  "whyItMatters": "2024 James Beard winner. No departure from the New Yorker found; still listed as staff writer.",
+  "ratingSystem": "No stars. Writes for Tables for Two.",
+  "caresAbout": "Drinking culture, mini cocktails, no-alcohol options (2026 interview).",
+  "relevanceToIara": "Medium. Covers NYC restaurants and bars."
  },
  {
   "slug": "gwendal-poullennec",
@@ -167,12 +225,20 @@
   "group": "Michelin & Beard",
   "shortRole": "Michelin Guide Inspectors",
   "status": "Inspector",
-  "ratingSystem": "Stars by team consensus. Disagreement triggers more visits.",
-  "howTheyDine": "Anonymous. Book under assumed names. Often dine alone. No notes at the table. Pay in full. May introduce themselves only after paying.",
-  "caresAbout": "Ingredient quality, technique, harmony of flavors, the chef's personality on the plate, consistency across visits.",
-  "recognizeBy": "No reliable tells. Do not guess.",
+  "ratingSystem": "Stars (1 to 3) and Bib Gourmand. Stars need inspector agreement.",
+  "howTheyDine": "Anonymous, assumed names, no notes at the table, pay in full. Often solo; in pairs at couples places. May reveal themselves only after paying.",
+  "caresAbout": "Ingredient quality, technique, harmony of flavors, the chef's personality, consistency across visits.",
+  "recognizeBy": "No reliable tells. A solo diner who orders widely and pays, then asks to talk, may be one.",
   "whyItMatters": "Stars or a Bib Gourmand change a restaurant's fate.",
-  "relevanceToIara": "High. Consistency on every night is what they test."
+  "relevanceToIara": "High. Consistency every night is what they test.",
+  "recentReviews": [
+   {
+    "restaurant": "Michelin NYC 2025",
+    "date": "2025-11-18",
+    "verdict": "New one stars: Bridges, Huso, Muku, Yamada.",
+    "url": "https://culinaryagents.com/resources/2025-new-york-michelin-star-winners"
+   }
+  ]
  },
  {
   "slug": "elazar-sontag",
@@ -192,12 +258,20 @@
   "group": "Other Press",
   "shortRole": "WaPo Food Critic",
   "status": "Reviews Restaurants",
-  "ratingSystem": "Brought back WaPo stars. A counter-service spot can earn the same stars as fine dining.",
-  "howTheyDine": "Not anonymous. Never books under his own name. Pays his own way. Multiple visits.",
-  "caresAbout": "Whether a restaurant is the best version of itself.",
-  "recognizeBy": "Dines openly. Former Bon Appetit restaurant editor.",
+  "ratingSystem": "Brought back WaPo stars in Dec 2025. One star means good. Highest is four (Izakaya Seki). Counter spots can earn top stars.",
+  "howTheyDine": "Not anonymous. Always books under aliases and pays his own way. About eight meals a week. Multiple visits.",
+  "caresAbout": "Whether a place is the best, most consistent version of itself. Broad taste: Lao, Ethiopian, Vietnamese.",
+  "recognizeBy": "Public face. Former Bon Appetit restaurant editor.",
   "whyItMatters": "Ran Bon Appetit's Best New Restaurants list; national taste-maker.",
-  "relevanceToIara": "Low for reviews (DC beat), but well known in NYC food circles."
+  "relevanceToIara": "Low for reviews (DC beat).",
+  "recentReviews": [
+   {
+    "restaurant": "Izakaya Seki (DC)",
+    "date": "2026-05-05",
+    "verdict": "Four stars, his first.",
+    "url": "https://www.washingtonpost.com/video/lifestyle/food/izakaya-seki-gets-our-food-critics-highest-rating/2026/05/05/cd6f3636-e629-4022-9c6e-2c4ec149bd3b_video.html"
+   }
+  ]
  },
  {
   "slug": "pete-wells",
@@ -217,10 +291,19 @@
   "group": "NYT",
   "shortRole": "Former NYT Critic",
   "status": "Former Critic",
-  "ratingSystem": "Gave NYT stars 2011 to 2024.",
-  "howTheyDine": "Three visits per review, each with three friends.",
-  "whyItMatters": "Stepped down August 2024 for health reasons; still at the Times.",
-  "relevanceToIara": "Low. Not reviewing."
+  "ratingSystem": "Gave NYT stars 2011 to 2024. Gave Brazilian Botequim two stars in 2014.",
+  "howTheyDine": "Fake names; a friend checks in first. Three visits, each with three friends. Waited two months after opening. Did not send food back.",
+  "whyItMatters": "Stepped down Aug 2024; still at the Times.",
+  "relevanceToIara": "Low now. Shows NYT critics value good Brazilian food.",
+  "recognizeBy": "Arrives after his party. Nonprescription glasses. Lots of food, little alcohol. Fingers flutter near temples. Studies each dish.",
+  "recentReviews": [
+   {
+    "restaurant": "Botequim (Brazilian)",
+    "date": "2014-12-23",
+    "verdict": "Two stars. Great feijoada and suckling pig; basement location hurt it.",
+    "url": "https://www.thedailymeal.com/eat/pete-wells-awards-two-stars-botequim"
+   }
+  ]
  },
  {
   "slug": "florence-fabricant",
@@ -240,7 +323,10 @@
   "group": "NYT",
   "shortRole": "NYT Off the Menu",
   "status": "Food Writer",
-  "whyItMatters": "Her opening column lists new restaurants; not verified in this research."
+  "whyItMatters": "Off the Menu is where NYT readers learn about openings.",
+  "ratingSystem": "No ratings. Writes the weekly Off the Menu (openings) and Front Burner columns.",
+  "caresAbout": "Restaurant news and new openings.",
+  "relevanceToIara": "High for PR. A listing there announces a new restaurant."
  },
  {
   "slug": "eric-asimov",
@@ -260,7 +346,10 @@
   "group": "NYT",
   "shortRole": "NYT Wine Critic",
   "status": "Food Writer",
-  "whyItMatters": "NYT wine voice; not verified in this research."
+  "whyItMatters": "Sets the tone on wine lists and pricing.",
+  "ratingSystem": "No restaurant ratings. Chief wine critic since 2004; writes The Pour weekly.",
+  "caresAbout": "Wine with food. Critical of high restaurant wine prices. Prefers good wine over trophy wine.",
+  "relevanceToIara": "Low. Know the wine list and fair pricing."
  },
  {
   "slug": "priya-krishna",
@@ -280,7 +369,12 @@
   "group": "NYT",
   "shortRole": "NYT Food Reporter",
   "status": "Food Writer",
-  "whyItMatters": "NYT food coverage; not verified in this research."
+  "whyItMatters": "Big NYT and video audience.",
+  "ratingSystem": "Gave NYT stars as interim co-critic from Aug 2024 into 2025. Now a reporter and video host.",
+  "howTheyDine": "Wore wigs and costumes as a critic. Brings comedians as companions. Takes leftovers home.",
+  "caresAbout": "South Asian and immigrant food; no waste.",
+  "recognizeBy": "May wear a wig. Takes leftovers home.",
+  "relevanceToIara": "Medium. Covers food culture stories, not starred reviews now."
  },
  {
   "slug": "sam-sifton",
@@ -304,8 +398,8 @@
  {
   "slug": "ryan-sutton",
   "name": "Ryan Sutton",
-  "outlet": "The Lo Times (Substack)",
-  "role": "Chief critic and editor; formerly Eater NY chief critic (position eliminated)",
+  "outlet": "The New York Times / The Lo Times",
+  "role": "NYT contributing critic (since Nov 2025); runs The Lo Times",
   "beat": "Independent NYC restaurant reviews",
   "note": "Longtime star-rating-style critic; now self-published, so he may dine on his own account.",
   "sources": [
@@ -314,13 +408,35 @@
   "anonymous": false,
   "photo": null,
   "photoCredit": null,
-  "group": "Independent",
-  "recognizeBy": "Keeps his face out of photos on purpose. Every published image hides it.",
-  "shortRole": "Lo Times Critic",
+  "group": "NYT",
+  "recognizeBy": "Face public since Nov 2025. Pays by Apple Pay, so no name on the card.",
+  "shortRole": "Lo Times / NYT Critic",
   "status": "Reviews Restaurants",
-  "caresAbout": "Restaurant economics and prices (for example sushi economics, slice pizza).",
-  "whyItMatters": "Former Eater NY chief critic; his Substack is read by the industry.",
-  "relevanceToIara": "Covers NYC restaurants only."
+  "caresAbout": "Prices and value. Steak, sandwiches, tacos. Whether the food justifies the spend.",
+  "whyItMatters": "Now gives NYT stars. Former Eater NY chief critic.",
+  "relevanceToIara": "High. Covers new NYC spots and Latin American grills; picanha fits his beat.",
+  "ratingSystem": "NYT contributing critic since Nov 2025: short starred reviews in the Where to Eat newsletter. No formal scale on The Lo Times.",
+  "howTheyDine": "Showed his face in Nov 2025. Still books under pseudonyms and pays with Apple Pay so his name never shows.",
+  "recentReviews": [
+   {
+    "restaurant": "Chateau Royale (NYT)",
+    "date": "2025-11",
+    "verdict": "One star (good).",
+    "url": "https://www.thelotimes.com/p/nyt-new-contributing-restaurant-critics-mahira-rivers-ryan-sutton"
+   },
+   {
+    "restaurant": "Somssi",
+    "date": "2026-08-03",
+    "verdict": "Praised the $33 ox steak.",
+    "url": "https://www.thelotimes.com/p/best-new-steak-somssi-review-nyc"
+   },
+   {
+    "restaurant": "Unglo",
+    "date": "2026-09-29",
+    "verdict": "Reviewed its beef rib fingers; wrote on Latin American steakhouses.",
+    "url": "https://www.thelotimes.com/p/unglo-steak-review-rib-fingers-nyc-restaurants"
+   }
+  ]
  },
  {
   "slug": "robert-sietsema",
@@ -339,9 +455,30 @@
   "recognizeBy": "Hides his face in photos (a devil mask, a camera). Treat any regular solo diner taking notes seriously.",
   "shortRole": "Substack Critic",
   "status": "Reviews Restaurants",
-  "caresAbout": "Value and good food across all neighborhoods. Openings and neighborhood walks.",
-  "whyItMatters": "35+ years covering NYC; posts three times a week.",
-  "relevanceToIara": "High. Covers openings and global food on a budget-to-mid range."
+  "caresAbout": "Cheap immigrant food made by people cooking from home. Value. New openings across all boroughs.",
+  "whyItMatters": "35+ years covering NYC; reviews new spots fast.",
+  "relevanceToIara": "High. Writes early reviews of new downtown openings.",
+  "ratingSystem": "No stars. Paid Substack, three posts a week. Early reviews, lists, cheap eats.",
+  "recentReviews": [
+   {
+    "restaurant": "Carnegie Deli",
+    "date": "2026-09-30",
+    "verdict": "Review of the reopened Midtown deli.",
+    "url": "https://robertsietsema.substack.com/p/carnegie-deli-steps-back-into-the"
+   },
+   {
+    "restaurant": "Kirbee's (Greenpoint)",
+    "date": "2026-09-23",
+    "verdict": "Memorable ribs and sausage; great potential.",
+    "url": "https://robertsietsema.substack.com/p/kirbees-brings-a-new-style-of-texas"
+   },
+   {
+    "restaurant": "Dravida (East Village)",
+    "date": "2026-08-19",
+    "verdict": "Early review of a new global Indian spot.",
+    "url": "https://robertsietsema.substack.com/p/an-new-east-village-restaurants-tracks"
+   }
+  ]
  },
  {
   "slug": "stephanie-wu",
@@ -456,7 +593,32 @@
   "group": "Other Press",
   "shortRole": "NY Post Critic",
   "status": "Reviews Restaurants",
-  "whyItMatters": "Longtime NY Post restaurant critic with a big mass audience."
+  "whyItMatters": "Big mass audience; NY Post since 1972.",
+  "ratingSystem": "No stars on 2026 reviews. Also writes the Post's real estate column.",
+  "howTheyDine": "Not anonymous; known for it. Accepts extra dishes from the kitchen.",
+  "caresAbout": "Big classic rooms, steak, Midtown. Hates overcooked chicken, share plates, upselling, refusing incomplete parties, and check surcharges.",
+  "recognizeBy": "Public face. Seat incomplete parties and do not upsell him.",
+  "relevanceToIara": "Medium. Likes South American grills; less focused on downtown.",
+  "recentReviews": [
+   {
+    "restaurant": "Graciela",
+    "date": "2026-09-03",
+    "verdict": "Exciting beef; its popularity is deserved.",
+    "url": "https://nypost.com/2026/09/03/lifestyle/summer-remains-scorching-at-steak-spot-graciela-where-they-create-flavor-magic-using-only-sea-salt-and-charcoal/"
+   },
+   {
+    "restaurant": "Derby Club",
+    "date": "2026-08-20",
+    "verdict": "Great food in the old Neary's space.",
+    "url": "https://nypost.com/2026/08/20/lifestyle/derby-club-brings-great-food-to-old-nearys-space/"
+   },
+   {
+    "restaurant": "Carnegie Deli",
+    "date": "2026-09-19",
+    "verdict": "Covered the reopening.",
+    "url": "https://nypost.com/2026/09/19/us-news/nycs-carnegie-deli-reopens-after-decade-long-absence/"
+   }
+  ]
  },
  {
   "slug": "tom-sietsema",
@@ -477,8 +639,8 @@
   "shortRole": "Former WaPo Critic",
   "status": "Former Critic",
   "ratingSystem": "Dropped WaPo stars in 2022.",
-  "howTheyDine": "Tried to stay anonymous; revealed his face when he left in fall 2025.",
-  "recognizeBy": "Face now public.",
+  "howTheyDine": "Never booked under his name. Used many credit cards, phone numbers and 15 OpenTable accounts. At least three visits.",
+  "recognizeBy": "Face public since he retired in fall 2025.",
   "whyItMatters": "25 years at WaPo; retired.",
   "relevanceToIara": "Low."
  },
@@ -501,7 +663,10 @@
   "shortRole": "Former NY Mag Critic",
   "status": "Former Critic",
   "whyItMatters": "Stepped down after 22 years; farewell essay I'm Full.",
-  "relevanceToIara": "Low. Not reviewing."
+  "relevanceToIara": "Low. Not reviewing.",
+  "ratingSystem": "Used New York mag stars, then paused them.",
+  "howTheyDine": "Two or three visits per review. Unmasked on a New York mag cover in Jan 2014.",
+  "recognizeBy": "Face public since 2014."
  },
  {
   "slug": "ruth-reichl",
@@ -557,12 +722,12 @@
   "group": "Creators",
   "shortRole": "TikTok Food Critic",
   "status": "Creator",
-  "ratingSystem": "Scores 1 to 10 on TikTok.",
+  "ratingSystem": "Scores out of 10 on TikTok.",
   "howTheyDine": "Usually orders anonymously, often takeout, reviews in his car. Often with family.",
-  "caresAbout": "Taste, how his family was treated, customer service, cost.",
+  "caresAbout": "Taste, how his family is treated, service, cost. Favors Black-owned and family-owned spots.",
   "recognizeBy": "Very famous face; millions of followers.",
-  "whyItMatters": "One video can fill a dining room overnight.",
-  "relevanceToIara": "Medium. NYC visits so far were mostly casual spots like pizza."
+  "whyItMatters": "One video can fill a room overnight. Hosted a 10,000-person NYC food festival in May 2025.",
+  "relevanceToIara": "Medium. NYC picks so far are casual spots."
  },
  {
   "slug": "dave-portnoy",
@@ -583,11 +748,19 @@
   "shortRole": "One Bite Reviewer",
   "status": "Creator",
   "ratingSystem": "0 to 10 decimal score, mostly pizza. Above 7 is respectable.",
-  "howTheyDine": "Films a single-bite review, usually outside a pizzeria.",
-  "caresAbout": "Crust, sauce, cheese, overall vibe. Leans New York thin crust.",
-  "recognizeBy": "Famous face; often has a camera crew.",
-  "whyItMatters": "Huge audience, but pizza-focused.",
-  "relevanceToIara": "Low. iara is not a pizza shop."
+  "howTheyDine": "Films a one-bite review, usually outside the pizzeria.",
+  "caresAbout": "Crust, sauce, cheese, vibe. Leans New York thin crust.",
+  "recognizeBy": "Famous face; usually a camera crew.",
+  "whyItMatters": "Huge audience, but pizza only.",
+  "relevanceToIara": "Low. iara does not serve pizza.",
+  "recentReviews": [
+   {
+    "restaurant": "Ceres (Mott St)",
+    "date": "2025",
+    "verdict": "9+, his highest since 2023. Lines formed within hours.",
+    "url": "https://www.barstoolsports.com/blog/3545201/best-of-2025-dave-portnoy-just-gave-his-highest-pizza-review-score-since-2023"
+   }
+  ]
  },
  {
   "slug": "david-chang",
@@ -987,8 +1160,8 @@
  {
   "slug": "mahira-rivers",
   "name": "Mahira Rivers",
-  "outlet": "The New York Times (freelance) / Sweet City",
-  "role": "Freelance restaurant critic; former Michelin inspector",
+  "outlet": "The New York Times",
+  "role": "Contributing restaurant critic (since Nov 2025); former Michelin inspector",
   "beat": "Restaurant reviews, NYC desserts (Sweet City newsletter)",
   "note": "She is a former anonymous Michelin inspector who now reviews NYC restaurants for the NYT (TASTE, Dec 19, 2025), so she is trained to dine without being noticed.",
   "group": "NYT",
@@ -996,10 +1169,12 @@
    "https://tastecooking.com/this-is-taste-704-the-year-in-nyc-restaurants-with-alan-sytsma-of-new-york-magazine-mahira-rivers-of-the-new-york-times/"
   ],
   "anonymous": false,
-  "photo": null,
-  "photoCredit": null,
-  "recognizeBy": "Former anonymous Michelin inspector. Trained not to be noticed.",
-  "shortRole": "NYT Freelance Critic",
+  "photo": "img/watch/mahira-rivers.jpg",
+  "photoCredit": {
+   "text": "nytimes.com byline page"
+  },
+  "recognizeBy": "Public NYT byline photo since Dec 2025. Former Michelin inspector, so expect a quiet, observant diner.",
+  "shortRole": "NYT Contributing Critic",
   "status": "Reviews Restaurants"
  },
  {
