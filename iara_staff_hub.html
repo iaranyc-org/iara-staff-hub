@@ -1046,6 +1046,28 @@
   .vb-shout .vb-txt{ color:#eafff6; font-size:16px; } .vb-shout .vb-badge, .vb-shout .vb-who{ color:#a9d8c6; }
   @media (max-width:860px){ .vb-wall{ columns:1; } .vb-hero{ padding:20px 18px 34px; } }
   @media (prefers-reduced-motion:reduce){ .vb-dot{ animation:none; } .vb-polaroid, .vb-polaroid:nth-child(even){ transform:none; } }
+  /* Feedback */
+  #fbk-dialog{ border:1px solid var(--line); border-radius:14px; padding:0; width:min(92vw,460px); background:var(--paper-raised); color:var(--ink); }
+  #fbk-dialog::backdrop{ background:rgba(0,0,0,.55); }
+  #fbk-form{ padding:22px; }
+  #fbk-title{ margin:0 0 4px; font-size:24px; }
+  .fbk-sub{ margin:0 0 14px; font-size:14px; color:var(--ink-soft); }
+  .fbk-kinds{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+  .fbk-kinds input{ position:absolute; opacity:0; pointer-events:none; }
+  .fbk-kinds span{ display:inline-flex; align-items:center; min-height:40px; padding:0 14px; border-radius:999px; border:1.5px solid var(--line);
+    font-size:14px; font-weight:700; color:var(--ink-mid); cursor:pointer; }
+  .fbk-kinds input:checked + span{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
+  .fbk-kinds input:focus-visible + span{ outline:2px solid var(--sun); outline-offset:2px; }
+  #fbk-msg{ width:100%; box-sizing:border-box; font:inherit; font-size:16px; line-height:1.5; padding:12px 14px; border-radius:8px;
+    border:1.5px solid var(--line); background:var(--paper); color:var(--ink); resize:vertical; }
+  #fbk-msg:focus{ outline:none; border-color:var(--sun); }
+  .fbk-hp{ position:absolute; left:-9999px; width:1px; height:1px; }
+  .fbk-status{ min-height:20px; margin:8px 0 0; font-size:13.5px; color:var(--sun); }
+  .fbk-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:8px; }
+  .home-feedback{ display:block; width:100%; text-align:left; margin:18px 0 0; padding:14px 16px; min-height:48px; border-radius:10px;
+    border:1.5px dashed var(--line); background:none; color:var(--ink-soft); font:inherit; font-size:14.5px; cursor:pointer; }
+  .home-feedback b{ color:var(--display); }
+  .home-feedback:hover{ border-color:var(--display); }
   [hidden]{ display:none !important; }
 
   /* The home screen is the docket you are handed at the start of a shift. */
@@ -1185,6 +1207,7 @@
       <div class="name" id="sb-name"></div>
       <div class="role" id="sb-role"></div>
       <button id="sb-switch">Switch User</button>
+      <button data-feedback>Send Feedback</button>
       <button class="nav-btn sb-admin" data-view="progress">Admin</button>
     </div>
   </aside>
@@ -1270,6 +1293,7 @@
           </nav>
         </div>
       </section>
+      <button class="home-feedback" data-feedback>Something broken, confusing, or missing? <b>Send Feedback</b></button>
 
       <div id="home-firstweek"></div>
 
@@ -1411,6 +1435,27 @@
   </nav>
 </div>
 
+
+<dialog id="fbk-dialog" aria-labelledby="fbk-title">
+  <form id="fbk-form" method="dialog" novalidate>
+    <h2 id="fbk-title">Send Feedback</h2>
+    <p class="fbk-sub">Goes straight to Jay. Bugs, ideas, or a shoutout all welcome.</p>
+    <div class="fbk-kinds" role="radiogroup" aria-label="Type">
+      <label><input type="radio" name="kind" value="Bug" checked><span>Bug</span></label>
+      <label><input type="radio" name="kind" value="Idea"><span>Idea</span></label>
+      <label><input type="radio" name="kind" value="Kudos"><span>Kudos</span></label>
+      <label><input type="radio" name="kind" value="Other"><span>Other</span></label>
+    </div>
+    <label class="sr-only" for="fbk-msg">Your feedback</label>
+    <textarea id="fbk-msg" maxlength="2000" rows="5" placeholder="What happened, or what would help?"></textarea>
+    <input type="text" name="website" id="fbk-hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="fbk-hp">
+    <p class="fbk-status" id="fbk-status" role="status"></p>
+    <div class="fbk-actions">
+      <button type="button" class="btn btn-ghost" id="fbk-cancel">Cancel</button>
+      <button type="submit" class="btn btn-sun" id="fbk-send">Send</button>
+    </div>
+  </form>
+</dialog>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
@@ -5426,6 +5471,42 @@ function renderVibes(){
 loadVibes();
 setInterval(loadVibes, 5 * 60 * 1000);
 document.addEventListener("visibilitychange", function(){ if (!document.hidden) loadVibes(); });
+
+
+/* ============================================================
+   Feedback: a small form that pings Jay (Janet, his Telegram bot) through
+   the iara Inbox app, which holds the bot token server-side.
+   ============================================================ */
+(function(){
+  var dlg = document.getElementById("fbk-dialog");
+  if (!dlg) return;
+  var msg = document.getElementById("fbk-msg"), status = document.getElementById("fbk-status"), send = document.getElementById("fbk-send");
+  function open(){
+    status.textContent = ""; send.disabled = false;
+    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    setTimeout(function(){ msg.focus(); }, 50);
+  }
+  function close(){ if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+  document.addEventListener("click", function(e){ var b = e.target.closest("[data-feedback]"); if (b) { e.preventDefault(); open(); } });
+  document.getElementById("fbk-cancel").addEventListener("click", close);
+  dlg.addEventListener("click", function(e){ if (e.target === dlg) close(); });
+  document.getElementById("fbk-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var text = msg.value.trim();
+    if (text.length < 3) { status.textContent = "Add a few words first."; msg.focus(); return; }
+    var kind = (dlg.querySelector('input[name="kind"]:checked') || {}).value || "Other";
+    send.disabled = true; status.textContent = "Sending…";
+    fetch("https://iara-inbox.vercel.app/api/staff-feedback", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ kind: kind, message: text, name: profile ? profile.name : "", role: profile ? profile.role : "",
+        page: location.pathname, website: document.getElementById("fbk-hp").value })
+    }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }).then(function(){
+      msg.value = ""; close(); toast("Sent. Thank you!");
+    }).catch(function(){
+      send.disabled = false; status.textContent = "Could not send. Check your signal and try again.";
+    });
+  });
+})();
 
 /* ============================================================
    First week checklist
