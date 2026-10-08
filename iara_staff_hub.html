@@ -976,6 +976,7 @@
   .ms-dish h3{ font-size:19px; margin:0 0 6px; }
   .ms-dish p{ margin:0; font-size:15.5px; line-height:1.7; color:var(--ink-mid); max-width:62ch; }
   .ms-room{ margin-top:36px; }
+  .ms-group{ margin:18px 0 0; font-size:12px; font-weight:700; letter-spacing:.1em; text-transform:uppercase; color:var(--sun); }
   .ms-intro{ margin:10px 0 4px; font-size:15px; line-height:1.65; color:var(--ink-soft); font-style:italic; max-width:62ch; }
   @media (max-width:860px){ .ms-jump{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; } .ms-jump::-webkit-scrollbar{ display:none; }
     .ms-jump a{ flex:none; min-height:40px; display:inline-flex; align-items:center; } }
@@ -1655,11 +1656,10 @@ var MENU_STORY = [
  {
   "course": "Coquetéis",
   "en": "Cocktails",
-  "intro": "Calvin Czypinski keeps the drinks simple and sources as close to the origin as he can. He peels the limes himself, tastes every spice before using it, makes nothing from a premix, and buys spirits from producers who show where they come from.",
   "dishes": [
    {
     "name": "Classic Caipirinha",
-    "story": "Brazil's national cocktail: cachaça, lime, and sugar. We use Novo Fogo Bar Strength, whose higher proof carries the character of the sugarcane and where it's grown. A caipirinha gets its bright, candy-like fruitiness from the oil in the lime peel, so instead of muddling lime and sugar in the glass, we make an oleo saccharum by macerating lime peels in sugar until the oil becomes a syrup. We shake the syrup hard with the cachaça, fresh lime wedges, and a little extra lime juice to replace the acid lost to the peels. The shake expresses the oil in the wedges and leaves the drink cold and frothy. Balancing the sugar and lime oil in advance keeps every caipirinha consistent."
+    "story": "Brazil's national cocktail: cachaça, lime, and sugar. We use Novo Fogo Bar Strength, whose higher proof carries the character of the sugarcane and where it's grown. A caipirinha gets its bright, candy-like fruitiness from the oil in the lime peel, so instead of muddling lime and sugar in the glass, we make an oleo saccharum by macerating lime peels in sugar until the oil becomes a syrup. We shake the syrup hard with cachaça, fresh lime wedges, and a little extra lime juice to replace the acid the peels lose. The shake expresses the oil in the wedges and leaves the drink cold and frothy. Balancing the sugar and lime oil in advance keeps every caipirinha consistent."
    },
    {
     "name": "Batida de Coco",
@@ -1667,7 +1667,7 @@ var MENU_STORY = [
    },
    {
     "name": "iara",
-    "story": "Our house cocktail began as a riff on a pornstar martini that Calvin created with a friend at a summer pop-up. The base is pox, a Mexican ancestral spirit distilled from cane, wheat, and corn. Cupuaçu, a cacao relative with bright acidity and a lychee-like finish, replaces the original kiwi, and Brazilian vanilla honey rounds it out. A tincture of jiquitaia, the Amazonian pepper blend used throughout the kitchen, adds heat, and Chef Vitor's Amazon spice blend on the rim adds more. We milk-punch it with coconut milk: the acid curdles the milk, the curd pulls out color and harshness, and straining it through cloth leaves a clear, smooth, stable cocktail with a hint of coconut. Because the curd is strained out, the drink is dairy-free."
+    "story": "Our house cocktail began as a riff on a pornstar martini that Calvin created with a friend at a summer pop-up. The base is pox, a Mexican ancestral spirit distilled from cane, wheat, and corn. Cupuaçu, a cacao relative with bright acidity and a lychee-like finish, replaces the original kiwi, and Brazilian vanilla honey rounds it out. A jiquitaia tincture, the Amazonian pepper blend used throughout the kitchen, adds heat, and Chef Vitor's Amazon spice blend on the rim adds more. We milk-punch it with coconut milk: the acid curdles the milk, the curd pulls out color and harshness, and straining it through cloth leaves a clear, smooth, stable cocktail with a hint of coconut. Because we strain out the curd, the drink is dairy-free."
    },
    {
     "name": "Tucupi Martini",
@@ -1675,9 +1675,96 @@ var MENU_STORY = [
    },
    {
     "name": "Romeo and Juliet Martini",
-    "story": "In Brazil, \"Romeu e Julieta\" is the classic pairing of guava paste and cheese. When the team wanted an agave cocktail, Chef Vitor asked for guava and cheese, and the result is an agave martini. The base is Claridad Espadín, a mezcal Calvin wouldn't usually mix with, but its minerality and clarity support the drink while letting the salinity and sweetness of the other ingredients take shape. We wash it with queijo minas, a fresh Brazilian cheese whose salinity carries into the spirit, and pair it with Rhine Hall guava eau de vie, which holds its own next to the mezcal. Blanc vermouth ties the two together, and a little saline brings the cheese forward. It went from idea to finished drink in about four hours and worked on the first try."
+    "story": "In Brazil, \"Romeu e Julieta\" is the classic pairing of guava paste and cheese. When the team wanted an agave cocktail, Chef Vitor asked for guava and cheese, and the result is an agave martini. The base is Claridad Espadín, a mezcal Calvin wouldn't usually mix, but its minerality and clarity support the drink while letting the other ingredients' salinity and sweetness shine. We wash it with queijo minas, a fresh Brazilian cheese whose salinity carries into the spirit, and pair it with Rhine Hall guava eau de vie, which holds its own next to the mezcal. Blanc vermouth ties them together, and a touch of saline brings the cheese forward. It went from idea to finished drink in about four hours and worked on the first try."
    }
-  ]
+  ],
+  "intro": "Calvin Czypinski keeps drinks simple and sources ingredients as close to the origin as possible. He peels the limes himself, tastes every spice before using it, makes nothing from a premix, and buys spirits from producers who show where they come from."
+ },
+ {
+  "course": "Vinho",
+  "en": "Wine by the Glass",
+  "dishes": [
+   {
+    "name": "Cave Geisse Brut Nature",
+    "story": "Mario Geisse founded Cave Geisse in 1979 in the cool hills of Pinto Bandeira, Serra Gaúcha, to make traditional-method sparkling wine, with the second fermentation in the bottle. This Brut Nature blends Chardonnay and Pinot Noir with no added sugar, so it drinks dry and precise.",
+    "group": "Sparkling"
+   },
+   {
+    "name": "Luis Pato Vinha Formal Espumante",
+    "story": "Luis Pato is one of Bairrada’s leading growers, and Vinha Formal is his single vineyard in Óis do Bairro, on some of the region’s chalkiest soil. This 2019 sparkling wine comes from three native white grapes, Bical, Cerceal, and Sercial, and has fine bubbles with notes of pear and apricot.",
+    "group": "Sparkling"
+   },
+   {
+    "name": "Garzón Albariño Reserva",
+    "story": "Bodega Garzón farms near Uruguay’s Atlantic coast in Maldonado, where ocean breezes slow ripening. The Albariño is hand-harvested, fermented in stainless steel and concrete, and rests on its lees for a few months. It shows peach, citrus, jasmine, and a mineral edge.",
+    "group": "White"
+   },
+   {
+    "name": "Alberto Orte Vara y Pulgar Blanco",
+    "story": "Alberto Orte co-founded the importer Olé & Obrigado and has spent years reviving old Palomino vines and forgotten grapes in Jerez. Vara y Pulgar grows on the region’s white, chalky albariza soils and shows Palomino Fino, the sherry grape, as a dry, still white wine with lemon zest, chamomile, and sea-spray salinity.",
+    "group": "White"
+   },
+   {
+    "name": "El Enemigo Semillón",
+    "story": "El Enemigo is the project of Alejandro Vigil, chief winemaker at Catena Zapata, and Adrianna Catena. Their Semillón ferments with wild yeast in French oak barrels, and part of it ages under flor, the layer of yeast that shapes sherry, which adds a savory, nutty edge to the fruit.",
+    "group": "White"
+   },
+   {
+    "name": "Brij Chardonnay",
+    "story": "Brij is the label of sommelier and winemaker Rajat Parr, named for his father. He buys grapes from organic and biodynamic vineyards on California’s San Luis Obispo Coast, ferments in steel and large foudres, and bottles the wine unfined and unfiltered. It shows citrus, green pear, coastal herbs, and salinity.",
+    "group": "White"
+   },
+   {
+    "name": "Day Wines Vin de Days L’Orange",
+    "story": "Brianne Day makes natural wine in Oregon’s Willamette Valley with native yeast and very little sulfur. L’Orange blends Riesling, Müller-Thurgau, and Gewürztraminer from organic and biodynamic vineyards, fermented on the skins, which gives these aromatic grapes texture and a gentle grip, with orange blossom, apricot, and candied peel.",
+    "group": "Orange"
+   },
+   {
+    "name": "De Fermo Concrete Rosato",
+    "story": "The de Fermo family estate in Loreto Aprutino, Abruzzo, dates to the late 1700s, and Stefano and Eloisa de Fermo have farmed it biodynamically from the start. Their rosato is Montepulciano that spends only an hour or two on the skins, then ferments with native yeast in concrete tanks and is bottled unfiltered, with notes of strawberry, rose, and herbs.",
+    "group": "Orange"
+   },
+   {
+    "name": "Martha Stoumen Post Flirtation Red",
+    "story": "Martha Stoumen makes low-intervention wines from Mediterranean grapes grown in California. Post Flirtation blends Zinfandel and Carignan from dry-farmed vineyards in Mendocino and Contra Costa counties into a light, bright red with notes of pomegranate, wild strawberry, and dried herbs. We serve it chilled.",
+    "group": "Red"
+   },
+   {
+    "name": "David Moreau Bourgogne Rouge Sous Montot",
+    "story": "David Moreau took over the vineyards his grandparents planted in Santenay, at the southern end of Burgundy’s Côte de Beaune, in 2009. Sous Montot is a single west-facing parcel of Pinot Noir near the village, bottled as Bourgogne Rouge: spiced, structured, and a little rustic.",
+    "group": "Red"
+   },
+   {
+    "name": "Susana Esteban Aventura Tinto",
+    "story": "Susana Esteban, born in Galicia, was named Portugal’s winemaker of the year by Revista de Vinhos in 2012, the first woman to win it. Aventura is her Alentejo red, built mainly on Aragonez and Touriga Nacional, hand-picked and made without oak, so it stays fresh, floral, and soft.",
+    "group": "Red"
+   },
+   {
+    "name": "Zuccardi Polígonos Altamira Malbec",
+    "story": "Sebastián Zuccardi, the third generation of his family’s winery, makes the Polígonos wines to show individual places in Argentina’s Uco Valley. This Malbec comes from Paraje Altamira, about 1,100 meters up on old riverbed stones coated in calcium carbonate. It ferments with native yeast and ages only in concrete, with no oak.",
+    "group": "Red"
+   }
+  ],
+  "intro": "General Manager Ronald Rufino, a Certified Sommelier through the Court of Master Sommeliers, built our wine and beer list. Half of the twelve wines by the glass come from Brazil, Portugal, and South America, many from small producers working with native yeast."
+ },
+ {
+  "course": "Cerveja",
+  "en": "Beer",
+  "dishes": [
+   {
+    "name": "Super Bock Mini",
+    "story": "Super Bock has been brewed in Portugal since 1927 and has led the Portuguese beer market since 1986. The Mini is the small 20 cl bottle, about 6.8 ounces: a medium-bodied lager with malty, lightly citrus notes."
+   },
+   {
+    "name": "Grimm Weisse",
+    "story": "Joe and Lauren Grimm founded Grimm Artisanal Ales, which brews in East Williamsburg, Brooklyn. Grimm Weisse is their take on a Bavarian hefeweizen, double-decocted, with notes of clove, lemon, and banana. It won gold at the New York State brewing competition."
+   },
+   {
+    "name": "Xingu Black",
+    "story": "Xingu is a Brazilian black lager named for the Xingu River, created to draw attention to the Amazon rainforest. It was inspired by 16th-century accounts of Amazon tribes brewing a dark beer from roasted corn and manioc. It has notes of dark chocolate, roast coffee, and caramel."
+   }
+  ],
+  "intro": "We serve our beer just below freezing, the way Brazilians drink it: “estupidamente gelada,” or stupidly cold."
  }
 ];
 
@@ -2572,7 +2659,10 @@ function renderStoryCards(){
     return '<section class="ms-course" id="ms-'+i+'"><h2 class="ms-course-h">'+esc(c.course)+
       ' <span class="ms-course-en">'+esc(c.en)+'</span></h2>' +
       (c.intro && !term ? '<p class="ms-intro">'+esc(c.intro)+'</p>' : '') +
-      dishes.map(function(d){ return '<article class="ms-dish"><h3>'+esc(d.name)+'</h3><p>'+esc(d.story)+'</p></article>'; }).join('') +
+      dishes.map(function(d, j){
+        var head = (d.group && (j === 0 || dishes[j-1].group !== d.group)) ? '<h4 class="ms-group">'+esc(d.group)+'</h4>' : '';
+        return head + '<article class="ms-dish"><h3>'+esc(d.name)+'</h3><p>'+esc(d.story)+'</p></article>';
+      }).join('') +
       '</section>';
   }).join('');
   var jump = term ? '' : '<nav class="ms-jump" aria-label="Jump to a course">' + MENU_STORY.map(function(c, i){
