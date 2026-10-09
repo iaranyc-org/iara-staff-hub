@@ -1227,7 +1227,6 @@
       <div class="name" id="sb-name"></div>
       <div class="role" id="sb-role"></div>
       <button id="sb-switch">Switch User</button>
-      <button data-feedback>Send Feedback</button>
       <button class="nav-btn sb-admin" data-view="progress">Admin</button>
     </div>
   </aside>
@@ -5521,6 +5520,24 @@ document.addEventListener("visibilitychange", function(){ if (!document.hidden) 
     setTimeout(function(){ msg.focus(); }, 50);
   }
   function close(){ if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+  // Desktop: pin the floating button beside the reading column, not
+  // the window's, so on wide screens it sits next to the content.
+  (function(){
+    var fab = document.querySelector(".fbk-fab");
+    if (!fab) return;
+    function place(){
+      var v = document.querySelector(".view.active");
+      if (!v || innerWidth <= 860) { fab.style.right = ""; return; }
+      // Sit just outside the column when the gutter fits it, so it never
+      // covers prices; otherwise fall back to the window corner.
+      var edge = v.getBoundingClientRect().right;
+      var room = innerWidth - edge - fab.offsetWidth;
+      fab.style.right = (room >= 24 ? Math.round(room) : 20) + "px";
+    }
+    addEventListener("resize", place);
+    var c = document.querySelector(".content"); if (c) new MutationObserver(place).observe(c, { subtree:true, attributes:true, attributeFilter:["class"] });
+    place();
+  })();
   document.addEventListener("click", function(e){ var b = e.target.closest("[data-feedback]"); if (b) { e.preventDefault(); open(); } });
   document.getElementById("fbk-cancel").addEventListener("click", close);
   dlg.addEventListener("click", function(e){ if (e.target === dlg) close(); });
