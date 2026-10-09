@@ -1630,8 +1630,8 @@ var MENU_STORY = [
   "en": "Vegetables",
   "dishes": [
    {
-    "name": "Salada da Estação",
-    "story": "Red and green gem lettuce with crisp candied Brazil nuts and a basil-dill dressing. It highlights heart of palm, a staple across Brazil."
+    "name": "Palmito Carpaccio",
+    "story": "Grilled heart of palm, a staple across Brazil, served as a carpaccio with candied Brazil nuts and a basil dressing."
    },
    {
     "name": "Caranguejo na Moranga",
@@ -1639,7 +1639,7 @@ var MENU_STORY = [
    },
    {
     "name": "Vegetais Grelhados",
-    "story": "Market vegetables from New York State farms, grilled over charcoal and served with a kumquat guava dressing and farofa."
+    "story": "Cone cabbage grilled over charcoal and served with a guava-puxuri dressing and farofa. Puxuri is the Amazonian seed known as Brazilian nutmeg."
    }
   ]
  },
@@ -1845,7 +1845,7 @@ var FNB_DEFAULTS = [
   { id:"d14", category:"Sides", name:"Tapioca Fries", pronunciation:"tah-pee-OH-kah", speak:"Tapioca", price:"$14", desc:"With housemade açaí ketchup.", allergens:[], example:false },
   { id:"d15", category:"Sides", name:"Arroz", pronunciation:"ah-HOHZ", speak:"Arroz", price:"$10", desc:"Long-grain upstate rice with Brazilian sofrito.", allergens:["Allium"], example:false },
   { id:"d16", category:"Sides", name:"Feijão Manteiguinha", pronunciation:"fay-ZHOW mahn-tay-GEEN-yah", speak:"Feijão Manteiguinha", price:"$8", desc:"Small white Amazonian beans served cold with herbs and vinaigrette.", allergens:[], example:false },
-  { id:"d17", category:"Sides", name:"Farofa", pronunciation:"fah-ROH-fah", speak:"Farofa", price:"$6", desc:"Toasted and seasoned cassava flour.", allergens:[], example:false },
+  { id:"d17", category:"Sides", name:"Farofa", pronunciation:"fah-ROH-fah", speak:"Farofa", price:"With entrées", desc:"Toasted and seasoned cassava flour.", allergens:[], example:false },
   /* --- Sobremesas --- */
   { id:"d18", category:"Desserts", name:"Pudim", pronunciation:"poo-DJEEN", speak:"Pudim", price:"$14", desc:"Flan with toasted sesame seeds.", allergens:["Egg","Dairy","Sesame"], example:false },
   { id:"d19", category:"Desserts", name:"Bolo de Mandioca", pronunciation:"BOH-loh djee mahn-djoh-kah", speak:"Bolo de Mandioca", price:"$14", desc:"Cassava coconut toffee cake (flourless).", allergens:["Coconut","Dairy","Egg","Tonka bean"], example:false },
@@ -2679,7 +2679,7 @@ function renderFbTabs(){
 var fbQuery = "";
 // Stories (MENU_STORY) attach to cards by name. Aliases cover cards whose
 // menu name differs from the story doc's heading.
-var STORY_ALIASES = { "palmito carpaccio": "salada da estacao" };
+var STORY_ALIASES = {};
 function storyKey(n){ return String(n || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
 var STORY_BY_NAME = null;
 function storyFor(it){
