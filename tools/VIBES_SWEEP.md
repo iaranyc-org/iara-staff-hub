@@ -30,10 +30,14 @@ Feature (hero) at most ~8 items: press plus the strongest lines.
    Any article not in vibes.json becomes a `press` item (reuse its description, image, link).
 2. **Google reviews**: Google Maps place `0x89c25929263c8d83:0xec99e56bbbe34371`, Reviews tab,
    sort Newest. New 5-star reviews with text only.
-3. **Instagram**: instagram.com/iara.nyc/tagged/ (Chrome is signed in). New posts by other
-   accounts; screenshot the tile into `img/vibes/ig-<handle>[-n].jpg`; caption = a short exact
-   phrase from their caption; url = the post link.
-4. **Resy / Yelp**: iara's Resy and Yelp pages, new 5-star reviews with text.
+3. **Instagram** (Chrome is signed in; read-only, never like/comment/follow/DM):
+   - instagram.com/iara.nyc/tagged/ : scroll the whole grid, open every post by another account.
+   - Hashtags #iaranyc and #iara (only posts clearly about the NYC restaurant), and a search for reels mentioning "iara nyc".
+   - The Instagram location page for iara / 205 Allen St.
+   - Comments on @iara.nyc's own recent posts: enthusiastic guest comments become `note` items (quote exactly, @handle as author; Portuguese gets an English `title`). Skip emoji-only, "can't wait", and plain congrats.
+   Screenshot post images into `img/vibes/<id>.jpg` (JPEG, under 150KB); caption = a short exact phrase; url = the post link.
+   Skip brand/partner promos (spirits brands, the design firm, vendors) and plain listicles.
+4. **TikTok, Resy, Yelp, Threads/X, Reddit**: TikTok search "iara nyc"; Resy reviews; Yelp (iara had no listing as of 2026-10-09, recheck); Threads/X search; r/FoodNYC and r/nyc. New, clearly positive items only; confirm it is the Lower East Side iara, not another Iara.
 5. **Web**: news search for "iara" "205 Allen" / "Vitor Mendes" for new articles or blogs.
 6. **Jay's submissions**: screenshots or links Jay sends; screenshots go in as `note` or
    `instagram` items with the image saved to `img/vibes/`.
