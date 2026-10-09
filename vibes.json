@@ -1,5 +1,5 @@
 {
- "updated": "2026-10-08",
+ "updated": "2026-10-09",
  "items": [
   {
    "id": "press-grub-street",
@@ -171,6 +171,123 @@
    "date": "",
    "added": "2026-10-08T12:00",
    "featured": false
+  },
+  {
+   "id": "g-kate-j",
+   "type": "review",
+   "source": "Google",
+   "author": "Kate J.",
+   "stars": 5,
+   "text": "It’s not often you go to a restaurant where every detail is thought out. The team at Iara did an exceptional job. The dishes and flatware are from\nBrazil, the staff is trained on every unique ingredient (I even asked where the beans were from and they knew). The food is exceptional, with incredibly unique flavors clearly celebrating where they’re from. The menu is majority gluten free inherently, and as a previously gluten intolerant person this made my heart sing.\n\nThe staff was a delight, everyone was friendly, well trained and attentive. I cannot wait to come back for the next seasonal menu. Congratulations to this team this spot is phenomenal!",
+   "pull": "Congratulations to this team this spot is phenomenal!",
+   "url": "https://www.google.com/maps/place/iara/data=!4m2!3m1!1s0x89c25929263c8d83:0xec99e56bbbe34371",
+   "date": "2026-10-09",
+   "featured": true,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "ig-chefvasconcellos",
+   "type": "instagram",
+   "source": "Instagram",
+   "author": "@chefvasconcellos",
+   "text": "A joyful night at the opening of @iara.nyc by @vitormendesnyc Amazonian flavors, beautiful food, and so much soul.",
+   "url": "https://www.instagram.com/chefvasconcellos/p/Dd9WtG7Rudk/",
+   "image": "/img/vibes/ig-chefvasconcellos.jpg",
+   "date": "2026-10-01",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "ig-chef-jeffrey-butler",
+   "type": "instagram",
+   "source": "Instagram",
+   "author": "@chef_jeffrey_butler",
+   "text": "You have come a long way since I had you in a classroom, very proud to see your journey!",
+   "url": "https://www.instagram.com/chef_jeffrey_butler/p/Dd7FQ0MSqZu/",
+   "image": "/img/vibes/ig-chef-jeffrey-butler.jpg",
+   "date": "2026-09-30",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "ig-nymatinee",
+   "type": "instagram",
+   "source": "Instagram",
+   "author": "@ny_matinee",
+   "text": "New Yorks restaurant scene has officially entered its rainforest era.",
+   "url": "https://www.instagram.com/ny_matinee/p/Dd-XK2nR05U/",
+   "image": "/img/vibes/ig-nymatinee.jpg",
+   "date": "2026-10-01",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "ig-ellamliuu",
+   "type": "instagram",
+   "source": "TikTok",
+   "author": "@ellamliuu",
+   "text": "a must try in the LES just opened up 🍗🫘🍇 INSANELY fresh, flavorful, and vibey!",
+   "url": "https://www.tiktok.com/@ellamliuu/video/7693985195774545165",
+   "image": "/img/vibes/ig-ellamliuu.jpg",
+   "date": "2026-10-07",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "press-hoodline",
+   "type": "press",
+   "source": "Hoodline",
+   "title": "New Amazonian Restaurant Iara Opens on Allen Street With $20 Plates",
+   "text": "Hoodline on iara’s opening: a menu built around ingredients most New York diners have never encountered, from a chef out to show Brazilian food is more than rice, beans and barbecue.",
+   "url": "https://hoodline.com/2026/09/new-amazonian-restaurant-iara-opens-on-allen-street-with-20-plates/",
+   "date": "2026-09-26",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "note-ig-lauragwagner",
+   "type": "note",
+   "source": "Instagram",
+   "author": "@lauragwagner",
+   "text": "Já virou meu favorito 😍👏",
+   "url": "https://www.instagram.com/iara.nyc/p/DeR-1sYHF4D/",
+   "date": "2026-10-09",
+   "featured": false,
+   "title": "Already my favorite (translated from Portuguese)",
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "note-ig-j-vinik",
+   "type": "note",
+   "source": "Instagram",
+   "author": "@j_vinik",
+   "text": "The best 🔥🔥🔥",
+   "url": "https://www.instagram.com/iara.nyc/p/DeR-1sYHF4D/",
+   "date": "2026-10-09",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "note-ig-maxwittawat",
+   "type": "note",
+   "source": "Instagram",
+   "author": "@maxwittawat",
+   "text": "So good!",
+   "url": "https://www.instagram.com/iara.nyc/reel/DePA7CKPeLY/",
+   "date": "2026-10-08",
+   "featured": false,
+   "added": "2026-10-09T17:45"
+  },
+  {
+   "id": "note-ig-isabela3015",
+   "type": "note",
+   "source": "Instagram",
+   "author": "@isa.bela3015",
+   "text": "The best!!",
+   "url": "https://www.instagram.com/iara.nyc/reel/DePA7CKPeLY/",
+   "date": "2026-10-08",
+   "featured": false,
+   "added": "2026-10-09T17:45"
   }
  ]
 }
