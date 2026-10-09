@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v30';
+const VERSION = 'iara-lineup-v31';
 const CORE = [
   './',
   './iara_hub.html',
@@ -30,7 +30,8 @@ const CORE = [
   './ops-manifest.json',
   './icon-512.png',
   './img/amazon.jpg',
-  './img/vitor.jpg'
+  './img/vitor.jpg',
+  './img/lineup-logo.png'
 ];
 
 self.addEventListener('install', (e) => {
