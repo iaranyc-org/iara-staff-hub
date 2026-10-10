@@ -1080,6 +1080,18 @@
   .fbk-fab:focus-visible{ outline:2px solid var(--display); outline-offset:3px; }
   @media (max-width:860px){ .fbk-fab{ right:14px; bottom:calc(76px + env(safe-area-inset-bottom, 0px)); padding:0 14px; min-height:44px; font-size:13.5px; } }
   @media print{ .fbk-fab{ display:none; } }
+  /* Cleaning */
+  .cl-warn{ margin:12px 0 14px; padding:10px 14px; border-radius:8px; border:1.5px solid var(--sun); color:var(--display); font-weight:700; font-size:15px; }
+  .cl-where{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:0 0 18px; }
+  .cl-where div{ padding:10px 12px; border-radius:8px; border:1px solid var(--line); }
+  .cl-where dt{ font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
+  .cl-where dd{ margin:4px 0 0; font-size:15px; line-height:1.5; color:var(--ink); }
+  .cl-group{ margin:0 0 18px; }
+  .cl-group h4{ margin:0 0 8px; font-size:17px; color:var(--display); }
+  .cl-group h4 span{ font-size:13px; font-weight:500; color:var(--ink-soft); margin-left:6px; }
+  .cl-list{ list-style:none; margin:0; padding:0; max-width:62ch; }
+  .cl-list li{ position:relative; padding-left:28px; margin-bottom:9px; line-height:1.55; font-size:16px; color:var(--ink-mid); }
+  .cl-list li::before{ content:""; position:absolute; left:0; top:4px; width:15px; height:15px; border:1.5px solid var(--ink-soft); border-radius:3px; }
   /* Menu: per-card stories, wine/beer subheads, course intros */
   .dish-story-btn{ margin-top:10px; background:none; border:none; padding:0; min-height:36px; font:inherit; font-size:13.5px; font-weight:700;
     color:var(--display); cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
@@ -1216,9 +1228,10 @@
     <div class="nav-rule"></div>
     <button class="nav-btn" data-view="manual">The Manual</button>
     <button class="nav-btn" data-view="fnb">The Menu</button>
-    <button class="nav-btn" data-view="team">Team</button>
     <button class="nav-btn" data-view="lore">The Lore</button>
+    <button class="nav-btn" data-view="cleaning">Cleaning</button>
     <button class="nav-btn" data-view="watch">Watch List</button>
+    <button class="nav-btn" data-view="team">Team</button>
     <div class="nav-rule"></div>
     <button class="nav-btn" data-view="study">Study</button>
     <button class="nav-btn" data-view="quiz">Final Exam</button>
@@ -1347,6 +1360,15 @@
       <div id="manual-accordions"></div>
     </section>
 
+    <!-- CLEANING: checklists copied word for word from the Drive docs
+         ("iara Main Bathroom Cleaning Checklist", "iara Staff Bathroom
+         Cleaning Checklist"). Add new areas to CLEANING below. -->
+    <section class="view" id="view-cleaning">
+      <h1>Cleaning</h1>
+      <p class="view-intro">Area by area: what to check during service, nightly, and on deep-clean days.</p>
+      <div id="cleaning-accordions"></div>
+    </section>
+
     <!-- TEAM -->
     <section class="view" id="view-team">
       <h1>Team</h1>
@@ -1443,9 +1465,10 @@
       <button class="nav-btn active" data-view="home">Home</button>
       <button class="nav-btn" data-view="manual">Manual</button>
       <button class="nav-btn" data-view="fnb">Menu</button>
-      <button class="nav-btn" data-view="team">Team</button>
       <button class="nav-btn" data-view="lore">Lore</button>
+      <button class="nav-btn" data-view="cleaning">Clean</button>
       <button class="nav-btn" data-view="watch">Watch</button>
+      <button class="nav-btn" data-view="team">Team</button>
       <button class="nav-btn" data-view="study">Study</button>
       <button class="nav-btn" data-view="quiz">Exam</button>
     </div>
@@ -1510,6 +1533,67 @@ var FIREBASE_CONFIG = {
 /* ============================================================
    DATA: Service Manual condensed content
    ============================================================ */
+/* ============================================================
+   DATA: Cleaning checklists, verbatim from the Drive docs.
+   ============================================================ */
+var CLEANING = [
+  { id:"main-bathroom", title:"Main Bathroom",
+    warn:"Always put gloves on before touching the toilet.",
+    where:[
+      ["Top drawer","Hand paper towels"],
+      ["Bottom drawer","Gloves · Hair ties · Toothpicks · Feminine products · Trash bags · Windex"],
+      ["Vanity bottom shelf","Bowl cleaner · Clorox cleaner · Extra TP"],
+      ["Storage outside","Backup supplies"]
+    ],
+    groups:[
+      { name:"Frequent Quick Check", when:"During service", items:[
+        "Hair ties + toothpicks: stocked on the counter",
+        "Hand paper towels: stocked",
+        "Toilet paper + feminine products: stocked on the back of the toilet",
+        "Toilet bowl: clean (if not: gloves on + bowl cleaner)",
+        "Trash: not full (if full: new bag)"
+      ] },
+      { name:"Nightly Thorough Clean", when:"Every night after service", items:[
+        "Blow out the candle",
+        "Toto: unlatch seat (back-right button). Clean seat, underneath, machine + under the back hinge. Click back on until it locks.",
+        "Toilet bowl: scrub with bowl cleaner",
+        "Wipe down every surface: vanity, small side table by the door, walls, molding",
+        "Mirror + window: Windex, no streaks",
+        "Floors: vacuum or wipe anything dirty",
+        "Trash: empty + new bag",
+        "Restock: everything in the quick check",
+        "Low on anything? Tell the GM."
+      ] },
+      { name:"Monthly Deep Clean", when:"1st of the month", items:[
+        "Air intake vent: vacuum (top of the bathroom)",
+        "Toto bidet nozzle: extend + wipe clean",
+        "Behind + around the toilet base: scrub floor, corners + grout",
+        "Trash can: wash inside + out",
+        "Dust high spots: light fixtures, top of mirror + door frame",
+        "Drawers + shelves: empty, wipe out, toss anything old"
+      ] }
+    ] },
+  { id:"staff-bathroom", title:"Staff Bathroom",
+    warn:"Always put gloves on before touching the toilet.",
+    where:[ ["Under the sink","All supplies"] ],
+    groups:[
+      { name:"Nightly Thorough Clean", when:"Every night after service", items:[
+        "Toilet paper: stocked",
+        "Toilet bowl: scrub with bowl cleaner",
+        "Sink + counter: wipe down",
+        "Mirror: Windex, no streaks",
+        "Trash: empty + new bag",
+        "Floor: wipe anything dirty",
+        "Low on anything? Tell the GM."
+      ] },
+      { name:"Weekly Deep Clean", when:"1st night of the week", items:[
+        "Toilet bowl tablet: check the tank, drop in a new one if it's gone",
+        "Wipe down: toilet outside + seat, door handle, light switch",
+        "Floor: full mop, incl. behind the toilet"
+      ] }
+    ] }
+];
+
 var MANUAL = [
   { id:"start", title:"Shift Start", body:[
     "Arrive on time, in full uniform, and begin opening sidework immediately. The goal is a fully built, stocked bar or station before the first guest arrives.",
@@ -2362,12 +2446,12 @@ document.getElementById("sb-switch").addEventListener("click", function(){
 /* ============================================================
    Nav
    ============================================================ */
-var VIEW_TITLES = { home:"Home", manual:"The Manual", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", watch:"Watch List", vibes:"Good Vibes", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
+var VIEW_TITLES = { home:"Home", manual:"The Manual", cleaning:"Cleaning", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", watch:"Watch List", vibes:"Good Vibes", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
 
 /* Path routing: /lineup/<view>/<section>. A refresh, or the phone reloading
    the tab in the background, keeps your place; back works; a manager can send
    a link to one section. Old #/view links still resolve and get rewritten. */
-var VIEW_NAMES = ["home","manual","team","fnb","lore","study","watch","vibes","quiz","checklist","progress"];
+var VIEW_NAMES = ["home","manual","cleaning","team","fnb","lore","study","watch","vibes","quiz","checklist","progress"];
 var BASE_PATH = "/lineup";
 
 function parseRoute(){
@@ -2564,6 +2648,26 @@ function highlight(root, term){
     var m = document.createElement("mark");
     m.textContent = after.nodeValue;
     after.parentNode.replaceChild(m, after);
+  });
+}
+
+function renderCleaning(){
+  var wrap = document.getElementById("cleaning-accordions");
+  if (!wrap) return;
+  wrap.innerHTML = CLEANING.map(function(a, i){
+    var where = '<dl class="cl-where">' + a.where.map(function(w){
+      return '<div><dt>'+esc(w[0])+'</dt><dd>'+esc(w[1])+'</dd></div>'; }).join("") + '</dl>';
+    var groups = a.groups.map(function(g){
+      return '<div class="cl-group"><h4>'+esc(g.name)+' <span>'+esc(g.when)+'</span></h4><ul class="cl-list">' +
+        g.items.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join("") + '</ul></div>';
+    }).join("");
+    return '<div class="card accordion" data-sec="'+esc(a.id)+'">' +
+      '<button class="acc-head"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
+        '<h3>'+esc(a.title)+'</h3><span class="chev">▾</span></button>' +
+      '<div class="acc-body">' + (a.warn ? '<p class="cl-warn">⚠ '+esc(a.warn)+'</p>' : '') + where + groups + '</div></div>';
+  }).join("");
+  wrap.querySelectorAll(".acc-head").forEach(function(h){
+    h.addEventListener("click", function(){ h.closest(".accordion").classList.toggle("open"); });
   });
 }
 
@@ -6493,6 +6597,7 @@ async function boot(data){
   // progress both need a session before they can read anything.
   await restoreSession();
   renderManual();
+  renderCleaning();
   renderTeam();
   renderLore();
   await loadFbItems();
