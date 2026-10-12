@@ -87,6 +87,12 @@
   #panel-phone{ margin:0 -16px; }
   /* Comfortable tap target for the home link on phones. */
   .brand{ min-height:44px; }
+  /* Phones: tabs and range chips scroll sideways; fade the right edge so it reads as "more this way". */
+  @media (max-width:560px){
+    .tabs, .seg{ -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
+    .tabs.at-end, .seg.at-end{ -webkit-mask-image:none; mask-image:none; }
+    .tab{ padding:9px 12px; font-size:14px; }
+  }
   @media (max-width:760px){
     .kpis{ grid-template-columns:1fr 1fr; }
     .grid2{ grid-template-columns:1fr; }
@@ -192,6 +198,10 @@
     announce();
     if (tab === "phone"){ var src = "/phone?embed=1#r=" + range.key; if ($("phone-frame").getAttribute("src") !== src) $("phone-frame").setAttribute("src", src); }
   }
+  // Keep the picked tab/chip in view and drop the fade once a scroller reaches its end.
+  document.querySelectorAll(".tabs,.seg").forEach(function(el){ var upd = function(){ el.classList.toggle("at-end", el.scrollLeft + el.clientWidth >= el.scrollWidth - 2); };
+    el.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd); setTimeout(upd, 0); });
+  window.addEventListener("analytics:tab", function(){ var b = document.querySelector('.tab[aria-selected="true"]'); if (b && b.scrollIntoView) b.scrollIntoView({ block: "nearest", inline: "nearest" }); });
   document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){ range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
   document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
   // Links like /analytics#t=email&r=30d work even when the page is already open.
