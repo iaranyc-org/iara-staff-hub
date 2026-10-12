@@ -20,10 +20,5 @@
       "source": "/phone",
       "destination": "/iara_phone.html"
     }
-  ],
-  "functions": {
-    "api/phone-stats.js": {
-      "maxDuration": 60
-    }
-  }
+  ]
 }

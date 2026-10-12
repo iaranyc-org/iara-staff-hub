@@ -169,7 +169,7 @@
   function load(fresh){
     $("loading").hidden = false; $("err").hidden = true; $("refresh").disabled = true;
     firebase.auth().currentUser.getIdToken().then(function(tok){
-      return fetch("/api/phone-stats" + (fresh ? "?refresh=1" : ""), { headers: { Authorization: "Bearer " + tok } });
+      return fetch("https://iara-inbox.vercel.app/api/phone-stats" + (fresh ? "?refresh=1" : ""), { headers: { Authorization: "Bearer " + tok } });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
       .then(render)
       .catch(function(e){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; })
