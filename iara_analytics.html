@@ -628,7 +628,34 @@
     var top = Object.keys(asks).map(function(c){ return { name: c, n: asks[c] }; }).sort(function(x, y){ return y.n - x.n; }).slice(0, 7);
     var asksCard = '<div class="card"><h2>What Guests Ask About</h2>' + (top.length ? top.map(function(t){ return '<div class="hbar"><span>' + esc(topicName(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / top[0].n) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("") : '<p class="note">Nothing in this range.</p>') + '</div>';
     // Jay 2026-10-12: no reply lists here, that's what iara Inbox is for (the Waiting Now KPI links there).
-    return '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
+    // 6. From Contact to Table: did people who reached us book? Phone from phone-stats (by phone number), email and
+    // DMs from the analytics route (by email / exact full name), restaurant-wide numbers from the ResyOS book copy.
+    var T = a.toTable, PR = p && p.resy, ctCard = "";
+    if (T){
+      var share = function(n, d){ return !d ? "–" : n && 100 * n / d < 1 ? "<1%" : pct(n, d); };
+      var chs = [ PR && { ch: "phone", b: PR.didBook.booked, g: PR.didBook.guests, n: "called or texted" },
+        T.email && { ch: "email", b: T.email.booked, g: T.email.guests, n: "emailed" },
+        T.dm && { ch: "dm", b: T.dm.booked, g: T.dm.named, n: "DMed with a full name", lb: true } ].filter(Boolean);
+      var tb = chs.reduce(function(t, x){ return t + x.b; }, 0), tg = chs.reduce(function(t, x){ return t + x.g; }, 0);
+      var ns = T.noShows, rt = T.returning;
+      // Touchpoints by night: calls + texts (phone) plus emails, DMs and comments that came in that day.
+      var lab2 = function(ds){ var u = new Date(ds + "T12:00:00Z"); return u.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }) + " " + (u.getUTCMonth() + 1) + "/" + u.getUTCDate(); };
+      var pd = {}; ((p && p.days) || []).forEach(function(x){ pd[x.label] = (x.answered || 0) + (x.voicemail || 0) + (x.missed || 0) + (x.textsIn || 0); });
+      var msgs = {}; [a.email, a.instagram.dms, a.instagram.comments].forEach(function(c){ c.byDay.forEach(function(d){ msgs[d.date] = (msgs[d.date] || 0) + d.in; }); });
+      var nights = Object.keys(T.coversByDay).filter(function(k){ return k >= a.from && k <= a.to; }).sort().reverse();
+      ctCard = '<h2 style="margin:22px 0 12px">From Contact to Table</h2><div class="kpis">' +
+        kpi(share(tb, tg), "Booked After Reaching Us", "<b>" + tb + "</b> of " + tg + " people, all channels") +
+        kpi(share(ns.noShows, ns.reservations), "No-Shows", ns.noShows + " of " + ns.reservations + " past reservations") +
+        kpi(rt.done ? pct(rt.returning, rt.done) : "–", "Returning Guests", rt.returning + " of " + rt.done + " seated reservations") + '</div>' +
+        '<div class="grid2 even"><div class="card"><h2>Booked, by Channel</h2>' + chs.map(function(x){ var v = x.g ? 100 * x.b / x.g : 0;
+          return '<div class="hbar"><span>' + CH[x.ch].label + '</span><div class="track"><div class="fill" style="width:' + v + '%;background:' + CH[x.ch].color + '"></div></div><span class="n">' + (x.lb ? "≥ " : "") + share(x.b, x.g) + '</span></div><p class="note" style="margin:-4px 0 8px">' + x.b + " of " + x.g + " who " + x.n + (x.lb ? " (" + T.dm.guests + " DMed in all)" : "") + '</p>'; }).join("") +
+          (PR ? "" : '<p class="note">Phone didn\'t load this time.</p>') + '</div>' +
+        '<div class="card"><h2>Covers vs Touchpoints by Night</h2><div style="overflow-x:auto"><table><thead><tr><th>Night</th><th class="num">Covers</th><th class="num">Touchpoints</th></tr></thead><tbody>' +
+          (nights.length ? nights.map(function(k){ var tp = (pd[lab2(k)] || 0) + (msgs[k] || 0); return '<tr><td>' + lab2(k) + '</td><td class="num">' + T.coversByDay[k] + '</td><td class="num">' + (tp || "–") + '</td></tr>'; }).join("") : '<tr><td colspan="3" class="muted">No covers in this range.</td></tr>') +
+          '</tbody></table></div></div></div>' +
+        '<p class="note">Booked = a ResyOS reservation dated within 45 days of their first contact, matched by phone number (phone), email address (email) or exact full name (DMs, so a lower bound). Someone who used two channels can count in both. The shared Iara Hold guest is left out. Covers include seated walk-ins; cancellations aren\'t in the ResyOS report. Book copied ' + (T.updatedAt ? new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "never") + '.</p>';
+    }
+    return ctCard + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
 
   function render(a, p){
