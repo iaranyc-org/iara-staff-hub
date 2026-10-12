@@ -142,7 +142,7 @@
     <div class="card">
       <h2>Waiting on a Reply</h2>
       <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th></tr></thead><tbody id="open"></tbody></table>
-      <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls and callers who hung up at the greeting (they got the Resy link automatically), running-late notices, thank-yous after a reply, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. "Reply Failed" means we answered but the text never reached them. Find the full number in Quo by searching the last four digits.</p>
+      <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls and callers who hung up at the greeting (they got the Resy link automatically), running-late and cancellation notices, thank-yous after a reply, "tonight" asks once the night is over, anything older than a week, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. "Reply Failed" means we answered but the text never reached them. Find the full number in Quo by searching the last four digits.</p>
     </div>
   </div>
 </main>
@@ -263,7 +263,7 @@
     var peak = hs.indexOf(Math.max.apply(null, hs)), ph = (peak + 8) % 24;
     $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
+      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td></tr>";
     }).join("") : "<tr><td colspan='4' class='muted'>Nobody is waiting on a reply. New voicemails and texts without a reply show up here.</td></tr>";
     $("body").hidden = false;
   }
