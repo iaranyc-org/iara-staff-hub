@@ -21,6 +21,14 @@
       "destination": "/iara_analytics.html"
     },
     {
+      "source": "/private-dining",
+      "destination": "https://iara-private-dining.vercel.app/private-dining"
+    },
+    {
+      "source": "/private-dining/:path*",
+      "destination": "https://iara-private-dining.vercel.app/private-dining/:path*"
+    },
+    {
       "source": "/inbox",
       "destination": "https://iara-inbox.vercel.app/inbox"
     },
