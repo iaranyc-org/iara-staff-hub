@@ -46,6 +46,7 @@
   .bars.trend .bar{ flex-direction:row; align-items:flex-end; gap:3px; }
   .bars.trend .bar span{ flex:1; border-radius:3px 3px 0 0; position:relative; }
   .bars.trend .bar span em{ position:absolute; left:50%; transform:translateX(-50%); bottom:100%; margin-bottom:3px; font-style:normal; font-size:11.5px; font-weight:700; color:var(--ink); white-space:nowrap; }
+  .bars.trend .bar.partial span:not(.none){ background-image:repeating-linear-gradient(135deg, transparent 0 5px, rgba(57,29,31,.35) 5px 8px); }
   .bars.trend .bar .none{ flex:1; align-self:center; text-align:center; font-size:12px; color:var(--river); background:none; }
   #trend-x{ gap:10px; }
   .delta{ display:block; font-size:13px; font-weight:600; color:var(--river); margin-top:3px; }
@@ -303,7 +304,7 @@
     var T = d.trend || { points: [], grain: "day" }, pts = T.points, unit = T.grain === "week" ? "week" : "day";
     $("trend-h").textContent = T.grain === "week" ? "Week Over Week" : "Day Over Day";
     var r = function(a, b){ return b ? Math.round(100 * a / b) : null; };
-    var withCalls = pts.filter(function(p){ return p.svcTotal > 0; });
+    var withCalls = pts.filter(function(p){ return p.svcTotal > 0 && !p.partial; });
     var head = "";
     if (withCalls.length >= 2){
       var a = withCalls[withCalls.length - 2], b = withCalls[withCalls.length - 1];
@@ -316,6 +317,7 @@
     pts.forEach(function(p){
       var b = document.createElement("div"); b.className = "bar";
       var ar = r(p.svcAnswered, p.svcTotal), hr = r(p.handled, p.needed);
+      if (p.partial) b.classList.add("partial");
       if (ar == null && hr == null){ var n = document.createElement("span"); n.className = "none"; n.textContent = "No calls"; b.appendChild(n); }
       else [[ar, "answered"], [hr, "voicemail"]].forEach(function(x){
         var sp = document.createElement("span");
@@ -325,7 +327,7 @@
       });
       tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " calls during service<br>Handled " + p.handled + " of " + p.needed + " guests who needed us");
       bars.appendChild(b);
-      var l = document.createElement("div"); l.textContent = unit === "week" ? p.label.replace("Wk ", "") : p.label; $("trend-x").appendChild(l);
+      var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : p.label) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
     });
     $("trend-y").innerHTML = "<span style='bottom:0'>0</span><span style='bottom:50%'>50%</span><span style='bottom:100%'>100%</span>";
     bars.querySelectorAll(".grid").forEach(function(g){ g.remove(); });
@@ -355,7 +357,7 @@
     var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
     $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
     var hr = rate(g.handled, need), phr = P && rate(P.guests.handled, pneed);
-    $("k-handled-n").innerHTML = g.handled + " of " + need + " who needed us" + (g.autoOnly ? "<br>" + g.autoOnly + " more needed nothing beyond the auto-text" : "") + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
+    $("k-handled-n").innerHTML = g.handled + " of " + need + " who needed us" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " more needed nothing beyond the auto-text" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
     $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
