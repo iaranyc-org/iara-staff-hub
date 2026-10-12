@@ -105,7 +105,7 @@
     </div>
     <button class="btn btn-ghost" id="refresh">Refresh</button>
   </div>
-  <div id="loading" class="loading">Pulling calls and texts from Quo. This can take a minute…</div>
+  <div id="loading" class="loading">Loading calls and texts…</div>
   <div id="err" class="card" hidden></div>
   <div id="body" hidden>
     <div class="kpis">
@@ -176,14 +176,24 @@
   });
   $("refresh").addEventListener("click", function(){ load(true); });
 
-  function load(fresh){
-    $("loading").hidden = false; $("err").hidden = true; $("refresh").disabled = true;
+  // The server answers instantly from its saved snapshot and tops it up in the
+  // background; "refreshing" means a newer one is on the way, so ask again shortly
+  // without blanking the page. Refresh forces a sync (a few seconds: only changed
+  // conversations are re-read from Quo).
+  var followUps = 0;
+  function load(fresh, quiet){
+    var shown = !$("body").hidden;
+    if (!shown) $("loading").hidden = false;
+    $("err").hidden = true; $("refresh").disabled = true; $("refresh").textContent = "Updating…";
     firebase.auth().currentUser.getIdToken().then(function(tok){
       return fetch("https://iara-inbox.vercel.app/api/phone-stats" + (fresh ? "?refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
-      .then(render)
-      .catch(function(e){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; })
-      .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; });
+      .then(function(j){
+        render(j);
+        if (j.refreshing && followUps < 3){ followUps++; setTimeout(function(){ load(false, true); }, 8000); }
+      })
+      .catch(function(e){ if (!quiet || !shown){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; } })
+      .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; $("refresh").textContent = "Refresh"; });
   }
 
   // 130 -> "2h 10m"; under an hour stays "45m".
