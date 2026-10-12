@@ -773,7 +773,7 @@
   }
   var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
   var when = function(t){ return new Date(t).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); };
-  var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); };
+  var esc = function(s){ return String(s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); };
 
   function tipOn(el, html){
     el.addEventListener("mousemove", function(e){ var t = $("tip"); t.innerHTML = html; t.hidden = false; t.style.left = (e.clientX + 12) + "px"; t.style.top = (e.clientY - 40) + "px"; });
@@ -823,13 +823,13 @@
       return fetch("https://iara-inbox.vercel.app/inbox/api/phone-stats", { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ key: key, undo: !!undo }), cache: "no-store" });
     }).then(function(r){ if (!r.ok) throw new Error(r.status); });
   }
-  document.addEventListener("click", function(ev){
+  P.addEventListener("click", function(ev){
     var b = ev.target.closest("[data-dismiss], [data-undo]"); if (!b) return;
     var tr = b.closest("tr"), key = b.getAttribute("data-dismiss") || b.getAttribute("data-undo"), undo = b.hasAttribute("data-undo");
     b.disabled = true;
     dismiss(key, undo).then(function(){
-      if (undo){ tr.classList.remove("gone"); tr.querySelector(".act").innerHTML = "<button class='link-btn' data-dismiss='" + key + "'>Dismiss</button>"; }
-      else { tr.classList.add("gone"); tr.querySelector(".act").innerHTML = "<span class='muted'>Dismissed</span> <button class='link-btn' data-undo='" + key + "'>Undo</button>"; }
+      if (undo){ tr.classList.remove("gone"); tr.querySelector(".act").innerHTML = "<button class='link-btn' data-dismiss='" + esc(key) + "'>Dismiss</button>"; }
+      else { tr.classList.add("gone"); tr.querySelector(".act").innerHTML = "<span class='muted'>Dismissed</span> <button class='link-btn' data-undo='" + esc(key) + "'>Undo</button>"; }
       var n = $("open").querySelectorAll("tr[data-key]:not(.gone)").length; $("k-open").textContent = n;
     }).catch(function(){ b.disabled = false; b.textContent = "Try again"; });
   });
@@ -931,7 +931,7 @@
     $("speed-head").innerHTML = stot ? "<b>" + Math.round(100 * fast / stot) + "%</b> got a reply within an hour (" + fast + " of " + stot + ")." : "No missed callers to reply to in this range.";
     $("speed").innerHTML = stot ? rows2.map(function(x){ return "<div class='hrow'><span>" + x[0] + "</span><span class='track'><span class='fill' style='width:" + (100 * (x[1] || 0) / smax) + "%'></span></span><span class='n'>" + (x[1] || 0) + "</span></div>"; }).join("") : "";
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr data-key='" + o.key + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' title='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + o.key + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
+      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' title='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
     }).join("") : "<tr><td colspan='5' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }
