@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v39';
+const VERSION = 'iara-lineup-v40';   // v40: stop caching /inbox; purges the stale inbox copies
 const CORE = [
   './',
   './iara_hub.html',
@@ -63,6 +63,10 @@ self.addEventListener('fetch', (e) => {
   // Live data APIs (the Phone dashboard reads iara-inbox): never cache. Cache-first
   // here froze /phone on its first response, Refresh included.
   if (url.pathname.startsWith('/api/') || url.hostname === 'iara-inbox.vercel.app') return;
+
+  // iara Inbox (/inbox) is its own live app proxied here: never touch it. Cache-first froze its data
+  // (a 10-hour-old "connection broken" banner, 2026-10-12) and would pin old builds after deploys.
+  if (url.pathname === '/inbox' || url.pathname.startsWith('/inbox/')) return;
 
   // Good Vibes content changes all day: never serve it from cache.
   if (url.pathname === '/vibes.json') return;
