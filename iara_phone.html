@@ -20,6 +20,9 @@
   [hidden]{ display:none !important; }
   .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
   .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:20px; box-shadow:var(--shadow); }
+  .gate-mark{ display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+  .gate-mark img{ width:48px; height:auto; flex:none; }
+  .gate-mark span{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:15px; color:var(--river); }
   .gate{ width:100%; max-width:380px; }
   h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; color:var(--forest); font-size:30px; margin:0; letter-spacing:-.01em; }
   h2{ font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
@@ -29,7 +32,15 @@
   .btn-ghost{ background:transparent; border:1.5px solid var(--line); color:var(--ink); width:auto; min-height:38px; padding:7px 14px; font-size:13px; }
   a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
-  main{ max-width:1080px; margin:0 auto; padding:28px 16px 64px; }
+  main{ max-width:1080px; margin:0 auto; padding:22px 16px 64px; }
+  header.topbar{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--paper); border-bottom:1px solid var(--line);
+    padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .brand{ display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; border-radius:8px; min-width:0; }
+  .brand:focus-visible{ outline:2px solid var(--sun); outline-offset:3px; }
+  .brand-mark{ width:38px; height:auto; display:block; flex:none; }
+  .brand-text{ min-width:0; }
+  .brand-text h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:19px; letter-spacing:-.005em; color:var(--river); margin:0; white-space:nowrap; }
+  .topbar-right{ display:flex; align-items:center; gap:14px; flex:none; }
   .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
   .status{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--river); white-space:nowrap; }
   .icon-btn{ display:inline-grid; place-items:center; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); cursor:pointer; }
@@ -126,7 +137,7 @@
 
 <div id="gate" class="center" hidden>
   <form class="card gate" id="gate-form">
-    <h1 style="font-size:22px;margin-bottom:18px">Phone Analytics</h1>
+    <div class="gate-mark"><img src="/img/iara-mark.png" alt="iara" width="48"><span>Phone Analytics</span></div>
     <label for="pw">Password</label>
     <input id="pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
     <p class="err" id="gate-err" hidden>That password is not right. Ask your manager.</p>
@@ -134,16 +145,20 @@
   </form>
 </div>
 
-<main id="app" hidden>
-  <a class="back" href="/">← Staff</a>
-  <header class="top">
-    <h1>Phone Analytics</h1>
-    <div class="status">
-      <button class="icon-btn" id="refresh" aria-label="Refresh data" title="Refresh">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg>
-      </button>
-    </div>
-  </header>
+<div id="app" hidden>
+<header class="topbar">
+  <!-- Same lockup as Kitchen Ops and Lineup: iara mark + one italic Fraunces word. -->
+  <a class="brand" href="/" aria-label="Back to iara Staff">
+    <img class="brand-mark" src="/img/iara-mark.png" alt="iara" width="38">
+    <div class="brand-text"><h1>Phone Analytics</h1></div>
+  </a>
+  <div class="topbar-right">
+    <button class="icon-btn" id="refresh" aria-label="Refresh data" title="Refresh">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg>
+    </button>
+  </div>
+</header>
+<main>
   <div class="range-bar">
     <div class="seg" role="group" aria-label="Date range">
       <button class="chip" data-r="today">Today</button>
@@ -209,6 +224,7 @@
     </div>
   </div>
 </main>
+</div>
 <div class="tip" id="tip" hidden></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
