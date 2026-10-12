@@ -347,7 +347,7 @@
     var rate = function(a, b){ return b ? Math.round(100 * a / b) : null; };
     $("k-calls").textContent = c.total;
     $("k-calls-n").innerHTML = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed" +
-      (c.missed ? "<br>Missed: " + c.missedTextedAfter + " texted after · " + c.missedNoFollowUp + " no follow-up" : "") + vs(P ? c.total - P.calls.total : 0, "");
+      "" + vs(P ? c.total - P.calls.total : 0, "");
     // Only calls while someone is at the host stand count; off-hours calls get the auto-text.
     var S = c.service, O = c.offHours;
     $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
