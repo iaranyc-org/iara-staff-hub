@@ -663,7 +663,8 @@
     $("panel-email").innerHTML = channelKpis(e, "Emails") + channelDetail(e, "var(--c-email)");
     $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs") + channelDetail(dm, "var(--c-dm)") +
       '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments") + channelDetail(cm, "var(--c-comment)") +
-      '<p class="note">Comments only count when they needed us (questions, booking asks, complaints). Compliments are closed with no reply.</p>';
+      '<p class="note">Comments only count when they needed us (questions, booking asks, complaints). Compliments are closed with no reply.</p>' +
+      (range.from < "2026-10-06" ? '<p class="note"><b>Incomplete before Oct 6:</b> Instagram DMs answered in the Instagram app before the iara Mac started scanning (opening weekend) were never recorded, so counts before Oct 6 are low, not zero. Full history comes once Meta approves the Instagram API.</p>' : "");
 
     var maxS = Math.max.apply(null, rv.dist.map(function(d){ return d.n; }).concat([1]));
     $("panel-reviews").innerHTML =
