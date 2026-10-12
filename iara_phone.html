@@ -142,7 +142,7 @@
   <div id="body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Service Answer Rate</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l" title="Business hours: Tue to Sat, 5 to 11 PM">Answer Rate, Business Hours</div><div class="n" id="k-ans-n"></div></div>
       <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled</div><div class="n" id="k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting Now</div><div class="n" id="k-open-n"></div></div>
     </div>
@@ -158,7 +158,7 @@
     <div class="card" style="margin-bottom:12px">
       <h2 id="trend-h">Trend</h2>
       <p class="trend-head" id="trend-head"></p>
-      <div class="legend"><span><i style="background:var(--c-answered)"></i>Service Answer Rate</span><span><i style="background:var(--c-voicemail)"></i>Guests Handled</span></div>
+      <div class="legend"><span><i style="background:var(--c-answered)"></i>Answer Rate, Business Hours</span><span><i style="background:var(--c-voicemail)"></i>Guests Handled</span></div>
       <div class="chart"><div class="yaxis" id="trend-y" aria-hidden="true"></div><div class="bars trend" id="trend" role="img"></div><div></div><div class="xl" id="trend-x"></div></div>
     </div>
     <div class="grid2">
@@ -310,8 +310,8 @@
       var a = withCalls[withCalls.length - 2], b = withCalls[withCalls.length - 1];
       var ra = r(a.svcAnswered, a.svcTotal), rb = r(b.svcAnswered, b.svcTotal), diff = rb - ra;
       var name = function(p){ return unit === "week" ? "Week of " + p.label.replace("Wk ", "") : p.label; };
-      head = name(b) + ": <b>" + rb + "%</b> answered during service, " + (diff > 0 ? "up " + diff + " pts" : diff < 0 ? "down " + (-diff) + " pts" : "level") + " from " + name(a) + " (" + ra + "%).";
-    } else head = withCalls.length ? "Pick a longer range to see a trend." : "No calls during service in this range.";
+      head = name(b) + ": <b>" + rb + "%</b> answered during business hours, " + (diff > 0 ? "up " + diff + " pts" : diff < 0 ? "down " + (-diff) + " pts" : "level") + " from " + name(a) + " (" + ra + "%).";
+    } else head = withCalls.length ? "Pick a longer range to see a trend." : "No calls during business hours in this range.";
     $("trend-head").innerHTML = head;
     var bars = $("trend"); bars.innerHTML = ""; $("trend-x").innerHTML = "";
     pts.forEach(function(p){
@@ -325,7 +325,7 @@
         if (x[0] != null && !p.partial){ var em = document.createElement("em"); em.textContent = x[0] + "%"; sp.appendChild(em); }
         b.appendChild(sp);
       });
-      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " service calls<br>Handled " + p.handled + " of " + p.needed + " guests");
+      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " business-hours calls<br>Handled " + p.handled + " of " + p.needed + " guests");
       bars.appendChild(b);
       var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : p.label) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
     });
@@ -352,8 +352,8 @@
     var S = c.service, O = c.offHours;
     $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
     var ar = rate(S.answered, S.total), par = P && rate(P.calls.service.answered, P.calls.service.total);
-    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " · Tue-Sat 5-11 PM" : "No calls during service") +
-      (O.total ? "<br>" + O.total + " off-hours, not counted" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
+    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " calls" : "No calls during business hours") +
+      (O.total ? "<br>" + O.total + " after hours, not counted" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
     // Guests the auto-text fully covered never needed a person, so they're not in this rate.
     var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
     $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
