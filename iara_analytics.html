@@ -135,7 +135,7 @@
   <p class="loading" id="loading">Loading…</p>
   <p class="err" id="err" hidden></p>
   <section id="panel-overview" role="tabpanel"></section>
-  <section id="panel-phone" role="tabpanel" hidden><iframe class="phone" id="phone-frame" title="Phone Analytics"></iframe></section>
+  <section id="panel-phone" role="tabpanel" hidden><iframe class="phone" id="phone-frame" title="Phone Analytics" scrolling="no"></iframe></section>
   <section id="panel-email" role="tabpanel" hidden></section>
   <section id="panel-instagram" role="tabpanel" hidden></section>
   <section id="panel-reviews" role="tabpanel" hidden></section>
@@ -187,7 +187,12 @@
   // Links like /analytics#t=email&r=30d work even when the page is already open.
   window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = t; var nr = resolve(r || range.key), changed = nr.key !== range.key; range = nr; paint(); if (changed) load(); });
   // Let the embedded Phone page size the frame to its content (same origin).
-  setInterval(function(){ try { var d = $("phone-frame").contentDocument; if (d && d.body) $("phone-frame").style.height = Math.max(900, d.documentElement.scrollHeight) + "px"; } catch(e){} }, 500);
+  // One scrollbar only: the frame never scrolls itself; it grows to the Phone page's full height (watching for
+  // its two-pass render and range changes) and the outer page does the scrolling.
+  (function(){ var fr = $("phone-frame"), ro = null;
+    function fit(){ try { var d = fr.contentDocument; if (!d || !d.documentElement) return; d.documentElement.style.overflow = "hidden"; fr.style.height = Math.max(600, d.documentElement.scrollHeight) + "px"; } catch(e){} }
+    fr.addEventListener("load", function(){ fit(); try { if (ro) ro.disconnect(); ro = new ResizeObserver(fit); ro.observe(fr.contentDocument.body); } catch(e){} });
+    setInterval(fit, 1000); })();
 
   firebase.auth().onAuthStateChanged(function(user){
     if (user){ $("gate").hidden = true; $("app").hidden = false; paint(); load(); }
