@@ -17,10 +17,6 @@
       "destination": "/iara_kitchen_ops.html"
     },
     {
-      "source": "/phone",
-      "destination": "/iara_phone.html"
-    },
-    {
       "source": "/analytics",
       "destination": "/iara_analytics.html"
     },
@@ -31,6 +27,13 @@
     {
       "source": "/inbox/:path*",
       "destination": "https://iara-inbox.vercel.app/inbox/:path*"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/phone",
+      "destination": "/analytics#t=phone",
+      "permanent": false
     }
   ]
 }
