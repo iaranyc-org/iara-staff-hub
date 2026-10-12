@@ -54,6 +54,7 @@
   .pill{ font-size:11.5px; font-weight:700; border-radius:100px; padding:2px 8px; white-space:nowrap; }
   .pill.text{ background:color-mix(in srgb,var(--river) 20%,transparent); color:var(--river); }
   .pill.voicemail{ background:color-mix(in srgb,var(--sun) 20%,transparent); color:var(--sun); }
+  .pill.failed{ background:color-mix(in srgb,var(--forest) 22%,transparent); color:#f2a38c; }
   .muted{ color:var(--ink-soft); }
   .note{ font-size:12.5px; color:var(--ink-soft); margin-top:12px; line-height:1.5; }
   .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
@@ -103,7 +104,7 @@
   <div id="body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer Rate Since Opening</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l" id="k-ans-l">Answer Rate Since Opening</div><div class="n" id="k-ans-n"></div></div>
       <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled by a Person</div><div class="n" id="k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on Us</div><div class="n" id="k-open-n"></div></div>
     </div>
@@ -119,7 +120,7 @@
     <div class="grid2">
       <div class="card">
         <h2>Incoming Calls by Day</h2>
-        <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-voicemail)"></i>Voicemail</span><span><i style="background:var(--c-missed)"></i>Missed</span></div>
+        <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-voicemail)"></i>Voicemail</span><span><i style="background:var(--c-missed)"></i>Missed or Hung Up</span></div>
         <div class="bars" id="days" role="img"></div><div class="xl" id="days-x"></div>
       </div>
       <div class="card">
@@ -135,7 +136,7 @@
     <div class="card">
       <h2>Waiting on a Reply</h2>
       <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th></tr></thead><tbody id="open"></tbody></table>
-      <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls with no voicemail (they got the Resy link automatically), running-late notices, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. A "voicemail" can also be a caller who hung up during the greeting. Find the full number in Quo by searching the last four digits.</p>
+      <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls and callers who hung up at the greeting (they got the Resy link automatically), running-late notices, thank-yous after a reply, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. "Reply Failed" means we answered but the text never reached them. Find the full number in Quo by searching the last four digits.</p>
     </div>
   </div>
 </main>
@@ -196,12 +197,14 @@
     $("k-calls").textContent = c.total;
     $("k-calls-n").textContent = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed";
     $("k-ans").textContent = pct(c.sinceOpen.answered, c.sinceOpen.total);
-    $("k-ans-n").textContent = c.sinceOpen.answered + " of " + c.sinceOpen.total + " calls since Oct 2";
+    // Once Oct 2 falls out of the window, this is no longer "since opening".
+    $("k-ans-l").textContent = c.sinceOpen.wholeHistory ? "Answer Rate Since Opening" : "Answer Rate, Last " + d.windowDays + " Days";
+    $("k-ans-n").textContent = c.sinceOpen.answered + " of " + c.sinceOpen.total + " calls" + (c.sinceOpen.wholeHistory ? " since Oct 2" : "");
     $("k-handled").textContent = pct(g.handled, g.total);
     $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "");
     $("k-open").textContent = g.open;
     $("k-open-n").textContent = g.autoOnly + " more fully covered by auto-replies";
-    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " written replies, " + d.texts.auto + " auto-replies. " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
+    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " written replies, " + d.texts.auto + " auto-replies" + (d.texts.failed ? ", " + d.texts.failed + " undelivered" : "") + ". " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
 
     var max = Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; })));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
@@ -218,8 +221,8 @@
 
     var busiest = d.days.reduce(function(a, x){ var t = x.answered + x.voicemail + x.missed; return t > a.t ? { t: t, l: x.label } : a; }, { t: 0, l: "" });
     $("days").setAttribute("aria-label", "Incoming calls per day for the last " + d.windowDays + " days. Busiest day: " + busiest.l + " with " + busiest.t + " calls. Full numbers are in the Day by Day table.");
-    var hs = d.hours.slice(8).concat(d.hours.slice(0, 1)); // 8 AM to midnight
-    var hl = ["8a","","10a","","12p","","2p","","4p","","6p","","8p","","10p","","12a"];
+    var hs = d.hours.slice(8).concat(d.hours.slice(0, 8)); // full day, starting 8 AM
+    var hl = ["8a","","","","12p","","","","4p","","","","8p","","","","12a","","","","4a","","",""];
     var hmax = Math.max(1, Math.max.apply(null, hs));
     $("hours").innerHTML = ""; $("hours-x").innerHTML = "";
     hs.forEach(function(n, i){
@@ -242,7 +245,7 @@
     var peak = hs.indexOf(Math.max.apply(null, hs)), ph = (peak + 8) % 24;
     $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span></td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
+      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
     }).join("") : "<tr><td colspan='4' class='muted'>Nobody is waiting on a reply. New voicemails and texts without a reply show up here.</td></tr>";
     $("body").hidden = false;
   }
