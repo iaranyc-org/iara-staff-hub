@@ -30,7 +30,16 @@
   a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
   main{ max-width:1080px; margin:0 auto; padding:28px 16px 64px; }
-  .top{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
+  .top{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
+  .range{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:18px; }
+  .chip{ font:inherit; font-size:13px; font-weight:600; color:var(--ink); background:var(--paper-raised); border:1px solid var(--line); border-radius:100px; padding:7px 13px; min-height:36px; cursor:pointer; }
+  .chip:hover{ border-color:var(--river); }
+  .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); border-color:var(--river); }
+  .custom{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; width:100%; }
+  .custom[hidden]{ display:none; }
+  .custom label{ display:flex; align-items:center; gap:6px; margin:0; font-size:12.5px; }
+  .custom input{ width:auto; margin:0; padding:7px 9px; font-size:15px; color-scheme:dark; }
+  .delta{ display:block; font-size:12px; color:var(--river); margin-top:3px; }
   .sub{ color:var(--river); font-size:13px; margin-top:6px; }
   .back{ color:var(--river); font-size:13px; text-decoration:none; display:inline-block; margin-bottom:10px; }
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
@@ -101,18 +110,31 @@
   <div class="top">
     <div>
       <h1>Phone</h1>
-      <div class="sub" id="sub">(929) 930-5033 · last 30 days</div>
+      <div class="sub" id="sub">(929) 930-5033</div>
     </div>
     <button class="btn btn-ghost" id="refresh">Refresh</button>
+  </div>
+  <div class="range" role="group" aria-label="Date range">
+    <button class="chip" data-r="today">Today</button>
+    <button class="chip" data-r="yesterday">Yesterday</button>
+    <button class="chip" data-r="7d">Last 7 Days</button>
+    <button class="chip" data-r="30d">Last 30 Days</button>
+    <button class="chip" data-r="open">Since Opening</button>
+    <button class="chip" data-r="custom">Custom</button>
+    <form class="custom" id="custom" hidden>
+      <label>From <input type="date" id="r-from" required></label>
+      <label>To <input type="date" id="r-to" required></label>
+      <button class="btn btn-ghost" type="submit">Apply</button>
+    </form>
   </div>
   <div id="loading" class="loading">Loading calls and texts…</div>
   <div id="err" class="card" hidden></div>
   <div id="body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l" id="k-ans-l">Answer Rate Since Opening</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer Rate</div><div class="n" id="k-ans-n"></div></div>
       <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled by a Person</div><div class="n" id="k-handled-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on Us</div><div class="n" id="k-open-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on Us Right Now</div><div class="n" id="k-open-n"></div></div>
     </div>
     <h2 style="margin:22px 0 12px">Who's Carrying the Line</h2>
     <div class="people">
@@ -125,7 +147,7 @@
     </div>
     <div class="grid2">
       <div class="card">
-        <h2>Incoming Calls by Day</h2>
+        <h2 id="days-h">Incoming Calls by Day</h2>
         <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-voicemail)"></i>Voicemail</span><span><i style="background:var(--c-missed)"></i>Missed or Hung Up</span></div>
         <div class="chart"><div class="yaxis" id="days-y" aria-hidden="true"></div><div class="bars" id="days" role="img"></div><div></div><div class="xl" id="days-x"></div></div>
       </div>
@@ -136,7 +158,7 @@
       </div>
     </div>
     <div class="card" style="margin-bottom:12px">
-      <h2>Day by Day</h2>
+      <h2 id="daily-h">Day by Day</h2>
       <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls In</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls Out</th><th>Talk Time</th><th>Texts In</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
@@ -180,15 +202,57 @@
   // background; "refreshing" means a newer one is on the way, so ask again shortly
   // without blanking the page. Refresh forces a sync (a few seconds: only changed
   // conversations are re-read from Quo).
-  var followUps = 0;
+  // ---- Date range ----
+  // Presets resolve to ET calendar dates in the browser; the server clamps to the
+  // line's first day and today. The pick lives in the URL (#r=7d or
+  // #r=2026-10-01..2026-10-07) so a link opens on the same range.
+  var OPENED_DAY = "2026-10-02", FIRST_DAY = "2026-09-10";
+  var etToday = function(){ return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date()); };
+  var shift = function(ds, n){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n, 12)).toISOString().slice(0, 10); };
+  function resolve(r){
+    var t = etToday(), m = /^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/.exec(r || "");
+    if (m) return { key: "custom", from: m[1], to: m[2] };
+    if (r === "today") return { key: r, from: t, to: t };
+    if (r === "yesterday") return { key: r, from: shift(t, -1), to: shift(t, -1) };
+    if (r === "30d") return { key: r, from: shift(t, -29), to: t };
+    if (r === "open") return { key: r, from: OPENED_DAY, to: t };
+    return { key: "7d", from: shift(t, -6), to: t };
+  }
+  var saved = ""; try { saved = localStorage.getItem("iara_phone_range") || ""; } catch(e){}
+  var range = resolve((/#r=([^&]+)/.exec(location.hash) || [])[1] || saved);
+  function setRange(r){
+    range = resolve(r);
+    var tag = range.key === "custom" ? range.from + ".." + range.to : range.key;
+    try { history.replaceState(null, "", "#r=" + tag); localStorage.setItem("iara_phone_range", tag); } catch(e){}
+    paintChips(); load(false);
+  }
+  function paintChips(){
+    document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
+    $("custom").hidden = range.key !== "custom";
+    var t = etToday();
+    ["r-from", "r-to"].forEach(function(id){ $(id).min = FIRST_DAY; $(id).max = t; });
+    $("r-from").value = range.from; $("r-to").value = range.to;
+  }
+  document.querySelectorAll(".chip").forEach(function(b){
+    b.addEventListener("click", function(){
+      if (b.dataset.r === "custom"){ range = { key: "custom", from: range.from, to: range.to }; paintChips(); $("r-from").focus(); return; }
+      setRange(b.dataset.r);
+    });
+  });
+  $("custom").addEventListener("submit", function(ev){ ev.preventDefault(); if ($("r-from").value && $("r-to").value) setRange($("r-from").value + ".." + $("r-to").value); });
+  paintChips();
+
+  var followUps = 0, seq = 0;
   function load(fresh, quiet){
+    var mine = ++seq;
     var shown = !$("body").hidden;
     if (!shown) $("loading").hidden = false;
     $("err").hidden = true; $("refresh").disabled = true; $("refresh").textContent = "Updating…";
     firebase.auth().currentUser.getIdToken().then(function(tok){
-      return fetch("https://iara-inbox.vercel.app/api/phone-stats" + (fresh ? "?refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
+      return fetch("https://iara-inbox.vercel.app/api/phone-stats?from=" + range.from + "&to=" + range.to + (fresh ? "&refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
       .then(function(j){
+        if (mine !== seq) return; // a newer range was picked meanwhile
         render(j);
         if (j.refreshing && followUps < 3){ followUps++; setTimeout(function(){ load(false, true); }, 8000); }
       })
@@ -220,17 +284,25 @@
 
   function render(d){
     var c = d.calls, g = d.guests;
-    $("sub").textContent = "(929) 930-5033 · last " + d.windowDays + " days · updated " + when(d.generatedAt);
+    var R = d.range, fmt = function(ds){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
+    var span = R.from === R.to ? fmt(R.from) : fmt(R.from) + " to " + fmt(R.to);
+    $("sub").textContent = "(929) 930-5033 · " + span + " · updated " + when(d.generatedAt);
+    // vs the same-length period right before; none for ranges starting on day one.
+    var P = d.prev, plural = R.days === 1 ? "day" : R.days + " days";
+    var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prior " + plural + "</span>" : ""; };
+    var rate = function(a, b){ return b ? Math.round(100 * a / b) : null; };
     $("k-calls").textContent = c.total;
-    $("k-calls-n").textContent = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed";
-    $("k-ans").textContent = pct(c.sinceOpen.answered, c.sinceOpen.total);
-    // Once Oct 2 falls out of the window, this is no longer "since opening".
-    $("k-ans-l").textContent = c.sinceOpen.wholeHistory ? "Answer Rate Since Opening" : "Answer Rate, Last " + d.windowDays + " Days";
-    $("k-ans-n").textContent = c.sinceOpen.answered + " of " + c.sinceOpen.total + " calls" + (c.sinceOpen.wholeHistory ? " since Oct 2" : "");
+    $("k-calls-n").innerHTML = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed" + vs(P ? c.total - P.calls.total : 0, "");
+    $("k-ans").textContent = pct(c.answered, c.total);
+    var ar = rate(c.answered, c.total), par = P && rate(P.calls.answered, P.calls.total);
+    $("k-ans-n").innerHTML = c.answered + " of " + c.total + " calls" + (ar != null && par != null ? vs(ar - par, " pts") : "");
     $("k-handled").textContent = pct(g.handled, g.total);
-    $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "");
+    var hr = rate(g.handled, g.total), phr = P && rate(P.guests.handled, P.guests.total);
+    $("k-handled-n").innerHTML = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
+    $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
+    $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
-    $("k-open-n").textContent = g.autoOnly + " more fully covered by auto-replies" + (g.stale ? ", " + g.stale + " too old to chase" : "");
+    $("k-open-n").textContent = g.liveAutoOnly + " more fully covered by auto-replies" + (g.stale ? ", " + g.stale + " too old to chase" : "");
     $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " written replies, " + d.texts.auto + " auto-replies" + (d.texts.failed ? ", " + d.texts.failed + " undelivered" : "") + ". " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
 
     var max = niceMax(Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; }))));
@@ -243,11 +315,11 @@
       });
       tipOn(b, "<b>" + x.label + "</b><br>" + x.answered + " answered · " + x.voicemail + " voicemail · " + x.missed + " missed");
       $("days").appendChild(b);
-      var l = document.createElement("div"); l.textContent = (d.days.length - 1 - i) % 7 === 0 ? x.label.split(" ")[1] : ""; $("days-x").appendChild(l);
+      var l = document.createElement("div"); var every = d.days.length <= 8 ? 1 : d.days.length <= 16 ? 2 : 7; l.textContent = (d.days.length - 1 - i) % every === 0 ? x.label.split(" ")[1] : ""; $("days-x").appendChild(l);
     });
 
     var busiest = d.days.reduce(function(a, x){ var t = x.answered + x.voicemail + x.missed; return t > a.t ? { t: t, l: x.label } : a; }, { t: 0, l: "" });
-    $("days").setAttribute("aria-label", "Incoming calls per day for the last " + d.windowDays + " days. Busiest day: " + busiest.l + " with " + busiest.t + " calls. Full numbers are in the Day by Day table.");
+    $("days").setAttribute("aria-label", "Incoming calls per " + R.grain + ", " + span + ". Busiest " + R.grain + ": " + busiest.l + " with " + busiest.t + " calls. Full numbers are in the Day by Day table.");
     var hs = d.hours.slice(8).concat(d.hours.slice(0, 8)); // full day, starting 8 AM
     var hl = ["8a","","","","12p","","","","4p","","","","8p","","","","12a","","","","4a","","",""];
     var hmax = niceMax(Math.max(1, Math.max.apply(null, hs)));
