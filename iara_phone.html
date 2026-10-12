@@ -315,7 +315,7 @@
     if (!shown) $("loading").hidden = false;
     $("err").hidden = true; $("refresh").disabled = true; $("refresh").setAttribute("aria-busy", "true");
     firebase.auth().currentUser.getIdToken().then(function(tok){
-      return fetch("https://iara-inbox.vercel.app/api/phone-stats?from=" + range.from + "&to=" + range.to + (fresh ? "&refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
+      return fetch("https://iara-inbox.vercel.app/inbox/api/phone-stats?from=" + range.from + "&to=" + range.to + (fresh ? "&refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
       .then(function(j){
         if (mine !== seq) return; // a newer range was picked meanwhile
