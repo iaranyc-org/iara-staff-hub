@@ -84,6 +84,12 @@
   .bar span{ display:block; border-radius:2px 2px 0 0; }
   .bar.grp{ flex-direction:row; align-items:flex-end; gap:2px; }
   .bar.grp span{ flex:1; }
+  .kpi .delta{ display:block; font-size:13px; font-weight:700; color:var(--river); margin-top:3px; }
+  .bar.partial span{ background-image:repeating-linear-gradient(45deg, rgba(0,0,0,.28) 0 4px, transparent 4px 8px); }
+  .bars.tr .bar{ flex-direction:row; align-items:flex-end; gap:3px; }
+  .bars.tr .bar span{ flex:1; border-radius:3px 3px 0 0; position:relative; }
+  .bars.tr .bar span em{ position:absolute; left:50%; transform:translateX(-50%); bottom:100%; margin-bottom:3px; font-style:normal; font-size:11.5px; font-weight:700; color:var(--ink); white-space:nowrap; }
+  .bars.tr .bar .none{ align-self:center; margin:auto; font-size:11.5px; color:var(--river); }
   .xl{ display:flex; gap:3px; font-size:12px; color:var(--river); margin-top:6px; }
   .xl div{ flex:1; text-align:center; white-space:nowrap; overflow:hidden; }
   .hbar{ display:grid; grid-template-columns:96px 1fr 36px; align-items:center; gap:10px; font-size:14px; margin-bottom:8px; }
@@ -555,7 +561,44 @@
   }
   var md = function(ds){ var p = ds.split("-"); return Number(p[1]) + "/" + Number(p[2]); };
   function legend(series){ return '<div class="legend" style="margin:-6px 0 12px">' + series.map(function(s){ return '<span><i style="background:' + s.color + '"></i>' + s.name + '</span>'; }).join("") + '</div>'; }
-  function kpi(v, l, n){ return '<div class="card kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div>' + (n ? '<div class="n">' + n + '</div>' : "") + '</div>'; }
+  function kpi(v, l, n, d){ return '<div class="card kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div>' + (d ? '<span class="delta">' + d + '</span>' : "") + (n ? '<div class="n">' + n + '</div>' : "") + '</div>'; }
+  // "vs previous period": the same-length stretch right before, only when it's all after opening (server sends null
+  // otherwise) and only for counts that were tracked then. No prior number, no delta: never a fake one.
+  var PREV = null;
+  function dlt(cur, old, kind){
+    if (!PREV || cur == null || old == null) return "";
+    var n = PREV.days, x = cur - old, sg = function(v){ return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v); };
+    if (kind === "pts") return sg(Math.round(x)) + " pts vs prev " + n + " days";
+    if (kind === "stars") return sg(Math.round(x * 100) / 100) + " vs prev " + n + " days";
+    if (kind === "hrs") return sg(Math.round(x * 10) / 10) + " h vs prev " + n + " days";
+    return sg(x) + " vs prev " + n + " days";
+  }
+  // Trend card (same shape as the Phone tab's): per open day for ranges up to 14 days, per Mon-Sun week otherwise; the
+  // in-progress period is hatched, labeled "(so far)" and gets no %. Headline compares the last two complete periods.
+  function trendCard(T, title, series, headFn){
+    var pts = (T && T.points) || [], wk = T && T.grain === "week";
+    var name = function(p){ return wk ? "Week of " + p.label.replace("Wk ", "") : p.label; };
+    var done = pts.filter(function(p){ return !p.partial && series[0].val(p) != null; }), head;
+    if (done.length >= 2) head = headFn(done[done.length - 1], done[done.length - 2], name);
+    else head = pts.length ? "Pick a longer range to see a trend." : "Nothing in this range yet.";
+    var max = series[0].max || niceMax(Math.max.apply(null, pts.map(function(p){ return Math.max.apply(null, series.map(function(s){ return s.val(p) || 0; })); }).concat([1])));
+    var bars = '<div class="bars tr">' + pts.map(function(p){
+      var vals = series.map(function(s){ return s.val(p); });
+      var tip = esc(p.label + (p.partial ? " (so far)" : "") + ": " + series.map(function(s, i){ return s.name + " " + (vals[i] == null ? "–" : s.fmt(vals[i])); }).join(", "));
+      return '<div class="bar' + (p.partial ? " partial" : "") + '" title="' + tip + '">' + (vals.every(function(v){ return v == null; }) ? '<span class="none">–</span>' :
+        series.map(function(s, i){ var v = vals[i]; return '<span style="height:' + (v == null ? 0 : Math.max(100 * v / max, 1)) + '%;background:' + s.color + '">' + (v != null && !p.partial ? "<em>" + s.fmt(v) + "</em>" : "") + '</span>'; }).join("")) + '</div>'; }).join("") + '</div>';
+    var xl = '<div class="xl">' + pts.map(function(p){ return '<div>' + esc((wk ? p.label.replace("Wk ", "") : pts.length <= 5 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : "")) + '</div>'; }).join("") + '</div>';
+    return '<div class="card" style="margin-bottom:12px"><h2>' + title + (wk ? " · Week Over Week" : " · Day Over Day") + '</h2><p style="margin:0 0 10px">' + head + '</p>' +
+      legend(series.map(function(s){ return { name: s.name, color: s.color }; })) + withAxis(max, bars, xl) +
+      '<p class="note">' + (wk ? "Mon to Sun weeks" : "Open days only (closed Sun and Mon)") + ', from opening. The hatched bar is still in progress.</p></div>';
+  }
+  var upDown = function(a, b, unit){ var d = Math.round((a - b) * (unit === " ★" ? 100 : 1)) / (unit === " ★" ? 100 : 1); return d > 0 ? "up " + d + unit : d < 0 ? "down " + (-d) + unit : "level"; };
+  function rateTrend(T, title, key, color, label){
+    return trendCard(T, title, [
+      { name: "Replied Within an Hour", color: color, max: 100, val: function(p){ return p[key] ? p[key].withinHourRate : null; }, fmt: function(v){ return v + "%"; } },
+    ], function(b, a, name){ var x = b[key].withinHourRate, y = a[key].withinHourRate;
+      return name(b) + ": <b>" + x + "%</b> of " + label + " replied within an hour (" + b[key].in + " in), " + upDown(x, y, " pts") + " from " + name(a) + " (" + y + "%)."; });
+  }
   function dayBars(days, series){
     // Series sit side by side (In next to Replied), never stacked: they're different counts, not parts of a total.
     var max = 1; days.forEach(function(d, i){ series.forEach(function(s){ max = Math.max(max, s.vals[i]); }); }); max = niceMax(max);
@@ -577,10 +620,10 @@
     var max = list[0].n, name = function(s){ return s.replace(/_/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }); };
     return list.map(function(t){ return '<div class="hbar"><span>' + esc(name(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / max) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("");
   }
-  function channelKpis(c, label){
-    return '<div class="kpis">' + kpi(fmt(c.in), label + " In", "<b>" + c.closedNoReply + "</b> needed no reply") +
-      kpi(c.replyRate == null ? "–" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one") +
-      kpi(hrs(c.medianReplyHours), "Median Reply Time", "From message to our reply") +
+  function channelKpis(c, label, pv){
+    return '<div class="kpis">' + kpi(fmt(c.in), label + " In", "<b>" + c.closedNoReply + "</b> needed no reply", pv && dlt(c.in, pv.in)) +
+      kpi(c.replyRate == null ? "–" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one", pv && dlt(c.replyRate, pv.replyRate, "pts")) +
+      kpi(hrs(c.medianReplyHours), "Median Reply Time", "From message to our reply", pv && dlt(c.medianReplyHours, pv.medianReplyHours, "hrs")) +
       kpi(fmt(c.waiting), "Waiting Now", c.waiting ? '<a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") + '</div>';
   }
   function channelDetail(c, color){
@@ -671,13 +714,21 @@
     ].filter(Boolean);
     var tot = rows.reduce(function(t, r){ t.in += r.in; t.needed += r.needed; t.replied += r.replied; t.waiting += r.waiting; return t; }, { in: 0, needed: 0, replied: 0, waiting: 0 });
 
+    PREV = a.prev ? { days: Math.round((Date.parse(a.prev.to) - Date.parse(a.prev.from)) / 864e5) + 1 } : null;
+    var pv0 = a.prev, pp = p && p.prev;
+    // Overview totals only get a delta when every channel was tracked in the prior period (DMs from Oct 6, phone loaded).
+    var prevTot = pv0 && pv0.dms && pp ? ((pp.calls && pp.calls.total) || 0) + (pp.textsIn || 0) + pv0.email.in + pv0.dms.in + pv0.comments.in + pv0.resy.count : null;
     var nowCount = (a.waiting || []).length + ((p && p.open) || []).length;
     $("panel-overview").innerHTML =
-      '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings") +
+      '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings", dlt(tot.in, prevTot)) +
         kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
         // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
         kpi(nowCount, "Waiting Now", nowCount ? 'Across every channel · <a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
-        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s")) + '</div>' +
+        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
+      trendCard(a.trend, "Replied Within an Hour", [
+        { name: "Email", color: "var(--c-email)", max: 100, val: function(q){ return q.email.withinHourRate; }, fmt: function(v){ return v + "%"; } },
+        { name: "Instagram DMs", color: "var(--c-dm)", val: function(q){ return q.dms ? q.dms.withinHourRate : null; }, fmt: function(v){ return v + "%"; } },
+      ], function(b, x, name){ return name(b) + ": email <b>" + b.email.withinHourRate + "%</b> replied within an hour, " + upDown(b.email.withinHourRate, x.email.withinHourRate, " pts") + " from " + name(x) + "." + (b.dms && x.dms && b.dms.withinHourRate != null && x.dms.withinHourRate != null ? " DMs <b>" + b.dms.withinHourRate + "%</b>, " + upDown(b.dms.withinHourRate, x.dms.withinHourRate, " pts") + "." : "") + " Phone's trend is on the Phone tab."; }) +
       extras(a, p) +
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
@@ -687,18 +738,22 @@
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
       '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>';
 
-    $("panel-email").innerHTML = channelKpis(e, "Emails") + channelDetail(e, "var(--c-email)");
-    $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs") + channelDetail(dm, "var(--c-dm)") +
-      '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments") + channelDetail(cm, "var(--c-comment)") +
+    var pv = a.prev;
+    $("panel-email").innerHTML = channelKpis(e, "Emails", pv && pv.email) + rateTrend(a.trend, "Email", "email", "var(--c-email)", "emails") + channelDetail(e, "var(--c-email)");
+    $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs", pv && pv.dms) + rateTrend(a.trend, "DMs", "dms", "var(--c-dm)", "DMs") + channelDetail(dm, "var(--c-dm)") +
+      '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments", pv && pv.comments) + channelDetail(cm, "var(--c-comment)") +
       '<p class="note">Comments only count when they needed us (questions, booking asks, complaints). Compliments are closed with no reply.</p>' +
       (range.from < "2026-10-06" ? '<p class="note"><b>Incomplete before Oct 6:</b> Instagram DMs answered in the Instagram app before the iara Mac started scanning (opening weekend) were never recorded, so counts before Oct 6 are low, not zero. Full history comes once Meta approves the Instagram API.</p>' : "");
 
     var maxS = Math.max.apply(null, rv.dist.map(function(d){ return d.n; }).concat([1]));
     $("panel-reviews").innerHTML =
-      '<div class="kpis">' + kpi(rv.count, "New Resy Ratings", rv.withComment + " with a written comment") +
-        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Average", "In this range") +
+      '<div class="kpis">' + kpi(rv.count, "New Resy Ratings", rv.withComment + " with a written comment", pv && dlt(rv.count, pv.resy.count)) +
+        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Average", "In this range", pv && dlt(rv.avg, pv.resy.avg, "stars")) +
         kpi(rv.low, "4★ or Below", rv.low ? "Each one is in the Bom Dia" : "None") +
         kpi(rv.vip, "From VIPs", "Tagged VIP in Resy") + '</div>' +
+      trendCard(a.trend, "Resy Ratings", [
+        { name: "Ratings", color: "var(--c-review)", val: function(p){ return p.resy.count || null; }, fmt: function(v){ return String(v); } },
+      ], function(b, x, name){ return name(b) + ": <b>" + b.resy.count + "</b> rating" + (b.resy.count === 1 ? "" : "s") + (b.resy.avg != null ? ", avg " + b.resy.avg.toFixed(2) + " ★" : "") + ", vs " + x.resy.count + (x.resy.avg != null ? " at " + x.resy.avg.toFixed(2) + " ★" : "") + " in " + name(x) + "."; }) +
       '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(rv.byDay.map(function(d){ return d.date; }), [{ name: "Ratings", color: "var(--c-review)", vals: rv.byDay.map(function(d){ return d.n; }) }]) + '</div>' +
         '<div class="card"><h2>Stars</h2>' + rv.dist.slice().reverse().map(function(d){ return '<div class="hbar"><span>' + d.stars + ' ★</span><div class="track"><div class="fill" style="width:' + (100 * d.n / maxS) + '%"></div></div><span class="n">' + d.n + '</span></div>'; }).join("") +
         '<h2 style="margin-top:18px">Scores Today</h2>' + (a.reviews.scores.length ? a.reviews.scores.map(function(s){ return '<p style="margin:0 0 6px"><b>' + esc(s.name) + '</b> · ' + esc(s.summary) + '</p>'; }).join("") : '<p class="note">Not read yet.</p>') + '</div></div>' +
