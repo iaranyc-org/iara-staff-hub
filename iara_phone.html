@@ -48,7 +48,11 @@
   .icon-btn[aria-busy="true"] svg{ animation:spin .9s linear infinite; }
   @keyframes spin{ to{ transform:rotate(360deg); } }
   @media (prefers-reduced-motion: reduce){ .icon-btn[aria-busy="true"] svg{ animation:none; } }
-  .range-bar{ margin-bottom:20px; }
+  .range-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:20px; }
+  .updated{ font-size:13px; color:var(--river); white-space:nowrap; }
+  .updated-m{ display:none; }
+  /* No room beside the lockup on phones: the timestamp joins the date caption instead. */
+  @media (max-width:480px){ .updated{ display:none; } .updated-m{ display:inline; } .updated-m::before{ content:" · "; } }
   .seg{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; width:max-content; max-width:100%; }
   .seg::-webkit-scrollbar{ display:none; }
   @media (max-width:560px){
@@ -60,8 +64,8 @@
   .chip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:38px; cursor:pointer; white-space:nowrap; }
   .chip:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
   .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); }
-  .range-text{ margin-top:10px; font-size:15px; font-weight:600; color:var(--ink); }
-  .custom{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
+  .range-text{ font-size:14px; color:var(--river); }
+  .custom{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; width:100%; }
   .custom[hidden]{ display:none; }
   .custom label{ display:flex; align-items:center; gap:6px; margin:0; font-size:14px; }
   .custom input{ width:auto; margin:0; padding:7px 9px; font-size:15px; color-scheme:dark; }
@@ -108,8 +112,7 @@
   .muted{ color:var(--ink-soft); }
   .note{ font-size:14px; color:var(--ink); margin-top:12px; line-height:1.5; }
   .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
-  .people{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
-  @media (max-width:1100px){ .people{ grid-template-columns:repeat(2,1fr); } }
+  .people{ display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-bottom:12px; }
   .person .who{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:12px; }
   .person .name{ font-family:'Fraunces',Georgia,serif; font-size:22px; color:var(--river); }
   .person .role{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); }
@@ -153,6 +156,7 @@
     <div class="brand-text"><h1>Phone Analytics</h1></div>
   </a>
   <div class="topbar-right">
+    <span class="updated" id="updated"></span>
     <button class="icon-btn" id="refresh" aria-label="Refresh data" title="Refresh">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg>
     </button>
@@ -168,7 +172,7 @@
       <button class="chip" data-r="open">Since Opening</button>
       <button class="chip" data-r="custom">Custom</button>
     </div>
-    <div class="range-text" id="sub"></div>
+    <div class="range-text"><span id="sub"></span><span class="updated-m" id="updated-m"></span></div>
     <form class="custom" id="custom" hidden>
       <label>From <input type="date" id="r-from" required></label>
       <label>To <input type="date" id="r-to" required></label>
@@ -189,11 +193,7 @@
       <div class="card person"><div class="who"><span class="name">Calls</span></div>
         <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">Calls Answered</div></div><div><div class="v" id="r-out"></div><div class="l">Calls Made</div></div><div><div class="v" id="r-min"></div><div class="l">On the Phone</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Texts</span></div>
-        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Texted Back</div></div></div></div>
-      <div class="card person"><div class="who"><span class="name">Auto-Replies</span></div>
-        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Auto-Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Guests Covered</div></div></div></div>
-      <div class="card person"><div class="who"><span class="name">All Together</span></div>
-        <div class="stat-row"><div><div class="v" id="t-in"></div><div class="l">Calls + Texts In</div></div><div><div class="v" id="t-person"></div><div class="l">By a Person</div></div><div><div class="v" id="t-auto"></div><div class="l">By Auto-Text</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Texted Back</div></div><div><div class="v" id="a-texts"></div><div class="l">Auto-Texts Sent</div></div></div></div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2 id="trend-h">Trend</h2>
@@ -210,7 +210,6 @@
       <div class="card">
         <h2>Calls by Hour (ET)</h2>
         <div class="chart"><div class="yaxis" id="hours-y" aria-hidden="true"></div><div class="bars" id="hours" role="img"></div><div></div><div class="xl" id="hours-x"></div></div>
-        <div class="note" id="texts-note"></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:12px">
@@ -218,7 +217,7 @@
       <div class="scroll"><table id="daily"><thead><tr class="group"><th></th><th colspan="6">Calls</th><th colspan="3">Texts</th></tr><tr><th>Day</th><th>In</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Made</th><th>Talk Time</th><th class="tx">In</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
-      <h2>Waiting on a Reply</h2>
+      <h2>Waiting for a Reply</h2>
       <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th></tr></thead><tbody id="open"></tbody></table>
       <p class="note">Voicemails and texts nobody has answered yet. Left off: missed calls without a voicemail (they got the Resy link), late and cancel notices, thank-yous, spam, and asks whose date has passed. "Reply Failed" = our text never arrived. Search the last 4 digits in Quo for the full number.</p>
     </div>
@@ -392,7 +391,8 @@
     var R = d.range, fmt = function(ds){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
     var span = R.from === R.to ? fmt(R.from) : R.from.slice(0, 7) === R.to.slice(0, 7) ? fmt(R.from) + " to " + +R.to.slice(8) : fmt(R.from) + " to " + fmt(R.to);
     var upd = new Date(d.generatedAt), sameDay = upd.toLocaleDateString("en-CA", { timeZone: "America/New_York" }) === etToday();
-    $("sub").textContent = span + " · Updated " + (sameDay ? upd.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : when(d.generatedAt));
+    $("sub").textContent = span;
+    $("updated").textContent = $("updated-m").textContent = "Updated " + (sameDay ? upd.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : when(d.generatedAt));
     // vs the same-length period right before; none for ranges starting on day one.
     var P = d.prev, plural = R.days === 1 ? "day" : R.days + " days";
     var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prev " + plural + "</span>" : ""; };
@@ -415,7 +415,6 @@
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
     $("k-open-n").textContent = "All dates" + (g.stale ? " · " + g.stale + " older dropped" : "");
-    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in · " + d.texts.human + " written · " + d.texts.auto + " auto" + (d.texts.failed ? " · " + d.texts.failed + " undelivered" : "") + ". Calls out: " + c.outbound + " · " + dur(c.talkMinutes) + " on the phone.";
 
     var max = niceMax(Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; }))));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
@@ -447,11 +446,8 @@
     var pp = d.people;
     $("r-ans").textContent = pp.ronald.answered; $("r-out").textContent = pp.ronald.callsOut; $("r-min").textContent = dur(pp.ronald.talkMin);
     $("j-typed").textContent = pp.jay.typed; $("j-threads").textContent = pp.jay.threads;
-    $("a-texts").textContent = pp.auto.texts; $("a-cov").textContent = pp.auto.guestsCovered;
-    // Everything in, and who responded: a person (answered, called, wrote) or the auto-text.
-    $("t-in").textContent = c.total + d.texts.inbound;
-    $("t-person").textContent = pp.ronald.answered + pp.ronald.callsOut + pp.jay.typed;
-    $("t-auto").textContent = pp.auto.texts;
+    $("a-texts").textContent = pp.auto.texts; 
+
     var rows = d.days.filter(function(x){ return x.answered + x.voicemail + x.missed + x.callsOut + x.textsIn + x.typed + x.auto > 0; }).reverse();
     var tot = rows.reduce(function(a, x){ ["answered","voicemail","missed","callsOut","talkMin","textsIn","typed","auto"].forEach(function(k){ a[k] = (a[k] || 0) + x[k]; }); return a; }, {});
     var dash = function(n){ return n || "<span class='muted'>–</span>"; };
