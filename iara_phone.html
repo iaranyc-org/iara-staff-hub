@@ -322,7 +322,7 @@
       else [[ar, "answered"], [hr, "voicemail"]].forEach(function(x){
         var sp = document.createElement("span");
         sp.style.height = (x[0] == null ? 0 : Math.max(x[0], 1)) + "%"; sp.style.background = "var(--c-" + x[1] + ")";
-        if (x[0] != null){ var em = document.createElement("em"); em.textContent = x[0] + "%"; sp.appendChild(em); }
+        if (x[0] != null && !p.partial){ var em = document.createElement("em"); em.textContent = x[0] + "%"; sp.appendChild(em); }
         b.appendChild(sp);
       });
       tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " calls during service<br>Handled " + p.handled + " of " + p.needed + " guests who needed us");
