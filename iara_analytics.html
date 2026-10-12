@@ -434,7 +434,7 @@
   firebase.initializeApp({ apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE", authDomain: "iara-lineup.firebaseapp.com", projectId: "iara-lineup",
     storageBucket: "iara-lineup.firebasestorage.app", messagingSenderId: "840712867607", appId: "1:840712867607:web:2003c145731aa85a13b152" });
   var $ = function(id){ return document.getElementById(id); };
-  var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var fmt = function(n){ return n == null ? "–" : String(n); };
   var hrs = function(h){ return h == null ? "–" : h < 1 ? Math.round(h * 60) + " min" : (Math.round(h * 10) / 10) + " h"; };
   var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
@@ -527,7 +527,7 @@
     }).then(function(res){
       if (mine !== seq) return;
       $("loading").hidden = true; render(res[0], res[1]);
-      $("updated").textContent = "Updated " + new Date(res[0].generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+      $("updated").textContent = "Updated " + new Date(res[0].generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
     }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; $("err").hidden = false; $("err").textContent = "Couldn't load analytics (" + e.message + "). Try again in a minute."; });
   }
 
@@ -616,13 +616,6 @@
     // Jay 2026-10-12: no reply lists here, that's what iara Inbox is for (the Waiting Now KPI links there).
     return '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
-  // Dismiss a phone row from the Overview list (same endpoint the Phone tab uses), then reload.
-  document.addEventListener("click", function(e){
-    var b = e.target.closest && e.target.closest("[data-dismiss]"); if (!b) return;
-    b.disabled = true; b.textContent = "Dismissing…";
-    firebase.auth().currentUser.getIdToken().then(function(tok){ return fetch(API + "/phone-stats", { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ key: b.dataset.dismiss }) }); })
-      .then(function(){ load(); }).catch(function(){ b.disabled = false; b.textContent = "Dismiss"; });
-  });
 
   function render(a, p){
     var e = a.email, dm = a.instagram.dms, cm = a.instagram.comments, rv = a.reviews.resy;
