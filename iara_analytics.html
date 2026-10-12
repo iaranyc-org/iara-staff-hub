@@ -373,6 +373,20 @@
       <div class="card person"><div class="who"><span class="name">Texts</span></div>
         <div class="stat-row"><div><div class="v" id="ph-j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="ph-j-threads"></div><div class="l">Guests Texted Back</div></div><div><div class="v" id="ph-a-texts"></div><div class="l">Auto-Texts Sent</div></div></div></div>
     </div>
+    <div id="ph-resy-sec" hidden>
+    <h2 style="margin:22px 0 12px">From Call to Table</h2>
+    <div class="kpis" style="margin-bottom:12px">
+      <div class="card kpi"><div class="v" id="ph-r-booked"></div><div class="l">Booked After Reaching Us</div><div class="n" id="ph-r-booked-n"></div></div>
+      <div class="card kpi"><div class="v" id="ph-r-auto"></div><div class="l">Auto-Text Only, Then Booked</div><div class="n" id="ph-r-auto-n"></div></div>
+      <div class="card kpi"><div class="v" id="ph-r-ns"></div><div class="l">No-Shows</div><div class="n" id="ph-r-ns-n"></div></div>
+      <div class="card kpi"><div class="v" id="ph-r-ret"></div><div class="l">Returning Guests</div><div class="n" id="ph-r-ret-n"></div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h2>Covers and Calls by Night</h2>
+      <div class="scroll"><table id="ph-r-nights"><thead><tr><th>Night</th><th class="num">Covers</th><th class="num">Calls In</th><th class="num">Answered</th></tr></thead><tbody></tbody></table></div>
+      <p class="note" id="ph-r-note"></p>
+    </div>
+    </div>
     <div class="grid2 asks">
       <div class="card">
         <h2>What Guests Ask About</h2>
@@ -921,6 +935,26 @@
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
     axis("days-y", "days", max); axis("hours-y", "hours", hmax);
     renderTrend(d);
+    // From Call to Table: ResyOS book copy (Mac worker, twice a day) matched by phone number.
+    var Z = d.resy;
+    $("resy-sec").hidden = !Z;
+    if (Z){
+      var b = Z.didBook, ns = Z.noShows, mx = Z.guestsMix, done = mx.newRes + mx.returningRes;
+      $("r-booked").textContent = pct(b.booked, b.guests);
+      $("r-booked-n").textContent = b.booked + " of " + b.guests + " guests who called or texted";
+      $("r-auto").textContent = pct(b.autoBooked, b.autoOnly);
+      $("r-auto-n").textContent = b.autoBooked + " of " + b.autoOnly + " who only got the auto-text";
+      $("r-ns").textContent = !ns.reservations ? "–" : ns.noShows && 100 * ns.noShows / ns.reservations < 1 ? "<1%" : pct(ns.noShows, ns.reservations);
+      $("r-ns-n").textContent = ns.noShows + " of " + ns.reservations + " past reservations" + (ns.covers ? " · " + ns.covers + " covers" : "");
+      $("r-ret").textContent = done ? pct(mx.returningRes, done) : "–";
+      $("r-ret-n").textContent = mx.returningRes + " returning · " + mx.newRes + " first-time";
+      var calls = {}; d.days.forEach(function(x){ calls[x.label] = x; });
+      var nights = Object.keys(Z.coversByDay).filter(function(k){ return k >= d.range.from && k <= d.range.to; }).sort().reverse();
+      var lab = function(ds){ var u = new Date(ds + "T12:00:00Z"); return u.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }) + " " + (u.getUTCMonth() + 1) + "/" + u.getUTCDate(); };
+      $("r-nights").querySelector("tbody").innerHTML = nights.length ? nights.map(function(k){ var c = calls[lab(k)] || {}; var inn = (c.answered || 0) + (c.voicemail || 0) + (c.missed || 0);
+        return "<tr><td>" + lab(k) + "</td><td class='num'>" + Z.coversByDay[k] + "</td><td class='num'>" + (inn || "–") + "</td><td class='num'>" + (c.answered || "–") + "</td></tr>"; }).join("") : "<tr><td colspan='4' class='muted'>No covers in this range.</td></tr>";
+      $("r-note").textContent = "Booked = a ResyOS reservation under the same phone number, dated within 45 days of their first call or text. Covers include seated walk-ins. Cancellations aren't in the ResyOS report. Book copied " + when(Z.updatedAt) + ".";
+    }
     // What guests ask about + how fast we reply.
     var TOPIC = { reservation: "Booking a table", fully_booked: "Booking a full night", running_late: "Running late", hours: "Hours", menu_dietary: "Menu & dietary", large_party: "Groups", catering: "Catering", complaint: "A complaint", other: "Something else" };
     var tp = d.topics || [], tmax = tp.reduce(function(m, x){ return Math.max(m, x.n); }, 1);
