@@ -132,8 +132,8 @@
   <div id="body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer Rate</div><div class="n" id="k-ans-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled by a Person</div><div class="n" id="k-handled-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer Rate During Service</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Who Needed Us, Handled</div><div class="n" id="k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on Us Right Now</div><div class="n" id="k-open-n"></div></div>
     </div>
     <h2 style="margin:22px 0 12px">Who's Carrying the Line</h2>
@@ -292,13 +292,19 @@
     var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prior " + plural + "</span>" : ""; };
     var rate = function(a, b){ return b ? Math.round(100 * a / b) : null; };
     $("k-calls").textContent = c.total;
-    $("k-calls-n").innerHTML = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed" + vs(P ? c.total - P.calls.total : 0, "");
-    $("k-ans").textContent = pct(c.answered, c.total);
-    var ar = rate(c.answered, c.total), par = P && rate(P.calls.answered, P.calls.total);
-    $("k-ans-n").innerHTML = c.answered + " of " + c.total + " calls" + (ar != null && par != null ? vs(ar - par, " pts") : "");
-    $("k-handled").textContent = pct(g.handled, g.total);
-    var hr = rate(g.handled, g.total), phr = P && rate(P.guests.handled, P.guests.total);
-    $("k-handled-n").innerHTML = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
+    $("k-calls-n").innerHTML = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed" +
+      (c.missed ? "<br>Of the missed: " + c.missedTextedAfter + " texted us after, " + c.missedNoFollowUp + " needed nothing more" : "") + vs(P ? c.total - P.calls.total : 0, "");
+    // Only calls while someone is at the host stand count; off-hours calls get the auto-text.
+    var S = c.service, O = c.offHours;
+    $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
+    var ar = rate(S.answered, S.total), par = P && rate(P.calls.service.answered, P.calls.service.total);
+    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " calls, Tue to Sat 5 to 11 PM" : "No calls during service") +
+      (O.total ? "<br>" + O.total + " more outside service" + (O.answered ? ", " + O.answered + " answered anyway" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
+    // Guests the auto-text fully covered never needed a person, so they're not in this rate.
+    var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
+    $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
+    var hr = rate(g.handled, need), phr = P && rate(P.guests.handled, pneed);
+    $("k-handled-n").innerHTML = g.handled + " of " + need + " who needed us" + (g.autoOnly ? "<br>" + g.autoOnly + " more needed nothing beyond the auto-text" : "") + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
     $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
