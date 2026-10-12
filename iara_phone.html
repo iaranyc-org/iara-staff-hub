@@ -71,6 +71,9 @@
   .custom input{ width:auto; margin:0; padding:7px 9px; font-size:15px; color-scheme:dark; }
   .trend-head{ margin:-4px 0 12px; font-size:15px; line-height:1.45; color:var(--ink); }
   .trend-head b{ color:var(--river); font-weight:700; }
+  #hours .bar.in-hours{ background:color-mix(in srgb, var(--river) 9%, transparent); border-radius:3px 3px 0 0; }
+  .band-key{ background:color-mix(in srgb, var(--river) 22%, transparent) !important; outline:1px solid color-mix(in srgb, var(--river) 35%, transparent); }
+  #hours-x div{ overflow:visible; white-space:nowrap; }
   .bars.trend{ gap:10px; margin-top:20px; }
   .chart:has(.bars.trend) .yaxis{ margin-top:20px; }
   .bars.trend .bar{ flex-direction:row; align-items:flex-end; gap:3px; }
@@ -208,8 +211,11 @@
         <div class="chart"><div class="yaxis" id="days-y" aria-hidden="true"></div><div class="bars" id="days" role="img"></div><div></div><div class="xl" id="days-x"></div></div>
       </div>
       <div class="card">
-        <h2>Calls by Hour (ET)</h2>
+        <h2>When Calls Come In</h2>
+        <p class="trend-head" id="hours-head"></p>
+        <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-missed)"></i>Not Answered</span><span><i class="band-key"></i>Business Hours</span></div>
         <div class="chart"><div class="yaxis" id="hours-y" aria-hidden="true"></div><div class="bars" id="hours" role="img"></div><div></div><div class="xl" id="hours-x"></div></div>
+        <p class="note" id="hours-note"></p>
       </div>
     </div>
     <div class="card" style="margin-bottom:12px">
@@ -431,17 +437,27 @@
 
     var busiest = d.days.reduce(function(a, x){ var t = x.answered + x.voicemail + x.missed; return t > a.t ? { t: t, l: x.label } : a; }, { t: 0, l: "" });
     $("days").setAttribute("aria-label", "Incoming calls per " + R.grain + ", " + span + ". Busiest " + R.grain + ": " + busiest.l + " with " + busiest.t + " calls. Full numbers are in the Day by Day table.");
-    var hs = d.hours.slice(8).concat(d.hours.slice(0, 8)); // full day, starting 8 AM
-    var hl = ["8a","","","","12p","","","","4p","","","","8p","","","","12a","","","","4a","","",""];
-    var hmax = niceMax(Math.max(1, Math.max.apply(null, hs)));
+    // 9 AM to midnight, where nearly all calls land; overnight calls become a note.
+    // Each bar splits answered vs not, and business hours (5-11 PM) are shaded.
+    var H0 = 9, hrs = [], hAns = d.hoursAnswered || [];
+    for (var h = H0; h < 24; h++) hrs.push({ h: h, n: d.hours[h] || 0, a: hAns[h] || 0 });
+    var overnight = 0; for (var h2 = 0; h2 < H0; h2++) overnight += d.hours[h2] || 0;
+    var hlab = function(h){ return ((h % 12) || 12) + (h < 12 ? "a" : "p"); };
+    var hname = function(h){ return ((h % 12) || 12) + (h < 12 ? " AM" : " PM"); };
+    var hmax = niceMax(Math.max(1, Math.max.apply(null, hrs.map(function(x){ return x.n; }))));
     $("hours").innerHTML = ""; $("hours-x").innerHTML = "";
-    hs.forEach(function(n, i){
-      var b = document.createElement("div"); b.className = "bar";
-      var s = document.createElement("span"); s.style.height = (100 * n / hmax) + "%"; s.style.background = "var(--river)"; b.appendChild(s);
-      var h = (i + 8) % 24; tipOn(b, n + (n === 1 ? " call · " : " calls · ") + ((h % 12) || 12) + (h < 12 ? " AM" : " PM"));
+    hrs.forEach(function(x, i){
+      var b = document.createElement("div"); b.className = "bar" + (x.h >= 17 && x.h < 23 ? " in-hours" : "");
+      if (x.a){ var sa = document.createElement("span"); sa.style.height = (100 * x.a / hmax) + "%"; sa.style.background = "var(--c-answered)"; b.appendChild(sa); }
+      if (x.n - x.a){ var sm = document.createElement("span"); sm.style.height = (100 * (x.n - x.a) / hmax) + "%"; sm.style.background = "var(--c-missed)"; b.appendChild(sm); }
+      tipOn(b, "<b>" + hname(x.h) + " to " + hname((x.h + 1) % 24) + "</b><br>" + x.n + (x.n === 1 ? " call" : " calls") + (x.n ? ", " + x.a + " answered" : ""));
       $("hours").appendChild(b);
-      var l = document.createElement("div"); l.textContent = hl[i]; $("hours-x").appendChild(l);
+      var l = document.createElement("div"); l.textContent = (x.h - H0) % 3 === 0 ? hlab(x.h) : ""; $("hours-x").appendChild(l);
     });
+    var top = hrs.reduce(function(m, x){ return x.n > m.n ? x : m; }, { n: 0 });
+    $("hours-head").innerHTML = top.n ? "Busiest: <b>" + hname(top.h) + " to " + hname((top.h + 1) % 24) + "</b>, " + top.n + " calls, " + Math.round(100 * top.a / top.n) + "% answered." : "No calls in this range.";
+    $("hours-note").textContent = overnight ? "+" + overnight + (overnight === 1 ? " call" : " calls") + " overnight (midnight to 9 AM), not shown." : "";
+    $("hours").setAttribute("aria-label", $("hours-head").textContent + " Bars run 9 AM to midnight; business hours 5 to 11 PM are shaded.");
 
     var pp = d.people;
     $("r-ans").textContent = pp.ronald.answered; $("r-out").textContent = pp.ronald.callsOut; $("r-min").textContent = dur(pp.ronald.talkMin);
@@ -455,8 +471,6 @@
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
     axis("days-y", "days", max); axis("hours-y", "hours", hmax);
     renderTrend(d);
-    var peak = hs.indexOf(Math.max.apply(null, hs)), ph = (peak + 8) % 24;
-    $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
       return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td></tr>";
     }).join("") : "<tr><td colspan='4' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
