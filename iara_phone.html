@@ -39,6 +39,15 @@
   .custom[hidden]{ display:none; }
   .custom label{ display:flex; align-items:center; gap:6px; margin:0; font-size:14px; }
   .custom input{ width:auto; margin:0; padding:7px 9px; font-size:15px; color-scheme:dark; }
+  .trend-head{ margin:-4px 0 12px; font-size:15px; line-height:1.45; color:var(--ink); }
+  .trend-head b{ color:var(--river); font-weight:700; }
+  .bars.trend{ gap:10px; margin-top:20px; }
+  .chart:has(.bars.trend) .yaxis{ margin-top:20px; }
+  .bars.trend .bar{ flex-direction:row; align-items:flex-end; gap:3px; }
+  .bars.trend .bar span{ flex:1; border-radius:3px 3px 0 0; position:relative; }
+  .bars.trend .bar span em{ position:absolute; left:50%; transform:translateX(-50%); bottom:100%; margin-bottom:3px; font-style:normal; font-size:11.5px; font-weight:700; color:var(--ink); white-space:nowrap; }
+  .bars.trend .bar .none{ flex:1; align-self:center; text-align:center; font-size:12px; color:var(--river); background:none; }
+  #trend-x{ gap:10px; }
   .delta{ display:block; font-size:13px; font-weight:600; color:var(--river); margin-top:3px; }
   .sub{ color:var(--river); font-size:14px; margin-top:6px; }
   .back{ color:var(--river); font-size:13px; text-decoration:none; display:inline-block; margin-bottom:10px; }
@@ -144,6 +153,12 @@
         <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Replied To</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Auto-replies</span><span class="role">System</span></div>
         <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Guests Fully Covered</div></div></div></div>
+    </div>
+    <div class="card" style="margin-bottom:12px">
+      <h2 id="trend-h">Trend</h2>
+      <p class="trend-head" id="trend-head"></p>
+      <div class="legend"><span><i style="background:var(--c-answered)"></i>Answer Rate During Service</span><span><i style="background:var(--c-voicemail)"></i>Guests Who Needed Us, Handled</span></div>
+      <div class="chart"><div class="yaxis" id="trend-y" aria-hidden="true"></div><div class="bars trend" id="trend" role="img"></div><div></div><div class="xl" id="trend-x"></div></div>
     </div>
     <div class="grid2">
       <div class="card">
@@ -282,6 +297,42 @@
     el.addEventListener("mouseleave", function(){ $("tip").hidden = true; });
   }
 
+  // Trend: answer rate during service and handled rate per open day (short ranges)
+  // or per week, with a headline comparing the last two periods that had calls.
+  function renderTrend(d){
+    var T = d.trend || { points: [], grain: "day" }, pts = T.points, unit = T.grain === "week" ? "week" : "day";
+    $("trend-h").textContent = T.grain === "week" ? "Week Over Week" : "Day Over Day";
+    var r = function(a, b){ return b ? Math.round(100 * a / b) : null; };
+    var withCalls = pts.filter(function(p){ return p.svcTotal > 0; });
+    var head = "";
+    if (withCalls.length >= 2){
+      var a = withCalls[withCalls.length - 2], b = withCalls[withCalls.length - 1];
+      var ra = r(a.svcAnswered, a.svcTotal), rb = r(b.svcAnswered, b.svcTotal), diff = rb - ra;
+      var name = function(p){ return unit === "week" ? "the week of " + p.label.replace("Wk ", "") : p.label; };
+      head = "Answer rate during service: <b>" + rb + "%</b> " + name(b) + ", " + (diff > 0 ? "up" : diff < 0 ? "down" : "level") + " from " + ra + "% " + name(a) + (diff ? " (" + (diff > 0 ? "+" : "−") + Math.abs(diff) + " pts)." : ".");
+    } else head = withCalls.length ? "Pick a longer range to compare " + unit + "s." : "No calls during service in this range.";
+    $("trend-head").innerHTML = head;
+    var bars = $("trend"); bars.innerHTML = ""; $("trend-x").innerHTML = "";
+    pts.forEach(function(p){
+      var b = document.createElement("div"); b.className = "bar";
+      var ar = r(p.svcAnswered, p.svcTotal), hr = r(p.handled, p.needed);
+      if (ar == null && hr == null){ var n = document.createElement("span"); n.className = "none"; n.textContent = "No calls"; b.appendChild(n); }
+      else [[ar, "answered"], [hr, "voicemail"]].forEach(function(x){
+        var sp = document.createElement("span");
+        sp.style.height = (x[0] == null ? 0 : Math.max(x[0], 1)) + "%"; sp.style.background = "var(--c-" + x[1] + ")";
+        if (x[0] != null){ var em = document.createElement("em"); em.textContent = x[0] + "%"; sp.appendChild(em); }
+        b.appendChild(sp);
+      });
+      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " calls during service<br>Handled " + p.handled + " of " + p.needed + " guests who needed us");
+      bars.appendChild(b);
+      var l = document.createElement("div"); l.textContent = unit === "week" ? p.label.replace("Wk ", "") : p.label; $("trend-x").appendChild(l);
+    });
+    $("trend-y").innerHTML = "<span style='bottom:0'>0</span><span style='bottom:50%'>50%</span><span style='bottom:100%'>100%</span>";
+    bars.querySelectorAll(".grid").forEach(function(g){ g.remove(); });
+    [50, 100].forEach(function(v){ var g = document.createElement("div"); g.className = "grid"; g.style.bottom = v + "%"; bars.appendChild(g); });
+    bars.setAttribute("aria-label", head.replace(/<[^>]+>/g, "") + " Per " + unit + " details are in the tooltips and the table below.");
+  }
+
   function render(d){
     var c = d.calls, g = d.guests;
     var R = d.range, fmt = function(ds){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
@@ -348,6 +399,7 @@
     var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + (x.talkMin ? dur(x.talkMin) : dash(0)) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
     axis("days-y", "days", max); axis("hours-y", "hours", hmax);
+    renderTrend(d);
     var peak = hs.indexOf(Math.max.apply(null, hs)), ph = (peak + 8) % 24;
     $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
