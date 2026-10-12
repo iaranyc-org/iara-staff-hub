@@ -567,7 +567,7 @@
     return '<div class="kpis">' + kpi(fmt(c.in), label + " In", "<b>" + c.closedNoReply + "</b> needed no reply") +
       kpi(c.replyRate == null ? "–" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one") +
       kpi(hrs(c.medianReplyHours), "Median Reply Time", "From message to our reply") +
-      kpi(fmt(c.waiting), "Waiting Now", c.waiting ? "Open in the inbox" : "All caught up") + '</div>';
+      kpi(fmt(c.waiting), "Waiting Now", c.waiting ? '<a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") + '</div>';
   }
   function channelDetail(c, color){
     var days = c.byDay.map(function(d){ return d.date; });
@@ -613,7 +613,8 @@
     var asks = {}; ((p && p.topics) || []).forEach(function(t){ asks[t.c] = (asks[t.c] || 0) + t.n; }); (a.asks || []).forEach(function(t){ asks[t.c] = (asks[t.c] || 0) + t.n; });
     var top = Object.keys(asks).map(function(c){ return { name: c, n: asks[c] }; }).sort(function(x, y){ return y.n - x.n; }).slice(0, 7);
     var asksCard = '<div class="card"><h2>What Guests Ask About</h2>' + (top.length ? top.map(function(t){ return '<div class="hbar"><span>' + esc(topicName(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / top[0].n) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("") : '<p class="note">Nothing in this range.</p>') + '</div>';
-    return list + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
+    // Jay 2026-10-12: no reply lists here, that's what iara Inbox is for (the Waiting Now KPI links there).
+    return '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
   // Dismiss a phone row from the Overview list (same endpoint the Phone tab uses), then reload.
   document.addEventListener("click", function(e){
@@ -641,7 +642,7 @@
       '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings") +
         kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
         // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
-        kpi(nowCount, "Waiting Now", nowCount ? "Across every channel, all dates" : "All caught up") +
+        kpi(nowCount, "Waiting Now", nowCount ? 'Across every channel · <a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
         kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s")) + '</div>' +
       extras(a, p) +
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
