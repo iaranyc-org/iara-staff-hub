@@ -49,6 +49,15 @@
   .chip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:38px; cursor:pointer; white-space:nowrap; }
   .chip:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
   .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); }
+  /* Custom dates: a popover hanging from the Custom button, shared by every tab. */
+  .range-bar{ position:relative; }
+  .range-pop{ position:absolute; left:0; z-index:30; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px 12px; align-items:end;
+    background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; padding:14px; box-shadow:var(--shadow); width:min(340px, calc(100vw - 32px)); }
+  .range-pop[hidden]{ display:none !important; }
+  .range-pop::before{ content:""; position:absolute; top:-6px; left:var(--caret, 24px); width:10px; height:10px; background:var(--paper-raised); border-left:1px solid var(--line); border-top:1px solid var(--line); transform:rotate(45deg); }
+  .range-pop label{ display:flex; flex-direction:column; gap:6px; margin:0; min-width:0; font-size:13px; color:var(--river); font-weight:700; }
+  .range-pop input{ width:100%; min-width:0; margin:0; padding:8px 6px; font-size:15px; color-scheme:dark; }
+  .range-pop .btn{ grid-column:1 / -1; width:100%; background:transparent; border:1.5px solid var(--line); color:var(--ink); min-height:40px; }
   .range-text{ font-size:14px; color:var(--river); }
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
   .kpi .v{ font-family:'Fraunces',Georgia,serif; font-size:34px; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums; }
@@ -119,6 +128,8 @@
   }
 
   /* ---- Phone tab (scoped) ---- */
+  /* The shared date bar above the tabs drives this tab now. */
+  #panel-phone .range-bar{ display:none !important; }
   #panel-phone .asks{ grid-template-columns:1fr 1fr; }
   #panel-phone .hrow{ display:grid; grid-template-columns:minmax(0,11em) 1fr 2.5em; align-items:center; gap:10px; font-size:14px; margin-bottom:9px; }
   #panel-phone .hrow .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
@@ -312,8 +323,14 @@
       <button class="chip" data-r="7d">7 Days</button>
       <button class="chip" data-r="30d">30 Days</button>
       <button class="chip" data-r="open">Since Opening</button>
+      <button class="chip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="range-custom">Custom ▾</button>
     </div>
     <span class="range-text" id="range-text"></span>
+    <form class="range-pop" id="range-custom" hidden>
+      <label>From <input type="date" id="rc-from" required></label>
+      <label>To <input type="date" id="rc-to" required></label>
+      <button class="btn btn-ghost" type="submit">Apply</button>
+    </form>
   </div>
   <p class="loading" id="loading">Loading…</p>
   <p class="err" id="err" hidden></p>
@@ -426,8 +443,12 @@
   var OPENED_DAY = "2026-10-02";
   var etToday = function(){ return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date()); };
   var shift = function(ds, n){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n, 12)).toISOString().slice(0, 10); };
+  var FIRST_DAY = "2026-09-10";
   function resolve(r){
     var t = etToday();
+    // Custom: "YYYY-MM-DD..YYYY-MM-DD", clamped to the line's first day and today, swapped if backwards.
+    var m = /^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/.exec(r || "");
+    if (m){ var f = m[1], to = m[2]; if (f > to){ var x = f; f = to; to = x; } if (to > t) to = t; if (f < FIRST_DAY) f = FIRST_DAY; if (f > to) f = to; return { key: "custom", from: f, to: to }; }
     if (r === "today") return { key: r, from: t, to: t };
     if (r === "yesterday") return { key: r, from: shift(t, -1), to: shift(t, -1) };
     if (r === "30d") return { key: r, from: shift(t, -29), to: t };
@@ -437,7 +458,8 @@
   var nice = function(ds){ return new Date(ds + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
   var hashGet = function(k){ return (new RegExp("[#&]" + k + "=([^&]+)").exec(location.hash) || [])[1]; };
   var range = resolve(hashGet("r") || "7d"), tab = hashGet("t") || "overview";
-  function syncHash(){ try { history.replaceState(null, "", "#t=" + tab + "&r=" + range.key); } catch(e){} }
+  var rangeTag = function(){ return range.key === "custom" ? range.from + ".." + range.to : range.key; };
+  function syncHash(){ try { history.replaceState(null, "", "#t=" + tab + "&r=" + rangeTag()); } catch(e){} }
 
   // Hooks for tab code (e.g. the Phone tab): window.iaraAnalytics.range is {key, from, to} (ET days); "analytics:range"
   // fires on window when it changes and "analytics:tab" ({tab}) whenever a tab is shown, including the first paint.
@@ -452,8 +474,6 @@
     document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
     document.querySelectorAll(".tab").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.t === tab)); });
     ["overview", "phone", "email", "instagram", "reviews"].forEach(function(t){ $("panel-" + t).hidden = t !== tab; });
-    // The Phone tab has its own range picker and header line, so ours steps aside there.
-    $("range-bar").hidden = tab === "phone";
     var sameMonth = range.from.slice(0, 7) === range.to.slice(0, 7);
     $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " to " + (sameMonth ? Number(range.to.slice(8)) : nice(range.to));
     announce();
@@ -462,10 +482,32 @@
   document.querySelectorAll(".tabs,.seg").forEach(function(el){ var upd = function(){ el.classList.toggle("at-end", el.scrollLeft + el.clientWidth >= el.scrollWidth - 2); };
     el.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd); setTimeout(upd, 0); });
   window.addEventListener("analytics:tab", function(){ var b = document.querySelector('.tab[aria-selected="true"]'); if (b && b.scrollIntoView) b.scrollIntoView({ block: "nearest", inline: "nearest" }); });
-  document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){ range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
+  document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){
+    if (b.dataset.r === "custom"){ openCustom(b); return; }
+    closeCustom(); range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
+  // Custom dates popover: anchored under the Custom button; closes on Apply, Escape or a click outside.
+  function openCustom(btn){
+    var f = $("range-custom"), bar = $("range-bar"), seg = btn.parentNode;
+    if (!f.hidden){ closeCustom(); return; }
+    seg.scrollLeft = Math.max(0, btn.offsetLeft + btn.offsetWidth - seg.clientWidth + 4);
+    var br = bar.getBoundingClientRect(), cr = btn.getBoundingClientRect();
+    $("rc-from").min = $("rc-to").min = FIRST_DAY; $("rc-from").max = $("rc-to").max = etToday();
+    $("rc-from").value = range.from; $("rc-to").value = range.to;
+    f.hidden = false;
+    var w = f.offsetWidth, left = Math.max(0, Math.min(cr.left - br.left + cr.width / 2 - 24, br.width - w));
+    var caret = Math.max(12, Math.min(cr.left - br.left + cr.width / 2 - left - 5, w - 22));
+    f.style.left = left + "px"; f.style.top = (cr.bottom - br.top + 8) + "px"; f.style.setProperty("--caret", caret + "px");
+    btn.setAttribute("aria-expanded", "true"); $("rc-from").focus({ preventScroll: true });
+  }
+  function closeCustom(){ $("range-custom").hidden = true; var c = document.querySelector('.chip[data-r="custom"]'); if (c) c.setAttribute("aria-expanded", "false"); }
+  $("range-custom").addEventListener("submit", function(ev){ ev.preventDefault();
+    if (!$("rc-from").value || !$("rc-to").value) return;
+    closeCustom(); range = resolve($("rc-from").value + ".." + $("rc-to").value); syncHash(); paint(); load(); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("range-custom").hidden){ closeCustom(); document.querySelector('.chip[data-r="custom"]').focus(); } });
+  document.addEventListener("click", function(e){ if (!$("range-custom").hidden && !e.target.closest("#range-custom") && !e.target.closest('.chip[data-r="custom"]')) closeCustom(); });
   document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
   // Links like /analytics#t=email&r=30d work even when the page is already open.
-  window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = t; var nr = resolve(r || range.key), changed = nr.key !== range.key; range = nr; paint(); if (changed) load(); });
+  window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = t; var nr = resolve(r || rangeTag()), changed = (nr.from + nr.to + nr.key) !== (range.from + range.to + range.key); range = nr; paint(); if (changed) load(); });
 
   firebase.auth().onAuthStateChanged(function(user){
     if (user){ $("gate").hidden = true; $("app").hidden = false; paint(); load(); }
@@ -594,10 +636,12 @@
     ].filter(Boolean);
     var tot = rows.reduce(function(t, r){ t.in += r.in; t.needed += r.needed; t.replied += r.replied; t.waiting += r.waiting; return t; }, { in: 0, needed: 0, replied: 0, waiting: 0 });
 
+    var nowCount = (a.waiting || []).length + ((p && p.open) || []).length;
     $("panel-overview").innerHTML =
       '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings") +
         kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
-        kpi(tot.waiting, "Waiting Now", tot.waiting ? "Across every channel" : "All caught up") +
+        // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
+        kpi(nowCount, "Waiting Now", nowCount ? "Across every channel, all dates" : "All caught up") +
         kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s")) + '</div>' +
       extras(a, p) +
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
@@ -657,7 +701,9 @@
     return { key: "7d", from: shift(t, -6), to: t };
   }
   var saved = ""; try { saved = localStorage.getItem("iara_phone_range") || ""; } catch(e){}
-  var range = resolve((/[#&]r=([^&]+)/.exec(location.hash) || [])[1] || saved);
+  // The page's shared date bar owns the range now (window.iaraAnalytics.range + "analytics:range").
+  var shared = function(){ var r = window.iaraAnalytics && window.iaraAnalytics.range; return r ? { key: r.key, from: r.from, to: r.to } : resolve("7d"); };
+  var range = shared();
   function setRange(r){
     range = resolve(r);
     var tag = range.key === "custom" ? range.from + ".." + range.to : range.key;
@@ -807,7 +853,8 @@
     var span = R.from === R.to ? fmt(R.from) : R.from.slice(0, 7) === R.to.slice(0, 7) ? fmt(R.from) + " to " + +R.to.slice(8) : fmt(R.from) + " to " + fmt(R.to);
     var upd = new Date(d.generatedAt), sameDay = upd.toLocaleDateString("en-CA", { timeZone: "America/New_York" }) === etToday();
     $("sub").textContent = span;
-    $("updated-m").textContent = "Updated " + (sameDay ? upd.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : when(d.generatedAt));
+    var updText = "Updated " + (sameDay ? upd.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : when(d.generatedAt));
+    $("updated-m").textContent = updText; if (window.iaraAnalytics && window.iaraAnalytics.tab === "phone" && document.getElementById("updated")) document.getElementById("updated").textContent = updText;
     // vs the same-length period right before; none for ranges starting on day one.
     var P = d.prev, plural = R.days === 1 ? "day" : R.days + " days";
     var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prev " + plural + "</span>" : ""; };
@@ -897,12 +944,9 @@
   // Started by iara Inbox Analytics: render the first time the Phone tab is shown.
   var started = false;
   function maybeStart(){ if (started || P.hidden || !firebase.auth().currentUser) return; started = true; paintChips(); load(false); }
-  window.addEventListener("analytics:tab", function(e){
-    if (!e.detail || e.detail.tab !== "phone") return;
-    // Keep the address on the Phone tab's own range (it may be Custom, which the outer bar doesn't have).
-    if (started){ var tag = range.key === "custom" ? range.from + ".." + range.to : range.key; setTimeout(function(){ try { history.replaceState(null, "", "#t=phone&r=" + tag); } catch(x){} }, 0); }
-    setTimeout(maybeStart, 0);
-  });
+  window.addEventListener("analytics:tab", function(e){ if (e.detail && e.detail.tab === "phone") setTimeout(maybeStart, 0); });
+  // Follow the shared date bar.
+  window.addEventListener("analytics:range", function(){ range = shared(); if (started) load(false); });
   firebase.auth().onAuthStateChanged(function(){ setTimeout(maybeStart, 0); });
 })();
 </script>
