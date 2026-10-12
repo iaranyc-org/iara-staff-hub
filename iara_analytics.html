@@ -753,7 +753,7 @@
         kpi(rv.vip, "From VIPs", "Tagged VIP in Resy") + '</div>' +
       trendCard(a.trend, "Resy Ratings", [
         { name: "Ratings", color: "var(--c-review)", val: function(p){ return p.resy.count || null; }, fmt: function(v){ return String(v); } },
-      ], function(b, x, name){ return name(b) + ": <b>" + b.resy.count + "</b> rating" + (b.resy.count === 1 ? "" : "s") + (b.resy.avg != null ? ", avg " + b.resy.avg.toFixed(2) + " ★" : "") + ", vs " + x.resy.count + (x.resy.avg != null ? " at " + x.resy.avg.toFixed(2) + " ★" : "") + " in " + name(x) + "."; }) +
+      ], function(b, x, name){ return name(b) + ": <b>" + b.resy.count + "</b> rating" + (b.resy.count === 1 ? "" : "s") + (b.resy.avg != null ? ", avg " + b.resy.avg.toFixed(2) + " ★" : "") + ", vs " + x.resy.count + (x.resy.avg != null ? " at " + x.resy.avg.toFixed(2) + " ★" : "") + (/^Week/.test(name(x)) ? " in the " + name(x).replace("Week", "week") : " on " + name(x)) + "."; }) +
       '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(rv.byDay.map(function(d){ return d.date; }), [{ name: "Ratings", color: "var(--c-review)", vals: rv.byDay.map(function(d){ return d.n; }) }]) + '</div>' +
         '<div class="card"><h2>Stars</h2>' + rv.dist.slice().reverse().map(function(d){ return '<div class="hbar"><span>' + d.stars + ' ★</span><div class="track"><div class="fill" style="width:' + (100 * d.n / maxS) + '%"></div></div><span class="n">' + d.n + '</span></div>'; }).join("") +
         '<h2 style="margin-top:18px">Scores Today</h2>' + (a.reviews.scores.length ? a.reviews.scores.map(function(s){ return '<p style="margin:0 0 6px"><b>' + esc(s.name) + '</b> · ' + esc(s.summary) + '</p>'; }).join("") : '<p class="note">Not read yet.</p>') + '</div></div>' +
