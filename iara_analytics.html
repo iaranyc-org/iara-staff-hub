@@ -173,6 +173,15 @@
   var range = resolve(hashGet("r") || "7d"), tab = hashGet("t") || "overview";
   function syncHash(){ try { history.replaceState(null, "", "#t=" + tab + "&r=" + range.key); } catch(e){} }
 
+  // Hooks for tab code (e.g. the Phone tab): window.iaraAnalytics.range is {key, from, to} (ET days); "analytics:range"
+  // fires on window when it changes and "analytics:tab" ({tab}) whenever a tab is shown, including the first paint.
+  var lastTab = null, lastRange = "";
+  function announce(){
+    window.iaraAnalytics = { range: { key: range.key, from: range.from, to: range.to }, tab: tab };
+    var rk = range.key + range.from + range.to;
+    if (rk !== lastRange){ lastRange = rk; window.dispatchEvent(new CustomEvent("analytics:range", { detail: window.iaraAnalytics.range })); }
+    if (tab !== lastTab){ lastTab = tab; window.dispatchEvent(new CustomEvent("analytics:tab", { detail: { tab: tab } })); }
+  }
   function paint(){
     document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
     document.querySelectorAll(".tab").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.t === tab)); });
@@ -180,6 +189,7 @@
     // The Phone tab has its own range picker and header line, so ours steps aside there.
     $("range-bar").hidden = tab === "phone";
     $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " – " + nice(range.to);
+    announce();
     if (tab === "phone"){ var src = "/phone?embed=1#r=" + range.key; if ($("phone-frame").getAttribute("src") !== src) $("phone-frame").setAttribute("src", src); }
   }
   document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){ range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
