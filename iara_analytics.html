@@ -180,6 +180,8 @@
   }
   document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){ range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
   document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
+  // Links like /analytics#t=email&r=30d work even when the page is already open.
+  window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = t; var nr = resolve(r || range.key), changed = nr.key !== range.key; range = nr; paint(); if (changed) load(); });
   // Let the embedded Phone page size the frame to its content (same origin).
   setInterval(function(){ try { var d = $("phone-frame").contentDocument; if (d && d.body) $("phone-frame").style.height = Math.max(900, d.documentElement.scrollHeight) + "px"; } catch(e){} }, 1000);
 
