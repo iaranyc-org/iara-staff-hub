@@ -27,6 +27,7 @@
   input{ width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:16px; margin-bottom:14px; }
   .btn{ border-radius:6px; border:0; padding:11px 18px; min-height:44px; font:inherit; font-weight:700; font-size:14.5px; cursor:pointer; background:var(--forest); color:var(--forest-ink); width:100%; }
   .btn-ghost{ background:transparent; border:1.5px solid var(--line); color:var(--ink); width:auto; min-height:38px; padding:7px 14px; font-size:13px; }
+  a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
   main{ max-width:1080px; margin:0 auto; padding:28px 16px 64px; }
   .top{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
@@ -64,7 +65,8 @@
   .stat-row .v{ font-family:'Fraunces',Georgia,serif; font-size:30px; line-height:1.1; font-variant-numeric:tabular-nums; }
   .stat-row .l{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
   .scroll{ overflow-x:auto; }
-  #daily td, #daily th{ text-align:right; }
+  #daily td, #daily th{ text-align:right; white-space:nowrap; }
+  #daily td:first-child, #daily th:first-child{ position:sticky; left:0; background:var(--paper-raised); z-index:1; }
   #daily td:first-child, #daily th:first-child{ text-align:left; }
   #daily tr.closed td{ color:var(--ink-soft); }
   @media (max-width:760px){
@@ -72,7 +74,8 @@
     .kpis{ grid-template-columns:1fr 1fr; }
     .grid2{ grid-template-columns:1fr; }
     .kpi .v{ font-size:28px; }
-    td.prev{ display:none; }
+    td.prev, th.prev{ display:none; }
+    #daily td, #daily th{ padding:9px 7px; font-size:13px; }
   }
 </style>
 
@@ -99,39 +102,39 @@
   <div id="err" class="card" hidden></div>
   <div id="body" hidden>
     <div class="kpis">
-      <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls in</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer rate since opening</div><div class="n" id="k-ans-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests handled by a person</div><div class="n" id="k-handled-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on us</div><div class="n" id="k-open-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer Rate Since Opening</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled by a Person</div><div class="n" id="k-handled-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on Us</div><div class="n" id="k-open-n"></div></div>
     </div>
-    <h2 style="margin:22px 0 12px">Who's carrying the line</h2>
+    <h2 style="margin:22px 0 12px">Who's Carrying the Line</h2>
     <div class="people">
       <div class="card person"><div class="who"><span class="name">Host</span><span class="role">Voice</span></div>
-        <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">calls answered</div></div><div><div class="v" id="r-out"></div><div class="l">calls made</div></div><div><div class="v" id="r-min"></div><div class="l">on the phone</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">Calls Answered</div></div><div><div class="v" id="r-out"></div><div class="l">Calls Made</div></div><div><div class="v" id="r-min"></div><div class="l">On the Phone</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Jay</span><span class="role">Text</span></div>
-        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">texts written</div></div><div><div class="v" id="j-threads"></div><div class="l">guests replied to</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Replied To</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Auto-replies</span><span class="role">System</span></div>
-        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">texts sent</div></div><div><div class="v" id="a-cov"></div><div class="l">guests fully covered</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Guests Fully Covered</div></div></div></div>
     </div>
     <div class="grid2">
       <div class="card">
-        <h2>Incoming calls by day</h2>
+        <h2>Incoming Calls by Day</h2>
         <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-voicemail)"></i>Voicemail</span><span><i style="background:var(--c-missed)"></i>Missed</span></div>
-        <div class="bars" id="days"></div><div class="xl" id="days-x"></div>
+        <div class="bars" id="days" role="img"></div><div class="xl" id="days-x"></div>
       </div>
       <div class="card">
-        <h2>By hour (ET)</h2>
-        <div class="bars" id="hours"></div><div class="xl" id="hours-x"></div>
+        <h2>Calls by Hour (ET)</h2>
+        <div class="bars" id="hours" role="img"></div><div class="xl" id="hours-x"></div>
         <div class="note" id="texts-note"></div>
       </div>
     </div>
     <div class="card" style="margin-bottom:12px">
-      <h2>Day by day</h2>
-      <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls in</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls out</th><th>Talk time</th><th>Texts in</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
+      <h2>Day by Day</h2>
+      <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls In</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls Out</th><th>Talk Time</th><th>Texts In</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
-      <h2>Waiting on a reply</h2>
-      <table><thead><tr><th>Number</th><th>Type</th><th>Last contact</th><th class="prev">Their last text</th></tr></thead><tbody id="open"></tbody></table>
+      <h2>Waiting on a Reply</h2>
+      <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th></tr></thead><tbody id="open"></tbody></table>
       <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls with no voicemail (they got the Resy link automatically), running-late notices, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. A "voicemail" can also be a caller who hung up during the greeting. Find the full number in Quo by searching the last four digits.</p>
     </div>
   </div>
@@ -195,10 +198,10 @@
     $("k-ans").textContent = pct(c.sinceOpen.answered, c.sinceOpen.total);
     $("k-ans-n").textContent = c.sinceOpen.answered + " of " + c.sinceOpen.total + " calls since Oct 2";
     $("k-handled").textContent = pct(g.handled, g.total);
-    $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median call back " + d.medianCallbackHours + "h" : "");
+    $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "");
     $("k-open").textContent = g.open;
-    $("k-open-n").textContent = g.autoOnly + " more got the Resy auto-text only";
-    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " typed replies, " + d.texts.auto + " auto-replies. " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
+    $("k-open-n").textContent = g.autoOnly + " more fully covered by auto-replies";
+    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " written replies, " + d.texts.auto + " auto-replies. " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
 
     var max = Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; })));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
@@ -213,6 +216,8 @@
       var l = document.createElement("div"); l.textContent = (d.days.length - 1 - i) % 7 === 0 ? x.label.split(" ")[1] : ""; $("days-x").appendChild(l);
     });
 
+    var busiest = d.days.reduce(function(a, x){ var t = x.answered + x.voicemail + x.missed; return t > a.t ? { t: t, l: x.label } : a; }, { t: 0, l: "" });
+    $("days").setAttribute("aria-label", "Incoming calls per day for the last " + d.windowDays + " days. Busiest day: " + busiest.l + " with " + busiest.t + " calls. Full numbers are in the Day by Day table.");
     var hs = d.hours.slice(8).concat(d.hours.slice(0, 1)); // 8 AM to midnight
     var hl = ["8a","","10a","","12p","","2p","","4p","","6p","","8p","","10p","","12a"];
     var hmax = Math.max(1, Math.max.apply(null, hs));
@@ -220,7 +225,7 @@
     hs.forEach(function(n, i){
       var b = document.createElement("div"); b.className = "bar";
       var s = document.createElement("span"); s.style.height = (100 * n / hmax) + "%"; s.style.background = "var(--river)"; b.appendChild(s);
-      var h = (i + 8) % 24; tipOn(b, n + " calls · " + ((h % 12) || 12) + (h < 12 ? " AM" : " PM"));
+      var h = (i + 8) % 24; tipOn(b, n + (n === 1 ? " call · " : " calls · ") + ((h % 12) || 12) + (h < 12 ? " AM" : " PM"));
       $("hours").appendChild(b);
       var l = document.createElement("div"); l.textContent = hl[i]; $("hours-x").appendChild(l);
     });
@@ -234,9 +239,11 @@
     var dash = function(n){ return n || "<span class='muted'>–</span>"; };
     var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + (x.talkMin ? dur(x.talkMin) : dash(0)) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
+    var peak = hs.indexOf(Math.max.apply(null, hs)), ph = (peak + 8) % 24;
+    $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'>" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span></td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
-    }).join("") : "<tr><td colspan='4' class='muted'>Nobody waiting. Nice.</td></tr>";
+      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span></td><td class='num'>" + when(o.at) + "</td><td class='prev muted'>" + esc(o.preview) + "</td></tr>";
+    }).join("") : "<tr><td colspan='4' class='muted'>Nobody is waiting on a reply. New voicemails and texts without a reply show up here.</td></tr>";
     $("body").hidden = false;
   }
 })();
