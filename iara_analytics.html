@@ -375,11 +375,11 @@
     </div>
     <div id="ph-resy-sec" hidden>
     <h2 style="margin:22px 0 12px">From Call to Table</h2>
-    <div class="kpis" style="margin-bottom:12px">
-      <div class="card kpi"><div class="v" id="ph-r-booked"></div><div class="l">Booked After Reaching Us</div><div class="n" id="ph-r-booked-n"></div></div>
+    <div class="kpis" style="margin-bottom:12px; grid-template-columns:1fr 1fr;">
+      <div class="card kpi"><div class="v" id="ph-r-booked"></div><div class="l">Booked After Calling or Texting</div><div class="n" id="ph-r-booked-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-r-auto"></div><div class="l">Auto-Text Only, Then Booked</div><div class="n" id="ph-r-auto-n"></div></div>
-      <div class="card kpi"><div class="v" id="ph-r-ns"></div><div class="l">No-Shows</div><div class="n" id="ph-r-ns-n"></div></div>
-      <div class="card kpi"><div class="v" id="ph-r-ret"></div><div class="l">Returning Guests</div><div class="n" id="ph-r-ret-n"></div></div>
+      <!-- No-shows and returning guests are restaurant-wide: they live on the Overview (From Contact to Table). -->
+      <div hidden><span id="ph-r-ns"></span><span id="ph-r-ns-n"></span><span id="ph-r-ret"></span><span id="ph-r-ret-n"></span></div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2>Covers and Calls by Night</h2>
@@ -981,7 +981,7 @@
       var lab = function(ds){ var u = new Date(ds + "T12:00:00Z"); return u.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }) + " " + (u.getUTCMonth() + 1) + "/" + u.getUTCDate(); };
       $("r-nights").querySelector("tbody").innerHTML = nights.length ? nights.map(function(k){ var c = calls[lab(k)] || {}; var inn = (c.answered || 0) + (c.voicemail || 0) + (c.missed || 0);
         return "<tr><td>" + lab(k) + "</td><td class='num'>" + Z.coversByDay[k] + "</td><td class='num'>" + (inn || "–") + "</td><td class='num'>" + (c.answered || "–") + "</td></tr>"; }).join("") : "<tr><td colspan='4' class='muted'>No covers in this range.</td></tr>";
-      $("r-note").textContent = "Booked = a ResyOS reservation under the same phone number, dated within 45 days of their first call or text. Covers include seated walk-ins. Cancellations aren't in the ResyOS report. Book copied " + when(Z.updatedAt) + ".";
+      $("r-note").textContent = "No-shows, returning guests and other channels are on the Overview. Booked = a ResyOS reservation under the same phone number, dated within 45 days of their first call or text. Covers include seated walk-ins. Cancellations aren't in the ResyOS report. Book copied " + when(Z.updatedAt) + ".";
     }
     // What guests ask about + how fast we reply.
     var TOPIC = { reservation: "Booking a table", fully_booked: "Booking a full night", running_late: "Running late", hours: "Hours", menu_dietary: "Menu & dietary", large_party: "Groups", catering: "Catering", complaint: "A complaint", other: "Something else" };
