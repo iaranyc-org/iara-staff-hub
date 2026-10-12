@@ -99,6 +99,13 @@
   }
 
   /* ---- Phone tab (scoped) ---- */
+  #panel-phone .asks{ grid-template-columns:1fr 1fr; }
+  #panel-phone .hrow{ display:grid; grid-template-columns:minmax(0,11em) 1fr 2.5em; align-items:center; gap:10px; font-size:14px; margin-bottom:9px; }
+  #panel-phone .hrow .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
+  #panel-phone .hrow .fill{ height:100%; border-radius:5px; background:var(--river); }
+  #panel-phone .hrow .n{ text-align:right; font-variant-numeric:tabular-nums; color:var(--river); }
+  #panel-phone .pill.landline{ background:color-mix(in srgb,var(--sun) 22%,transparent); color:var(--sun); }
+  @media (max-width:760px){ #panel-phone .asks{ grid-template-columns:1fr; } }
   #panel-phone{ --c-answered:#e8cbab; --c-voicemail:#fbbf56; --c-missed:#e0633f; }
   /* Small phones: each waiting row stacks into a compact card instead of a 5-column table. */
   @media (max-width:520px){
@@ -328,6 +335,19 @@
         <div class="stat-row"><div><div class="v" id="ph-r-ans"></div><div class="l">Calls Answered</div></div><div><div class="v" id="ph-r-out"></div><div class="l">Calls Made</div></div><div><div class="v" id="ph-r-min"></div><div class="l">On the Phone</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Texts</span></div>
         <div class="stat-row"><div><div class="v" id="ph-j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="ph-j-threads"></div><div class="l">Guests Texted Back</div></div><div><div class="v" id="ph-a-texts"></div><div class="l">Auto-Texts Sent</div></div></div></div>
+    </div>
+    <div class="grid2 asks">
+      <div class="card">
+        <h2>What Guests Ask About</h2>
+        <div id="ph-topics"></div>
+        <p class="note">From texts and voicemails (answered calls aren't transcribed). One count per guest per topic.</p>
+      </div>
+      <div class="card">
+        <h2>How Fast We Reply</h2>
+        <p class="trend-head" id="ph-speed-head"></p>
+        <div id="ph-speed"></div>
+        <p class="note">Time to a person's first reply, for guests whose call we missed.</p>
+      </div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2 id="ph-trend-h">Trend</h2>
@@ -780,8 +800,17 @@
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
     axis("days-y", "days", max); axis("hours-y", "hours", hmax);
     renderTrend(d);
+    // What guests ask about + how fast we reply.
+    var TOPIC = { reservation: "Booking a table", fully_booked: "Booking a full night", running_late: "Running late", hours: "Hours", menu_dietary: "Menu & dietary", large_party: "Groups", catering: "Catering", complaint: "A complaint", other: "Something else" };
+    var tp = d.topics || [], tmax = tp.reduce(function(m, x){ return Math.max(m, x.n); }, 1);
+    $("topics").innerHTML = tp.length ? tp.map(function(x){ return "<div class='hrow'><span>" + esc(TOPIC[x.c] || x.c) + "</span><span class='track'><span class='fill' style='width:" + (100 * x.n / tmax) + "%'></span></span><span class='n'>" + x.n + "</span></div>"; }).join("") : "<p class='muted'>No texts or voicemails in this range.</p>";
+    var sp = d.replySpeed || {}, rows2 = [["Under 15 min", sp.under15m], ["15 to 60 min", sp.under1h], ["1 to 6 hours", sp.under6h], ["Later", sp.later]];
+    var stot = rows2.reduce(function(a, x){ return a + (x[1] || 0); }, 0), smax = rows2.reduce(function(m, x){ return Math.max(m, x[1] || 0); }, 1);
+    var fast = (sp.under15m || 0) + (sp.under1h || 0);
+    $("speed-head").innerHTML = stot ? "<b>" + Math.round(100 * fast / stot) + "%</b> got a reply within an hour (" + fast + " of " + stot + ")." : "No missed callers to reply to in this range.";
+    $("speed").innerHTML = stot ? rows2.map(function(x){ return "<div class='hrow'><span>" + x[0] + "</span><span class='track'><span class='fill' style='width:" + (100 * (x[1] || 0) / smax) + "%'></span></span><span class='n'>" + (x[1] || 0) + "</span></div>"; }).join("") : "";
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr data-key='" + o.key + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + o.key + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
+      return "<tr data-key='" + o.key + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' title='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + o.key + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
     }).join("") : "<tr><td colspan='5' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }
