@@ -90,6 +90,8 @@
   .stat-row .l{ font-size:13.5px; color:var(--river); margin-top:2px; }
   .scroll{ overflow-x:auto; }
   #daily td, #daily th{ text-align:right; white-space:nowrap; }
+  #daily tr.group th{ text-align:center; border-bottom:1px solid var(--line); padding-bottom:4px; letter-spacing:.06em; text-transform:uppercase; font-size:12px; }
+  #daily tr.group th + th + th, #daily th.tx, #daily td:nth-child(8){ border-left:1px solid var(--line); }
   #daily td:first-child, #daily th:first-child{ position:sticky; left:0; background:var(--paper-raised); z-index:1; }
   #daily td:first-child, #daily th:first-child{ text-align:left; }
   #daily tr.closed td{ color:var(--ink-soft); }
@@ -142,23 +144,23 @@
   <div id="body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l" title="Business hours: Tue to Sat, 5 to 11 PM">Answer Rate, Business Hours</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l" title="Business hours: Tue to Sat, 5 to 11 PM">Call Answer Rate</div><div class="n" id="k-ans-n"></div></div>
       <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled</div><div class="n" id="k-handled-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting Now</div><div class="n" id="k-open-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting for a Reply</div><div class="n" id="k-open-n"></div></div>
     </div>
     <h2 style="margin:22px 0 12px">How We Covered the Line</h2>
     <div class="people">
       <div class="card person"><div class="who"><span class="name">Calls</span></div>
         <div class="stat-row"><div><div class="v" id="r-ans"></div><div class="l">Calls Answered</div></div><div><div class="v" id="r-out"></div><div class="l">Calls Made</div></div><div><div class="v" id="r-min"></div><div class="l">On the Phone</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Texts</span></div>
-        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Replied To</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Texted Back</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Auto-Replies</span></div>
-        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Covered by Auto-Text</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Auto-Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Guests Covered</div></div></div></div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2 id="trend-h">Trend</h2>
       <p class="trend-head" id="trend-head"></p>
-      <div class="legend"><span><i style="background:var(--c-answered)"></i>Answer Rate, Business Hours</span><span><i style="background:var(--c-voicemail)"></i>Guests Handled</span></div>
+      <div class="legend"><span><i style="background:var(--c-answered)"></i>Call Answer Rate (Business Hours)</span><span><i style="background:var(--c-voicemail)"></i>Guests Handled (Calls + Texts)</span></div>
       <div class="chart"><div class="yaxis" id="trend-y" aria-hidden="true"></div><div class="bars trend" id="trend" role="img"></div><div></div><div class="xl" id="trend-x"></div></div>
     </div>
     <div class="grid2">
@@ -175,7 +177,7 @@
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2 id="daily-h">Day by Day</h2>
-      <div class="scroll"><table id="daily"><thead><tr><th>Day</th><th>Calls In</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Calls Out</th><th>Talk Time</th><th>Texts In</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll"><table id="daily"><thead><tr class="group"><th></th><th colspan="6">Calls</th><th colspan="3">Texts</th></tr><tr><th>Day</th><th>In</th><th>Answered</th><th>Voicemail</th><th>Missed</th><th>Made</th><th>Talk Time</th><th class="tx">In</th><th>Written</th><th>Auto</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="card">
       <h2>Waiting on a Reply</h2>
@@ -352,13 +354,13 @@
     var S = c.service, O = c.offHours;
     $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
     var ar = rate(S.answered, S.total), par = P && rate(P.calls.service.answered, P.calls.service.total);
-    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " calls" : "No calls during business hours") +
+    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " calls in business hours" : "No calls during business hours") +
       (O.total ? "<br>" + O.total + " after hours, not counted" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
     // Guests the auto-text fully covered never needed a person, so they're not in this rate.
     var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
     $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
     var hr = rate(g.handled, need), phr = P && rate(P.guests.handled, pneed);
-    $("k-handled-n").innerHTML = g.handled + " of " + need + (d.medianCallbackHours != null ? " · first reply ~" + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " more covered by auto-text" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
+    $("k-handled-n").innerHTML = g.handled + " of " + need + " who called or texted" + (d.medianCallbackHours != null ? " · first reply ~" + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " more covered by auto-text" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
     $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
