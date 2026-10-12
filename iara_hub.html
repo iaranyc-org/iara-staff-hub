@@ -120,7 +120,9 @@
   }
 
   /* ===================== App switch + panel ===================== */
-  .app-switch{ display:flex; gap:8px; margin-bottom:16px; }
+  .app-switch{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+  /* Four apps don't fit in one row on a phone: 2 x 2 instead of squeezing. */
+  @media (max-width:520px){ .app-switch .switch-btn{ flex:1 1 calc(50% - 4px); } }
   .switch-btn{
     flex:1; display:flex; align-items:center; justify-content:center; gap:9px;
     background:var(--paper-raised); border:1px solid var(--line); border-radius:10px;
@@ -185,6 +187,7 @@
       <button class="switch-btn active" id="switch-lineup" role="tab" aria-selected="true">Lineup</button>
       <button class="switch-btn" id="switch-ops" role="tab" aria-selected="false">Kitchen Ops</button>
       <button class="switch-btn" id="switch-inbox" role="tab" aria-selected="false">Inbox</button>
+      <button class="switch-btn" id="switch-phone" role="tab" aria-selected="false">Phone Analytics</button>
     </div>
 
     <div class="app-panel card" id="panel-lineup">
@@ -219,6 +222,11 @@
     <div class="app-panel card" id="panel-ops" hidden>
       <p class="panel-desc">Ingredient costing, inventory counts, and purchasing. <span class="app-badge">Manager</span></p>
       <a class="btn btn-primary" href="/ops" style="text-decoration:none;">Continue to Kitchen Ops →</a>
+    </div>
+
+    <div class="app-panel card" id="panel-phone" hidden>
+      <p class="panel-desc">Calls and texts on the iara line: answer rate in business hours, trends by day or week, and who's still waiting for a reply. <span class="app-badge">Manager</span></p>
+      <a class="btn btn-primary" href="/phone" style="text-decoration:none;">Continue to iara Phone Analytics →</a>
     </div>
 
     <div class="app-panel card" id="panel-inbox" hidden>
@@ -290,7 +298,7 @@
   });
 
   // ---- App switch ----
-  var APPS = ["lineup", "ops", "inbox"];
+  var APPS = ["lineup", "ops", "inbox", "phone"];
   function showPanel(which){
     APPS.forEach(function(name){
       var on = name === which;

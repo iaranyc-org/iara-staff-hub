@@ -1,7 +1,7 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>iara Phone</title>
+<title>iara Phone Analytics</title>
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="/icon-512.png">
 <meta name="theme-color" content="#391d1f">
@@ -30,12 +30,27 @@
   a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
   main{ max-width:1080px; margin:0 auto; padding:28px 16px 64px; }
-  .top{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:16px; }
-  .range{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:18px; }
-  .chip{ font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:var(--paper-raised); border:1px solid var(--line); border-radius:100px; padding:7px 13px; min-height:36px; cursor:pointer; }
-  .chip:hover{ border-color:var(--river); }
-  .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); border-color:var(--river); }
-  .custom{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; width:100%; }
+  .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+  .status{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--river); white-space:nowrap; }
+  .icon-btn{ display:inline-grid; place-items:center; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); cursor:pointer; }
+  .icon-btn:hover{ border-color:var(--river); }
+  .icon-btn[aria-busy="true"] svg{ animation:spin .9s linear infinite; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .icon-btn[aria-busy="true"] svg{ animation:none; } }
+  .range-bar{ margin-bottom:20px; }
+  .seg{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; width:max-content; max-width:100%; }
+  .seg::-webkit-scrollbar{ display:none; }
+  @media (max-width:560px){
+    /* Fade the right edge so a clipped control reads as scrollable. */
+    .seg{ width:100%; -webkit-mask-image:linear-gradient(90deg, #000 85%, transparent); mask-image:linear-gradient(90deg, #000 85%, transparent); }
+    .seg.at-end{ -webkit-mask-image:none; mask-image:none; }
+    .chip{ padding:8px 12px; }
+  }
+  .chip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:38px; cursor:pointer; white-space:nowrap; }
+  .chip:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
+  .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); }
+  .range-text{ margin-top:10px; font-size:15px; font-weight:600; color:var(--ink); }
+  .custom{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-top:10px; }
   .custom[hidden]{ display:none; }
   .custom label{ display:flex; align-items:center; gap:6px; margin:0; font-size:14px; }
   .custom input{ width:auto; margin:0; padding:7px 9px; font-size:15px; color-scheme:dark; }
@@ -49,12 +64,13 @@
   .bars.trend .bar.partial span:not(.none){ background-image:repeating-linear-gradient(135deg, transparent 0 5px, rgba(57,29,31,.35) 5px 8px); }
   .bars.trend .bar .none{ flex:1; align-self:center; text-align:center; font-size:12px; color:var(--river); background:none; }
   #trend-x{ gap:10px; }
+  #trend-x div{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
   .delta{ display:block; font-size:13px; font-weight:600; color:var(--river); margin-top:3px; }
-  .sub{ color:var(--river); font-size:14px; margin-top:6px; }
-  .back{ color:var(--river); font-size:13px; text-decoration:none; display:inline-block; margin-bottom:10px; }
+  .back{ color:var(--river); font-size:14px; text-decoration:none; display:inline-flex; align-items:center; min-height:32px; margin-bottom:6px; }
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
   .kpi .v{ font-family:'Fraunces',Georgia,serif; font-size:34px; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums; }
   .kpi .l{ font-size:14.5px; font-weight:600; margin-top:4px; color:var(--river); }
+  .kpi .n b{ color:var(--river); font-weight:700; }
   .kpi .n{ font-size:13.5px; line-height:1.45; color:var(--ink); margin-top:4px; }
   .grid2{ display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:12px; }
   .legend{ display:flex; gap:14px; font-size:13.5px; color:var(--river); margin:-6px 0 12px; flex-wrap:wrap; }
@@ -81,7 +97,8 @@
   .muted{ color:var(--ink-soft); }
   .note{ font-size:14px; color:var(--ink); margin-top:12px; line-height:1.5; }
   .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
-  .people{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
+  .people{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
+  @media (max-width:1100px){ .people{ grid-template-columns:repeat(2,1fr); } }
   .person .who{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:12px; }
   .person .name{ font-family:'Fraunces',Georgia,serif; font-size:22px; color:var(--river); }
   .person .role{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); }
@@ -109,7 +126,7 @@
 
 <div id="gate" class="center" hidden>
   <form class="card gate" id="gate-form">
-    <h1 style="font-size:22px;margin-bottom:18px">Phone</h1>
+    <h1 style="font-size:22px;margin-bottom:18px">Phone Analytics</h1>
     <label for="pw">Password</label>
     <input id="pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
     <p class="err" id="gate-err" hidden>That password is not right. Ask your manager.</p>
@@ -119,20 +136,24 @@
 
 <main id="app" hidden>
   <a class="back" href="/">← Staff</a>
-  <div class="top">
-    <div>
-      <h1>Phone</h1>
-      <div class="sub" id="sub">(929) 930-5033</div>
+  <header class="top">
+    <h1>Phone Analytics</h1>
+    <div class="status">
+      <button class="icon-btn" id="refresh" aria-label="Refresh data" title="Refresh">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg>
+      </button>
     </div>
-    <button class="btn btn-ghost" id="refresh">Refresh</button>
-  </div>
-  <div class="range" role="group" aria-label="Date range">
-    <button class="chip" data-r="today">Today</button>
-    <button class="chip" data-r="yesterday">Yesterday</button>
-    <button class="chip" data-r="7d">Last 7 Days</button>
-    <button class="chip" data-r="30d">Last 30 Days</button>
-    <button class="chip" data-r="open">Since Opening</button>
-    <button class="chip" data-r="custom">Custom</button>
+  </header>
+  <div class="range-bar">
+    <div class="seg" role="group" aria-label="Date range">
+      <button class="chip" data-r="today">Today</button>
+      <button class="chip" data-r="yesterday">Yesterday</button>
+      <button class="chip" data-r="7d">7 Days</button>
+      <button class="chip" data-r="30d">30 Days</button>
+      <button class="chip" data-r="open">Since Opening</button>
+      <button class="chip" data-r="custom">Custom</button>
+    </div>
+    <div class="range-text" id="sub"></div>
     <form class="custom" id="custom" hidden>
       <label>From <input type="date" id="r-from" required></label>
       <label>To <input type="date" id="r-to" required></label>
@@ -143,7 +164,7 @@
   <div id="err" class="card" hidden></div>
   <div id="body" hidden>
     <div class="kpis">
-      <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls + Texts In</div><div class="n" id="k-calls-n"></div></div>
       <div class="card kpi"><div class="v" id="k-ans"></div><div class="l" title="Business hours: Tue to Sat, 5 to 11 PM">Call Answer Rate</div><div class="n" id="k-ans-n"></div></div>
       <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled</div><div class="n" id="k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting for a Reply</div><div class="n" id="k-open-n"></div></div>
@@ -156,6 +177,8 @@
         <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Texted Back</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Auto-Replies</span></div>
         <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Auto-Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Guests Covered</div></div></div></div>
+      <div class="card person"><div class="who"><span class="name">All Together</span></div>
+        <div class="stat-row"><div><div class="v" id="t-in"></div><div class="l">Calls + Texts In</div></div><div><div class="v" id="t-person"></div><div class="l">By a Person</div></div><div><div class="v" id="t-auto"></div><div class="l">By Auto-Text</div></div></div></div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2 id="trend-h">Trend</h2>
@@ -259,13 +282,17 @@
   });
   $("custom").addEventListener("submit", function(ev){ ev.preventDefault(); if ($("r-from").value && $("r-to").value) setRange($("r-from").value + ".." + $("r-to").value); });
   paintChips();
+  // Drop the fade once the control is scrolled to its end; keep the picked range in view.
+  (function(){ var seg = document.querySelector(".seg"); var upd = function(){ seg.classList.toggle("at-end", seg.scrollLeft + seg.clientWidth >= seg.scrollWidth - 2); };
+    seg.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd);
+    upd(); })();
 
   var followUps = 0, seq = 0;
   function load(fresh, quiet){
     var mine = ++seq;
     var shown = !$("body").hidden;
     if (!shown) $("loading").hidden = false;
-    $("err").hidden = true; $("refresh").disabled = true; $("refresh").textContent = "Updating…";
+    $("err").hidden = true; $("refresh").disabled = true; $("refresh").setAttribute("aria-busy", "true");
     firebase.auth().currentUser.getIdToken().then(function(tok){
       return fetch("https://iara-inbox.vercel.app/api/phone-stats?from=" + range.from + "&to=" + range.to + (fresh ? "&refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
@@ -275,7 +302,7 @@
         if (j.refreshing && followUps < 3){ followUps++; setTimeout(function(){ load(false, true); }, 8000); }
       })
       .catch(function(e){ if (!quiet || !shown){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; } })
-      .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; $("refresh").textContent = "Refresh"; });
+      .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; $("refresh").setAttribute("aria-busy", "false"); });
   }
 
   // 130 -> "2h 10m"; under an hour stays "45m".
@@ -329,7 +356,7 @@
       });
       tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " business-hours calls<br>Handled " + p.handled + " of " + p.needed + " guests");
       bars.appendChild(b);
-      var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : p.label) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
+      var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : pts.length <= 5 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
     });
     $("trend-y").innerHTML = "<span style='bottom:0'>0</span><span style='bottom:50%'>50%</span><span style='bottom:100%'>100%</span>";
     bars.querySelectorAll(".grid").forEach(function(g){ g.remove(); });
@@ -337,7 +364,14 @@
     bars.setAttribute("aria-label", head.replace(/<[^>]+>/g, "") + " Per " + unit + " details are in the tooltips and the table below.");
   }
 
+  function showPicked(){
+    var seg = document.querySelector(".seg"), on = seg.querySelector('[aria-pressed="true"]');
+    if (on) seg.scrollLeft = Math.max(0, on.offsetLeft - seg.clientWidth / 2 + on.offsetWidth / 2);
+    seg.classList.toggle("at-end", seg.scrollLeft + seg.clientWidth >= seg.scrollWidth - 2);
+  }
+
   function render(d){
+    showPicked();
     var c = d.calls, g = d.guests;
     var R = d.range, fmt = function(ds){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
     var span = R.from === R.to ? fmt(R.from) : R.from.slice(0, 7) === R.to.slice(0, 7) ? fmt(R.from) + " to " + +R.to.slice(8) : fmt(R.from) + " to " + fmt(R.to);
@@ -347,24 +381,24 @@
     var P = d.prev, plural = R.days === 1 ? "day" : R.days + " days";
     var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prev " + plural + "</span>" : ""; };
     var rate = function(a, b){ return b ? Math.round(100 * a / b) : null; };
-    $("k-calls").textContent = c.total;
-    $("k-calls-n").innerHTML = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed" +
-      "" + vs(P ? c.total - P.calls.total : 0, "");
+    $("k-calls").textContent = c.total + d.texts.inbound;
+    $("k-calls-n").innerHTML = c.total + " calls · " + d.texts.inbound + " texts" +
+      vs(P ? (c.total + d.texts.inbound) - (P.calls.total + (P.textsIn || 0)) : 0, "");
     // Only calls while someone is at the host stand count; off-hours calls get the auto-text.
     var S = c.service, O = c.offHours;
     $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
     var ar = rate(S.answered, S.total), par = P && rate(P.calls.service.answered, P.calls.service.total);
-    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " calls in business hours" : "No calls during business hours") +
-      (O.total ? "<br>" + O.total + " after hours, not counted" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
+    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " in business hours" : "No calls in business hours") +
+      (O.total ? "<br>" + O.total + " after hours (not counted)" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
     // Guests the auto-text fully covered never needed a person, so they're not in this rate.
     var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
     $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
     var hr = rate(g.handled, need), phr = P && rate(P.guests.handled, pneed);
-    $("k-handled-n").innerHTML = g.handled + " of " + need + " who called or texted" + (d.medianCallbackHours != null ? " · first reply ~" + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " more covered by auto-text" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
+    $("k-handled-n").innerHTML = g.handled + " of " + need + " guests" + (d.medianCallbackHours != null ? " · reply ~" + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " auto-text only" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
     $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
-    $("k-open-n").textContent = "All dates" + (g.stale ? " · " + g.stale + " older ones dropped" : "");
+    $("k-open-n").textContent = "All dates" + (g.stale ? " · " + g.stale + " older dropped" : "");
     $("texts-note").textContent = "Texts: " + d.texts.inbound + " in · " + d.texts.human + " written · " + d.texts.auto + " auto" + (d.texts.failed ? " · " + d.texts.failed + " undelivered" : "") + ". Calls out: " + c.outbound + " · " + dur(c.talkMinutes) + " on the phone.";
 
     var max = niceMax(Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; }))));
@@ -398,6 +432,10 @@
     $("r-ans").textContent = pp.ronald.answered; $("r-out").textContent = pp.ronald.callsOut; $("r-min").textContent = dur(pp.ronald.talkMin);
     $("j-typed").textContent = pp.jay.typed; $("j-threads").textContent = pp.jay.threads;
     $("a-texts").textContent = pp.auto.texts; $("a-cov").textContent = pp.auto.guestsCovered;
+    // Everything in, and who responded: a person (answered, called, wrote) or the auto-text.
+    $("t-in").textContent = c.total + d.texts.inbound;
+    $("t-person").textContent = pp.ronald.answered + pp.ronald.callsOut + pp.jay.typed;
+    $("t-auto").textContent = pp.auto.texts;
     var rows = d.days.filter(function(x){ return x.answered + x.voicemail + x.missed + x.callsOut + x.textsIn + x.typed + x.auto > 0; }).reverse();
     var tot = rows.reduce(function(a, x){ ["answered","voicemail","missed","callsOut","talkMin","textsIn","typed","auto"].forEach(function(k){ a[k] = (a[k] || 0) + x[k]; }); return a; }, {});
     var dash = function(n){ return n || "<span class='muted'>–</span>"; };
