@@ -66,7 +66,11 @@
   .split span{ display:block; height:100%; }
   .legend{ display:flex; gap:14px; font-size:13.5px; color:var(--river); flex-wrap:wrap; }
   .legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
-  .bars{ display:flex; align-items:flex-end; gap:3px; height:140px; border-bottom:1px solid var(--line); }
+  .bars{ display:flex; align-items:flex-end; gap:3px; height:160px; border-bottom:1px solid var(--line); position:relative; }
+  .ychart{ display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:8px; }
+  .yaxis{ position:relative; height:160px; min-width:20px; font-size:12px; color:var(--river); font-variant-numeric:tabular-nums; }
+  .yaxis span{ position:absolute; right:0; transform:translateY(50%); line-height:1; }
+  .ygrid{ position:absolute; left:0; right:0; border-top:1px dashed color-mix(in srgb, var(--line) 80%, transparent); pointer-events:none; }
   .bar{ flex:1; min-width:0; display:flex; flex-direction:column-reverse; gap:1px; height:100%; }
   .bar span{ display:block; border-radius:2px 2px 0 0; }
   .bar.grp{ flex-direction:row; align-items:flex-end; gap:2px; }
@@ -80,7 +84,23 @@
   .quote{ border-left:3px solid var(--forest); padding:2px 0 2px 12px; margin:0 0 14px; font-size:14.5px; line-height:1.5; }
   .quote small{ display:block; margin-top:4px; color:var(--river); font-size:13px; }
   .vip{ display:inline-block; padding:1px 7px; border-radius:100px; background:var(--forest); color:var(--forest-ink); font-size:11px; font-weight:700; letter-spacing:.06em; margin-right:6px; }
-  .note{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:8px 0 0; }
+  .note{ font-size:13.5px; color:var(--ink); line-height:1.5; margin:8px 0 0; }
+  .grid2.even{ grid-template-columns:1fr 1fr; }
+  .wl{ display:flex; flex-direction:column; }
+  .wrow{ display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:start; padding:11px 0; border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent); }
+  .wrow:first-child{ border-top:0; padding-top:2px; }
+  .wch{ font-size:11.5px; font-weight:700; color:var(--paper); border-radius:100px; padding:2px 9px; white-space:nowrap; margin-top:2px; }
+  .wbody{ min-width:0; }
+  .wtop{ display:flex; gap:10px; align-items:baseline; justify-content:space-between; }
+  .wtop b{ font-weight:700; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .wage{ font-size:13px; color:var(--river); white-space:nowrap; }
+  .wtext{ font-size:13.5px; color:var(--ink-soft); line-height:1.45; margin-top:2px; overflow-wrap:anywhere; }
+  .wfail{ color:var(--sun); font-weight:700; }
+  .wact{ display:flex; gap:4px; }
+  .wlink{ background:none; border:0; padding:8px 6px; min-height:36px; font:inherit; font-size:13px; font-weight:600; color:var(--river); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+  .wlink:hover{ color:var(--ink); }
+  .muted{ color:var(--ink-soft); }
+  @media (max-width:760px){ .grid2.even{ grid-template-columns:1fr; } .wrow{ grid-template-columns:1fr auto; } .wch{ grid-column:1 / -1; justify-self:start; } }
   .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
   /* Comfortable tap target for the home link on phones. */
   .brand{ min-height:44px; }
@@ -434,7 +454,8 @@
     ["overview", "phone", "email", "instagram", "reviews"].forEach(function(t){ $("panel-" + t).hidden = t !== tab; });
     // The Phone tab has its own range picker and header line, so ours steps aside there.
     $("range-bar").hidden = tab === "phone";
-    $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " – " + nice(range.to);
+    var sameMonth = range.from.slice(0, 7) === range.to.slice(0, 7);
+    $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " to " + (sameMonth ? Number(range.to.slice(8)) : nice(range.to));
     announce();
   }
   // Keep the picked tab/chip in view and drop the fade once a scroller reaches its end.
@@ -469,21 +490,32 @@
   }
 
   // ---- Building blocks ----
+  // Charts match the Phone tab: title, legend, then the chart with a y-axis (0 / half / max) and dashed gridlines.
+  var niceMax = function(m){ if (m <= 4) return 4; var p = Math.pow(10, Math.floor(Math.log10(m))), f = m / p; return (f <= 2 ? 2 : f <= 5 ? 5 : 10) * p; };
+  function withAxis(max, barsHtml, xl){
+    var ticks = [0, max / 2, max];
+    return '<div class="ychart"><div class="yaxis">' + ticks.map(function(t){ return '<span style="bottom:' + (100 * t / max) + '%">' + (Math.round(t * 10) / 10) + '</span>'; }).join("") + '</div><div>' +
+      barsHtml.replace('<div class="bars">', '<div class="bars">' + ticks.slice(1).map(function(t){ return '<div class="ygrid" style="bottom:' + (100 * t / max) + '%"></div>'; }).join("")) + xl + '</div></div>';
+  }
+  var md = function(ds){ var p = ds.split("-"); return Number(p[1]) + "/" + Number(p[2]); };
+  function legend(series){ return '<div class="legend" style="margin:-6px 0 12px">' + series.map(function(s){ return '<span><i style="background:' + s.color + '"></i>' + s.name + '</span>'; }).join("") + '</div>'; }
   function kpi(v, l, n){ return '<div class="card kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div>' + (n ? '<div class="n">' + n + '</div>' : "") + '</div>'; }
   function dayBars(days, series){
     // Series sit side by side (In next to Replied), never stacked: they're different counts, not parts of a total.
-    var max = 1; days.forEach(function(d, i){ series.forEach(function(s){ max = Math.max(max, s.vals[i]); }); });
+    var max = 1; days.forEach(function(d, i){ series.forEach(function(s){ max = Math.max(max, s.vals[i]); }); }); max = niceMax(max);
     var step = Math.ceil(days.length / 10);
-    return '<div class="bars">' + days.map(function(d, i){ return '<div class="bar' + (series.length > 1 ? " grp" : "") + '" title="' + nice(d) + ": " + series.map(function(s){ return s.name + " " + s.vals[i]; }).join(", ") + '">' +
-      series.map(function(s){ var h = 100 * s.vals[i] / max; return h ? '<span style="height:' + h + '%;background:' + s.color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>' +
-      '<div class="xl">' + days.map(function(d, i){ return '<div>' + (i % step === 0 ? nice(d).replace(/^\w+ /, "") : "") + '</div>'; }).join("") + '</div>' +
-      '<div class="legend" style="margin-top:10px">' + series.map(function(s){ return '<span><i style="background:' + s.color + '"></i>' + s.name + '</span>'; }).join("") + '</div>';
+    var bars = '<div class="bars">' + days.map(function(d, i){ return '<div class="bar' + (series.length > 1 ? " grp" : "") + '" title="' + md(d) + ": " + series.map(function(s){ return s.name + " " + s.vals[i]; }).join(", ") + '">' +
+      series.map(function(s){ var h = 100 * s.vals[i] / max; return h ? '<span style="height:' + h + '%;background:' + s.color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
+    var xl = '<div class="xl">' + days.map(function(d, i){ return '<div>' + (i % step === 0 ? md(d) : "") + '</div>'; }).join("") + '</div>';
+    return legend(series) + withAxis(max, bars, xl);
   }
+
   function hourBars(byHour){
-    var max = Math.max.apply(null, byHour.concat([1])), lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
-    return '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" title="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--river)"></span></div>'; }).join("") + '</div>' +
-      '<div class="xl">' + byHour.map(function(n, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>';
+    var max = niceMax(Math.max.apply(null, byHour.concat([1]))), lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
+    var bars = '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" title="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--river)"></span></div>'; }).join("") + '</div>';
+    return withAxis(max, bars, '<div class="xl">' + byHour.map(function(n, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>');
   }
+
   function topics(list){
     if (!list.length) return '<p class="note">Nothing in this range.</p>';
     var max = list[0].n, name = function(s){ return s.replace(/_/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }); };
@@ -498,14 +530,61 @@
   function channelDetail(c, color){
     var days = c.byDay.map(function(d){ return d.date; });
     return '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(days, [{ name: "In", color: color, vals: c.byDay.map(function(d){ return d.in; }) }, { name: "Replied", color: "var(--river)", vals: c.byDay.map(function(d){ return d.replied; }) }]) + '</div>' +
-      '<div class="card"><h2>What It Was About</h2>' + topics(c.topics) + '</div></div>' +
+      '<div class="card"><h2>What Guests Ask About</h2>' + topics(c.topics) + (c.notGuests ? '<p class="note">Not counted: ' + c.notGuests + ' from vendors, partners, job seekers and press.</p>' : "") + '</div></div>' +
       '<div class="card" style="margin-bottom:12px"><h2>When Messages Arrive</h2>' + hourBars(c.byHour) + '</div>';
   }
+
+  // ---- Overview extras (Jay, 2026-10-12): Needs a Reply Now, replied within an hour, busiest hours, top asks, sellout speed.
+  var CH = { phone: { label: "Phone", color: "var(--c-phone)" }, email: { label: "Email", color: "var(--c-email)" }, dm: { label: "DM", color: "var(--c-dm)" }, comment: { label: "Comment", color: "var(--c-comment)" } };
+  var ago = function(t){ var h = (Date.now() - t) / 36e5; return h < 1 ? Math.max(1, Math.round(h * 60)) + "m" : h < 48 ? Math.round(h) + "h" : Math.round(h / 24) + "d"; };
+  var topicName = function(s){ return String(s).replace(/_/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }); };
+  function extras(a, p){
+    // 1. One list of everyone waiting, oldest first. Phone rows come from the Phone tab's live list (dismissals applied).
+    var items = (a.waiting || []).map(function(w){ return { ch: w.channel, who: w.name, at: w.at, text: w.preview, href: "/inbox" }; })
+      .concat(((p && p.open) || []).map(function(o){ return { ch: "phone", who: "…" + o.last4 + (o.landline ? " (landline)" : ""), at: o.at, text: o.type === "voicemail" ? "Voicemail" + (o.count > 1 ? " · " + o.count + " tries" : "") : (o.preview || "Text"), href: "#t=phone", key: o.key, failed: o.replyFailed }; }))
+      .sort(function(x, y){ return x.at - y.at; });
+    var list = '<div class="card" style="margin-bottom:12px"><h2>Needs a Reply Now · ' + items.length + '</h2>' + (items.length ? '<div class="wl">' + items.map(function(it){
+      return '<div class="wrow"><span class="wch" style="background:' + CH[it.ch].color + '">' + CH[it.ch].label + '</span><div class="wbody"><div class="wtop"><b>' + esc(it.who) + '</b><span class="wage">' + ago(it.at) + ' ago</span></div><div class="wtext">' + esc(it.text) + (it.failed ? ' <span class="wfail">reply failed</span>' : "") + '</div></div>' +
+        '<div class="wact"><a class="wlink" href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '>Open</a>' + (it.key ? '<button class="wlink" data-dismiss="' + esc(it.key) + '">Dismiss</button>' : "") + '</div></div>'; }).join("") + '</div>' : '<p class="note">Nobody is waiting on us. 🎉'.replace(" 🎉", "") + '</p>') + '</div>';
+    // 2. Replied within an hour, same definition per channel (first reply ≤ 1h after the message).
+    var rs = p && p.replySpeed, phT = rs ? (rs.under15m + rs.under1h + rs.under6h + rs.later) : 0;
+    var speed = [ rs && { ch: "phone", v: phT ? Math.round(100 * (rs.under15m + rs.under1h) / phT) : null, n: (rs.under15m + rs.under1h) + " of " + phT },
+      { ch: "email", v: a.email.withinHourRate, n: a.email.withinHour + " of " + a.email.needed },
+      { ch: "dm", v: a.instagram.dms.withinHourRate, n: a.instagram.dms.withinHour + " of " + a.instagram.dms.needed },
+      { ch: "comment", v: a.instagram.comments.withinHourRate, n: a.instagram.comments.withinHour + " of " + a.instagram.comments.needed } ].filter(Boolean);
+    var speedCard = '<div class="card"><h2>Replied Within an Hour</h2>' + speed.map(function(x){ return '<div class="hbar"><span>' + CH[x.ch].label + '</span><div class="track"><div class="fill" style="width:' + (x.v || 0) + '%;background:' + CH[x.ch].color + '"></div></div><span class="n">' + (x.v == null ? "–" : x.v + "%") + '</span></div>'; }).join("") +
+      '<p class="note">Share of messages that needed a reply and got one within an hour. Phone counts missed calls and texts.</p></div>';
+    // 5. Sellout speed (noon releases, from the Mac's release watch). Missed readings say so.
+    var pace = (a.pace || []).slice().reverse();
+    var paceCard = '<div class="card"><h2>Noon Release Sellout</h2>' + (pace.length ? '<table><thead><tr><th>Night</th><th class="num">Sold Out In</th></tr></thead><tbody>' + pace.map(function(r){
+      return '<tr><td>' + esc(nice(r.night)) + ' <span class="muted">(released ' + esc(nice(r.released)) + ')</span></td><td class="num">' + (r.minutes != null ? r.minutes + " min" : r.final != null && r.cap && r.final < r.cap ? r.final + "/" + r.cap + " booked" : "No reading") + '</td></tr>'; }).join("") + '</tbody></table>' : '<p class="note">No release measured in this range.</p>') +
+      '<p class="note">Read live from noon by the iara Mac. "No reading" means the Mac was asleep or started late, so no time was recorded.</p></div>';
+    // 3. Busiest hours across channels (phone = incoming calls; email/IG = messages), ET.
+    var hrs = []; for (var h = 0; h < 24; h++) hrs.push({ phone: (p && p.hours && p.hours[h]) || 0, email: a.email.byHour[h], dm: a.instagram.dms.byHour[h], comment: a.instagram.comments.byHour[h] });
+    var hmax = Math.max.apply(null, hrs.map(function(x){ return x.phone + x.email + x.dm + x.comment; }).concat([1]));
+    var lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
+    hmax = niceMax(hmax);
+    var hbars = '<div class="bars">' + hrs.map(function(x, h){ return '<div class="bar" title="' + lab(h) + ": " + (x.phone + x.email + x.dm + x.comment) + '">' + ["phone", "email", "dm", "comment"].map(function(k){ return x[k] ? '<span style="height:' + (100 * x[k] / hmax) + '%;background:' + CH[k].color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
+    var hoursCard = '<div class="card"><h2>Busiest Hours</h2>' + legend(["phone", "email", "dm", "comment"].map(function(k){ return { name: CH[k].label, color: CH[k].color }; })) +
+      withAxis(hmax, hbars, '<div class="xl">' + hrs.map(function(x, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>') + '<p class="note">Phone counts incoming calls; email and Instagram count messages. Eastern time.</p></div>';
+    // 4. Top asks across channels (guests only; vendors, jobs, press left out).
+    var asks = {}; ((p && p.topics) || []).forEach(function(t){ asks[t.c] = (asks[t.c] || 0) + t.n; }); (a.asks || []).forEach(function(t){ asks[t.c] = (asks[t.c] || 0) + t.n; });
+    var top = Object.keys(asks).map(function(c){ return { name: c, n: asks[c] }; }).sort(function(x, y){ return y.n - x.n; }).slice(0, 7);
+    var asksCard = '<div class="card"><h2>What Guests Ask About</h2>' + (top.length ? top.map(function(t){ return '<div class="hbar"><span>' + esc(topicName(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / top[0].n) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("") : '<p class="note">Nothing in this range.</p>') + '</div>';
+    return list + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
+  }
+  // Dismiss a phone row from the Overview list (same endpoint the Phone tab uses), then reload.
+  document.addEventListener("click", function(e){
+    var b = e.target.closest && e.target.closest("[data-dismiss]"); if (!b) return;
+    b.disabled = true; b.textContent = "Dismissing…";
+    firebase.auth().currentUser.getIdToken().then(function(tok){ return fetch(API + "/phone-stats", { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ key: b.dataset.dismiss }) }); })
+      .then(function(){ load(); }).catch(function(){ b.disabled = false; b.textContent = "Dismiss"; });
+  });
 
   function render(a, p){
     var e = a.email, dm = a.instagram.dms, cm = a.instagram.comments, rv = a.reviews.resy;
     // Phone: same definition as the Phone tab (handled / (total - autoOnly)); email/IG replies to a phone guest already count there.
-    var ph = p && p.guests ? { in: p.guests.total, needed: p.guests.total - p.guests.autoOnly, replied: p.guests.handled, waiting: p.guests.open, median: p.medianCallbackHours } : null;
+    var ph = p && p.guests ? { in: ((p.calls && p.calls.total) || 0) + ((p.texts && p.texts.inbound) || 0), needed: p.guests.total - p.guests.autoOnly, replied: p.guests.handled, waiting: p.guests.open, median: p.medianCallbackHours } : null;
     var rows = [
       ph && { name: "Phone (calls + texts)", color: "var(--c-phone)", in: ph.in, needed: ph.needed, replied: ph.replied, waiting: ph.waiting, median: ph.median },
       { name: "Email (contact@)", color: "var(--c-email)", in: e.in, needed: e.needed, replied: e.replied, waiting: e.waiting, median: e.medianReplyHours },
@@ -520,13 +599,14 @@
         kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
         kpi(tot.waiting, "Waiting Now", tot.waiting ? "Across every channel" : "All caught up") +
         kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s")) + '</div>' +
+      extras(a, p) +
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
       '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
         rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "–" : r.needed) + '</td><td class="num">' + (isR ? "–" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "–" : hrs(r.median)) + '</td><td class="num">' + (isR ? "–" : r.waiting) + '</td></tr>'; }).join("") +
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
-      '<p class="note">Phone median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>';
+      '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>';
 
     $("panel-email").innerHTML = channelKpis(e, "Emails") + channelDetail(e, "var(--c-email)");
     $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs") + channelDetail(dm, "var(--c-dm)") +
