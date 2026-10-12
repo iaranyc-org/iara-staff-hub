@@ -688,7 +688,6 @@
       var nights = Object.keys(T.coversByDay).filter(function(k){ return k >= a.from && k <= a.to; }).sort().reverse();
       ctCard = '<h2 style="margin:22px 0 12px">From Contact to Table</h2><div class="kpis">' +
         kpi(share(tb, tg), "Booked After Reaching Us", "<b>" + tb + "</b> of " + tg + " people, all channels") +
-        kpi(share(ns.noShows, ns.reservations), "No-Shows", ns.noShows + " of " + ns.reservations + " past reservations") +
         kpi(rt.done ? pct(rt.returning, rt.done) : "–", "Returning Guests", rt.returning + " of " + rt.done + " seated reservations") + '</div>' +
         '<div class="grid2 even"><div class="card"><h2>Booked, by Channel</h2>' + chs.map(function(x){ var v = x.g ? 100 * x.b / x.g : 0;
           return '<div class="hbar"><span>' + CH[x.ch].label + '</span><div class="track"><div class="fill" style="width:' + v + '%;background:' + CH[x.ch].color + '"></div></div><span class="n">' + (x.lb ? "≥ " : "") + share(x.b, x.g) + '</span></div><p class="note" style="margin:-4px 0 8px">' + x.b + " of " + x.g + " who " + x.n + (x.lb ? " (" + T.dm.guests + " DMed in all)" : "") + '</p>'; }).join("") +
@@ -696,7 +695,7 @@
         '<div class="card"><h2>Covers vs Touchpoints by Night</h2><div style="overflow-x:auto"><table><thead><tr><th>Night</th><th class="num">Covers</th><th class="num">Touchpoints</th></tr></thead><tbody>' +
           (nights.length ? nights.map(function(k){ var tp = (pd[lab2(k)] || 0) + (msgs[k] || 0); return '<tr><td>' + lab2(k) + '</td><td class="num">' + T.coversByDay[k] + '</td><td class="num">' + (tp || "–") + '</td></tr>'; }).join("") : '<tr><td colspan="3" class="muted">No covers in this range.</td></tr>') +
           '</tbody></table></div></div></div>' +
-        '<p class="note">Booked = a ResyOS reservation dated within 45 days of their first contact, matched by phone number (phone), email address (email) or exact full name (DMs, so a lower bound). Someone who used two channels can count in both. The shared Iara Hold guest is left out. Covers include seated walk-ins; cancellations aren\'t in the ResyOS report. Book copied ' + (T.updatedAt ? new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "never") + '.</p>';
+        '<p class="note">Booked = a ResyOS reservation dated within 45 days of their first contact, matched by phone number (phone), email address (email) or exact full name (DMs, so a lower bound). Only bookings made after they first reached us count; booking time is estimated from Resy's reservation number (±a few hours). Someone who used two channels can count in both. The shared Iara Hold guest is left out. Covers include seated walk-ins; cancellations aren\'t in the ResyOS report. Book copied ' + (T.updatedAt ? new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "never") + '.</p>';
     }
     return ctCard + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
