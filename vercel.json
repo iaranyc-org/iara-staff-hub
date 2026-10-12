@@ -21,6 +21,10 @@
       "destination": "/iara_phone.html"
     },
     {
+      "source": "/analytics",
+      "destination": "/iara_analytics.html"
+    },
+    {
       "source": "/inbox",
       "destination": "https://iara-inbox.vercel.app/inbox"
     },

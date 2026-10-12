@@ -1,0 +1,283 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iara Inbox Analytics</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/icon-512.png">
+<meta name="theme-color" content="#391d1f">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+  /* Same tokens and components as Phone Analytics (iara_phone.html), so the embedded Phone tab is seamless. */
+  :root{
+    --ink:#faf6f0; --ink-soft:#b3a695; --paper:#391d1f; --paper-raised:#4a2528; --line:#5f3b3e;
+    --forest:#e0633f; --forest-ink:#2a1206; --sun:#fbbf56; --river:#e8cbab;
+    --c-phone:#e8cbab; --c-email:#fbbf56; --c-dm:#e0633f; --c-comment:#c98a6a; --c-review:#a7c4a0;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+  *{box-sizing:border-box;}
+  html,body{ background:var(--paper); }
+  body{ margin:0; color:var(--ink); font-family:'Instrument Sans',system-ui,sans-serif; -webkit-font-smoothing:antialiased; }
+  [hidden]{ display:none !important; }
+  .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
+  .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:20px; box-shadow:var(--shadow); }
+  .gate{ width:100%; max-width:380px; }
+  .gate-mark{ display:flex; align-items:center; gap:12px; margin-bottom:24px; }
+  .gate-mark img{ width:48px; height:auto; flex:none; }
+  .gate-mark span{ font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:15px; color:var(--river); }
+  h2{ font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
+  label{ display:block; font-size:12.5px; font-weight:700; color:var(--river); margin-bottom:6px; }
+  input{ width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:16px; margin-bottom:14px; }
+  .btn{ border-radius:6px; border:0; padding:11px 18px; min-height:44px; font:inherit; font-weight:700; font-size:14.5px; cursor:pointer; background:var(--forest); color:var(--forest-ink); width:100%; }
+  a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
+  header.topbar{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--paper); border-bottom:1px solid var(--line);
+    padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .brand{ display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; border-radius:8px; min-width:0; }
+  .brand-mark{ width:38px; height:auto; display:block; flex:none; }
+  .brand h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:19px; color:var(--river); margin:0; white-space:nowrap; }
+  .updated{ font-size:13px; color:var(--river); white-space:nowrap; }
+  main{ max-width:1080px; margin:0 auto; padding:18px 16px 64px; }
+  .tabs{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
+  .tabs::-webkit-scrollbar{ display:none; }
+  .tab{ flex:1 0 auto; font:inherit; font-size:14.5px; font-weight:700; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:9px 14px; min-height:40px; cursor:pointer; white-space:nowrap; }
+  .tab:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
+  .tab[aria-selected="true"]{ background:var(--forest); color:var(--forest-ink); }
+  .range-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:18px; }
+  .seg{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; max-width:100%; }
+  .seg::-webkit-scrollbar{ display:none; }
+  .chip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:38px; cursor:pointer; white-space:nowrap; }
+  .chip:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
+  .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); }
+  .range-text{ font-size:14px; color:var(--river); }
+  .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
+  .kpi .v{ font-family:'Fraunces',Georgia,serif; font-size:34px; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .kpi .l{ font-size:14.5px; font-weight:600; margin-top:4px; color:var(--river); }
+  .kpi .n{ font-size:13.5px; line-height:1.45; color:var(--ink); margin-top:4px; }
+  .kpi .n b{ color:var(--river); }
+  .grid2{ display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:12px; }
+  .stack{ display:grid; gap:12px; margin-bottom:12px; }
+  table{ width:100%; border-collapse:collapse; font-size:14px; }
+  th{ text-align:left; font-size:13px; color:var(--river); font-weight:700; padding:8px; border-bottom:1px solid var(--line); }
+  td{ padding:10px 8px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); vertical-align:top; }
+  td.num, th.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .dot{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:8px; vertical-align:-1px; }
+  .split{ display:flex; height:14px; border-radius:7px; overflow:hidden; background:var(--paper); margin:4px 0 12px; }
+  .split span{ display:block; height:100%; }
+  .legend{ display:flex; gap:14px; font-size:13.5px; color:var(--river); flex-wrap:wrap; }
+  .legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
+  .bars{ display:flex; align-items:flex-end; gap:3px; height:140px; border-bottom:1px solid var(--line); }
+  .bar{ flex:1; min-width:0; display:flex; flex-direction:column-reverse; gap:1px; height:100%; }
+  .bar span{ display:block; border-radius:2px 2px 0 0; }
+  .xl{ display:flex; gap:3px; font-size:12px; color:var(--river); margin-top:6px; }
+  .xl div{ flex:1; text-align:center; white-space:nowrap; overflow:hidden; }
+  .hbar{ display:grid; grid-template-columns:96px 1fr 36px; align-items:center; gap:10px; font-size:14px; margin-bottom:8px; }
+  .hbar .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
+  .hbar .fill{ height:100%; background:var(--river); border-radius:5px; }
+  .hbar .n{ text-align:right; font-variant-numeric:tabular-nums; color:var(--river); }
+  .quote{ border-left:3px solid var(--forest); padding:2px 0 2px 12px; margin:0 0 14px; font-size:14.5px; line-height:1.5; }
+  .quote small{ display:block; margin-top:4px; color:var(--river); font-size:13px; }
+  .vip{ display:inline-block; padding:1px 7px; border-radius:100px; background:var(--forest); color:var(--forest-ink); font-size:11px; font-weight:700; letter-spacing:.06em; margin-right:6px; }
+  .note{ font-size:13.5px; color:var(--ink-soft); line-height:1.5; margin:8px 0 0; }
+  .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
+  iframe.phone{ width:100%; border:0; min-height:1400px; display:block; background:var(--paper); }
+  @media (max-width:760px){
+    .kpis{ grid-template-columns:1fr 1fr; }
+    .grid2{ grid-template-columns:1fr; }
+    .kpi .v{ font-size:28px; }
+    header.topbar{ padding:12px 16px; }
+    .hbar{ grid-template-columns:80px 1fr 32px; }
+  }
+</style>
+
+<div id="gate" class="center" hidden>
+  <form class="card gate" id="gate-form">
+    <div class="gate-mark"><img src="/img/iara-mark.png" alt="iara" width="48"><span>Inbox Analytics</span></div>
+    <label for="pw">Password</label>
+    <input id="pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
+    <p class="err" id="gate-err" hidden>That password is not right. Ask your manager.</p>
+    <button class="btn" type="submit">Enter</button>
+  </form>
+</div>
+
+<div id="app" hidden>
+<header class="topbar">
+  <a class="brand" href="/" aria-label="Back to iara Staff">
+    <img class="brand-mark" src="/img/iara-mark.png" alt="iara" width="38">
+    <h1>Inbox Analytics</h1>
+  </a>
+  <span class="updated" id="updated"></span>
+</header>
+<main>
+  <div class="tabs" role="tablist" aria-label="Channel">
+    <button class="tab" role="tab" data-t="overview">Overview</button>
+    <button class="tab" role="tab" data-t="phone">Phone</button>
+    <button class="tab" role="tab" data-t="email">Email</button>
+    <button class="tab" role="tab" data-t="instagram">Instagram</button>
+    <button class="tab" role="tab" data-t="reviews">Reviews</button>
+  </div>
+  <div class="range-bar" id="range-bar">
+    <div class="seg" role="group" aria-label="Date range">
+      <button class="chip" data-r="today">Today</button>
+      <button class="chip" data-r="yesterday">Yesterday</button>
+      <button class="chip" data-r="7d">7 Days</button>
+      <button class="chip" data-r="30d">30 Days</button>
+      <button class="chip" data-r="open">Since Opening</button>
+    </div>
+    <span class="range-text" id="range-text"></span>
+  </div>
+  <p class="loading" id="loading">Loading…</p>
+  <p class="err" id="err" hidden></p>
+  <section id="panel-overview" role="tabpanel"></section>
+  <section id="panel-phone" role="tabpanel" hidden><iframe class="phone" id="phone-frame" title="Phone Analytics"></iframe></section>
+  <section id="panel-email" role="tabpanel" hidden></section>
+  <section id="panel-instagram" role="tabpanel" hidden></section>
+  <section id="panel-reviews" role="tabpanel" hidden></section>
+</main>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+(function(){
+  // Same shared staff login as the hub, Lineup and Phone; the API re-verifies the Firebase token.
+  var STAFF_EMAIL = "staff@iara.nyc", API = "https://iara-inbox.vercel.app/inbox/api";
+  firebase.initializeApp({ apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE", authDomain: "iara-lineup.firebaseapp.com", projectId: "iara-lineup",
+    storageBucket: "iara-lineup.firebasestorage.app", messagingSenderId: "840712867607", appId: "1:840712867607:web:2003c145731aa85a13b152" });
+  var $ = function(id){ return document.getElementById(id); };
+  var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); };
+  var fmt = function(n){ return n == null ? "–" : String(n); };
+  var hrs = function(h){ return h == null ? "–" : h < 1 ? Math.round(h * 60) + " min" : (Math.round(h * 10) / 10) + " h"; };
+  var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
+
+  // ---- Range (ET calendar days), shared with the Phone tab via its #r= hash ----
+  var OPENED_DAY = "2026-10-02";
+  var etToday = function(){ return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date()); };
+  var shift = function(ds, n){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n, 12)).toISOString().slice(0, 10); };
+  function resolve(r){
+    var t = etToday();
+    if (r === "today") return { key: r, from: t, to: t };
+    if (r === "yesterday") return { key: r, from: shift(t, -1), to: shift(t, -1) };
+    if (r === "30d") return { key: r, from: shift(t, -29), to: t };
+    if (r === "open") return { key: r, from: OPENED_DAY, to: t };
+    return { key: "7d", from: shift(t, -6), to: t };
+  }
+  var nice = function(ds){ return new Date(ds + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
+  var hashGet = function(k){ return (new RegExp("[#&]" + k + "=([^&]+)").exec(location.hash) || [])[1]; };
+  var range = resolve(hashGet("r") || "7d"), tab = hashGet("t") || "overview";
+  function syncHash(){ try { history.replaceState(null, "", "#t=" + tab + "&r=" + range.key); } catch(e){} }
+
+  function paint(){
+    document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
+    document.querySelectorAll(".tab").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.t === tab)); });
+    ["overview", "phone", "email", "instagram", "reviews"].forEach(function(t){ $("panel-" + t).hidden = t !== tab; });
+    // The Phone tab has its own range picker and header line, so ours steps aside there.
+    $("range-bar").hidden = tab === "phone";
+    $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " – " + nice(range.to);
+    if (tab === "phone"){ var src = "/phone?embed=1#r=" + range.key; if ($("phone-frame").getAttribute("src") !== src) $("phone-frame").setAttribute("src", src); }
+  }
+  document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){ range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
+  document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
+  // Let the embedded Phone page size the frame to its content (same origin).
+  setInterval(function(){ try { var d = $("phone-frame").contentDocument; if (d && d.body) $("phone-frame").style.height = Math.max(900, d.documentElement.scrollHeight) + "px"; } catch(e){} }, 1000);
+
+  firebase.auth().onAuthStateChanged(function(user){
+    if (user){ $("gate").hidden = true; $("app").hidden = false; paint(); load(); }
+    else { $("gate").hidden = false; $("app").hidden = true; }
+  });
+  $("gate-form").addEventListener("submit", function(ev){ ev.preventDefault(); $("gate-err").hidden = true;
+    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(){ $("gate-err").hidden = false; }); });
+
+  var seq = 0;
+  function load(){
+    var mine = ++seq; $("loading").hidden = false; $("err").hidden = true;
+    firebase.auth().currentUser.getIdToken().then(function(tok){
+      var get = function(path){ return fetch(API + path + "?from=" + range.from + "&to=" + range.to, { headers: { Authorization: "Bearer " + tok }, cache: "no-store" })
+        .then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); }); };
+      // Phone numbers are optional for the Overview: if that feed is slow or down, the rest still shows.
+      return Promise.all([get("/analytics"), get("/phone-stats").catch(function(){ return null; })]);
+    }).then(function(res){
+      if (mine !== seq) return;
+      $("loading").hidden = true; render(res[0], res[1]);
+      $("updated").textContent = "Updated " + new Date(res[0].generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
+    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; $("err").hidden = false; $("err").textContent = "Couldn't load analytics (" + e.message + "). Try again in a minute."; });
+  }
+
+  // ---- Building blocks ----
+  function kpi(v, l, n){ return '<div class="card kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div>' + (n ? '<div class="n">' + n + '</div>' : "") + '</div>'; }
+  function dayBars(days, series){
+    var max = 1; days.forEach(function(d, i){ var t = 0; series.forEach(function(s){ t += s.vals[i]; }); max = Math.max(max, t); });
+    var step = Math.ceil(days.length / 10);
+    return '<div class="bars">' + days.map(function(d, i){ return '<div class="bar" title="' + nice(d) + ": " + series.map(function(s){ return s.name + " " + s.vals[i]; }).join(", ") + '">' +
+      series.map(function(s){ var h = 100 * s.vals[i] / max; return h ? '<span style="height:' + h + '%;background:' + s.color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>' +
+      '<div class="xl">' + days.map(function(d, i){ return '<div>' + (i % step === 0 ? nice(d).replace(/^\w+ /, "") : "") + '</div>'; }).join("") + '</div>' +
+      '<div class="legend" style="margin-top:10px">' + series.map(function(s){ return '<span><i style="background:' + s.color + '"></i>' + s.name + '</span>'; }).join("") + '</div>';
+  }
+  function hourBars(byHour){
+    var max = Math.max.apply(null, byHour.concat([1])), lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
+    return '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" title="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--river)"></span></div>'; }).join("") + '</div>' +
+      '<div class="xl">' + byHour.map(function(n, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>';
+  }
+  function topics(list){
+    if (!list.length) return '<p class="note">Nothing in this range.</p>';
+    var max = list[0].n, name = function(s){ return s.replace(/_/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }); };
+    return list.map(function(t){ return '<div class="hbar"><span>' + esc(name(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / max) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("");
+  }
+  function channelKpis(c, label){
+    return '<div class="kpis">' + kpi(fmt(c.in), label + " In", "<b>" + c.closedNoReply + "</b> needed no reply") +
+      kpi(c.replyRate == null ? "–" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one") +
+      kpi(hrs(c.medianReplyHours), "Median Reply Time", "From message to our reply") +
+      kpi(fmt(c.waiting), "Waiting Now", c.waiting ? "Open in the inbox" : "All caught up") + '</div>';
+  }
+  function channelDetail(c, color){
+    var days = c.byDay.map(function(d){ return d.date; });
+    return '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(days, [{ name: "In", color: color, vals: c.byDay.map(function(d){ return d.in; }) }, { name: "Replied", color: "var(--river)", vals: c.byDay.map(function(d){ return d.replied; }) }]) + '</div>' +
+      '<div class="card"><h2>What It Was About</h2>' + topics(c.topics) + '</div></div>' +
+      '<div class="card" style="margin-bottom:12px"><h2>When Messages Arrive</h2>' + hourBars(c.byHour) + '</div>';
+  }
+
+  function render(a, p){
+    var e = a.email, dm = a.instagram.dms, cm = a.instagram.comments, rv = a.reviews.resy;
+    // Phone: same definition as the Phone tab (handled / (total - autoOnly)); email/IG replies to a phone guest already count there.
+    var ph = p && p.guests ? { in: p.guests.total, needed: p.guests.total - p.guests.autoOnly, replied: p.guests.handled, waiting: p.guests.open, median: p.medianCallbackHours } : null;
+    var rows = [
+      ph && { name: "Phone (calls + texts)", color: "var(--c-phone)", in: ph.in, needed: ph.needed, replied: ph.replied, waiting: ph.waiting, median: ph.median },
+      { name: "Email (contact@)", color: "var(--c-email)", in: e.in, needed: e.needed, replied: e.replied, waiting: e.waiting, median: e.medianReplyHours },
+      { name: "Instagram DMs", color: "var(--c-dm)", in: dm.in, needed: dm.needed, replied: dm.replied, waiting: dm.waiting, median: dm.medianReplyHours },
+      { name: "Instagram Comments", color: "var(--c-comment)", in: cm.in, needed: cm.needed, replied: cm.replied, waiting: cm.waiting, median: cm.medianReplyHours },
+      { name: "Resy Ratings", color: "var(--c-review)", in: rv.count, needed: 0, replied: 0, waiting: 0, median: null },
+    ].filter(Boolean);
+    var tot = rows.reduce(function(t, r){ t.in += r.in; t.needed += r.needed; t.replied += r.replied; t.waiting += r.waiting; return t; }, { in: 0, needed: 0, replied: 0, waiting: 0 });
+
+    $("panel-overview").innerHTML =
+      '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings") +
+        kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
+        kpi(tot.waiting, "Waiting Now", tot.waiting ? "Across every channel" : "All caught up") +
+        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s")) + '</div>' +
+      '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
+        rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
+        '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
+      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
+        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "–" : r.needed) + '</td><td class="num">' + (isR ? "–" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "–" : hrs(r.median)) + '</td><td class="num">' + (isR ? "–" : r.waiting) + '</td></tr>'; }).join("") +
+      '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
+      '<p class="note">Phone median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>';
+
+    $("panel-email").innerHTML = channelKpis(e, "Emails") + channelDetail(e, "var(--c-email)");
+    $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs") + channelDetail(dm, "var(--c-dm)") +
+      '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments") + channelDetail(cm, "var(--c-comment)") +
+      '<p class="note">Comments only count when they needed us (questions, booking asks, complaints). Compliments are closed with no reply.</p>';
+
+    var maxS = Math.max.apply(null, rv.dist.map(function(d){ return d.n; }).concat([1]));
+    $("panel-reviews").innerHTML =
+      '<div class="kpis">' + kpi(rv.count, "New Resy Ratings", rv.withComment + " with a written comment") +
+        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Average", "In this range") +
+        kpi(rv.low, "4★ or Below", rv.low ? "Each one is in the Bom Dia" : "None") +
+        kpi(rv.vip, "From VIPs", "Tagged VIP in Resy") + '</div>' +
+      '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(rv.byDay.map(function(d){ return d.date; }), [{ name: "Ratings", color: "var(--c-review)", vals: rv.byDay.map(function(d){ return d.n; }) }]) + '</div>' +
+        '<div class="card"><h2>Stars</h2>' + rv.dist.slice().reverse().map(function(d){ return '<div class="hbar"><span>' + d.stars + ' ★</span><div class="track"><div class="fill" style="width:' + (100 * d.n / maxS) + '%"></div></div><span class="n">' + d.n + '</span></div>'; }).join("") +
+        '<h2 style="margin-top:18px">Scores Today</h2>' + (a.reviews.scores.length ? a.reviews.scores.map(function(s){ return '<p style="margin:0 0 6px"><b>' + esc(s.name) + '</b> · ' + esc(s.summary) + '</p>'; }).join("") : '<p class="note">Not read yet.</p>') + '</div></div>' +
+      '<div class="card"><h2>What Guests Wrote</h2>' + (rv.recent.length ? rv.recent.map(function(r){ return '<p class="quote">“' + esc(r.text) + '”<small>' + (r.vip ? '<span class="vip">VIP</span>' : "") + esc(r.author) + " · " + r.stars + "★ · " + esc(r.date) + '</small></p>'; }).join("") : '<p class="note">No written comments in this range.</p>') +
+        (a.reviews.public.count ? '<p class="note">Public reviews: ' + a.reviews.public.count + " new, " + a.reviews.public.replied + ' replied.</p>' : "") + '</div>';
+  }
+})();
+</script>
