@@ -142,9 +142,9 @@
   <div id="body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="k-calls"></div><div class="l">Calls In</div><div class="n" id="k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Answer Rate During Service</div><div class="n" id="k-ans-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Who Needed Us, Handled</div><div class="n" id="k-handled-n"></div></div>
-      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting on Us Right Now</div><div class="n" id="k-open-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-ans"></div><div class="l">Service Answer Rate</div><div class="n" id="k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-handled"></div><div class="l">Guests Handled</div><div class="n" id="k-handled-n"></div></div>
+      <div class="card kpi"><div class="v" id="k-open"></div><div class="l">Waiting Now</div><div class="n" id="k-open-n"></div></div>
     </div>
     <h2 style="margin:22px 0 12px">Who's Carrying the Line</h2>
     <div class="people">
@@ -153,12 +153,12 @@
       <div class="card person"><div class="who"><span class="name">Jay</span><span class="role">Text</span></div>
         <div class="stat-row"><div><div class="v" id="j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="j-threads"></div><div class="l">Guests Replied To</div></div></div></div>
       <div class="card person"><div class="who"><span class="name">Auto-replies</span><span class="role">System</span></div>
-        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Guests Fully Covered</div></div></div></div>
+        <div class="stat-row"><div><div class="v" id="a-texts"></div><div class="l">Texts Sent</div></div><div><div class="v" id="a-cov"></div><div class="l">Covered by Auto-Text</div></div></div></div>
     </div>
     <div class="card" style="margin-bottom:12px">
       <h2 id="trend-h">Trend</h2>
       <p class="trend-head" id="trend-head"></p>
-      <div class="legend"><span><i style="background:var(--c-answered)"></i>Answer Rate During Service</span><span><i style="background:var(--c-voicemail)"></i>Guests Who Needed Us, Handled</span></div>
+      <div class="legend"><span><i style="background:var(--c-answered)"></i>Service Answer Rate</span><span><i style="background:var(--c-voicemail)"></i>Guests Handled</span></div>
       <div class="chart"><div class="yaxis" id="trend-y" aria-hidden="true"></div><div class="bars trend" id="trend" role="img"></div><div></div><div class="xl" id="trend-x"></div></div>
     </div>
     <div class="grid2">
@@ -180,7 +180,7 @@
     <div class="card">
       <h2>Waiting on a Reply</h2>
       <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th></tr></thead><tbody id="open"></tbody></table>
-      <p class="note">Voicemails and texts with no call back or written reply since. Not listed: missed calls and callers who hung up at the greeting (they got the Resy link automatically), running-late and cancellation notices, thank-yous after a reply, "tonight" asks once the night is over, anything older than a week, "how do I book?" (the auto-reply answers it), reservation bots and vendor spam. "Reply Failed" means we answered but the text never reached them. Find the full number in Quo by searching the last four digits.</p>
+      <p class="note">Voicemails and texts nobody has answered yet. Left off: missed calls without a voicemail (they got the Resy link), late and cancel notices, thank-yous, spam, and asks whose date has passed. "Reply Failed" = our text never arrived. Search the last 4 digits in Quo for the full number.</p>
     </div>
   </div>
 </main>
@@ -309,9 +309,9 @@
     if (withCalls.length >= 2){
       var a = withCalls[withCalls.length - 2], b = withCalls[withCalls.length - 1];
       var ra = r(a.svcAnswered, a.svcTotal), rb = r(b.svcAnswered, b.svcTotal), diff = rb - ra;
-      var name = function(p){ return unit === "week" ? "the week of " + p.label.replace("Wk ", "") : p.label; };
-      head = "Answer rate during service: <b>" + rb + "%</b> " + name(b) + ", " + (diff > 0 ? "up" : diff < 0 ? "down" : "level") + " from " + ra + "% " + name(a) + (diff ? " (" + (diff > 0 ? "+" : "−") + Math.abs(diff) + " pts)." : ".");
-    } else head = withCalls.length ? "Pick a longer range to compare " + unit + "s." : "No calls during service in this range.";
+      var name = function(p){ return unit === "week" ? "Week of " + p.label.replace("Wk ", "") : p.label; };
+      head = name(b) + ": <b>" + rb + "%</b> answered during service, " + (diff > 0 ? "up " + diff + " pts" : diff < 0 ? "down " + (-diff) + " pts" : "level") + " from " + name(a) + " (" + ra + "%).";
+    } else head = withCalls.length ? "Pick a longer range to see a trend." : "No calls during service in this range.";
     $("trend-head").innerHTML = head;
     var bars = $("trend"); bars.innerHTML = ""; $("trend-x").innerHTML = "";
     pts.forEach(function(p){
@@ -325,7 +325,7 @@
         if (x[0] != null && !p.partial){ var em = document.createElement("em"); em.textContent = x[0] + "%"; sp.appendChild(em); }
         b.appendChild(sp);
       });
-      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " calls during service<br>Handled " + p.handled + " of " + p.needed + " guests who needed us");
+      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " service calls<br>Handled " + p.handled + " of " + p.needed + " guests");
       bars.appendChild(b);
       var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : p.label) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
     });
@@ -338,31 +338,32 @@
   function render(d){
     var c = d.calls, g = d.guests;
     var R = d.range, fmt = function(ds){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
-    var span = R.from === R.to ? fmt(R.from) : fmt(R.from) + " to " + fmt(R.to);
-    $("sub").textContent = "(929) 930-5033 · " + span + " · updated " + when(d.generatedAt);
+    var span = R.from === R.to ? fmt(R.from) : R.from.slice(0, 7) === R.to.slice(0, 7) ? fmt(R.from) + " to " + +R.to.slice(8) : fmt(R.from) + " to " + fmt(R.to);
+    var upd = new Date(d.generatedAt), sameDay = upd.toLocaleDateString("en-CA", { timeZone: "America/New_York" }) === etToday();
+    $("sub").textContent = span + " · Updated " + (sameDay ? upd.toLocaleTimeString("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" }) : when(d.generatedAt));
     // vs the same-length period right before; none for ranges starting on day one.
     var P = d.prev, plural = R.days === 1 ? "day" : R.days + " days";
-    var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prior " + plural + "</span>" : ""; };
+    var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prev " + plural + "</span>" : ""; };
     var rate = function(a, b){ return b ? Math.round(100 * a / b) : null; };
     $("k-calls").textContent = c.total;
     $("k-calls-n").innerHTML = c.answered + " answered · " + c.voicemail + " voicemail · " + c.missed + " missed" +
-      (c.missed ? "<br>Of the missed: " + c.missedTextedAfter + " texted us after, " + c.missedNoFollowUp + " needed nothing more" : "") + vs(P ? c.total - P.calls.total : 0, "");
+      (c.missed ? "<br>Missed: " + c.missedTextedAfter + " texted after · " + c.missedNoFollowUp + " no follow-up" : "") + vs(P ? c.total - P.calls.total : 0, "");
     // Only calls while someone is at the host stand count; off-hours calls get the auto-text.
     var S = c.service, O = c.offHours;
     $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
     var ar = rate(S.answered, S.total), par = P && rate(P.calls.service.answered, P.calls.service.total);
-    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " calls, Tue to Sat 5 to 11 PM" : "No calls during service") +
-      (O.total ? "<br>" + O.total + " more outside service" + (O.answered ? ", " + O.answered + " answered anyway" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
+    $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " · Tue-Sat 5-11 PM" : "No calls during service") +
+      (O.total ? "<br>" + O.total + " off-hours, not counted" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
     // Guests the auto-text fully covered never needed a person, so they're not in this rate.
     var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
     $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
     var hr = rate(g.handled, need), phr = P && rate(P.guests.handled, pneed);
-    $("k-handled-n").innerHTML = g.handled + " of " + need + " who needed us" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " more needed nothing beyond the auto-text" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
+    $("k-handled-n").innerHTML = g.handled + " of " + need + (d.medianCallbackHours != null ? " · first reply ~" + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " more covered by auto-text" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
     $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
-    $("k-open-n").textContent = g.liveAutoOnly + " more fully covered by auto-replies" + (g.stale ? ", " + g.stale + " too old to chase" : "");
-    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " written replies, " + d.texts.auto + " auto-replies" + (d.texts.failed ? ", " + d.texts.failed + " undelivered" : "") + ". " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
+    $("k-open-n").textContent = "All dates" + (g.stale ? " · " + g.stale + " older ones dropped" : "");
+    $("texts-note").textContent = "Texts: " + d.texts.inbound + " in · " + d.texts.human + " written · " + d.texts.auto + " auto" + (d.texts.failed ? " · " + d.texts.failed + " undelivered" : "") + ". Calls out: " + c.outbound + " · " + dur(c.talkMinutes) + " on the phone.";
 
     var max = niceMax(Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; }))));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
@@ -406,7 +407,7 @@
     $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
       return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td></tr>";
-    }).join("") : "<tr><td colspan='4' class='muted'>Nobody is waiting on a reply. New voicemails and texts without a reply show up here.</td></tr>";
+    }).join("") : "<tr><td colspan='4' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }
 })();
