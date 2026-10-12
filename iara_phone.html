@@ -21,9 +21,9 @@
   .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
   .card{ background:var(--paper-raised); border:1px solid var(--line); border-radius:10px; padding:20px; box-shadow:var(--shadow); }
   .gate{ width:100%; max-width:380px; }
-  h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; color:var(--river); font-size:30px; margin:0; letter-spacing:-.01em; }
-  h2{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); margin:0 0 14px; }
-  label{ display:block; font-size:12.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
+  h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; color:var(--forest); font-size:30px; margin:0; letter-spacing:-.01em; }
+  h2{ font-size:12.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
+  label{ display:block; font-size:12.5px; font-weight:700; color:var(--river); margin-bottom:6px; }
   input{ width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:16px; margin-bottom:14px; }
   .btn{ border-radius:6px; border:0; padding:11px 18px; min-height:44px; font:inherit; font-weight:700; font-size:14.5px; cursor:pointer; background:var(--forest); color:var(--forest-ink); width:100%; }
   .btn-ghost{ background:transparent; border:1.5px solid var(--line); color:var(--ink); width:auto; min-height:38px; padding:7px 14px; font-size:13px; }
@@ -31,24 +31,28 @@
   .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
   main{ max-width:1080px; margin:0 auto; padding:28px 16px 64px; }
   .top{ display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:22px; }
-  .sub{ color:var(--ink-soft); font-size:13px; margin-top:6px; }
-  .back{ color:var(--ink-soft); font-size:13px; text-decoration:none; display:inline-block; margin-bottom:10px; }
+  .sub{ color:var(--river); font-size:13px; margin-top:6px; }
+  .back{ color:var(--river); font-size:13px; text-decoration:none; display:inline-block; margin-bottom:10px; }
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
   .kpi .v{ font-family:'Fraunces',Georgia,serif; font-size:34px; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums; }
-  .kpi .l{ font-size:13px; font-weight:600; margin-top:4px; }
-  .kpi .n{ font-size:12.5px; color:var(--ink-soft); margin-top:4px; }
+  .kpi .l{ font-size:13px; font-weight:600; margin-top:4px; color:var(--river); }
+  .kpi .n{ font-size:12.5px; color:var(--ink); margin-top:4px; }
   .grid2{ display:grid; grid-template-columns:2fr 1fr; gap:12px; margin-bottom:12px; }
-  .legend{ display:flex; gap:14px; font-size:12.5px; color:var(--ink-soft); margin:-6px 0 12px; flex-wrap:wrap; }
+  .legend{ display:flex; gap:14px; font-size:12.5px; color:var(--river); margin:-6px 0 12px; flex-wrap:wrap; }
   .legend i{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:6px; vertical-align:-1px; }
-  .bars{ display:flex; align-items:flex-end; gap:3px; height:160px; border-bottom:1px solid var(--line); }
+  .chart{ display:grid; grid-template-columns:auto minmax(0,1fr); column-gap:8px; }
+  .yaxis{ position:relative; height:160px; min-width:18px; font-size:11px; color:var(--river); font-variant-numeric:tabular-nums; }
+  .yaxis span{ position:absolute; right:0; transform:translateY(50%); line-height:1; }
+  .bars{ display:flex; align-items:flex-end; gap:3px; height:160px; border-bottom:1px solid var(--line); position:relative; }
+  .grid{ position:absolute; left:0; right:0; border-top:1px dashed color-mix(in srgb, var(--line) 80%, transparent); pointer-events:none; }
   .bar{ flex:1; display:flex; flex-direction:column-reverse; gap:1px; min-width:0; height:100%; justify-content:flex-start; position:relative; }
   .bar span{ display:block; border-radius:2px 2px 0 0; }
   .bar:hover{ outline:1px solid var(--line); outline-offset:2px; }
-  .xl{ display:flex; gap:3px; font-size:11px; color:var(--ink-soft); margin-top:6px; }
+  .xl{ display:flex; gap:3px; font-size:11px; color:var(--river); margin-top:6px; }
   .xl div{ flex:1; text-align:center; white-space:nowrap; overflow:visible; }
   .tip{ position:fixed; pointer-events:none; background:var(--paper); border:1px solid var(--line); border-radius:6px; padding:8px 10px; font-size:12.5px; box-shadow:var(--shadow); z-index:9; }
   table{ width:100%; border-collapse:collapse; font-size:14px; }
-  th{ text-align:left; font-size:12px; color:var(--ink-soft); font-weight:700; padding:8px 8px; border-bottom:1px solid var(--line); }
+  th{ text-align:left; font-size:12px; color:var(--river); font-weight:700; padding:8px 8px; border-bottom:1px solid var(--line); }
   td{ padding:10px 8px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); vertical-align:top; }
   td.num{ font-variant-numeric:tabular-nums; white-space:nowrap; }
   .pill{ font-size:11.5px; font-weight:700; border-radius:100px; padding:2px 8px; white-space:nowrap; }
@@ -56,15 +60,15 @@
   .pill.voicemail{ background:color-mix(in srgb,var(--sun) 20%,transparent); color:var(--sun); }
   .pill.failed{ background:color-mix(in srgb,var(--forest) 22%,transparent); color:#f2a38c; }
   .muted{ color:var(--ink-soft); }
-  .note{ font-size:12.5px; color:var(--ink-soft); margin-top:12px; line-height:1.5; }
+  .note{ font-size:12.5px; color:var(--ink); margin-top:12px; line-height:1.5; }
   .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
   .people{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:12px; }
   .person .who{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:12px; }
   .person .name{ font-family:'Fraunces',Georgia,serif; font-size:22px; color:var(--river); }
-  .person .role{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--ink-soft); }
+  .person .role{ font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); }
   .stat-row{ display:flex; gap:18px; flex-wrap:wrap; }
   .stat-row .v{ font-family:'Fraunces',Georgia,serif; font-size:30px; line-height:1.1; font-variant-numeric:tabular-nums; }
-  .stat-row .l{ font-size:12.5px; color:var(--ink-soft); margin-top:2px; }
+  .stat-row .l{ font-size:12.5px; color:var(--river); margin-top:2px; }
   .scroll{ overflow-x:auto; }
   #daily td, #daily th{ text-align:right; white-space:nowrap; }
   #daily td:first-child, #daily th:first-child{ position:sticky; left:0; background:var(--paper-raised); z-index:1; }
@@ -121,11 +125,11 @@
       <div class="card">
         <h2>Incoming Calls by Day</h2>
         <div class="legend"><span><i style="background:var(--c-answered)"></i>Answered</span><span><i style="background:var(--c-voicemail)"></i>Voicemail</span><span><i style="background:var(--c-missed)"></i>Missed or Hung Up</span></div>
-        <div class="bars" id="days" role="img"></div><div class="xl" id="days-x"></div>
+        <div class="chart"><div class="yaxis" id="days-y" aria-hidden="true"></div><div class="bars" id="days" role="img"></div><div></div><div class="xl" id="days-x"></div></div>
       </div>
       <div class="card">
         <h2>Calls by Hour (ET)</h2>
-        <div class="bars" id="hours" role="img"></div><div class="xl" id="hours-x"></div>
+        <div class="chart"><div class="yaxis" id="hours-y" aria-hidden="true"></div><div class="bars" id="hours" role="img"></div><div></div><div class="xl" id="hours-x"></div></div>
         <div class="note" id="texts-note"></div>
       </div>
     </div>
@@ -182,6 +186,17 @@
 
   // 130 -> "2h 10m"; under an hour stays "45m".
   var dur = function(m){ m = Math.round(m || 0); if (m < 60) return m + "m"; var h = Math.floor(m / 60), r = m % 60; return h + "h" + (r ? " " + r + "m" : ""); };
+  // Round the top of a chart up to a clean number so the axis reads 0 / 10 / 20, not 0 / 13.5 / 27.
+  var niceMax = function(n){ if (n <= 4) return 4; var step = n <= 10 ? 2 : n <= 25 ? 5 : n <= 60 ? 10 : 20; return Math.ceil(n / step) * step; };
+  function axis(yId, barsId, max){
+    var y = $(yId), bars = $(barsId), html = "";
+    bars.querySelectorAll(".grid").forEach(function(g){ g.remove(); });
+    [0, max / 2, max].forEach(function(v){
+      html += "<span style='bottom:" + (100 * v / max) + "%'>" + v + "</span>";
+      if (v > 0){ var g = document.createElement("div"); g.className = "grid"; g.style.bottom = (100 * v / max) + "%"; bars.appendChild(g); }
+    });
+    y.innerHTML = html;
+  }
   var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
   var when = function(t){ return new Date(t).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); };
   var esc = function(s){ return String(s).replace(/[&<>"]/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]; }); };
@@ -203,10 +218,10 @@
     $("k-handled").textContent = pct(g.handled, g.total);
     $("k-handled-n").textContent = g.handled + " of " + g.total + " guests" + (d.medianCallbackHours != null ? " · median first reply " + d.medianCallbackHours + "h" : "");
     $("k-open").textContent = g.open;
-    $("k-open-n").textContent = g.autoOnly + " more fully covered by auto-replies";
+    $("k-open-n").textContent = g.autoOnly + " more fully covered by auto-replies" + (g.stale ? ", " + g.stale + " too old to chase" : "");
     $("texts-note").textContent = "Texts: " + d.texts.inbound + " in, " + d.texts.human + " written replies, " + d.texts.auto + " auto-replies" + (d.texts.failed ? ", " + d.texts.failed + " undelivered" : "") + ". " + c.outbound + " calls out, " + dur(c.talkMinutes) + " on the phone.";
 
-    var max = Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; })));
+    var max = niceMax(Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; }))));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
     d.days.forEach(function(x, i){
       var b = document.createElement("div"); b.className = "bar";
@@ -223,7 +238,7 @@
     $("days").setAttribute("aria-label", "Incoming calls per day for the last " + d.windowDays + " days. Busiest day: " + busiest.l + " with " + busiest.t + " calls. Full numbers are in the Day by Day table.");
     var hs = d.hours.slice(8).concat(d.hours.slice(0, 8)); // full day, starting 8 AM
     var hl = ["8a","","","","12p","","","","4p","","","","8p","","","","12a","","","","4a","","",""];
-    var hmax = Math.max(1, Math.max.apply(null, hs));
+    var hmax = niceMax(Math.max(1, Math.max.apply(null, hs)));
     $("hours").innerHTML = ""; $("hours-x").innerHTML = "";
     hs.forEach(function(n, i){
       var b = document.createElement("div"); b.className = "bar";
@@ -242,6 +257,7 @@
     var dash = function(n){ return n || "<span class='muted'>–</span>"; };
     var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + (x.talkMin ? dur(x.talkMin) : dash(0)) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
+    axis("days-y", "days", max); axis("hours-y", "hours", hmax);
     var peak = hs.indexOf(Math.max.apply(null, hs)), ph = (peak + 8) % 24;
     $("hours").setAttribute("aria-label", "Incoming calls by hour of day. Busiest hour starts at " + ((ph % 12) || 12) + (ph < 12 ? " AM" : " PM") + ".");
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
