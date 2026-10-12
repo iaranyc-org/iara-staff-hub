@@ -112,6 +112,11 @@
   .pill.text{ background:color-mix(in srgb,var(--river) 20%,transparent); color:var(--river); }
   .pill.voicemail{ background:color-mix(in srgb,var(--sun) 20%,transparent); color:var(--sun); }
   .pill.failed{ background:color-mix(in srgb,var(--forest) 22%,transparent); color:#f2a38c; }
+  .link-btn{ background:none; border:0; padding:6px 4px; min-height:32px; font:inherit; font-size:13px; font-weight:600; color:var(--river); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
+  .link-btn:hover{ color:var(--ink); }
+  td.act{ text-align:right; white-space:nowrap; }
+  tr.gone td:not(.act){ opacity:.45; text-decoration:line-through; text-decoration-color:color-mix(in srgb, var(--ink) 40%, transparent); }
+  .sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
   .muted{ color:var(--ink-soft); }
   .note{ font-size:14px; color:var(--ink); margin-top:12px; line-height:1.5; }
   .loading{ color:var(--ink-soft); padding:60px 0; text-align:center; }
@@ -224,7 +229,7 @@
     </div>
     <div class="card">
       <h2>Waiting for a Reply</h2>
-      <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th></tr></thead><tbody id="open"></tbody></table>
+      <table><thead><tr><th>Number</th><th>Type</th><th>Last Contact</th><th class="prev">Their Last Text</th><th><span class="sr">Actions</span></th></tr></thead><tbody id="open"></tbody></table>
       <p class="note">Voicemails and texts nobody has answered yet. Left off: missed calls without a voicemail (they got the Resy link), late and cancel notices, thank-yous, spam, and asks whose date has passed. "Reply Failed" = our text never arrived. Search the last 4 digits in Quo for the full number.</p>
     </div>
   </div>
@@ -385,6 +390,23 @@
     bars.setAttribute("aria-label", head.replace(/<[^>]+>/g, "") + " Per " + unit + " details are in the tooltips and the table below.");
   }
 
+  // Dismiss hides a row for everyone until that guest reaches out again; Undo puts it back.
+  function dismiss(key, undo){
+    return firebase.auth().currentUser.getIdToken().then(function(tok){
+      return fetch("https://iara-inbox.vercel.app/inbox/api/phone-stats", { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ key: key, undo: !!undo }), cache: "no-store" });
+    }).then(function(r){ if (!r.ok) throw new Error(r.status); });
+  }
+  document.addEventListener("click", function(ev){
+    var b = ev.target.closest("[data-dismiss], [data-undo]"); if (!b) return;
+    var tr = b.closest("tr"), key = b.getAttribute("data-dismiss") || b.getAttribute("data-undo"), undo = b.hasAttribute("data-undo");
+    b.disabled = true;
+    dismiss(key, undo).then(function(){
+      if (undo){ tr.classList.remove("gone"); tr.querySelector(".act").innerHTML = "<button class='link-btn' data-dismiss='" + key + "'>Dismiss</button>"; }
+      else { tr.classList.add("gone"); tr.querySelector(".act").innerHTML = "<span class='muted'>Dismissed</span> <button class='link-btn' data-undo='" + key + "'>Undo</button>"; }
+      var n = $("open").querySelectorAll("tr[data-key]:not(.gone)").length; $("k-open").textContent = n;
+    }).catch(function(){ b.disabled = false; b.textContent = "Try again"; });
+  });
+
   function showPicked(){
     var seg = document.querySelector(".seg"), on = seg.querySelector('[aria-pressed="true"]');
     if (on) seg.scrollLeft = Math.max(0, on.offsetLeft - seg.clientWidth / 2 + on.offsetWidth / 2);
@@ -472,8 +494,8 @@
     axis("days-y", "days", max); axis("hours-y", "hours", hmax);
     renderTrend(d);
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td></tr>";
-    }).join("") : "<tr><td colspan='4' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
+      return "<tr data-key='" + o.key + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + o.key + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
+    }).join("") : "<tr><td colspan='5' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }
 })();
