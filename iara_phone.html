@@ -33,6 +33,11 @@
   a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .err{ color:var(--sun); font-size:13px; margin:-4px 0 12px; }
   main{ max-width:1080px; margin:0 auto; padding:22px 16px 64px; }
+  /* ?embed=1: shown as the Phone tab inside iara Inbox Analytics, which supplies its own header. */
+  .embed header.topbar{ display:none; }
+  .embed main{ padding-top:8px; }
+  .embed .range-text .updated-m{ display:inline; }
+  .embed .range-text .updated-m::before{ content:" · "; }
   header.topbar{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--paper); border-bottom:1px solid var(--line);
     padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
   .brand{ display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; border-radius:8px; min-width:0; }
@@ -240,6 +245,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
+if (/[?&]embed=1\b/.test(location.search)) document.documentElement.classList.add("embed");
 (function(){
   // Same shared staff account as the hub and Lineup; the password is checked
   // by Firebase, never compared here, and the API re-verifies the token.
