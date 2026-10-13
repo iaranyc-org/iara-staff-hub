@@ -91,7 +91,9 @@
   .bars.tr .bar span em{ position:absolute; left:50%; transform:translateX(-50%); bottom:100%; margin-bottom:3px; font-style:normal; font-size:11.5px; font-weight:700; color:var(--ink); white-space:nowrap; }
   .bars.tr .bar .none{ align-self:center; margin:auto; font-size:11.5px; color:var(--river); }
   .xl{ display:flex; gap:3px; font-size:12px; color:var(--river); margin-top:6px; }
-  .xl div{ flex:1; text-align:center; white-space:nowrap; overflow:hidden; }
+  .xl div{ flex:1; min-width:0; text-align:center; white-space:nowrap; overflow:visible; }
+  /* Narrow phones: smaller axis text so 10/10-style labels don't touch; tighter header so the title and Updated time fit side by side. */
+  @media (max-width:420px){ .xl{ font-size:11px; } .brand h1{ font-size:17px; } .brand-mark{ width:32px; } .updated{ font-size:12px; } header.topbar{ padding:12px 16px; } }
   .hbar{ display:grid; grid-template-columns:96px 1fr 36px; align-items:center; gap:10px; font-size:14px; margin-bottom:8px; }
   .hbar .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
   .hbar .fill{ height:100%; background:var(--river); border-radius:5px; }
@@ -602,7 +604,8 @@
   function dayBars(days, series){
     // Series sit side by side (In next to Replied), never stacked: they're different counts, not parts of a total.
     var max = 1; days.forEach(function(d, i){ series.forEach(function(s){ max = Math.max(max, s.vals[i]); }); }); max = niceMax(max);
-    var step = Math.ceil(days.length / 10);
+    // Phones fit about 4 date labels without them touching; wider screens fit 10.
+    var step = Math.ceil(days.length / (window.innerWidth <= 420 ? 4 : 10));
     var bars = '<div class="bars">' + days.map(function(d, i){ return '<div class="bar' + (series.length > 1 ? " grp" : "") + '" title="' + md(d) + ": " + series.map(function(s){ return s.name + " " + s.vals[i]; }).join(", ") + '">' +
       series.map(function(s){ var h = 100 * s.vals[i] / max; return h ? '<span style="height:' + h + '%;background:' + s.color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
     var xl = '<div class="xl">' + days.map(function(d, i){ return '<div>' + (i % step === 0 ? md(d) : "") + '</div>'; }).join("") + '</div>';
@@ -724,18 +727,19 @@
         // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
         kpi(nowCount, "Waiting Now", nowCount ? 'Across every channel · <a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
         kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
-      trendCard(a.trend, "Replied Within an Hour", [
-        { name: "Email", color: "var(--c-email)", max: 100, val: function(q){ return q.email.withinHourRate; }, fmt: function(v){ return v + "%"; } },
-        { name: "Instagram DMs", color: "var(--c-dm)", val: function(q){ return q.dms ? q.dms.withinHourRate : null; }, fmt: function(v){ return v + "%"; } },
-      ], function(b, x, name){ return name(b) + ": email <b>" + b.email.withinHourRate + "%</b> replied within an hour, " + upDown(b.email.withinHourRate, x.email.withinHourRate, " pts") + " from " + name(x) + "." + (b.dms && x.dms && b.dms.withinHourRate != null && x.dms.withinHourRate != null ? " DMs <b>" + b.dms.withinHourRate + "%</b>, " + upDown(b.dms.withinHourRate, x.dms.withinHourRate, " pts") + "." : "") + " Phone's trend is on the Phone tab."; }) +
-      extras(a, p) +
+      // Volume first (where guests came from), then how fast we replied, then outcomes.
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
       '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
         rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "–" : r.needed) + '</td><td class="num">' + (isR ? "–" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "–" : hrs(r.median)) + '</td><td class="num">' + (isR ? "–" : r.waiting) + '</td></tr>'; }).join("") +
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
-      '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>';
+      '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>' +
+      trendCard(a.trend, "Replied Within an Hour", [
+        { name: "Email", color: "var(--c-email)", max: 100, val: function(q){ return q.email.withinHourRate; }, fmt: function(v){ return v + "%"; } },
+        { name: "Instagram DMs", color: "var(--c-dm)", val: function(q){ return q.dms ? q.dms.withinHourRate : null; }, fmt: function(v){ return v + "%"; } },
+      ], function(b, x, name){ return name(b) + ": email <b>" + b.email.withinHourRate + "%</b> replied within an hour, " + upDown(b.email.withinHourRate, x.email.withinHourRate, " pts") + " from " + name(x) + "." + (b.dms && x.dms && b.dms.withinHourRate != null && x.dms.withinHourRate != null ? " DMs <b>" + b.dms.withinHourRate + "%</b>, " + upDown(b.dms.withinHourRate, x.dms.withinHourRate, " pts") + "." : "") + " Phone's trend is on the Phone tab."; }) +
+      extras(a, p);
 
     var pv = a.prev;
     $("panel-email").innerHTML = channelKpis(e, "Emails", pv && pv.email) + rateTrend(a.trend, "Email", "email", "var(--c-email)", "emails") + channelDetail(e, "var(--c-email)");
