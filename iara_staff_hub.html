@@ -218,7 +218,7 @@
   .sb-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:19px;
     letter-spacing:-.005em; color:var(--river); }
   .sb-mark{ display:flex; align-items:center; gap:10px; padding:4px 10px 22px; }
-  .sb-mark-link{ display:inline-flex; align-items:center; gap:10px; border-radius:6px; text-decoration:none; }
+  .sb-mark-link{ display:inline-flex; align-items:center; gap:10px; border-radius:6px; text-decoration:none; min-height:44px; }
   .sb-mark-link:focus-visible{ outline:2px solid var(--sun); outline-offset:3px; }
   .nav-btn{
     display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:6px;
@@ -328,8 +328,8 @@
      FIRST WEEK still shares a first-line baseline with its neighbours. */
   .bottom-nav .nav-btn{ flex:1; display:flex; flex-direction:column; align-items:center;
     justify-content:flex-start; gap:2px; padding:11px 1px 8px; border-radius:6px;
-    font-size:10.5px; font-weight:700; letter-spacing:.04em; text-transform:uppercase;
-    line-height:1.2; text-align:center; hyphens:none;
+    font-size:12px; font-weight:700; letter-spacing:.01em;
+    line-height:1.2; text-align:center; hyphens:none; min-width:44px;
     color:var(--ink-soft); background:none; }
   .bottom-nav .nav-btn.active{ color:var(--sun); }
   .bottom-nav .nav-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
@@ -460,8 +460,8 @@
   .qtext{ font-size:19px; font-weight:700; margin:0 0 18px; line-height:1.4; }
   .opt{ display:block; width:100%; text-align:left; padding:13px 15px; border-radius:6px; border:1.5px solid var(--line); background:var(--paper); margin-bottom:10px; cursor:pointer; font-size:14.5px; }
   .opt:hover{ border-color:var(--river); }
-  .opt.correct{ border-color:var(--forest); background:color-mix(in srgb, var(--forest) 14%, var(--paper)); }
-  .opt.wrong{ border-color:var(--clay); background:color-mix(in srgb, var(--clay) 14%, var(--paper)); }
+  .opt.correct{ border-color:var(--sun); border-width:2px; background:color-mix(in srgb, var(--sun) 16%, var(--paper)); }
+  .opt.wrong{ border-color:var(--ink-soft); background:var(--paper); opacity:.85; }
   .opt[disabled]{ cursor:default; }
   .qexplain{ font-size:13.5px; color:var(--ink-soft); margin-top:6px; line-height:1.55; }
   #shell, #gate{ position:relative; z-index:1; }
@@ -523,7 +523,7 @@
 
   /* Course tabs: set like a menu's course line, not pills. */
   .fb-tab{ background:none; border:none; border-bottom:1.5px solid transparent; border-radius:0;
-    padding:6px 2px; margin-right:18px; font-size:13px; font-weight:600; letter-spacing:.02em;
+    padding:6px 2px; min-height:40px; margin-right:18px; font-size:13px; font-weight:600; letter-spacing:.02em;
     color:var(--ink-soft); text-transform:uppercase; }
   .fb-tab:hover{ color:var(--ink); }
   .fb-tab.active{ background:none; color:var(--display); border-bottom-color:var(--sun); }
@@ -727,7 +727,7 @@
      with wet hands. 44px is the size a thumb actually hits; the desktop sizes
      were 30 to 41 and fine for a mouse but not for that. */
   @media (max-width:860px){
-    .bottom-nav .nav-btn{ min-height:52px; padding:9px 1px 10px; font-size:10.5px; }
+    .bottom-nav .nav-btn{ min-height:52px; padding:0 4px; justify-content:center; font-size:12.5px; }
     .fb-tab{ min-height:44px; display:inline-flex; align-items:center; padding:0 2px;
       margin-right:20px; font-size:14px; }
     .btn-small{ min-height:44px; padding:0 16px; font-size:14px; }
@@ -735,7 +735,7 @@
     .say-btn{ height:44px; padding:0 15px; font-size:13.5px; }
     .say{ gap:8px; }
     .cl-item input{ width:22px; height:22px; }
-    .cl-item label{ padding:2px 0; }
+    .cl-item label{ padding:2px 0; min-height:44px; align-items:center; }
     .bio-more, .linkish{ min-height:44px; display:inline-flex; align-items:center; }
     .dish-edit{ min-height:44px; display:inline-flex; align-items:center; }
     .manual-search input, .field input, .field select, .field textarea{ font-size:16px; }
@@ -746,6 +746,9 @@
       -webkit-overflow-scrolling:touch; margin-left:-16px; margin-right:-16px;
       padding-left:16px; padding-right:16px; }
     .fb-tabs::-webkit-scrollbar{ display:none; }
+    /* Fade the right edge so a row that scrolls reads as one that does. */
+    .fb-tabs{ padding-right:40px; -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);
+      mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent); }
     .fb-tab{ flex:none; white-space:nowrap; }
     /* The dot leader only reads as a menu when the name fits on one line. */
     .dish-line{ flex-wrap:wrap; }
@@ -797,6 +800,7 @@
   .linkish{ display:block; margin-top:18px; background:none; border:none; color:var(--ink-soft);
     font:inherit; font-size:12.5px; text-decoration:underline; cursor:pointer; padding:0; }
   .linkish:hover{ color:var(--ink); }
+  button.linkish{ min-height:40px; padding:0; }
   /* Drill categories as an editorial list, matching the manual and the decks. */
   .drill-list{ list-style:none; margin:0; padding:0; max-width:var(--measure); border-top:1px solid var(--rule); }
   .drill-list li{ border-bottom:1px solid var(--rule); }
@@ -836,8 +840,14 @@
   .opt.correct .optkey, .opt.wrong .optkey{ border-color:currentColor; }
   .q-feedback{ margin-top:16px; padding:14px 16px; border-radius:6px; font-size:14.5px; line-height:1.5;
     border:1.5px solid var(--line); display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  .q-feedback .q-msg{ margin:0; flex:1 1 220px; }
+  .opt.correct::after, .opt.wrong::after{ float:right; font-size:12.5px; font-weight:700; margin-left:10px; white-space:nowrap; }
+  .opt.correct, .opt.correct[disabled]{ color:var(--ink); opacity:1; }
+  .opt.correct::after{ content:"\2713  Correct"; color:var(--sun); }
+  .opt.wrong::after{ content:"\2715  Your Answer"; color:var(--ink-soft); }
+  .opt.wrong{ border-style:dashed; }
   .q-feedback.is-right{ border-color:var(--sun); }
-  .q-feedback.is-wrong{ border-color:var(--forest); }
+  .q-feedback.is-wrong{ border-color:var(--ink-soft); border-style:dashed; }
   .q-feedback em{ font-style:normal; font-weight:700; color:var(--display); }
   .btn-next{ margin-left:auto; width:auto; }
   .result-num{ font-family:'IBM Plex Mono',monospace; font-size:52px; font-weight:600; }
@@ -916,7 +926,7 @@
   .wl-card:hover .wl-flip, .wl-flip:focus-visible{ opacity:1; }
   .wl-flip:focus-visible{ outline:2px solid var(--sun); outline-offset:1px; }
   @media (hover:none){ .wl-flip{ opacity:.6; width:26px; height:34px; font-size:19px; } .wl-prev{ left:4px; } .wl-next{ right:4px; } }
-  .wl-dots{ position:absolute; left:0; right:0; bottom:7px; display:flex; justify-content:center; gap:5px; pointer-events:none; }
+  .wl-dots{ position:absolute; z-index:2; left:50%; transform:translateX(-50%); bottom:7px; padding:4px 7px; border-radius:999px; background:rgba(0,0,0,.45); display:flex; justify-content:center; gap:5px; pointer-events:none; }
   .wl-dots i{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.55); box-shadow:0 0 0 1px rgba(0,0,0,.25); }
   .wl-dots i.on{ background:#fff; width:14px; border-radius:3px; }
   .wl-backdrop{ display:none; }
@@ -964,7 +974,22 @@
     .wl-reviews a, .wl-fine a{ display:inline-flex; align-items:center; min-height:40px; }
   }
   @media (hover:none){ .wl-flip{ height:44px; width:30px; } }
-  @media (max-width:360px){ .bottom-nav .nav-btn{ font-size:9.5px; letter-spacing:.01em; } }
+  @media (max-width:360px){ .bottom-nav .nav-btn{ font-size:11.5px; } }
+  /* More sheet: the views that do not fit the five-tab bar. */
+  #more-sheet{ border:0; padding:0; margin:auto 0 0; width:100%; max-width:100%; max-height:85vh;
+    border-radius:16px 16px 0 0; background:var(--paper-raised); color:var(--ink);
+    border-top:1px solid var(--line); }
+  #more-sheet::backdrop{ background:rgba(0,0,0,.55); }
+  .more-inner{ padding:14px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
+  .more-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+  .more-head h2{ margin:0; font-size:20px; }
+  .more-close{ min-width:44px; min-height:44px; border:0; background:none; color:var(--ink-soft); font-size:26px; cursor:pointer; }
+  .more-list{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  #more-sheet .nav-btn, .more-fbk{ display:flex; align-items:center; min-height:52px; padding:0 14px; border-radius:10px;
+    border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:15px; font-weight:700;
+    text-align:left; cursor:pointer; }
+  #more-sheet .nav-btn.active{ border-color:var(--sun); color:var(--sun); }
+  .more-fbk{ grid-column:1 / -1; justify-content:center; background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
   /* Menu: Stories lens */
   .ms-jump{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; }
   .ms-jump a{ font-size:13px; font-weight:700; padding:8px 12px; border:1.5px solid var(--line); border-radius:999px;
@@ -1013,12 +1038,12 @@
   .vb-hero-kicker{ font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:#fbbf56; }
   .vb-hero-q{ font-family:var(--font-display); font-size:clamp(22px,3vw,32px); line-height:1.15; margin:8px 0 14px; max-width:28ch; }
   .vb-hero-by{ font-size:13.5px; margin:-6px 0 10px; color:#f3d9c4; }
-  .vb-hero-link{ display:inline-flex; align-items:center; min-height:40px; color:#fff4ea; font-weight:700; font-size:14px; }
+  .vb-hero-link{ display:inline-flex; align-items:center; min-height:44px; color:#fff4ea; font-weight:700; font-size:14px; }
   .vb-hero-dots{ position:absolute; right:18px; bottom:16px; display:flex; gap:5px; }
   .vb-hero-dots i{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.4); }
   .vb-hero-dots i.on{ background:#fff; width:14px; border-radius:3px; }
   .vb-chips{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 16px; }
-  .vb-chip{ font:inherit; font-size:13.5px; font-weight:700; padding:8px 13px; min-height:40px; border-radius:999px; border:1.5px solid var(--line);
+  .vb-chip{ font:inherit; font-size:13.5px; font-weight:700; padding:8px 13px; min-height:44px; border-radius:999px; border:1.5px solid var(--line);
     background:none; color:var(--ink-mid); cursor:pointer; }
   .vb-chip.on{ background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
   .vb-chip:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
@@ -1072,14 +1097,6 @@
     border:1.5px dashed var(--line); background:none; color:var(--ink-soft); font:inherit; font-size:14.5px; cursor:pointer; }
   .home-feedback b{ color:var(--display); }
   .home-feedback:hover{ border-color:var(--display); }
-  .fbk-fab{ position:fixed; right:20px; bottom:20px; z-index:30; display:inline-flex; align-items:center; gap:8px;
-    min-height:48px; padding:0 18px 0 14px; border:0; border-radius:999px; background:var(--sun); color:var(--sun-ink);
-    font:inherit; font-size:14.5px; font-weight:700; cursor:pointer; box-shadow:0 6px 22px rgba(0,0,0,.35); }
-  .fbk-fab svg{ width:20px; height:20px; flex:none; }
-  .fbk-fab:hover{ transform:translateY(-1px); }
-  .fbk-fab:focus-visible{ outline:2px solid var(--display); outline-offset:3px; }
-  @media (max-width:860px){ .fbk-fab{ right:14px; bottom:calc(76px + env(safe-area-inset-bottom, 0px)); padding:0 14px; min-height:44px; font-size:13.5px; } }
-  @media print{ .fbk-fab{ display:none; } }
   /* Cleaning */
   .cl-warn{ margin:12px 0 14px; padding:10px 14px; border-radius:8px; border:1.5px solid var(--sun); color:var(--display); font-weight:700; font-size:15px; }
   .cl-where{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:0 0 18px; }
@@ -1240,6 +1257,7 @@
       <div class="name" id="sb-name"></div>
       <div class="role" id="sb-role"></div>
       <button id="sb-switch">Switch User</button>
+      <button type="button" data-feedback>Send Feedback</button>
       <button class="nav-btn sb-admin" data-view="progress">Admin</button>
     </div>
   </aside>
@@ -1400,7 +1418,7 @@
         <div class="manual-search">
           <label class="sr-only" for="fb-q">Search the menu</label>
           <input id="fb-q" type="search" autocomplete="off"
-                 placeholder="Search dishes and allergens, e.g. tucupi, dairy, shellfish">
+                 placeholder="Search dishes or allergens">
           <p class="manual-count" id="fb-count" hidden></p>
         </div>
         <div class="fb-toolbar" id="fb-toolbar">
@@ -1465,15 +1483,25 @@
       <button class="nav-btn active" data-view="home">Home</button>
       <button class="nav-btn" data-view="manual">Manual</button>
       <button class="nav-btn" data-view="fnb">Menu</button>
-      <button class="nav-btn" data-view="lore">Lore</button>
-      <button class="nav-btn" data-view="cleaning">Clean</button>
-      <button class="nav-btn" data-view="watch">Watch</button>
-      <button class="nav-btn" data-view="team">Team</button>
       <button class="nav-btn" data-view="study">Study</button>
-      <button class="nav-btn" data-view="quiz">Exam</button>
+      <button class="nav-btn more-btn" type="button" aria-haspopup="dialog" aria-controls="more-sheet">More</button>
     </div>
   </nav>
-  <button type="button" class="fbk-fab" data-feedback aria-label="Send Feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Feedback</span></button>
+  <dialog id="more-sheet" aria-labelledby="more-title">
+    <div class="more-inner">
+      <div class="more-head"><h2 id="more-title">More</h2><button type="button" class="more-close" aria-label="Close">&times;</button></div>
+      <div class="more-list">
+        <button class="nav-btn" data-view="quiz">Final Exam</button>
+        <button class="nav-btn" data-view="cleaning">Cleaning</button>
+        <button class="nav-btn" data-view="watch">Watch List</button>
+        <button class="nav-btn" data-view="team">Team</button>
+        <button class="nav-btn" data-view="lore">The Lore</button>
+        <button class="nav-btn" data-view="vibes">Good Vibes</button>
+        <button class="nav-btn" data-view="progress">Admin</button>
+        <button type="button" class="more-fbk" data-feedback>Send Feedback</button>
+      </div>
+    </div>
+  </dialog>
 </div>
 
 
@@ -2288,28 +2316,31 @@ async function signOutManager(){
   try { if (adminAuth) await adminAuth.signOut(); } catch(e){}
 }
 
-// Returns true once there is a real session. Remembers the password on the
-// device so a server types it once, not every shift.
+// Returns true once there is a real session. Firebase Auth persists that
+// session on the device (LOCAL persistence), so a server types the password
+// once; the password itself is never stored in localStorage.
 async function signInStaff(password){
   if (!db || !firebase.auth) return false;
   try {
     if (firebase.auth().currentUser) return true;
     await firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, password);
-    try { localStorage.setItem(LS_PW, password); } catch(e){}
     return true;
   } catch(e){
-    try { localStorage.removeItem(LS_PW); } catch(e2){}
     return false;
   }
 }
 
+// Waits for Firebase to restore its persisted session (currentUser is null
+// until the first auth-state callback fires).
 async function restoreSession(){
+  try { localStorage.removeItem(LS_PW); } catch(e){} // clear the legacy plaintext copy
   if (!db || !firebase.auth) return false;
-  if (firebase.auth().currentUser) return true;
-  var saved = null;
-  try { saved = localStorage.getItem(LS_PW); } catch(e){}
-  if (!saved) return false;
-  return signInStaff(saved);
+  var auth = firebase.auth();
+  if (auth.currentUser) return true;
+  var u = await new Promise(function(res){
+    var off = auth.onAuthStateChanged(function(user){ off(); res(user); });
+  });
+  return !!u;
 }
 
 async function touchStaffDoc(){
@@ -2473,9 +2504,13 @@ function showView(name, opts){
   document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
   document.getElementById("view-" + name).classList.add("active");
   var lit = (name === "checklist") ? "home" : name;
-  document.querySelectorAll(".nav-btn").forEach(function(b){
+  document.querySelectorAll(".nav-btn[data-view]").forEach(function(b){
     b.classList.toggle("active", b.getAttribute("data-view") === lit);
   });
+  var moreBtn = document.querySelector(".bottom-nav .more-btn");
+  if (moreBtn) moreBtn.classList.toggle("active", !document.querySelector('.bottom-nav .nav-btn[data-view="'+lit+'"]'));
+  var sheet = document.getElementById("more-sheet");
+  if (sheet && sheet.open) sheet.close();
   document.title = (VIEW_TITLES[name] ? VIEW_TITLES[name] + " \u00b7 " : "") + "iara Lineup";
   if (name === "quiz" && !activeQuiz) renderQuizPicker();
   if (name === "study" && !studyDeck) renderStudyPicker();
@@ -2517,9 +2552,16 @@ function routeFromHash(){
 window.addEventListener("popstate", routeFromHash);
 window.addEventListener("hashchange", routeFromHash);
 
-document.querySelectorAll(".nav-btn, .jump, .jump-link").forEach(function(btn){
+document.querySelectorAll(".nav-btn[data-view], .jump, .jump-link").forEach(function(btn){
   btn.addEventListener("click", function(){ showView(btn.getAttribute("data-view")); });
 });
+(function(){
+  var sheet = document.getElementById("more-sheet"), btn = document.querySelector(".bottom-nav .more-btn");
+  if (!sheet || !btn) return;
+  btn.addEventListener("click", function(){ if (sheet.showModal) sheet.showModal(); else sheet.setAttribute("open",""); });
+  sheet.querySelector(".more-close").addEventListener("click", function(){ sheet.close(); });
+  sheet.addEventListener("click", function(e){ if (e.target === sheet || e.target.closest("[data-feedback]")) sheet.close(); });
+})();
 
 /* ============================================================
    Manual accordions
@@ -2662,12 +2704,12 @@ function renderCleaning(){
         g.items.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join("") + '</ul></div>';
     }).join("");
     return '<div class="card accordion" data-sec="'+esc(a.id)+'">' +
-      '<button class="acc-head"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
+      '<button class="acc-head" aria-expanded="false"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
         '<h3>'+esc(a.title)+'</h3><span class="chev">▾</span></button>' +
       '<div class="acc-body">' + (a.warn ? '<p class="cl-warn">⚠ '+esc(a.warn)+'</p>' : '') + where + groups + '</div></div>';
   }).join("");
   wrap.querySelectorAll(".acc-head").forEach(function(h){
-    h.addEventListener("click", function(){ h.closest(".accordion").classList.toggle("open"); });
+    h.addEventListener("click", function(){ h.setAttribute("aria-expanded", String(h.closest(".accordion").classList.toggle("open"))); });
   });
 }
 
@@ -3205,7 +3247,7 @@ function openManagerGate(onOk){
   wrap.className = "modal-back";
   wrap.innerHTML =
     '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="mg-title" style="max-width:400px;">' +
-      '<h3 id="mg-title">Manager access</h3>' +
+      '<h3 id="mg-title">Manager Access</h3>' +
       '<p class="field-help" style="margin:0 0 16px;">Sign in with your iara Google account. ' +
         'Editing the menu changes it for everyone, and team progress is everyone\'s record.</p>' +
       '<p class="form-err" id="mg-err" hidden></p>' +
@@ -3611,13 +3653,13 @@ function renderStudyPicker(){
   if (!area) return;
   var ready = lineupCards(LINEUP_SIZE).length;
   var html = '<div class="card lineup-card">' +
-      '<div class="fw-head">Today\'s lineup</div>' +
+      '<div class="fw-head">Today\'s Lineup</div>' +
       '<p class="fw-lede">' + (ready
         ? 'Four cards, whichever you are weakest on. Two minutes before the door opens.'
         : 'Nothing waiting. Everything is either solid or already counted for this shift.') + '</p>' +
-      (ready ? '<button class="btn btn-sun" id="lineup-go">Run the lineup</button>' : '') +
+      (ready ? '<button class="btn btn-sun" id="lineup-go">Run the Lineup</button>' : '') +
     '</div>';
-  html += '<h2 class="drill-head">Every deck</h2><div class="deck-grid">';
+  html += '<h2 class="drill-head">Every Deck</h2><div class="deck-grid">';
   studyDecks().forEach(function(d){
     var cards = buildDeck(d.key);
     var pct = deckMastery(cards);
@@ -5683,24 +5725,6 @@ document.addEventListener("visibilitychange", function(){ if (!document.hidden) 
     setTimeout(function(){ msg.focus(); }, 50);
   }
   function close(){ if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
-  // Desktop: pin the floating button beside the reading column, not
-  // the window's, so on wide screens it sits next to the content.
-  (function(){
-    var fab = document.querySelector(".fbk-fab");
-    if (!fab) return;
-    function place(){
-      var v = document.querySelector(".view.active");
-      if (!v || innerWidth <= 860) { fab.style.right = ""; return; }
-      // Sit just outside the column when the gutter fits it, so it never
-      // covers prices; otherwise fall back to the window corner.
-      var edge = v.getBoundingClientRect().right;
-      var room = innerWidth - edge - fab.offsetWidth;
-      fab.style.right = (room >= 24 ? Math.round(room) : 20) + "px";
-    }
-    addEventListener("resize", place);
-    var c = document.querySelector(".content"); if (c) new MutationObserver(place).observe(c, { subtree:true, attributes:true, attributeFilter:["class"] });
-    place();
-  })();
   document.addEventListener("click", function(e){ var b = e.target.closest("[data-feedback]"); if (b) { e.preventDefault(); open(); } });
   document.getElementById("fbk-cancel").addEventListener("click", close);
   dlg.addEventListener("click", function(e){ if (e.target === dlg) close(); });
@@ -5807,14 +5831,14 @@ async function renderHomeFirstWeek(){
   var p = await checklistProgress();
   if (p.complete) {
     slot.innerHTML = '<p class="fw-done">First week: done. ' +
-      '<button class="jump-link" data-view="checklist">Look back at it</button></p>';
+      '<button class="jump-link" data-view="checklist">Look Back at It</button></p>';
   } else {
     slot.innerHTML = '<div class="card fw-card">' +
-      '<div class="fw-head">First week</div>' +
+      '<div class="fw-head">First Week</div>' +
       '<p class="fw-lede">Finish this before anything else. Nothing here is timed.</p>' +
       '<div class="fw-count"><span class="mono">'+p.done+'</span> of <span class="mono">'+p.total+'</span> done</div>' +
       '<div class="qbar"><span style="width:'+p.pct+'%"></span></div>' +
-      '<button class="btn btn-sun fw-open" data-view="checklist">Open the checklist</button>' +
+      '<button class="btn btn-sun fw-open" data-view="checklist">Open the Checklist</button>' +
       '</div>';
   }
   slot.querySelectorAll("[data-view]").forEach(function(b){
@@ -6236,9 +6260,9 @@ function answerQuiz(i){
   });
   var fb = document.getElementById("q-feedback");
   fb.className = "q-feedback " + (correct ? "is-right" : "is-wrong");
-  fb.innerHTML = (correct
+  fb.innerHTML = '<p class="q-msg">' + (correct
       ? '<strong>Correct.</strong>'
-      : '<strong>Not quite.</strong> The answer is <em>'+esc(q.opts[correctIdx].text)+'</em>.') +
+      : '<strong>Not quite.</strong> The answer is <em>'+esc(q.opts[correctIdx].text)+'</em>.') + '</p>' +
     '<button class="btn btn-sun btn-next" id="q-next">' +
       (aq.idx + 1 >= aq.questions.length ? 'See Your Score' : 'Next Question') + '</button>';
   fb.hidden = false;
@@ -6347,12 +6371,14 @@ async function renderProgress(){
     // clicking Admin just goes straight to the dashboard. This card only
     // stays on screen if the prompt gets cancelled or fails, as a retry.
     area.innerHTML = '<div class="card pin-gate">' +
-      '<h3 style="margin-top:0;">Manager access</h3>' +
+      '<h3 style="margin-top:0;">Manager Access</h3>' +
       '<p class="placeholder-note" style="margin-bottom:14px;">Sign in with your iara Google account to see team-wide progress.</p>' +
       '<button class="btn btn-primary" id="pg-unlock">Sign in with Google</button></div>';
     var unlock = function(){ openManagerGate(function(){ progressUnlocked = true; renderProgress(); }); };
     document.getElementById("pg-unlock").addEventListener("click", unlock);
-    unlock();
+    // Signed in already: go straight through. Otherwise the card above is
+    // the one prompt; auto-opening a modal on top of it said the same thing twice.
+    if (isManagerSignedIn()) unlock();
     return;
   }
   if (!db) {

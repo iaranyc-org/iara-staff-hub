@@ -133,6 +133,10 @@
     display:flex; gap:4px; padding:8px 16px; overflow-x:auto; scrollbar-width:none;
   }
   nav.tabs::-webkit-scrollbar{display:none;}
+  /* Scroll cue: fade the trailing edge while more tabs sit off-screen
+     (class toggled from JS on scroll/resize). Tablets wrap instead. */
+  nav.tabs.more-right{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);}
+  @media (min-width:641px){ nav.tabs{flex-wrap:wrap; overflow-x:visible;} nav.tabs.more-right{-webkit-mask-image:none; mask-image:none;} }
   nav.tabs button{
     flex:none; border:1px solid transparent; background:transparent; color:var(--ink-secondary);
     padding:7px 13px; min-height:44px; display:inline-flex; align-items:center;
@@ -191,7 +195,21 @@
   .badge.neutral{background:var(--border); color:var(--ink-secondary);}
   .badge::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex:none;}
 
-  .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:12px;}
+  .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:12px;
+    /* Scroll shadows: show an edge shadow only where more columns are hidden. */
+    background:
+      linear-gradient(90deg, var(--surface-raised) 30%, transparent) left/40px 100% no-repeat local,
+      linear-gradient(270deg, var(--surface-raised) 30%, transparent) right/40px 100% no-repeat local,
+      radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.55), transparent) left/14px 100% no-repeat scroll,
+      radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.55), transparent) right/14px 100% no-repeat scroll;
+    background-color:var(--surface-raised);}
+  .table-wrap table{background:transparent;}
+  /* Phone/tablet: pin the name column so key numbers scroll beside it. */
+  @media (max-width:860px){
+    .table-wrap th:first-child, .table-wrap td:first-child{position:sticky; left:0; z-index:1; background:var(--surface-raised); min-width:130px; max-width:170px; box-shadow:1px 0 0 var(--border);}
+    .table-wrap thead th:first-child{background:var(--surface); z-index:2;}
+    .table-wrap tbody tr:hover td:first-child{background:color-mix(in srgb, var(--accent-soft) 100%, var(--surface-raised));}
+  }
   table{width:100%; border-collapse:collapse; min-width:560px; background:var(--surface-raised);}
   thead th{position:sticky; top:0; background:var(--surface); text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted); font-weight:700; padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap;}
   tbody td{padding:10px 12px; border-bottom:1px solid var(--border); font-size:13.5px; vertical-align:middle;}
@@ -252,6 +270,9 @@
   .hint{font-size:12px; color:var(--ink-muted);}
   .modal-actions{display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:6px; border-top:1px solid var(--border);}
   .modal-actions .right{display:flex; gap:8px;}
+  /* Save/Cancel stay pinned to the bottom of the scrolling modal card so a
+     long form never hides them below the fold (phone, iPad landscape). */
+  #modalRoot .modal-actions{position:sticky; bottom:-20px; z-index:2; background:var(--surface-raised); margin:0 -20px -20px; padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 16px -12px rgba(0,0,0,0.6);}
   .line-row{display:grid; grid-template-columns:1fr 110px 90px auto; gap:8px; align-items:end; padding:8px 0; border-bottom:1px solid var(--border);}
   .line-row:last-child{border-bottom:none;}
   @media (max-width:480px){
@@ -331,6 +352,10 @@
   .sort-arrow{font-size:9px; margin-left:2px; color:var(--accent-strong);}
   .filter-row select, .filter-row input{border:1px solid var(--border); background:var(--surface-raised); border-radius:8px; padding:7px 10px; font-size:16px;}
   .pr-clickable td{cursor:pointer;}
+  @media (max-width:640px){
+    .btn, .btn.small, .search-box, .filter-row select, .filter-row input{min-height:44px;}
+    th.sortable{padding-top:15px; padding-bottom:15px;}
+  }
   [hidden]{display:none!important;}
 
   @media print{
@@ -408,6 +433,7 @@ var REORDER_LEAD_DAYS = 3;
 var PAR_COVER_DAYS = 14;
 var ING_CATS = ["Protein","Produce","Dairy","Dry Goods","Pantry","Wine","Liquor","Beer","N/A Bev","Non-Food/Bev","Maintenance","Other"];
 var STORAGE_AREAS = ["Walk-in Cooler","Freezer","Dry Storage","Bar","Front of House","Main Bathroom"];
+var COUNT_UNITS = ["each","ea","dozen","can","cans","count","ct","case","bottle","jar","bag","box","pack","pc","piece"];
 var UNITS = ["oz","lb","g","kg","ml","L","fl oz","each","dozen","qt","gal"];
 var RECIPE_CATS = ["Appetizer","Entree","Side","Dessert","Beverage","Prep/Batch"];
 var CAT_COLOR = {"Appetizer":"var(--cat-1)","Entree":"var(--cat-2)","Side":"var(--cat-3)","Dessert":"var(--cat-4)","Beverage":"var(--cat-5)","Prep/Batch":"var(--cat-6)"};
@@ -458,6 +484,13 @@ function plural(n, word){ return n + ' ' + word + (num(n)===1 ? '' : 's'); }
 function pct(n, d){ d = d==null?1:d; return num(n).toFixed(d) + '%'; }
 function round2(n){ return Math.round(num(n)*100)/100; }
 function isoNow(){ return new Date().toISOString(); }
+// Business date (YYYY-MM-DD) in the restaurant's timezone. toISOString() is
+// UTC, so after 8pm ET it rolled to tomorrow's date for headers and defaults.
+function nyDate(ms){
+  var p = {}; new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York', year:'numeric', month:'2-digit', day:'2-digit'})
+    .formatToParts(new Date(ms==null ? Date.now() : ms)).forEach(function(x){ p[x.type]=x.value; });
+  return p.year+'-'+p.month+'-'+p.day;
+}
 function isoDaysAgo(n){ return new Date(Date.now() - n*DAY).toISOString(); }
 function localDateFromIso(iso){
   // A stored ISO string is often midnight UTC for a date-only field (PO date,
@@ -658,6 +691,8 @@ function orderGuide(){
     if(risk.method==='usage') target = Math.max(target, risk.dailyRate * PAR_COVER_DAYS);
     var need = round2(target - num(ing.onHand));
     if(need <= 0) return;
+    // Count-type units can't be ordered fractionally: round up to whole units.
+    if(COUNT_UNITS.indexOf(String(ing.invUnit||'').trim().toLowerCase()) >= 0) need = Math.ceil(need - 1e-9);
     var v = ing.vendor || 'Unassigned vendor';
     (byVendor[v] = byVendor[v] || []).push({ing:ing, qty:need, cost:need*unitCostOf(ing), risk:risk});
   });
@@ -1178,8 +1213,19 @@ function renderNav(){
   nav.innerHTML = TABS.map(function(t){
     return '<button data-action="setTab" data-tab="'+t.id+'" class="'+(state.tab===t.id?'active':'')+'">'+t.label+'</button>';
   }).join('');
-  $('#todayLabel').textContent = dateLong(isoNow());
+  $('#todayLabel').textContent = dateLong(nyDate());
+  var act = nav.querySelector('button.active');
+  if(act && nav.scrollWidth > nav.clientWidth) nav.scrollLeft = Math.max(0, act.offsetLeft - 16);
+  updateTabCue();
 }
+function updateTabCue(){
+  var nav = $('#tabNav'); if(!nav) return;
+  nav.classList.toggle('more-right', nav.scrollLeft + nav.clientWidth < nav.scrollWidth - 2);
+}
+document.addEventListener('DOMContentLoaded', function(){
+  var nav = $('#tabNav'); if(nav) nav.addEventListener('scroll', updateTabCue, {passive:true});
+  window.addEventListener('resize', updateTabCue);
+});
 
 function render(){
   renderNav();
@@ -1321,7 +1367,7 @@ function ingredientsTableHtml(){
   var s = state.ingredientsSort;
   var html = '<div class="table-wrap"><table><thead><tr>'+
     sortTh('Name','ingredients','name',s)+sortTh('Category','ingredients','category',s)+sortTh('Dept','ingredients','department',s)+sortTh('Vendor','ingredients','vendor',s)+
-    sortTh('Unit cost','ingredients','unitCost',s,'num')+sortTh('On hand','ingredients','onHand',s,'num')+sortTh('Par','ingredients','par',s,'num')+sortTh('Status','ingredients','status',s)+
+    sortTh('Unit Cost','ingredients','unitCost',s,'num')+sortTh('On Hand','ingredients','onHand',s,'num')+sortTh('Par','ingredients','par',s,'num')+sortTh('Status','ingredients','status',s)+
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(ing){
     var risk = stockRisk(ing);
@@ -1349,7 +1395,7 @@ function renderIngredientsTableWrap(){ var el = $('#ingredientsTableWrap'); if(e
 
 function renderIngredients(){
   var filter = state.ingredientsDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items — pack cost, count unit, par &amp; on-hand.</div></div><button class="btn primary" data-action="newIngredient">+ Add ingredient</button></div>';
+  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items — pack cost, count unit, par &amp; on-hand.</div></div><button class="btn primary" data-action="newIngredient">+ Add Ingredient</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('ingredientsDept', filter)+searchBoxHtml('ingredientsSearchInput','Search ingredients or vendor…', state.ingredientsSearch)+'</div>';
   html += '<div id="ingredientsTableWrap">'+ingredientsTableHtml()+'</div>';
   return html;
@@ -1401,7 +1447,7 @@ function renderRecipesTableWrap(){ var el = $('#recipesTableWrap'); if(el) el.in
 
 function renderRecipes(){
   var filter = state.recipesDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Recipes &amp; Plate Costing</h2><div class="desc">Build recipes from ingredients to see plate cost and food cost %.</div></div><button class="btn primary" data-action="newRecipe">+ Add recipe</button></div>';
+  var html = '<div class="panel-head"><div><h2>Recipes &amp; Plate Costing</h2><div class="desc">Build recipes from ingredients to see plate cost and food cost %.</div></div><button class="btn primary" data-action="newRecipe">+ Add Recipe</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('recipesDept', filter)+searchBoxHtml('recipesSearchInput','Search recipes…', state.recipesSearch)+'</div>';
   html += '<div id="recipesTableWrap">'+recipesTableHtml()+'</div>';
   return html;
@@ -1435,7 +1481,7 @@ function countsTableHtml(){
 function renderCountsTableWrap(){ var el = $('#countsTableWrap'); if(el) el.innerHTML = countsTableHtml(); }
 
 function renderCounts(){
-  var html = '<div class="panel-head"><div><h2>Inventory Counts</h2><div class="desc">Snapshot on-hand quantities and track total inventory value.</div></div><button class="btn primary" data-action="newCount">+ New count</button></div>';
+  var html = '<div class="panel-head"><div><h2>Inventory Counts</h2><div class="desc">Snapshot on-hand quantities and track total inventory value.</div></div><button class="btn primary" data-action="newCount">+ New Count</button></div>';
   if(state.counts.length){
     html += '<div class="toolbar-row" style="justify-content:flex-end">'+searchBoxHtml('countsSearchInput','Search counts…', state.countsSearch)+'</div>';
   }
@@ -1448,7 +1494,7 @@ function renderPurchasing(){
   var guide = orderGuide();
   var vendors = Object.keys(guide).sort();
   var html = '<div class="panel-head"><div><h2>Purchasing</h2><div class="desc">Order guide, grouped by vendor — usage-predicted where there\'s count history, par level otherwise.</div></div>'+
-    '<button class="btn primary" data-action="scanInvoice">'+icon('camera')+' Scan invoice</button></div>';
+    '<button class="btn primary" data-action="scanInvoice">'+icon('camera')+' Scan Invoice</button></div>';
 
   html += '<div class="card">';
   if(!vendors.length){
@@ -1458,7 +1504,7 @@ function renderPurchasing(){
       var items = guide[v];
       var total = sum(items, function(x){ return x.cost; });
       html += '<div class="vendor-group"><h3>'+esc(v)+' <span class="badge neutral">'+items.length+' item'+(items.length>1?'s':'')+' · '+money(total)+'</span> <button class="btn small primary" data-action="createPoFromGuide" data-vendor="'+esc(v)+'" style="margin-left:auto">Create PO</button></h3>';
-      html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On hand</th><th class="num">Par</th><th class="num">Suggested qty</th><th class="num">Est. cost</th><th>Why</th></tr></thead><tbody>';
+      html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On Hand</th><th class="num">Par</th><th class="num">Suggested Qty</th><th class="num">Est. Cost</th><th>Why</th></tr></thead><tbody>';
       items.forEach(function(x){
         var why = x.risk.method==='usage'
           ? '<span class="badge '+x.risk.level+'">~'+Math.max(0,Math.round(x.risk.daysLeft))+'d left</span>'
@@ -1500,7 +1546,7 @@ function posTableHtml(){
     html += '<tr><td>'+dateLong(po.date)+(po.receiptAssetId?' <button class="btn small ghost" data-action="viewReceipt" data-asset-id="'+esc(po.receiptAssetId)+'" title="View scanned receipt">'+icon('receipt')+'</button>':'')+'</td><td>'+esc(po.vendor)+'</td><td class="num">'+(po.lines||[]).length+'</td><td class="num">'+money(poTotal(po))+'</td>'+
       '<td><span class="badge '+badgeClass+'">'+po.status+'</span></td><td class="row-actions">'+
       (po.status==='draft' ? '<button class="btn small ghost" data-action="poStatus" data-id="'+po.id+'" data-status="sent">Mark sent</button>' : '') +
-      (po.status==='sent' ? '<button class="btn small primary" data-action="poStatus" data-id="'+po.id+'" data-status="received">Mark received</button>' : '') +
+      (po.status==='sent' ? '<button class="btn small primary" data-action="poStatus" data-id="'+po.id+'" data-status="received">Mark Received</button>' : '') +
       '</td></tr>';
   });
   html += '</tbody></table></div>';
@@ -1573,7 +1619,7 @@ function pricingDetailHtml(){
     '<div class="chart-wrap" style="margin-top:10px">'+trendChart.svg+'</div>'+
     '<div class="two-col" style="margin-top:14px">'+
       '<div><div class="section-title">Price history</div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Cost/pack</th><th class="num">Cost/unit</th></tr></thead><tbody>'+(histRows||'<tr><td colspan="3" class="empty-state">No history yet.</td></tr>')+'</tbody></table></div></div>'+
-      '<div><div class="section-title">Purchase history</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit cost</th><th>Status</th></tr></thead><tbody>'+(poRows||'<tr><td colspan="5" class="empty-state">No purchase orders yet.</td></tr>')+'</tbody></table></div></div>'+
+      '<div><div class="section-title">Purchase history</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit Cost</th><th>Status</th></tr></thead><tbody>'+(poRows||'<tr><td colspan="5" class="empty-state">No purchase orders yet.</td></tr>')+'</tbody></table></div></div>'+
     '</div>'+
   '</div>';
 }
@@ -1683,7 +1729,7 @@ function purchaseDrilldownTableHtml(){
   var html = '<div class="table-wrap"><table><thead><tr>'+
     sortTh('Date','purchaseDrilldown','date',s)+sortTh('Vendor','purchaseDrilldown','vendor',s)+sortTh('Item','purchaseDrilldown','item',s)+
     (showCatCol ? sortTh('Category','purchaseDrilldown','category',s) : '') +
-    sortTh('Qty','purchaseDrilldown','qty',s,'num')+sortTh('Unit cost','purchaseDrilldown','unitCost',s,'num')+sortTh('Ext. cost','purchaseDrilldown','ext',s,'num')+
+    sortTh('Qty','purchaseDrilldown','qty',s,'num')+sortTh('Unit Cost','purchaseDrilldown','unitCost',s,'num')+sortTh('Ext. Cost','purchaseDrilldown','ext',s,'num')+
   '</tr></thead><tbody>';
   rows.forEach(function(r){
     html += '<tr>'+
@@ -1719,7 +1765,7 @@ function renderPurchaseDrilldownPage(){
 
 function renderReports(){
   if(state.purchaseDrilldown) return renderPurchaseDrilldownPage();
-  var html = '<div class="panel-head"><div><h2>Reports</h2><div class="desc">Cost trends, food cost by category, and theoretical vs. actual COGS.</div></div><div class="filter-row no-print"><button class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button class="btn ghost" data-action="newSales">+ Log period sales</button></div></div>';
+  var html = '<div class="panel-head"><div><h2>Reports</h2><div class="desc">Cost trends, food cost by category, and theoretical vs. actual COGS.</div></div><div class="filter-row no-print"><button class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button class="btn ghost" data-action="newSales">+ Log Period Sales</button></div></div>';
 
   html += renderPurchaseReportCard();
 
@@ -1921,7 +1967,7 @@ function openRecipeModal(existing){
       '<label><span class="label-row">Target food cost % <span class="qmark" title="Your goal ceiling for this dish - ingredient cost as a share of menu price. Recipes over target get flagged on the Dashboard and in Reports.">?</span></span><input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
     '</div>'+
     '<div><div class="section-title">Ingredient lines</div><div class="lines-box" id="linesBox">'+recipeLinesHtml(state.tempLines)+'</div>'+
-    '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add ingredient line</button></div>'+
+    '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add Ingredient Line</button></div>'+
     '<div class="cost-preview" id="recipeCostPreview"></div>'+
     '<div class="modal-actions">'+
       (existing ? '<button type="button" class="btn ghost danger" data-action="deleteRecipe" data-id="'+existing.id+'">Delete</button>' : '<span></span>')+
@@ -1958,11 +2004,11 @@ function openCountModal(){
   var h = '<h2>New Inventory Count</h2>'+
   '<form data-form="count">'+
     '<div class="grid2">'+
-      '<label>Date<input type="date" name="date" value="'+new Date().toISOString().slice(0,10)+'"></label>'+
+      '<label>Date<input type="date" name="date" value="'+nyDate()+'"></label>'+
       '<label>Label<input name="label" placeholder="e.g. Weekly count"></label>'+
     '</div>'+
     '<div class="lines-box" style="max-height:340px">'+rowsHtml+'</div>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save count</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Count</button></div></div>'+
   '</form>';
   openModal(h, true);
 }
@@ -1978,7 +2024,7 @@ function openPoModal(prefillVendor){
       return '<div class="line-row">'+
         '<div>'+esc(ing.name)+'</div>'+
         '<label>Qty<input type="number" step="0.0001" min="0" name="qty_'+ing.id+'" value="'+(suggested[ing.id]||0)+'"></label>'+
-        '<label>Unit cost<input type="number" step="0.01" min="0" name="cost_'+ing.id+'" value="'+unitCostOf(ing).toFixed(2)+'"></label>'+
+        '<label>Unit Cost<input type="number" step="0.01" min="0" name="cost_'+ing.id+'" value="'+unitCostOf(ing).toFixed(2)+'"></label>'+
         '<div class="line-total">'+esc(ing.invUnit)+'</div>'+
       '</div>';
     }).join('') || '<div class="empty-state">No ingredients assigned to this vendor yet.</div>';
@@ -1987,7 +2033,7 @@ function openPoModal(prefillVendor){
   '<form data-form="po">'+
     '<div class="grid2">'+
       '<label>Vendor<select name="vendor" id="poVendorSelect">'+vendors.map(function(v){return '<option '+(v===vendor?'selected':'')+'>'+esc(v)+'</option>';}).join('')+'</select></label>'+
-      '<label>Date<input type="date" name="date" value="'+new Date().toISOString().slice(0,10)+'"></label>'+
+      '<label>Date<input type="date" name="date" value="'+nyDate()+'"></label>'+
     '</div>'+
     '<div class="lines-box" id="poLinesBox" style="max-height:320px">'+rowsFor(vendor)+'</div>'+
     '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Create PO</button></div></div>'+
@@ -2006,11 +2052,11 @@ function openSalesModal(){
   var h = '<h2>Log Period Sales</h2>'+
   '<form data-form="sales">'+
     '<div class="grid2">'+
-      '<label>From<input type="date" name="dateFrom" value="'+new Date(Date.now()-7*DAY).toISOString().slice(0,10)+'"></label>'+
-      '<label>To<input type="date" name="dateTo" value="'+new Date().toISOString().slice(0,10)+'"></label>'+
+      '<label>From<input type="date" name="dateFrom" value="'+nyDate(Date.now()-7*DAY)+'"></label>'+
+      '<label>To<input type="date" name="dateTo" value="'+nyDate()+'"></label>'+
     '</div>'+
     '<div class="lines-box" style="max-height:320px">'+rows+'</div>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save sales</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Sales</button></div></div>'+
   '</form>';
   openModal(h, true);
 }
@@ -2041,7 +2087,7 @@ function openInvoiceModal(){
     '<p class="hint">'+esc(note)+'</p>' +
     '<input type="file" id="invoicePhotoInput" accept="image/*" capture="environment" hidden>' +
     '<div id="invoicePhotoArea">' + invoicePhotoAreaHtml() + '</div>' +
-    '<div class="modal-actions"><button type="button" class="btn ghost" data-action="enterInvoiceManually">Skip photo, enter by hand</button><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button></div></div>';
+    '<div class="modal-actions"><button type="button" class="btn ghost" data-action="enterInvoiceManually">Skip Photo, Enter by Hand</button><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button></div></div>';
   openModal(h, true);
 }
 
@@ -2091,7 +2137,7 @@ function invoiceLinesHtml(lines){
         : ('<label>Ingredient<select data-line-field="ingredientId" data-idx="'+idx+'"><option value="">Select…</option>'+ingredientOptionsHtml(l.ingredientId)+'</select></label>')) +
       catSelect+
       '<label>Qty<input type="number" step="0.0001" min="0" data-line-field="qty" data-idx="'+idx+'" value="'+(l.qty||'')+'"></label>'+
-      '<label>Unit cost<input type="number" step="0.01" min="0" data-line-field="unitCost" data-idx="'+idx+'" value="'+(l.unitCost||'')+'"></label>'+
+      '<label>Unit Cost<input type="number" step="0.01" min="0" data-line-field="unitCost" data-idx="'+idx+'" value="'+(l.unitCost||'')+'"></label>'+
       '<button type="button" class="btn small ghost" data-action="removeLine" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
     '</div>';
   }).join('');
@@ -2100,7 +2146,7 @@ function invoiceLinesHtml(lines){
 function renderInvoiceReview(data){
   state.tempLinesKind = 'invoice';
   var vendor = (data && data.vendor) || '';
-  var dateGuess = (data && data.invoiceDate) || new Date().toISOString().slice(0,10);
+  var dateGuess = (data && data.invoiceDate) || nyDate();
   state.tempLines = ((data && data.lineItems) || []).map(function(li){
     var match = li.matchedIngredient ? state.ingredients.filter(function(i){ return i.name.toLowerCase()===String(li.matchedIngredient).toLowerCase(); })[0] : null;
     return {description: li.description||'', ingredientId: match ? match.id : '', qty: num(li.quantity), unitCost: round2(num(li.unitPrice)), category: match ? match.category : 'Food'};
@@ -2121,7 +2167,7 @@ function renderInvoiceReview(data){
     '<div><div class="section-title">Line items</div><div class="lines-box" id="linesBox" style="max-height:280px">'+invoiceLinesHtml(state.tempLines)+'</div>'+
     '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add line</button></div>'+
     '<p class="hint">Saving creates a received purchase order — matched items restock on-hand and log any price change automatically. Unmatched lines are added as new ingredients using the quantity, cost and category shown.</p>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save purchase order</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Purchase Order</button></div></div>'+
     '</form>';
   openModal(h, true);
   var form = $('#modalRoot form');
@@ -2151,9 +2197,9 @@ function viewCountModal(count){
     return '<tr><td>'+esc(l.name)+'</td><td class="num">'+l.countedQty+' '+esc(l.unit)+'</td><td class="num">'+money(l.unitCost)+'</td><td class="num">'+money(l.extValue)+'</td></tr>';
   }).join('');
   var h = '<h2>'+esc(count.label)+'</h2><p class="hint">'+dateLong(count.date)+'</p>'+
-    '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit cost</th><th class="num">Ext. value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit Cost</th><th class="num">Ext. value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div class="cost-preview"><span>Total value</span><strong>'+money(count.totalValue)+'</strong></div>'+
-    '<div class="modal-actions"><button type="button" class="btn ghost danger" data-action="deleteCount" data-id="'+count.id+'">Delete count</button><div class="right"><button type="button" class="btn primary" data-action="closeModal">Close</button></div></div>';
+    '<div class="modal-actions"><button type="button" class="btn ghost danger" data-action="deleteCount" data-id="'+count.id+'">Delete Count</button><div class="right"><button type="button" class="btn primary" data-action="closeModal">Close</button></div></div>';
   openModal(h, true);
 }
 

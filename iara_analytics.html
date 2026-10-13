@@ -50,13 +50,13 @@
   main{ max-width:1080px; margin:0 auto; padding:18px 16px 64px; }
   .tabs{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
   .tabs::-webkit-scrollbar{ display:none; }
-  .tab{ flex:1 0 auto; font:inherit; font-size:14.5px; font-weight:700; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:9px 14px; min-height:40px; cursor:pointer; white-space:nowrap; }
+  .tab{ flex:1 0 auto; font:inherit; font-size:14.5px; font-weight:700; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:9px 14px; min-height:44px; cursor:pointer; white-space:nowrap; }
   .tab:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
   .tab[aria-selected="true"]{ background:var(--forest); color:var(--forest-ink); }
   .range-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:18px; }
   .seg{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; max-width:100%; }
   .seg::-webkit-scrollbar{ display:none; }
-  .chip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:38px; cursor:pointer; white-space:nowrap; }
+  .chip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:44px; cursor:pointer; white-space:nowrap; }
   .chip:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
   .chip[aria-pressed="true"]{ background:var(--river); color:var(--paper); }
   /* Custom dates: a popover hanging from the Custom button, shared by every tab. */
@@ -69,6 +69,11 @@
   .range-pop input{ width:100%; min-width:0; margin:0; padding:8px 6px; font-size:15px; color-scheme:dark; }
   .range-pop .btn{ grid-column:1 / -1; width:100%; background:transparent; border:1.5px solid var(--line); color:var(--ink); min-height:40px; }
   .range-text{ font-size:14px; color:var(--river); }
+  .howcount{ margin:8px 0 22px; }
+  .howcount .note{ margin:0; }
+  .howcount summary{ display:inline-flex; align-items:center; min-height:44px; font-size:13px; font-weight:700; color:var(--river); cursor:pointer; }
+  .howcount summary:focus-visible{ outline:2px solid var(--river); outline-offset:2px; border-radius:6px; }
+  .howcount details .note{ margin:0 0 4px; }
   .kpis{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:12px; }
   .kpi .v{ font-family:'Fraunces',Georgia,serif; font-size:34px; line-height:1.1; color:var(--ink); font-variant-numeric:tabular-nums; }
   .kpi .l{ font-size:14.5px; font-weight:600; margin-top:4px; color:var(--river); }
@@ -146,12 +151,10 @@
   }
 
   /* ---- Phone tab (scoped) ---- */
-  /* The shared date bar above the tabs drives this tab now. */
-  #panel-phone .range-bar{ display:none !important; }
   #panel-phone .asks{ grid-template-columns:1fr 1fr; }
   #panel-phone .hrow{ display:grid; grid-template-columns:minmax(0,11em) 1fr 2.5em; align-items:center; gap:10px; font-size:14px; margin-bottom:9px; }
-  #panel-phone .hrow .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
-  #panel-phone .hrow .fill{ height:100%; border-radius:5px; background:var(--river); }
+  #panel-phone .hrow .track{ display:block; height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
+  #panel-phone .hrow .fill{ display:block; height:100%; border-radius:5px; background:var(--river); }
   #panel-phone .hrow .n{ text-align:right; font-variant-numeric:tabular-nums; color:var(--river); }
   #panel-phone .pill.landline{ background:color-mix(in srgb,var(--sun) 22%,transparent); color:var(--sun); }
   @media (max-width:760px){ #panel-phone .asks{ grid-template-columns:1fr; } }
@@ -193,14 +196,6 @@
   #panel-phone .topbar-right{ display:flex; align-items:center; gap:14px; flex:none; }
   #panel-phone .top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
   #panel-phone .status{ display:flex; align-items:center; gap:8px; font-size:13.5px; color:var(--river); white-space:nowrap; }
-  #panel-phone .icon-btn{ display:inline-grid; place-items:center; width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--paper-raised); color:var(--ink); cursor:pointer; }
-  #panel-phone .icon-btn:hover{ border-color:var(--river); }
-  #panel-phone .icon-btn[aria-busy="true"] svg{ animation:ph-spin .9s linear infinite; }
-  @keyframes ph-spin{ to{ transform:rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce){
-    #panel-phone .icon-btn[aria-busy="true"] svg{ animation:none; }
-  }
-  #panel-phone .range-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:20px; position:relative; }
   #panel-phone .updated{ font-size:13px; color:var(--river); white-space:nowrap; }
   #panel-phone .updated-m{ display:none; }
   @media (max-width:480px){
@@ -208,26 +203,6 @@
     #panel-phone .updated-m{ display:inline; }
     #panel-phone .updated-m::before{ content:" · "; }
   }
-  #panel-phone .pseg{ display:flex; gap:2px; padding:3px; background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; overflow-x:auto; scrollbar-width:none; width:max-content; max-width:100%; }
-  #panel-phone .pseg::-webkit-scrollbar{ display:none; }
-  @media (max-width:560px){
-    #panel-phone .pseg{ width:100%; -webkit-mask-image:linear-gradient(90deg, #000 85%, transparent); mask-image:linear-gradient(90deg, #000 85%, transparent); }
-    #panel-phone .pseg.at-end{ -webkit-mask-image:none; mask-image:none; }
-    #panel-phone .pchip{ padding:8px 12px; }
-  }
-  #panel-phone .pchip{ flex:none; font:inherit; font-size:14px; font-weight:600; color:var(--ink); background:transparent; border:0; border-radius:9px; padding:8px 14px; min-height:38px; cursor:pointer; white-space:nowrap; }
-  #panel-phone .pchip:hover{ background:color-mix(in srgb, var(--river) 12%, transparent); }
-  #panel-phone .pchip[aria-pressed="true"]{ background:var(--river); color:var(--paper); }
-  #panel-phone .range-text{ font-size:14px; color:var(--river); }
-  /* Custom dates: a popover hanging from the Custom button, not an extra row. */
-  #panel-phone .custom{ position:absolute; top:calc(100% + 6px); left:0; z-index:30; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px 12px; align-items:end;
-    background:var(--paper-raised); border:1px solid var(--line); border-radius:12px; padding:14px; box-shadow:var(--shadow); width:min(340px, calc(100vw - 32px)); }
-  #panel-phone .custom::before{ content:""; position:absolute; top:-6px; left:var(--caret, 24px); width:10px; height:10px; background:var(--paper-raised); border-left:1px solid var(--line); border-top:1px solid var(--line); transform:rotate(45deg); }
-  #panel-phone .custom .btn{ grid-column:1 / -1; width:100%; }
-  #panel-phone .custom[hidden]{ display:none; }
-  #panel-phone .custom label{ display:flex; flex-direction:column; gap:6px; margin:0; font-size:13px; color:var(--river); font-weight:700; }
-  #panel-phone .custom input{ width:100%; min-width:0; margin:0; padding:8px 6px; font-size:15px; color-scheme:dark; }
-  #panel-phone .custom label{ min-width:0; }
   #panel-phone .trend-head{ margin:-4px 0 12px; font-size:15px; line-height:1.45; color:var(--ink); }
   #panel-phone .trend-head b{ color:var(--river); font-weight:700; }
   #panel-phone #ph-hours .bar.in-hours{ background:color-mix(in srgb, var(--river) 9%, transparent); border-radius:3px 3px 0 0; }
@@ -305,7 +280,6 @@
   }
   #panel-phone .updated-m{ display:inline; }
   #panel-phone .updated-m::before{ content:" · "; }
-  #panel-phone .range-bar #ph-refresh{ margin-left:auto; }
 </style>
 
 <div id="gate" class="center" hidden>
@@ -356,25 +330,8 @@
   <section id="panel-phone" role="tabpanel" hidden>
 <!-- Phone Analytics (was iara_phone.html). Owned by the phone-stats work; ids are ph-*, styles scoped to #panel-phone. -->
 
-  <div class="range-bar">
-    <div class="pseg" role="group" aria-label="Date range">
-      <button class="pchip" data-r="today">Today</button>
-      <button class="pchip" data-r="yesterday">Yesterday</button>
-      <button class="pchip" data-r="7d">7 Days</button>
-      <button class="pchip" data-r="30d">30 Days</button>
-      <button class="pchip" data-r="open">Since Opening</button>
-      <button class="pchip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="ph-custom">Custom ▾</button>
-    </div>
-    <div class="range-text"><span id="ph-sub"></span><span class="updated-m" id="ph-updated-m"></span></div>
-    <form class="custom" id="ph-custom" hidden>
-      <label>From <input type="date" id="ph-r-from" required></label>
-      <label>To <input type="date" id="ph-r-to" required></label>
-      <button class="btn btn-ghost" type="submit">Apply</button>
-    </form>
-    <button class="icon-btn" id="ph-refresh" aria-label="Refresh data" title="Refresh">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 4v5h-5"/></svg>
-    </button>
-  </div>
+  <!-- Range comes from the shared date bar above the tabs; these two spans keep the Phone render's range/updated text. -->
+  <div hidden><span id="ph-sub"></span><span id="ph-updated-m"></span></div>
   <div id="ph-loading" class="loading">Loading calls and texts…</div>
   <div id="ph-err" class="card" hidden></div>
   <div id="ph-body" hidden>
@@ -489,9 +446,14 @@
   }
   var nice = function(ds){ return new Date(ds + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
   var hashGet = function(k){ return (new RegExp("[#&]" + k + "=([^&]+)").exec(location.hash) || [])[1]; };
-  var range = resolve(hashGet("r") || "7d"), tab = hashGet("t") || "overview";
+  var TABS = ["overview", "phone", "email", "instagram", "reviews"];
+  // Unknown or stale tab names (typo'd shared links) fall back to Overview instead of a blank page.
+  var tabOf = function(t){ return TABS.indexOf(t) >= 0 ? t : "overview"; };
+  var range = resolve(hashGet("r") || "7d"), tab = tabOf(hashGet("t"));
   var rangeTag = function(){ return range.key === "custom" ? range.from + ".." + range.to : range.key; };
   function syncHash(){ try { history.replaceState(null, "", "#t=" + tab + "&r=" + rangeTag()); } catch(e){} }
+  // A shared link keeps what the page actually shows: clamped custom dates and fixed tab names go back into the URL.
+  if (location.hash) syncHash();
 
   // Hooks for tab code (e.g. the Phone tab): window.iaraAnalytics.range is {key, from, to} (ET days); "analytics:range"
   // fires on window when it changes and "analytics:tab" ({tab}) whenever a tab is shown, including the first paint.
@@ -505,7 +467,7 @@
   function paint(){
     document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
     document.querySelectorAll(".tab").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.t === tab)); });
-    ["overview", "phone", "email", "instagram", "reviews"].forEach(function(t){ $("panel-" + t).hidden = t !== tab; });
+    TABS.forEach(function(t){ $("panel-" + t).hidden = t !== tab; });
     var sameMonth = range.from.slice(0, 7) === range.to.slice(0, 7);
     $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " to " + (sameMonth ? Number(range.to.slice(8)) : nice(range.to));
     announce();
@@ -539,7 +501,7 @@
   document.addEventListener("click", function(e){ if (!$("range-custom").hidden && !e.target.closest("#range-custom") && !e.target.closest('.chip[data-r="custom"]')) closeCustom(); });
   document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
   // Links like /analytics#t=email&r=30d work even when the page is already open.
-  window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = t; var nr = resolve(r || rangeTag()), changed = (nr.from + nr.to + nr.key) !== (range.from + range.to + range.key); range = nr; paint(); if (changed) load(); });
+  window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = tabOf(t); var nr = resolve(r || rangeTag()), changed = (nr.from + nr.to + nr.key) !== (range.from + range.to + range.key); range = nr; syncHash(); paint(); if (changed) load(); });
 
   firebase.auth().onAuthStateChanged(function(user){
     if (user){ $("gate").hidden = true; $("app").hidden = false; paint(); load(); }
@@ -579,20 +541,26 @@
   var PREV = null;
   function dlt(cur, old, kind){
     if (!PREV || cur == null || old == null) return "";
-    var n = PREV.days, x = cur - old, sg = function(v){ return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v); };
-    if (kind === "pts") return sg(Math.round(x)) + " pts vs prev " + n + " days";
-    if (kind === "stars") return sg(Math.round(x * 100) / 100) + " vs prev " + n + " days";
-    if (kind === "hrs") return sg(Math.round(x * 10) / 10) + " h vs prev " + n + " days";
-    return sg(x) + " vs prev " + n + " days";
+    var n = PREV.days === 1 ? "day" : PREV.days + " days", x = cur - old, sg = function(v){ return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v); };
+    if (kind === "pts") return sg(Math.round(x)) + " pts vs prev " + n;
+    if (kind === "stars") return sg(Math.round(x * 100) / 100) + " vs prev " + n;
+    if (kind === "hrs") return sg(Math.round(x * 10) / 10) + " h vs prev " + n;
+    return sg(x) + " vs prev " + n;
   }
   // Trend card (same shape as the Phone tab's): per open day for ranges up to 14 days, per Mon-Sun week otherwise; the
   // in-progress period is hatched, labeled "(so far)" and gets no %. Headline compares the last two complete periods.
-  function trendCard(T, title, series, headFn){
+  function trendCard(T, title, series, headFn, gapNote){
     var pts = (T && T.points) || [], wk = T && T.grain === "week";
+    // One day (Today, Yesterday) can't make a trend: a one-line note instead of an empty chart.
+    if (pts.length < 2) return '<div class="card" style="margin-bottom:12px"><h2>' + title + ' · Trend</h2><p class="note" style="margin:0">A trend needs two or more open days. Pick 7 Days or longer to see one.</p></div>';
     var name = function(p){ return wk ? "Week of " + p.label.replace("Wk ", "") : p.label; };
     var done = pts.filter(function(p){ return !p.partial && series[0].val(p) != null; }), head;
     if (done.length >= 2) head = headFn(done[done.length - 1], done[done.length - 2], name);
-    else head = pts.length ? "Pick a longer range to see a trend." : "Nothing in this range yet.";
+    else {
+      // Complete periods exist but have no value (e.g. DMs before tracking began): say why, not "pick a longer range".
+      var full = pts.filter(function(p){ return !p.partial; }).length;
+      head = gapNote && full >= 2 ? gapNote(wk) : "Pick a longer range to see a trend.";
+    }
     var max = series[0].max || niceMax(Math.max.apply(null, pts.map(function(p){ return Math.max.apply(null, series.map(function(s){ return s.val(p) || 0; })); }).concat([1])));
     var bars = '<div class="bars tr">' + pts.map(function(p){
       var vals = series.map(function(s){ return s.val(p); });
@@ -605,11 +573,12 @@
       '<p class="note">' + (wk ? "Mon to Sun weeks" : "Open days only (closed Sun and Mon)") + ', from opening. The hatched bar is still in progress.</p></div>';
   }
   var upDown = function(a, b, unit){ var d = Math.round((a - b) * (unit === " ★" ? 100 : 1)) / (unit === " ★" ? 100 : 1); return d > 0 ? "up " + d + unit : d < 0 ? "down " + (-d) + unit : "level"; };
+  var dmGap = function(wk){ return "Instagram DMs are tracked from Oct 6, so earlier " + (wk ? "weeks" : "days") + " show –. A trend shows once two complete " + (wk ? "weeks" : "days") + " have data."; };
   function rateTrend(T, title, key, color, label){
     return trendCard(T, title, [
       { name: "Replied Within an Hour", color: color, max: 100, val: function(p){ return p[key] ? p[key].withinHourRate : null; }, fmt: function(v){ return v + "%"; } },
     ], function(b, a, name){ var x = b[key].withinHourRate, y = a[key].withinHourRate;
-      return name(b) + ": <b>" + x + "%</b> of " + label + " replied within an hour (" + b[key].in + " in), " + upDown(x, y, " pts") + " from " + name(a) + " (" + y + "%)."; });
+      return name(b) + ": <b>" + x + "%</b> of " + label + " replied within an hour (" + b[key].in + " in), " + upDown(x, y, " pts") + " from " + name(a) + " (" + y + "%)."; }, key === "dms" ? dmGap : null);
   }
   function dayBars(days, series){
     // Series sit side by side (In next to Replied), never stacked: they're different counts, not parts of a total.
@@ -633,11 +602,12 @@
     var max = list[0].n, name = function(s){ return s.replace(/_/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }); };
     return list.map(function(t){ return '<div class="hbar"><span>' + esc(name(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / max) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("");
   }
-  function channelKpis(c, label, pv){
+  // waitNow: the live count from the Needs a Reply Now list, so it never moves with the picked range.
+  function channelKpis(c, label, pv, waitNow){
     return '<div class="kpis">' + kpi(fmt(c.in), label + " In", "<b>" + c.closedNoReply + "</b> needed no reply", pv && dlt(c.in, pv.in)) +
       kpi(c.replyRate == null ? "–" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one", pv && dlt(c.replyRate, pv.replyRate, "pts")) +
       kpi(hrs(c.medianReplyHours), "Median Reply Time", "From message to our reply", pv && dlt(c.medianReplyHours, pv.medianReplyHours, "hrs")) +
-      kpi(fmt(c.waiting), "Waiting Now", c.waiting ? '<a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") + '</div>';
+      kpi(fmt(waitNow), "Waiting Now", waitNow ? '<a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") + '</div>';
   }
   function channelDetail(c, color){
     var days = c.byDay.map(function(d){ return d.date; });
@@ -708,7 +678,9 @@
         '<div class="card"><h2>Covers vs Touchpoints by Night</h2><div style="overflow-x:auto"><table><thead><tr><th>Night</th><th class="num">Covers</th><th class="num">Touchpoints</th></tr></thead><tbody>' +
           (nights.length ? nights.map(function(k){ var tp = (pd[lab2(k)] || 0) + (msgs[k] || 0); return '<tr><td>' + lab2(k) + '</td><td class="num">' + T.coversByDay[k] + '</td><td class="num">' + (tp || "–") + '</td></tr>'; }).join("") : '<tr><td colspan="3" class="muted">No covers in this range.</td></tr>') +
           '</tbody></table></div></div></div>' +
-        '<p class="note">Booked = a ResyOS reservation dated within 45 days of their first contact, matched by phone number (phone), email address (email) or exact full name (DMs, so a lower bound). Only bookings made after they first reached us count; booking time is estimated from Resy&rsquo;s reservation number (±a few hours). Someone who used two channels can count in both. The shared Iara Hold guest is left out. Covers include seated walk-ins; cancellations aren\'t in the ResyOS report. Book copied ' + (T.updatedAt ? new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "never") + '.</p>';
+        // One short line; the full counting rules sit behind a "How We Count" toggle (Jay, 2026-10-12: no wall of text).
+        '<div class="howcount"><p class="note">Booked = Resy reservation within 45 days of first contact · Updated ' + (T.updatedAt ? new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "never") + '</p>' +
+        '<details><summary>How We Count</summary><p class="note">Matched by phone number (phone), email address (email) or exact full name (DMs, so a lower bound). Only bookings made after they first reached us count; booking time is estimated from Resy&rsquo;s reservation number (±a few hours). Someone who used two channels can count in both. The shared Iara Hold guest is left out. Covers include seated walk-ins; cancellations aren\'t in the ResyOS report.</p></details></div>';
     }
     return ctCard + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
@@ -716,12 +688,15 @@
   function render(a, p){
     var e = a.email, dm = a.instagram.dms, cm = a.instagram.comments, rv = a.reviews.resy;
     // Phone: same definition as the Phone tab (handled / (total - autoOnly)); email/IG replies to a phone guest already count there.
-    var ph = p && p.guests ? { in: ((p.calls && p.calls.total) || 0) + ((p.texts && p.texts.inbound) || 0), needed: p.guests.total - p.guests.autoOnly, replied: p.guests.handled, waiting: p.guests.open, median: p.medianCallbackHours } : null;
+    // "Waiting" is a now count, not a range count: per channel it comes from the same live lists as the headline
+    // (a.waiting for email/DMs/comments, the Phone tab's open list for phone), so the rows always sum to it.
+    var live = { email: 0, dm: 0, comment: 0 }; (a.waiting || []).forEach(function(w){ if (w.channel in live) live[w.channel]++; });
+    var ph = p && p.guests ? { in: ((p.calls && p.calls.total) || 0) + ((p.texts && p.texts.inbound) || 0), needed: p.guests.total - p.guests.autoOnly, replied: p.guests.handled, waiting: (p.open || []).length, median: p.medianCallbackHours } : null;
     var rows = [
       ph && { name: "Phone (calls + texts)", color: "var(--c-phone)", in: ph.in, needed: ph.needed, replied: ph.replied, waiting: ph.waiting, median: ph.median },
-      { name: "Email (contact@)", color: "var(--c-email)", in: e.in, needed: e.needed, replied: e.replied, waiting: e.waiting, median: e.medianReplyHours },
-      { name: "Instagram DMs", color: "var(--c-dm)", in: dm.in, needed: dm.needed, replied: dm.replied, waiting: dm.waiting, median: dm.medianReplyHours },
-      { name: "Instagram Comments", color: "var(--c-comment)", in: cm.in, needed: cm.needed, replied: cm.replied, waiting: cm.waiting, median: cm.medianReplyHours },
+      { name: "Email (contact@)", color: "var(--c-email)", in: e.in, needed: e.needed, replied: e.replied, waiting: live.email, median: e.medianReplyHours },
+      { name: "Instagram DMs", color: "var(--c-dm)", in: dm.in, needed: dm.needed, replied: dm.replied, waiting: live.dm, median: dm.medianReplyHours },
+      { name: "Instagram Comments", color: "var(--c-comment)", in: cm.in, needed: cm.needed, replied: cm.replied, waiting: live.comment, median: cm.medianReplyHours },
       { name: "Resy Ratings", color: "var(--c-review)", in: rv.count, needed: 0, replied: 0, waiting: 0, median: null },
     ].filter(Boolean);
     var tot = rows.reduce(function(t, r){ t.in += r.in; t.needed += r.needed; t.replied += r.replied; t.waiting += r.waiting; return t; }, { in: 0, needed: 0, replied: 0, waiting: 0 });
@@ -741,7 +716,7 @@
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
-      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
+      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting Now</th></tr></thead><tbody>' +
         rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "–" : r.needed) + '</td><td class="num">' + (isR ? "–" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "–" : hrs(r.median)) + '</td><td class="num">' + (isR ? "–" : r.waiting) + '</td></tr>'; }).join("") +
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
       '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>' +
@@ -752,9 +727,9 @@
       extras(a, p);
 
     var pv = a.prev;
-    $("panel-email").innerHTML = channelKpis(e, "Emails", pv && pv.email) + rateTrend(a.trend, "Email", "email", "var(--c-email)", "emails") + channelDetail(e, "var(--c-email)");
-    $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs", pv && pv.dms) + rateTrend(a.trend, "DMs", "dms", "var(--c-dm)", "DMs") + channelDetail(dm, "var(--c-dm)") +
-      '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments", pv && pv.comments) + channelDetail(cm, "var(--c-comment)") +
+    $("panel-email").innerHTML = channelKpis(e, "Emails", pv && pv.email, live.email) + rateTrend(a.trend, "Email", "email", "var(--c-email)", "emails") + channelDetail(e, "var(--c-email)");
+    $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs", pv && pv.dms, live.dm) + rateTrend(a.trend, "DMs", "dms", "var(--c-dm)", "DMs") + channelDetail(dm, "var(--c-dm)") +
+      '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments", pv && pv.comments, live.comment) + channelDetail(cm, "var(--c-comment)") +
       '<p class="note">Comments only count when they needed us (questions, booking asks, complaints). Compliments are closed with no reply.</p>' +
       (range.from < "2026-10-06" ? '<p class="note"><b>Incomplete before Oct 6:</b> Instagram DMs answered in the Instagram app before the iara Mac started scanning (opening weekend) were never recorded, so counts before Oct 6 are low, not zero. Full history comes once Meta approves the Instagram API.</p>' : "");
 
@@ -769,7 +744,12 @@
       ], function(b, x, name){ return name(b) + ": <b>" + b.resy.count + "</b> rating" + (b.resy.count === 1 ? "" : "s") + (b.resy.avg != null ? ", avg " + b.resy.avg.toFixed(2) + " ★" : "") + ", vs " + x.resy.count + (x.resy.avg != null ? " at " + x.resy.avg.toFixed(2) + " ★" : "") + (/^Week/.test(name(x)) ? " in the " + name(x).replace("Week", "week") : " on " + name(x)) + "."; }) +
       '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(rv.byDay.map(function(d){ return d.date; }), [{ name: "Ratings", color: "var(--c-review)", vals: rv.byDay.map(function(d){ return d.n; }) }]) + '</div>' +
         '<div class="card"><h2>Stars</h2>' + rv.dist.slice().reverse().map(function(d){ return '<div class="hbar"><span>' + d.stars + ' ★</span><div class="track"><div class="fill" style="width:' + (100 * d.n / maxS) + '%"></div></div><span class="n">' + d.n + '</span></div>'; }).join("") +
-        '<h2 style="margin-top:18px">Scores Today</h2>' + (a.reviews.scores.length ? a.reviews.scores.map(function(s){ return '<p style="margin:0 0 6px"><b>' + esc(s.name) + '</b> · ' + esc(s.summary) + '</p>'; }).join("") : '<p class="note">Not read yet.</p>') +
+        '<h2 style="margin-top:18px">Scores Today</h2>' + (a.reviews.scores.length ? a.reviews.scores.map(function(s){
+          // Resy's line is ResyOS's own month total, read once each morning for the Bom Dia; ratings that arrive later
+          // that day are already in the tracked count, so say which is which when they differ.
+          var m = s.name === "Resy" && /(\d+) ratings this month/.exec(s.summary), tr = a.reviews.ratingsTracked;
+          var note = m && tr != null && Number(m[1]) !== tr ? ' <span class="muted">(at the morning read; ' + tr + ' tracked since opening)</span>' : "";
+          return '<p style="margin:0 0 6px"><b>' + esc(s.name) + '</b> · ' + esc(s.summary) + note + '</p>'; }).join("") : '<p class="note">Not read yet.</p>') +
         (function(B){ return B ? '<p style="margin:0 0 6px"><b>Beli</b> · ' + B.latest.score + ' · ' + B.latest.count + ' reviews <span class="muted">(as of ' + esc(nice(B.latest.date)) + (B.latest.source === "manual" ? ", read from the app" : "") + ')</span></p>' : '<p style="margin:0 0 6px"><b>Beli</b> · <span class="muted">Not tracked (app only)</span></p>'; })(a.reviews.beli) + '</div></div>' +
       '<div class="card"><h2>What Guests Wrote</h2>' + (rv.recent.length ? rv.recent.map(function(r){ return '<p class="quote">“' + esc(r.text) + '”<small>' + (r.vip ? '<span class="vip">VIP</span>' : "") + esc(r.author) + " · " + r.stars + "★ · " + esc(r.date) + '</small></p>'; }).join("") : '<p class="note">No written comments in this range.</p>') +
         (a.reviews.public.count ? '<p class="note">Public reviews: ' + a.reviews.public.count + " new, " + a.reviews.public.replied + ' replied.</p>' : "") + '</div>';
@@ -783,80 +763,17 @@
   var $ = function(id){ return document.getElementById("ph-" + id); };
   var started = false;
 
-  $("refresh").addEventListener("click", function(){ load(true); });
-
-  // The server answers instantly from its saved snapshot and tops it up in the
-  // background; "refreshing" means a newer one is on the way, so ask again shortly
-  // without blanking the page. Refresh forces a sync (a few seconds: only changed
-  // conversations are re-read from Quo).
-  // ---- Date range ----
-  // Presets resolve to ET calendar dates in the browser; the server clamps to the
-  // line's first day and today. The pick lives in the URL (#r=7d or
-  // #r=2026-10-01..2026-10-07) so a link opens on the same range.
-  var OPENED_DAY = "2026-10-02", FIRST_DAY = "2026-09-10";
+  // The page's shared date bar owns the range (window.iaraAnalytics.range + "analytics:range").
   var etToday = function(){ return new Intl.DateTimeFormat("en-CA", { timeZone: "America/New_York" }).format(new Date()); };
-  var shift = function(ds, n){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n, 12)).toISOString().slice(0, 10); };
-  function resolve(r){
-    var t = etToday(), m = /^(\d{4}-\d{2}-\d{2})\.\.(\d{4}-\d{2}-\d{2})$/.exec(r || "");
-    if (m) return { key: "custom", from: m[1], to: m[2] };
-    if (r === "today") return { key: r, from: t, to: t };
-    if (r === "yesterday") return { key: r, from: shift(t, -1), to: shift(t, -1) };
-    if (r === "30d") return { key: r, from: shift(t, -29), to: t };
-    if (r === "open") return { key: r, from: OPENED_DAY, to: t };
-    return { key: "7d", from: shift(t, -6), to: t };
-  }
-  var saved = ""; try { saved = localStorage.getItem("iara_phone_range") || ""; } catch(e){}
-  // The page's shared date bar owns the range now (window.iaraAnalytics.range + "analytics:range").
-  var shared = function(){ var r = window.iaraAnalytics && window.iaraAnalytics.range; return r ? { key: r.key, from: r.from, to: r.to } : resolve("7d"); };
+  var shared = function(){ var r = window.iaraAnalytics && window.iaraAnalytics.range; return r ? { key: r.key, from: r.from, to: r.to } : null; };
   var range = shared();
-  function setRange(r){
-    range = resolve(r);
-    var tag = range.key === "custom" ? range.from + ".." + range.to : range.key;
-    try { history.replaceState(null, "", "#t=phone&r=" + tag); localStorage.setItem("iara_phone_range", tag); } catch(e){}
-    paintChips(); load(false);
-  }
-  function paintChips(){
-    P.querySelectorAll(".pchip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
-
-    var t = etToday();
-    ["r-from", "r-to"].forEach(function(id){ $(id).min = FIRST_DAY; $(id).max = t; });
-    $("r-from").value = range.from; $("r-to").value = range.to;
-  }
-  P.querySelectorAll(".pchip").forEach(function(b){
-    b.addEventListener("click", function(){
-      if (b.dataset.r === "custom"){ openCustom(b); return; }
-      setRange(b.dataset.r);
-    });
-  });
-  $("custom").addEventListener("submit", function(ev){ ev.preventDefault(); if ($("r-from").value && $("r-to").value){ closeCustom(); setRange($("r-from").value + ".." + $("r-to").value); } });
-  // Popover under the Custom button; closes on Apply, Escape, or a click outside.
-  function openCustom(btn){
-    var f = $("custom"), bar = f.parentNode, seg = btn.parentNode;
-    if (!f.hidden){ closeCustom(); return; }
-    // On phones Custom can sit scrolled out of view in the picker: bring it in first, so the caret has a target.
-    seg.scrollLeft = Math.max(0, btn.offsetLeft + btn.offsetWidth - seg.clientWidth + 4);
-    var br = bar.getBoundingClientRect(), cr = btn.getBoundingClientRect();
-    f.hidden = false;
-    var w = f.offsetWidth, left = Math.max(0, Math.min(cr.left - br.left + cr.width / 2 - 24, br.width - w));
-    var caret = Math.max(12, Math.min(cr.left - br.left + cr.width / 2 - left - 5, w - 22));
-    f.style.left = left + "px"; f.style.top = (cr.bottom - br.top + 8) + "px"; f.style.setProperty("--caret", caret + "px");
-    btn.setAttribute("aria-expanded", "true"); $("r-from").focus({ preventScroll: true });
-  }
-  function closeCustom(){ $("custom").hidden = true; var c = P.querySelector('.pchip[data-r="custom"]'); if (c) c.setAttribute("aria-expanded", "false"); }
-  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("custom").hidden){ closeCustom(); P.querySelector('.pchip[data-r="custom"]').focus(); } });
-  document.addEventListener("click", function(e){ if (!$("custom").hidden && !e.target.closest("#ph-custom") && !e.target.closest('.pchip[data-r="custom"]')) closeCustom(); });
-  paintChips();
-  // Drop the fade once the control is scrolled to its end; keep the picked range in view.
-  (function(){ var seg = P.querySelector(".pseg"); var upd = function(){ seg.classList.toggle("at-end", seg.scrollLeft + seg.clientWidth >= seg.scrollWidth - 2); };
-    seg.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd);
-    upd(); })();
 
   var followUps = 0, seq = 0;
   function load(fresh, quiet){
     var mine = ++seq;
     var shown = !$("body").hidden;
     if (!shown) $("loading").hidden = false;
-    $("err").hidden = true; $("refresh").disabled = true; $("refresh").setAttribute("aria-busy", "true");
+    $("err").hidden = true;
     firebase.auth().currentUser.getIdToken().then(function(tok){
       return fetch("https://iara-inbox.vercel.app/inbox/api/phone-stats?from=" + range.from + "&to=" + range.to + (fresh ? "&refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
@@ -866,7 +783,7 @@
         if (j.refreshing && followUps < 3){ followUps++; setTimeout(function(){ load(false, true); }, 8000); }
       })
       .catch(function(e){ if (!quiet || !shown){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; } })
-      .finally(function(){ $("loading").hidden = true; $("refresh").disabled = false; $("refresh").setAttribute("aria-busy", "false"); });
+      .finally(function(){ $("loading").hidden = true; });
   }
 
   // 130 -> "2h 10m"; under an hour stays "45m".
@@ -945,14 +862,7 @@
     }).catch(function(){ b.disabled = false; b.textContent = "Try again"; });
   });
 
-  function showPicked(){
-    var seg = P.querySelector(".pseg"), on = seg.querySelector('[aria-pressed="true"]');
-    if (on) seg.scrollLeft = Math.max(0, on.offsetLeft - seg.clientWidth / 2 + on.offsetWidth / 2);
-    seg.classList.toggle("at-end", seg.scrollLeft + seg.clientWidth >= seg.scrollWidth - 2);
-  }
-
   function render(d){
-    showPicked();
     var c = d.calls, g = d.guests;
     var R = d.range, fmt = function(ds){ var p = ds.split("-").map(Number); return new Date(Date.UTC(p[0], p[1] - 1, p[2], 12)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
     var span = R.from === R.to ? fmt(R.from) : R.from.slice(0, 7) === R.to.slice(0, 7) ? fmt(R.from) + " to " + +R.to.slice(8) : fmt(R.from) + " to " + fmt(R.to);
@@ -1068,10 +978,10 @@
   }
   // Started by iara Inbox Analytics: render the first time the Phone tab is shown.
   var started = false;
-  function maybeStart(){ if (started || P.hidden || !firebase.auth().currentUser) return; started = true; paintChips(); load(false); }
+  function maybeStart(){ if (started || P.hidden || !firebase.auth().currentUser) return; range = shared(); if (!range) return; started = true; load(false); }
   window.addEventListener("analytics:tab", function(e){ if (e.detail && e.detail.tab === "phone") setTimeout(maybeStart, 0); });
   // Follow the shared date bar.
-  window.addEventListener("analytics:range", function(){ range = shared(); if (started) load(false); });
+  window.addEventListener("analytics:range", function(){ range = shared(); if (started) load(false); else maybeStart(); });
   firebase.auth().onAuthStateChanged(function(){ setTimeout(maybeStart, 0); });
 })();
 </script>
