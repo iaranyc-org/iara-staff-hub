@@ -1245,7 +1245,6 @@
     <div class="nav-rule"></div>
     <button class="nav-btn" data-view="manual">The Manual</button>
     <button class="nav-btn" data-view="fnb">The Menu</button>
-    <button class="nav-btn" data-view="lore">The Lore</button>
     <button class="nav-btn" data-view="cleaning">Cleaning</button>
     <button class="nav-btn" data-view="watch">Watch List</button>
     <button class="nav-btn" data-view="team">Team</button>
@@ -1495,7 +1494,6 @@
         <button class="nav-btn" data-view="cleaning">Cleaning</button>
         <button class="nav-btn" data-view="watch">Watch List</button>
         <button class="nav-btn" data-view="team">Team</button>
-        <button class="nav-btn" data-view="lore">The Lore</button>
         <button class="nav-btn" data-view="vibes">Good Vibes</button>
         <button class="nav-btn" data-view="progress">Admin</button>
         <button type="button" class="more-fbk" data-feedback>Send Feedback</button>
@@ -2482,7 +2480,8 @@ var VIEW_TITLES = { home:"Home", manual:"The Manual", cleaning:"Cleaning", team:
 /* Path routing: /lineup/<view>/<section>. A refresh, or the phone reloading
    the tab in the background, keeps your place; back works; a manager can send
    a link to one section. Old #/view links still resolve and get rewritten. */
-var VIEW_NAMES = ["home","manual","cleaning","team","fnb","lore","study","watch","vibes","quiz","checklist","progress"];
+// "lore" is hidden until the stories are written (Jay, 2026-10-13); its view and renderLore stay for later.
+var VIEW_NAMES = ["home","manual","cleaning","team","fnb","study","watch","vibes","quiz","checklist","progress"];
 var BASE_PATH = "/lineup";
 
 function parseRoute(){
