@@ -158,7 +158,8 @@ REJECT_EXTRA = {'hunter-lewis/3.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' en
 for s_, p in roster.items():
     files = (sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg')))
              + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
-             + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more3', s_, '*.jpg'))))
+             + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more3', s_, '*.jpg')))
+             + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more4', s_, '*.jpg'))))
     photos = []
     if p.get('photo'):
         photos.append({'src': p['photo'], 'credit': (p.get('photoCredit') or {}).get('text', '')})
@@ -178,6 +179,8 @@ for s_, p in roster.items():
             n = 'r2-' + n
         elif 'watch_more3' in src:
             n = 'r3-' + n
+        elif 'watch_more4' in src:
+            n = 'r4-' + n
         if f'{s_}/{n}.jpg' in REJECT_EXTRA:
             continue
         dst_rel = f'img/watch/{s_}-{n}.jpg'

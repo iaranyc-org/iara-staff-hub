@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v41';   // v41: Watch List adds the Hall PR Look Book 2026 (new people, intel, photos)
+const VERSION = 'iara-lineup-v42';   // v42: Watch List round-4 photos for the thinnest profiles
 const CORE = [
   './',
   './iara_hub.html',
