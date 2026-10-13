@@ -1,0 +1,659 @@
+[
+ {
+  "slug": "ligaya-mishan",
+  "name": "Ligaya Mishan",
+  "outlet": "The New York Times",
+  "role": "Co-chief restaurant critic",
+  "group": "NYT",
+  "hallIntel": "Co Chief Critic, the NYC based critic. Filipino, raised in Hawaii. Reservations are made under the name Justine Darley. Twitter and Instagram: @ligayamishan."
+ },
+ {
+  "slug": "tejal-rao",
+  "name": "Tejal Rao",
+  "outlet": "The New York Times",
+  "role": "Co-chief restaurant critic",
+  "group": "NYT",
+  "hallIntel": "Co Chief Critic. Based in LA, reviews restaurants throughout the US. Instagram: @tejalxrao."
+ },
+ {
+  "slug": "mahira-rivers",
+  "name": "Mahira Rivers",
+  "outlet": "The New York Times",
+  "role": "Contributing restaurant critic",
+  "group": "NYT",
+  "hallIntel": "Contributing restaurant critic. Instagram: @mahirarivers."
+ },
+ {
+  "slug": "ryan-sutton",
+  "name": "Ryan Sutton",
+  "outlet": "The New York Times / The Lo Times",
+  "role": "Contributing restaurant critic",
+  "group": "NYT",
+  "hallIntel": "Contributing restaurant critic. Former Chief NYC Restaurant Critic at Eater; editor and founder of the Lo Times newsletter. Doesn't like loud noise, cash only, or splitting checks as requested. Believes in good bar food, drinks Manhattans, and likes the bar tab transferred. Service notes: answer the phone, crumb the table, say thanks when he is leaving. Has a bad back. Has a blog that chronicles prices at different restaurants. Instagram: @thebaddeal."
+ },
+ {
+  "slug": "matthew-schneier",
+  "name": "Matthew Schneier",
+  "outlet": "New York magazine",
+  "role": "Restaurant critic",
+  "group": "New York Mag",
+  "hallIntel": "Features writer and newly appointed critic at New York Magazine. Alias name: George Civeris. Instagram: @matthewschneier."
+ },
+ {
+  "slug": "tammie-teclemariam",
+  "name": "Tammie Teclemariam",
+  "outlet": "New York Magazine",
+  "role": "Underground Gourmet writer",
+  "group": "New York Mag",
+  "hallIntel": "Writes the Underground Gourmet column and newsletter for NY Mag. Twitter @tammieetc, Instagram @tammieeverytime."
+ },
+ {
+  "slug": "helen-rosner",
+  "name": "Helen Rosner",
+  "outlet": "The New Yorker",
+  "role": "Critic",
+  "group": "New Yorker",
+  "hallIntel": "Critic, The New Yorker. Instagram: @helenr."
+ },
+ {
+  "slug": "steve-cuozzo",
+  "name": "Steve Cuozzo",
+  "outlet": "New York Post",
+  "role": "Columnist and critic",
+  "group": "Other Press",
+  "hallIntel": "Joined the New York Post in 1972; one of their longtime columnists. Proud Brooklyn native, lives on the Upper East Side. Has a hard edge, tends to comment on value and shuns overly hip places. Doesn't like ramps. Twitter and Instagram: @stevecuozzo."
+ },
+ {
+  "slug": "florence-fabricant",
+  "name": "Florence Fabricant",
+  "outlet": "The New York Times",
+  "role": "Food and wine writer",
+  "group": "NYT",
+  "hallIntel": "Food and Wine Writer for The New York Times. Writes the weekly Front Burner and Off the Menu columns. Author of 12 cookbooks. Twitter: @flofab."
+ },
+ {
+  "slug": "priya-krishna",
+  "name": "Priya Krishna",
+  "outlet": "The New York Times",
+  "role": "Food reporter",
+  "group": "NYT",
+  "hallIntel": "Food Reporter at The New York Times. Twitter and Instagram: @priyakrishna."
+ },
+ {
+  "slug": "julia-moskin",
+  "name": "Julia Moskin",
+  "outlet": "The New York Times",
+  "role": "Food section reporter",
+  "group": "NYT",
+  "hallIntel": "Editor at the Food section; tends to write exposés on chefs and restaurateurs behaving badly. Twitter and Instagram: @juliamoskin."
+ },
+ {
+  "slug": "melissa-clark",
+  "name": "Melissa Clark",
+  "outlet": "The New York Times",
+  "role": "Food staff reporter",
+  "group": "NYT",
+  "hallIntel": "Food Staff Reporter. Focuses on recipe stories; a baker and professional home cook. Will include chefs at times. Twitter: @MelissaClark. Instagram: @clarkbar."
+ },
+ {
+  "slug": "nikita-richardson",
+  "name": "Nikita Richardson",
+  "outlet": "The New York Times",
+  "role": "Senior staff editor, NYT Cooking and NYT Food",
+  "group": "NYT",
+  "status": "Editor",
+  "shortRole": "NYT Food Editor",
+  "hallIntel": "Senior Staff Editor, NYT Cooking and NYT Food at The New York Times. Instagram: @nomnomnikita. Twitter: @nikitarbk.",
+  "source": "https://www.instagram.com/nomnomnikita/"
+ },
+ {
+  "slug": "becky-hughes",
+  "name": "Becky Hughes",
+  "outlet": "The New York Times",
+  "role": "Social media editor; contributes to Where To Eat: New York City",
+  "group": "NYT",
+  "status": "Editor",
+  "shortRole": "NYT Social Editor",
+  "hallIntel": "Social Media Editor for NYT. Contributes to the \"Where To Eat: New York City\" newsletter. Instagram: @beckyblairhughes. Twitter: @becky__hughes.",
+  "source": "https://www.instagram.com/beckyblairhughes/"
+ },
+ {
+  "slug": "luke-fortney",
+  "name": "Luke Fortney",
+  "outlet": "The New York Times",
+  "role": "Writer, Where To Eat: New York City newsletter",
+  "group": "NYT",
+  "status": "Food Writer",
+  "shortRole": "NYT Where To Eat Writer",
+  "hallIntel": "Writer/contributor, \"Where To Eat: New York City\" newsletter for NYT. Instagram: @luke.fortney.",
+  "source": "https://www.instagram.com/luke.fortney/"
+ },
+ {
+  "slug": "kate-krader",
+  "name": "Kate Krader",
+  "outlet": "Bloomberg Pursuits",
+  "role": "Food editor",
+  "group": "Other Press",
+  "hallIntel": "Food Editor for Bloomberg. Currently lives in London but visits NY frequently. Likes bold flavors and spicy food. Twitter and Instagram: @kkrader."
+ },
+ {
+  "slug": "alan-sytsma",
+  "name": "Alan Sytsma",
+  "outlet": "New York Magazine / Grub Street",
+  "role": "Food editor",
+  "group": "New York Mag",
+  "hallIntel": "Food Editor; often dines out with Adam Platt. Alias name: George Civeris. Twitter: @asytsma. Instagram: @alansytsma."
+ },
+ {
+  "slug": "stephanie-wu",
+  "name": "Stephanie Wu",
+  "outlet": "Eater",
+  "role": "Editor in chief",
+  "group": "Food Media",
+  "hallIntel": "Editor-in-Chief at Eater, co-founder of Mochi Magazine. Twitter and Instagram: @bystephwu."
+ },
+ {
+  "slug": "bettina-makalintal",
+  "name": "Bettina Makalintal",
+  "outlet": "Eater",
+  "role": "Senior reporter",
+  "group": "Food Media",
+  "status": "Food Writer",
+  "shortRole": "Eater Senior Reporter",
+  "hallIntel": "Senior Reporter. Formerly staff writer at Bon Appetit and VICE Munchies. Food and culture writer. Name is pronounced Beh-TINA Mack-uh-lin-TAHL. Twitter: @bettinamak. Instagram: @buttina.",
+  "source": "https://www.instagram.com/buttina/"
+ },
+ {
+  "slug": "melissa-mccart",
+  "name": "Melissa McCart",
+  "outlet": "Eater",
+  "role": "Editor, Eater Northeast region",
+  "group": "Food Media",
+  "hallIntel": "Editor at Eater Northeast Region. Instagram: @melissamccart."
+ },
+ {
+  "slug": "tierney-plumb",
+  "name": "Tierney Plumb",
+  "outlet": "Eater",
+  "role": "Editor, Eater Northeast region",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Eater Northeast Editor",
+  "hallIntel": "Editor, Eater Northeast Region. Instagram: @tiers2you.",
+  "source": "https://www.instagram.com/tiers2you/"
+ },
+ {
+  "slug": "nick-mancall-bitel",
+  "name": "Nick Mancall-Bitel",
+  "outlet": "Eater",
+  "role": "Dining and travel editorial manager",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Eater Dining and Travel",
+  "hallIntel": "Dining and Travel Editorial Manager at Eater."
+ },
+ {
+  "slug": "nadia-chaudhury",
+  "name": "Nadia Chaudhury",
+  "outlet": "Eater",
+  "role": "Editor, Eater NY and Northeast region",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Eater NY Editor",
+  "hallIntel": "Editor at Eater NY and Northeast Region. Instagram: @nadiachaudhury.",
+  "source": "https://www.instagram.com/nadiachaudhury/"
+ },
+ {
+  "slug": "jamila-robinson",
+  "name": "Jamila Robinson",
+  "outlet": "Bon Appetit",
+  "role": "Editor in chief",
+  "group": "Food Media",
+  "hallIntel": "Editor-in-Chief, Bon Appetit. Instagram: @jamilarobinson."
+ },
+ {
+  "slug": "kate-kassin",
+  "name": "Kate Kassin",
+  "outlet": "Bon Appetit",
+  "role": "Editorial operations manager",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Bon Appetit Editorial Ops",
+  "hallIntel": "Editorial Operations Manager, Bon Appetit. Instagram: @kateakassin.",
+  "source": "https://www.instagram.com/kateakassin/"
+ },
+ {
+  "slug": "justin-chapple",
+  "name": "Justin Chapple",
+  "outlet": "Food & Wine",
+  "role": "Culinary director-at-large",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Food & Wine Culinary Director",
+  "hallIntel": "Culinary Director-at-Large, Food & Wine. Instagram: @justinchapple.",
+  "source": "https://www.instagram.com/justinchapple/"
+ },
+ {
+  "slug": "erika-adams",
+  "name": "Erika Adams",
+  "outlet": "Food & Wine",
+  "role": "Restaurant editor",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Food & Wine Restaurant Editor",
+  "hallIntel": "Restaurant Editor, Food & Wine. Instagram: @erika.lea.adams.",
+  "source": "https://www.instagram.com/erika.lea.adams/"
+ },
+ {
+  "slug": "prairie-rose",
+  "name": "Prairie Rose",
+  "outlet": "Food & Wine",
+  "role": "Senior drinks editor (LA based)",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Food & Wine Drinks Editor",
+  "hallIntel": "Senior Drinks Editor, Food & Wine. LA based. Instagram: @bitbyafox.",
+  "source": "https://www.instagram.com/bitbyafox/"
+ },
+ {
+  "slug": "dana-brown",
+  "name": "Dana Brown",
+  "outlet": "Caper Media",
+  "role": "Editor in chief",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Caper Editor in Chief",
+  "hallIntel": "Editor-in-Chief, Caper Media. Instagram: @mrdanabrown.",
+  "source": "https://www.instagram.com/mrdanabrown/"
+ },
+ {
+  "slug": "chris-crowley",
+  "name": "Chris Crowley",
+  "outlet": "Caper Media (formerly Grub Street)",
+  "role": "Founding journalist, Caper Media",
+  "group": "Food Media",
+  "hallIntel": "Founding Journalist, Caper Media. Instagram: @chrisecrowley."
+ },
+ {
+  "slug": "emma-orlow",
+  "name": "Emma Orlow",
+  "outlet": "Caper Media",
+  "role": "Founding journalist",
+  "group": "Food Media",
+  "status": "Food Writer",
+  "shortRole": "Caper Journalist",
+  "hallIntel": "Founding Journalist, Caper Media. Instagram: @emorlow.",
+  "source": "https://www.instagram.com/emorlow/"
+ },
+ {
+  "slug": "annie-armstrong",
+  "name": "Annie Armstrong",
+  "outlet": "Caper Media",
+  "role": "Founding journalist",
+  "group": "Food Media",
+  "status": "Food Writer",
+  "shortRole": "Caper Journalist",
+  "hallIntel": "Founding Journalist, Caper Media. Instagram: @anniesalright.",
+  "source": "https://www.instagram.com/anniesalright/"
+ },
+ {
+  "slug": "andrew-steinthal",
+  "name": "Andrew Steinthal",
+  "outlet": "The Infatuation",
+  "role": "Co-founder and CEO",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Infatuation Co-Founder",
+  "hallIntel": "Co-Founder and CEO, The Infatuation. Twitter and Instagram: @schmooey.",
+  "source": "https://www.instagram.com/schmooey/"
+ },
+ {
+  "slug": "chris-stang",
+  "name": "Chris Stang",
+  "outlet": "The Infatuation",
+  "role": "Co-founder",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Infatuation Co-Founder",
+  "hallIntel": "Co-Founder, The Infatuation. Spent nearly twelve years in marketing at Atlantic Records; now runs The Infatuation full time. Twitter and Instagram: @houseofstang.",
+  "source": "https://www.instagram.com/houseofstang/"
+ },
+ {
+  "slug": "bryan-kim",
+  "name": "Bryan Kim",
+  "outlet": "The Infatuation",
+  "role": "Staff writer, primarily reviews",
+  "group": "Food Media",
+  "hallIntel": "Staff Writer; primarily does reviews. Instagram: @bryansdoingfine."
+ },
+ {
+  "slug": "kenny-yang",
+  "name": "Kenny Yang",
+  "outlet": "The Infatuation",
+  "role": "Staff writer, does reviews",
+  "group": "Food Media",
+  "status": "Reviews Restaurants",
+  "shortRole": "Infatuation Writer",
+  "hallIntel": "Staff Writer, does reviews. Instagram: @kennyyangnyc.",
+  "source": "https://www.instagram.com/kennyyangnyc/"
+ },
+ {
+  "slug": "will-hartman",
+  "name": "Will Hartman",
+  "outlet": "The Infatuation",
+  "role": "Staff writer, does reviews",
+  "group": "Food Media",
+  "hallIntel": "Staff Writer, does reviews. Instagram: @willhvrt."
+ },
+ {
+  "slug": "molly-fitzpatrick",
+  "name": "Molly Fitzpatrick",
+  "outlet": "The Infatuation",
+  "role": "Senior staff writer, does reviews",
+  "group": "Food Media",
+  "hallIntel": "Senior Staff Writer, does reviews. Instagram: @mollyofitz."
+ },
+ {
+  "slug": "willa-moore",
+  "name": "Willa Moore",
+  "outlet": "The Infatuation",
+  "role": "Staff writer, does reviews",
+  "group": "Food Media",
+  "hallIntel": "Staff Writer, does reviews. Known alias: Monique Colt. Instagram: @willa_grace."
+ },
+ {
+  "slug": "sonal-shah",
+  "name": "Sonal Shah",
+  "outlet": "The Infatuation",
+  "role": "Staff writer, does reviews",
+  "group": "Food Media",
+  "hallIntel": "Staff Writer, does reviews. Instagram: @toutress."
+ },
+ {
+  "slug": "britt-lam",
+  "name": "Britt Lam",
+  "outlet": "The Infatuation",
+  "role": "Social media editor",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Infatuation Social Editor",
+  "hallIntel": "Social Media Editor, The Infatuation. Instagram: @snufffyyy.",
+  "source": "https://www.instagram.com/snufffyyy/"
+ },
+ {
+  "slug": "morgan-carter",
+  "name": "Morgan Carter",
+  "outlet": "Time Out New York",
+  "role": "Food and drink editor",
+  "group": "Food Media",
+  "hallIntel": "Food and Drink Editor, Time Out New York. Twitter: @mo_car. Instagram: @MReneeCarter."
+ },
+ {
+  "slug": "will-gleason",
+  "name": "Will Gleason",
+  "outlet": "Time Out New York",
+  "role": "Creative director",
+  "group": "Food Media",
+  "status": "Editor",
+  "shortRole": "Time Out Creative Director",
+  "hallIntel": "Creative Director, Time Out New York. Instagram and Twitter: @willsgleason.",
+  "source": "https://www.instagram.com/willsgleason/"
+ },
+ {
+  "slug": "hannah-goldfield",
+  "name": "Hannah Goldfield",
+  "outlet": "The New Yorker",
+  "role": "Staff writer",
+  "group": "New Yorker",
+  "hallIntel": "Staff Writer, The New Yorker. Instagram: @hannahgoldfield."
+ },
+ {
+  "slug": "jiayang-fan",
+  "name": "Jiayang Fan",
+  "outlet": "The New Yorker",
+  "role": "Staff writer",
+  "group": "New Yorker",
+  "status": "Food Writer",
+  "shortRole": "New Yorker Staff Writer",
+  "hallIntel": "Staff Writer, The New Yorker. Twitter and Instagram: @jiayangfan.",
+  "source": "https://www.instagram.com/jiayangfan/"
+ },
+ {
+  "slug": "shauna-lyon",
+  "name": "Shauna Lyon",
+  "outlet": "The New Yorker",
+  "role": "Editor of Goings On About Town; writes Tables for Two",
+  "group": "New Yorker",
+  "status": "Reviews Restaurants",
+  "shortRole": "Tables for Two Writer",
+  "hallIntel": "Editor of Goings On About Town and writes the \"Tables for Two\" column for The New Yorker.",
+  "source": "https://www.newyorker.com/contributors/shauna-lyon"
+ },
+ {
+  "slug": "jeanette-settembre",
+  "name": "Jeanette Settembre",
+  "outlet": "New York Post",
+  "role": "Senior features reporter",
+  "group": "Other Press",
+  "status": "Food Writer",
+  "shortRole": "NY Post Features Reporter",
+  "hallIntel": "Senior Features Reporter, New York Post. Instagram and Twitter: @j_settembre.",
+  "source": "https://www.instagram.com/j_settembre/"
+ },
+ {
+  "slug": "jeff-gordinier",
+  "name": "Jeff Gordinier",
+  "outlet": "Esquire (former)",
+  "role": "Former food and drinks editor",
+  "group": "Other Press",
+  "status": "Food Writer",
+  "shortRole": "Former Esquire Food Editor",
+  "hallIntel": "Former Food and Drinks Editor at Esquire. Dines out with editor and critic friends (Pete Wells, etc.). Sometimes writes for NYT and Yahoo. Twitter: @JeffGordinier. Instagram: @TheGordinier.",
+  "source": "https://www.instagram.com/thegordinier/"
+ },
+ {
+  "slug": "kathleen-squires",
+  "name": "Kathleen Squires",
+  "outlet": "The Wall Street Journal",
+  "role": "Columnist; food and travel freelance writer",
+  "group": "Other Press",
+  "status": "Food Writer",
+  "shortRole": "WSJ Columnist",
+  "hallIntel": "WSJ columnist, food and travel freelance writer. Instagram: @KSquiresNYC.",
+  "source": "https://www.instagram.com/ksquiresnyc/"
+ },
+ {
+  "slug": "scott-lynch",
+  "name": "Scott Lynch",
+  "outlet": "Hell Gate / Brooklyn Magazine",
+  "role": "Food writer and freelance photojournalist",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Hell Gate Food Writer",
+  "hallIntel": "Food writer at Hell Gate and Brooklyn Magazine plus freelance photojournalist. Sometimes goes to restaurants on his own, usually bringing his camera equipment. Sometimes dines with @Foodbaby influencer Mike Chau. Twitter and Instagram: @scoboco.",
+  "source": "https://www.instagram.com/scoboco/"
+ },
+ {
+  "slug": "jay-cheshes",
+  "name": "Jay Cheshes",
+  "outlet": "The Wall Street Journal (contributor)",
+  "role": "Writer covering food, travel, art, culture",
+  "group": "Independent",
+  "hallIntel": "Writer covering food, travel, art and culture. Regular contributor to The Wall Street Journal. Twitter and Instagram: @jaycheshes."
+ },
+ {
+  "slug": "cathy-erway",
+  "name": "Cathy Erway",
+  "outlet": "Freelance",
+  "role": "Food writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Food Writer",
+  "hallIntel": "As seen in Medium, The New York Times, HuffPost, The Washington Post, Salon, Serious Eats, Food52, San Francisco Chronicle, Bon Appetit, Epicurious and more. Twitter and Instagram: @cathyerway.",
+  "source": "https://www.instagram.com/cathyerway/"
+ },
+ {
+  "slug": "brian-koppelman",
+  "name": "Brian Koppelman",
+  "outlet": "The Moment with Brian (podcast)",
+  "role": "Filmmaker, essayist, podcaster",
+  "group": "Independent",
+  "status": "Creator",
+  "shortRole": "Filmmaker and Podcaster",
+  "hallIntel": "American filmmaker, essayist, podcaster, TV series creator, former music business executive and record producer. Host of The Moment with Brian. Sometimes dines with Pete Wells. Twitter and Instagram: @briankoppelman.",
+  "source": "https://www.instagram.com/briankoppelman/"
+ },
+ {
+  "slug": "betsy-andrews",
+  "name": "Betsy Andrews",
+  "outlet": "Freelance",
+  "role": "Food and travel writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Food Writer",
+  "hallIntel": "Writes for Food & Wine, SevenFifty Daily, Travel + Leisure, Conde Nast Traveler. Often dines with Pete Wells. Instagram: @betsyandrews.",
+  "source": "https://www.instagram.com/betsyandrews/"
+ },
+ {
+  "slug": "ella-quittner",
+  "name": "Ella Quittner",
+  "outlet": "Freelance",
+  "role": "Food writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Food Writer",
+  "hallIntel": "Writes for Grub Street, The New York Times, Food & Wine. Instagram: @equittner.",
+  "source": "https://www.instagram.com/equittner/"
+ },
+ {
+  "slug": "rachel-sugar",
+  "name": "Rachel Sugar",
+  "outlet": "Freelance",
+  "role": "Writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Writer",
+  "hallIntel": "Contributes to Grub Street, T Magazine and NY Magazine. Instagram: @rtsugar.",
+  "source": "https://www.instagram.com/rtsugar/"
+ },
+ {
+  "slug": "joshua-david-stein",
+  "name": "Joshua David Stein",
+  "outlet": "Freelance",
+  "role": "Writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Food Writer",
+  "hallIntel": "Writes for Grub Street, Curbed, Esquire, Avenue, Resy. Instagram: @joshuadavidstein.",
+  "source": "https://www.instagram.com/joshuadavidstein/"
+ },
+ {
+  "slug": "khushbu-shah",
+  "name": "Khushbu Shah",
+  "outlet": "Freelance (formerly Food & Wine)",
+  "role": "Former restaurant editor, Food & Wine",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Former F&W Restaurant Editor",
+  "hallIntel": "Previous Restaurant Editor for Food & Wine. Doesn't live in NYC but is constantly on the road for her job. Twitter: @KhushAndOJ. Instagram: @khushandoj.",
+  "source": "https://www.instagram.com/khushandoj/"
+ },
+ {
+  "slug": "jason-diamond",
+  "name": "Jason Diamond",
+  "outlet": "Freelance",
+  "role": "Writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Writer",
+  "hallIntel": "Writes for Taste, GQ, Grub Street. Instagram: @imjasondiamond.",
+  "source": "https://www.instagram.com/imjasondiamond/"
+ },
+ {
+  "slug": "robert-simonson",
+  "name": "Robert Simonson",
+  "outlet": "Freelance",
+  "role": "Drinks writer",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Drinks Writer",
+  "hallIntel": "Freelance drinks writer (Grub Street, VinePair, NYT). Instagram: @RobertOSimonson.",
+  "source": "https://www.instagram.com/robertosimonson/"
+ },
+ {
+  "slug": "elyse-inamine",
+  "name": "Elyse Inamine",
+  "outlet": "Freelance",
+  "role": "Freelancer; former Bon Appetit restaurants editor",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Freelance Food Writer",
+  "hallIntel": "Freelancer. Former Restaurants Editor at Bon Appetit. Still freelance writing for Food & Wine, NYT and other outlets. Twitter and Instagram: @elyseinamine.",
+  "source": "https://www.instagram.com/elyseinamine/"
+ },
+ {
+  "slug": "dana-cowin",
+  "name": "Dana Cowin",
+  "outlet": "DBC Creative",
+  "role": "CEO, DBC Creative; former Food & Wine editor in chief",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Former F&W Editor in Chief",
+  "hallIntel": "Writer. CEO of DBC Creative, former EIC of Food & Wine. Continues to dine out. Twitter: @fwscout.",
+  "source": "https://x.com/fwscout"
+ },
+ {
+  "slug": "robert-sietsema",
+  "name": "Robert Sietsema",
+  "role": "Writer; former Eater senior critic",
+  "group": "Former Critics",
+  "hallIntel": "Writer. Former Senior Critic at Eater, currently writes for his own Substack. Twitter: @robertsietsema. Instagram: @rsietsema."
+ },
+ {
+  "slug": "liz-provencher",
+  "name": "Liz Provencher",
+  "outlet": "Freelance",
+  "role": "Writer; former Thrillist editor",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Former Thrillist Editor",
+  "hallIntel": "Writer. Former Thrillist Editor. Instagram: @lizprovencher.",
+  "source": "https://www.instagram.com/lizprovencher/"
+ },
+ {
+  "slug": "adam-platt",
+  "name": "Adam Platt",
+  "role": "Former New York Magazine restaurant critic",
+  "group": "Former Critics",
+  "hallIntel": "Writer. Former New York Magazine restaurant critic and a contributor to Grub Street. Twitter: @plattypants."
+ },
+ {
+  "slug": "rob-patronite-robin-raisfeld",
+  "name": "Rob Patronite & Robin Raisfeld",
+  "outlet": "Former New York Magazine",
+  "role": "Former Underground Gourmet critics and food editors",
+  "group": "Former Critics",
+  "status": "Former Critic",
+  "shortRole": "Former Underground Gourmet",
+  "hallIntel": "Former Underground Gourmet critics and food editors, New York Magazine. Hall PR: \"We are waiting to see what they will do next.\" Normally dine together; quiet and unassuming.",
+  "source": "https://nymag.com/author/rob-patronite-and-robin-raisfeld/"
+ },
+ {
+  "slug": "shaye-weaver",
+  "name": "Shaye Weaver",
+  "outlet": "Freelance (formerly Time Out New York)",
+  "role": "Freelance; former Time Out New York editor",
+  "group": "Independent",
+  "status": "Food Writer",
+  "shortRole": "Former Time Out Editor",
+  "hallIntel": "Freelance (former editor of Time Out NY). Instagram and Twitter: @shayeweaver.",
+  "source": "https://www.instagram.com/shayeweaver/"
+ },
+ {
+  "slug": "pete-wells",
+  "name": "Pete Wells",
+  "role": "Former NYT restaurant critic",
+  "group": "Former Critics",
+  "hallIntel": "Former NYT Restaurant Critic. Twitter and Instagram: @pete_wells."
+ }
+]

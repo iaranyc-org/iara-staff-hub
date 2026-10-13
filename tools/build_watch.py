@@ -18,6 +18,17 @@ def load(f, default):
 
 roster = {p['slug']: p for p in load('watch_final.json', [])}
 
+# Hall PR Look Book 2026 (tools/hallpr_lookbook_2026.md). Everyone in it is shown,
+# new people are added, and Hall PR's intel is kept on each profile as hallIntel.
+LOOKBOOK = load('hallpr_lookbook.json', [])
+for e in LOOKBOOK:
+    s = e['slug']
+    if s not in roster:
+        roster[s] = {'slug': s, 'name': e['name'], 'outlet': e.get('outlet', ''), 'role': e.get('role', ''),
+                     'beat': '', 'note': '', 'group': e.get('group', 'Other Press'),
+                     'sources': [e['source']] if e.get('source') else [], 'anonymous': False}
+    roster[s]['hallIntel'] = e['hallIntel']
+
 # New people from the roster expansion.
 NEW_STATUS = {
     'melissa-mccart': ('Eater Regional Editor', 'Editor'),
@@ -145,14 +156,28 @@ for f in sorted(glob.glob(T('more_photos_*.json'))):
 PRIMARY = {'morgan-carter': 'img/watch/morgan-carter-r2-2.jpg'}  # clearest captioned face leads
 REJECT_EXTRA = {'hunter-lewis/3.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' entries rejected on visual review
 for s_, p in roster.items():
-    files = sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg'))) + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
+    files = (sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg')))
+             + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
+             + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more3', s_, '*.jpg'))))
     photos = []
     if p.get('photo'):
         photos.append({'src': p['photo'], 'credit': (p.get('photoCredit') or {}).get('text', '')})
+    lb = os.path.join(ROOT, 'img', 'watch_lookbook', s_ + '.jpg')
+    if os.path.exists(lb):
+        lb_rel = f'img/watch/{s_}-lb.jpg'
+        shutil.copyfile(lb, os.path.join(ROOT, lb_rel))
+        if not p.get('photo'):
+            p['photo'] = lb_rel
+            p['photoCredit'] = {'text': 'Hall PR Look Book'}
+            photos.append({'src': lb_rel, 'credit': 'Hall PR Look Book'})
+        elif not any(x['src'] == lb_rel for x in photos):
+            photos.insert(1, {'src': lb_rel, 'credit': 'Hall PR Look Book'})
     for src in files:
         n = os.path.splitext(os.path.basename(src))[0]
         if 'watch_more2' in src:
             n = 'r2-' + n
+        elif 'watch_more3' in src:
+            n = 'r3-' + n
         if f'{s_}/{n}.jpg' in REJECT_EXTRA:
             continue
         dst_rel = f'img/watch/{s_}-{n}.jpg'
@@ -176,7 +201,7 @@ for s_, p in roster.items():
 
 OVERRIDES = {
     'chris-crowley': {'outlet': 'Caper Media (formerly Grub Street)', 'role': 'Food writer at Caper Media; formerly Grub Street senior writer',
-                      'shortRole': 'Independent Food Writer', 'group': 'Independent',
+                      'shortRole': 'Caper Founding Journalist', 'group': 'Food Media',
                       'note': 'Left New York magazine for Caper Media (Instagram bio, Oct 2026). Follows iara on Instagram.'},
     'sonal-shah': {'note': 'Infatuation NYC editor. Follows iara on Instagram.'},
     'ryan-sutton': {'note': 'NYT contributing critic since Nov 2025; also runs The Lo Times newsletter.'},
@@ -192,6 +217,12 @@ HIDE = {'gwendal-poullennec', 'clare-reichenbach', 'hunter-lewis', 'jamila-robin
         'melissa-clark', 'julia-moskin', 'eric-asimov', 'kate-krader', 'beth-kracklauer', 'jay-cheshes',
         'brad-a-johnson', 'elazar-sontag', 'tom-sietsema', 'adam-platt', 'ruth-reichl', 'frank-bruni',
         'arthur-schwartz', 'dave-portnoy', 'david-chang', 'nick-digiovanni'}
+for e in LOOKBOOK:
+    p = roster[e['slug']]
+    for k in ('status', 'shortRole'):
+        if e.get(k):
+            p[k] = e[k]
+HIDE -= {e['slug'] for e in LOOKBOOK}  # Jay, 2026-10-13: show everyone in the Hall PR Look Book.
 for s_, p in roster.items():
     p['hidden'] = s_ in HIDE
 

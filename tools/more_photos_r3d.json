@@ -1,0 +1,101 @@
+[
+ {
+  "slug": "robert-simonson",
+  "file": "img/watch_more3/robert-simonson/1.jpg",
+  "source_page": "https://www.youtube.com/watch?v=wXHCUnda4pc",
+  "image_url": "https://i.ytimg.com/vi/wXHCUnda4pc/maxresdefault.jpg",
+  "evidence": "YouTube: 'A Proper Drink | Robert Simonson | Talks at Google'; matches look book face",
+  "year": 2016,
+  "notes": ""
+ },
+ {
+  "slug": "robert-simonson",
+  "file": "img/watch_more3/robert-simonson/2.jpg",
+  "source_page": "https://www.guildhall.org/?p=25260",
+  "image_url": "https://www.guildhall.org/wp-content/uploads/2023/05/Robert-Simonson_Stirring-the-Pot_Estias.png",
+  "evidence": "Guild Hall event page for Robert Simonson; image filename names him; matches reference",
+  "year": 2023,
+  "notes": ""
+ },
+ {
+  "slug": "elyse-inamine",
+  "file": "img/watch_more3/elyse-inamine/1.jpg",
+  "source_page": "https://www.bonappetit.com/contributor/elyse-inamine",
+  "image_url": "https://assets.bonappetit.com/photos/6aba3ef62e7b2931ff74c945/1:1/w_600,c_limit/Elyse%20Inamine%20-%20PC%20Heami%20Lee.jpg",
+  "evidence": "Bon Appetit contributor page headshot (file 'Elyse Inamine - PC Heami Lee')",
+  "year": null,
+  "notes": ""
+ },
+ {
+  "slug": "elyse-inamine",
+  "file": "img/watch_more3/elyse-inamine/2.jpg",
+  "source_page": "https://www.elyseinamine.com",
+  "image_url": "https://images.squarespace-cdn.com/content/v1/61f5e69ea030af7bc2584331/0835b8ed-4b0a-4188-becf-62addd47072c/121824-ElyseInamine-043.jpg",
+  "evidence": "Her personal site; filename ElyseInamine; same session as #1 but different frame",
+  "year": 2024,
+  "notes": ""
+ },
+ {
+  "slug": "dana-cowin",
+  "file": "img/watch_more3/dana-cowin/1.jpg",
+  "source_page": "https://www.youtube.com/watch?v=yiEI6779JNU",
+  "image_url": "https://i.ytimg.com/vi/yiEI6779JNU/maxresdefault.jpg",
+  "evidence": "YouTube: 'Mastering My Mistakes in the Kitchen | Dana Cowin | Talks at Google'",
+  "year": null,
+  "notes": ""
+ },
+ {
+  "slug": "dana-cowin",
+  "file": "img/watch_more3/dana-cowin/2.jpg",
+  "source_page": "https://mastmarket.com/blogs/the-mast-journal/dana-cowin-is-speaking-broadly",
+  "image_url": "https://mastmarket.com/cdn/shop/articles/IMG_1237.jpg?v=1692321924&width=1200",
+  "evidence": "Mast Journal profile 'Dana Cowin is Speaking Broadly' lead photo",
+  "year": 2023,
+  "notes": ""
+ },
+ {
+  "slug": "dana-cowin",
+  "file": "img/watch_more3/dana-cowin/3.jpg",
+  "source_page": "https://www.youtube.com/watch?v=nXwe0E-3j_M",
+  "image_url": "https://i.ytimg.com/vi/nXwe0E-3j_M/maxresdefault.jpg",
+  "evidence": "YouTube: 'Former Food + Wine Editor, Dana Cowin, On Her New Cookbook' (ChefsClub TV)",
+  "year": 2014,
+  "notes": ""
+ },
+ {
+  "slug": "shaye-weaver",
+  "file": "img/watch_more3/shaye-weaver/1.jpg",
+  "source_page": "https://squareup.com/us/en/the-bottom-line/about/shaye-weaver",
+  "image_url": "https://us-en-cdn.square.ncms.io/content/uploads/2025/08/Shaye-Weaver-headshot.webp",
+  "evidence": "Square author page 'Shaye Weaver' headshot",
+  "year": 2025,
+  "notes": ""
+ },
+ {
+  "slug": "shaye-weaver",
+  "file": "img/watch_more3/shaye-weaver/2.jpg",
+  "source_page": "https://www.youtube.com/watch?v=sL8oqxm7vj8",
+  "image_url": "https://i.ytimg.com/vi/sL8oqxm7vj8/maxresdefault.jpg",
+  "evidence": "CBS New York segment; lower-third caption 'SHAYE WEAVER, Time Out New York'; cropped to her (right)",
+  "year": null,
+  "notes": ""
+ },
+ {
+  "slug": "melissa-mccart",
+  "file": "img/watch_more3/melissa-mccart/1.jpg",
+  "source_page": "https://www.eater.com/authors/melissa-mccart",
+  "image_url": "https://platform.eater.com/wp-content/uploads/sites/2/2025/06/melissa-headshot.jpg",
+  "evidence": "Eater author page og:image; differs from existing PRH photo",
+  "year": 2025,
+  "notes": ""
+ },
+ {
+  "slug": "willa-moore",
+  "file": "img/watch_more3/willa-moore/1.jpg",
+  "source_page": "https://www.theinfatuation.com/contributor/willa-moore",
+  "image_url": "https://res.cloudinary.com/the-infatuation/image/upload/v1691789454/images/WillaMoore_Headshot_KatePrevite_00001_2_vcnykb.jpg",
+  "evidence": "Infatuation contributor page headshot (filename WillaMoore_Headshot); differs from existing extras",
+  "year": 2023,
+  "notes": ""
+ }
+]

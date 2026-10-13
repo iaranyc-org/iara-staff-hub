@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v40';   // v40: stop caching /inbox; purges the stale inbox copies
+const VERSION = 'iara-lineup-v41';   // v41: Watch List adds the Hall PR Look Book 2026 (new people, intel, photos)
 const CORE = [
   './',
   './iara_hub.html',
