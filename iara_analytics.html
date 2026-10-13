@@ -100,6 +100,8 @@
   .bar.grp{ flex-direction:row; align-items:flex-end; gap:2px; }
   .bar.grp span{ flex:1; }
   .kpi .delta{ display:block; font-size:13px; font-weight:700; color:var(--river); margin-top:3px; }
+  .kpi .delta.good{ color:#7fb24a; }
+  .kpi .delta.bad{ color:#f2836a; }
   .bar.partial span{ background-image:repeating-linear-gradient(45deg, rgba(0,0,0,.28) 0 4px, transparent 4px 8px); }
   .bars.tr .bar{ flex-direction:row; align-items:flex-end; gap:3px; }
   .bars.tr .bar span{ flex:1; border-radius:3px 3px 0 0; position:relative; }
@@ -535,7 +537,7 @@
   }
   var md = function(ds){ var p = ds.split("-"); return Number(p[1]) + "/" + Number(p[2]); };
   function legend(series){ return '<div class="legend" style="margin:-6px 0 12px">' + series.map(function(s){ return '<span><i style="background:' + s.color + '"></i>' + s.name + '</span>'; }).join("") + '</div>'; }
-  function kpi(v, l, n, d){ return '<div class="card kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div>' + (d ? '<span class="delta">' + d + '</span>' : "") + (n ? '<div class="n">' + n + '</div>' : "") + '</div>'; }
+  function kpi(v, l, n, d){ return '<div class="card kpi"><div class="v">' + v + '</div><div class="l">' + l + '</div>' + (d ? '<span class="delta' + (/^\+/.test(d) ? (/ h vs/.test(d) ? " bad" : " good") : /^−/.test(d) ? (/ h vs/.test(d) ? " good" : " bad") : "") + '">' + d + '</span>' : "") + (n ? '<div class="n">' + n + '</div>' : "") + '</div>'; }
   // "vs previous period": the same-length stretch right before, only when it's all after opening (server sends null
   // otherwise) and only for counts that were tracked then. No prior number, no delta: never a fake one.
   var PREV = null;
