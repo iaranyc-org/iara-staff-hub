@@ -169,7 +169,7 @@
      small, even margins on the true window edges instead of one
      lopsided gap after the content column. */
   /* The kit app bar (kit/nav.js) sits above the sidebar + content layout. */
-  :root{ --appbar-h:calc(60px + max(0px, env(safe-area-inset-top, 0px) - 8px)); }
+  :root{ --appbar-h:calc(var(--k-appbar-h) + max(0px, env(safe-area-inset-top, 0px) - 8px)); }
   #lineup-appbar{ position:sticky; top:0; z-index:900; }
   #shell{ display:none; min-height:calc(100vh - var(--appbar-h)); min-height:calc(100dvh - var(--appbar-h)); }
   #shell.active{ display:flex; max-width:1560px; margin:0 auto; }

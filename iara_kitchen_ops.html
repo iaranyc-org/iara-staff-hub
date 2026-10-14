@@ -110,7 +110,7 @@
   /* Sticky section tabs sit directly under the sticky kit app bar
      (60px tall, plus any safe-area inset beyond its own 8px padding). */
   .tabs-bar{
-    position:sticky; top:calc(60px + max(0px, env(safe-area-inset-top,0px) - 8px)); z-index:19;
+    position:sticky; top:calc(var(--k-appbar-h) + max(0px, env(safe-area-inset-top,0px) - 8px)); z-index:19;
     display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap;
     background:var(--page); border-bottom:1px solid var(--border); padding:8px 16px;
   }

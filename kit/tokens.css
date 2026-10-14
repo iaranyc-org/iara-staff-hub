@@ -52,6 +52,7 @@
   /* lockup: mark big, word small. 80/18 everywhere (Jay, 2026-10-13) */
   --k-lockup-mark: 80px;  /* WIDTH of the mark (about 24px tall). Never height: 80px tall is ~270px wide. */
   --k-lockup-word: 18px;
+  --k-appbar-h: 61px;   /* app bar height (44 tap + 2x8 padding + 1 border). Sticky things below it use top: var(--k-appbar-h). */
 
   /* motion */
   --k-fast: 150ms;

@@ -129,6 +129,7 @@
 /* App bar: the ONE cross-app navigation, identical in every staff app (static via nav.js,
    Next via next/staff-bar.tsx, same class names). Left: lockup → this app's home.
    Right, fixed order: Search (palette) · Apps switcher · Account. In-app tabs live below it. */
+[data-k-appbar] { position: sticky; top: 0; z-index: 900; }  /* static placeholder must stick, not just the bar inside it */
 .k-appbar { position: sticky; top: 0; z-index: 900; display: flex; align-items: center; gap: 8px; min-height: 60px; padding: 8px 16px; padding-top: max(8px, env(safe-area-inset-top)); box-sizing: border-box; background: var(--k-page); border-bottom: 1px solid var(--k-border); font-family: var(--k-font-sans); }
 .k-appbar .k-lockup { flex-wrap: nowrap; min-width: 0; }
 .k-appbar .k-palette-trigger { border-color: transparent; background: none; }
