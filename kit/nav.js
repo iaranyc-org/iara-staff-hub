@@ -18,12 +18,12 @@
   // Manager app tabs, in order (keep identical to TABS in next/staff-bar.tsx). `title` is the
   // rolling name shown by the logo. Lineup is a separate staff app: it opens in a new tab.
   var APPS = [
-    { label: "Home", title: "Staff Home", href: "/" },
-    { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops" },
-    { label: "Analytics", title: "Analytics", href: "/analytics" },
-    { label: "Inbox", title: "Inbox", href: "/inbox" },
-    { label: "Private Dining", title: "Private Dining", href: "/private-dining" },
-    { label: "Lineup", title: "Lineup", href: "/lineup", external: true }
+    { label: "Home", title: "Staff Home", href: "/", sub: "Every iara staff tool in one place." },
+    { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders." },
+    { label: "Analytics", title: "Analytics", href: "/analytics", sub: "See how fast we answer guests and how bookings are going." },
+    { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send." },
+    { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
+    { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
   var ICON = {
@@ -64,6 +64,8 @@
     if (slot && window.iaraPalette) slot.appendChild(window.iaraPalette.trigger());
     paintAccount(el);
     roll(el.querySelector(".k-roll"), name);
+    // The one-line subtitle (what this app does) goes wherever the app put [data-k-subtitle].
+    document.querySelectorAll("[data-k-subtitle]").forEach(function (p) { p.textContent = cur.sub; p.classList.add("k-app-sub"); });
   }
 
   // Account menu repaints on its own, so a late sign-in never interrupts the name roll.

@@ -153,7 +153,7 @@
 .k-apptab:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
 .k-apptab[aria-current="page"] { color: var(--k-primary-ink); background: var(--k-primary); }
 .k-apptab svg { flex: none; }
-@media (pointer: coarse) { .k-apptab { min-height: var(--k-tap); } }
+@media (pointer: coarse), (max-width: 1023px) { .k-apptab { min-height: var(--k-tap); } }
 
 .k-appbar .k-palette-trigger { border-color: transparent; background: none; }
 .k-appbar .k-palette-trigger:hover, .k-appbar .k-palette-trigger[aria-expanded="true"] { background: var(--k-raised); }
@@ -188,3 +188,7 @@
 .k-menu-item[aria-current="page"]::after { content: "Current"; margin-left: auto; font: 600 12px/1 var(--k-font-sans); color: var(--k-accent-text); }
 .k-menu-sep { height: 1px; margin: 6px 4px; background: var(--k-border); }
 @media (prefers-reduced-motion: reduce) { .k-menu-list { animation: none; } .k-apptab { transition: none; } }
+
+/* App subtitle: one plain line under the bar saying what the app does (text lives in nav.js / staff-bar.tsx). */
+.k-app-sub { margin: 0 0 16px; color: var(--k-muted); font: 400 15px/1.4 var(--k-font-sans); text-wrap: pretty; }
+.k-app-sub-row { max-width: var(--k-content-max); margin: 16px auto 4px; padding: 0 16px; box-sizing: border-box; }
