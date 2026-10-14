@@ -4,6 +4,10 @@
    an app's legacy CSS during migration. React apps use next/ instead; both
    render the same pixels from the same tokens.
    ========================================================================== */
+/* The hidden attribute always wins over component display rules (.k-alert is flex, .k-empty grid...).
+   Without this, apps that toggle [hidden] showed empty error boxes and closed popovers (2026-10-14). */
+[hidden] { display: none !important; }
+
 .k-body { margin: 0; background: var(--k-page); color: var(--k-ink); font-family: var(--k-font-sans); -webkit-font-smoothing: antialiased; }
 .k-num, .k-body td, .k-body .num { font-variant-numeric: tabular-nums; }
 .k-body h1, .k-body h2, .k-body h3 { text-wrap: balance; }
