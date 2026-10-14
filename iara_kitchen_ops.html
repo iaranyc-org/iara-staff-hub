@@ -1626,7 +1626,7 @@ function pricingDetailHtml(){
 
 function renderPricing(){
   var html = '<div class="panel-head"><div><h2>Price Search</h2><div class="desc">Search your ingredients to see current cost, price history and purchase history.</div></div></div>';
-  html += '<div class="card"><input id="priceSearchInput" type="text" placeholder="Search by ingredient or vendor…" value="'+esc(state.priceSearch)+'" style="border:1px solid var(--border); border-radius:8px; padding:9px 12px; font-size:16px; width:100%; background:var(--surface); color:var(--ink)"></div>';
+  html += '<div class="card"><input id="priceSearchInput" type="text" placeholder="Search by ingredient or vendor…" value="'+esc(state.priceSearch)+'" style="border:1px solid var(--border); border-radius:8px; padding:9px 12px; min-height:var(--k-tap); box-sizing:border-box; font-size:16px; width:100%; background:var(--surface); color:var(--ink)"></div>';
   html += '<div id="priceResultsList">' + pricingResultsHtml() + '</div>';
   html += pricingDetailHtml();
   return html;
