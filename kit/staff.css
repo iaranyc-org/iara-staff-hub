@@ -179,7 +179,7 @@
 /* App bar v3 (Jay, 2026-10-13): the ONE manager navigation, identical in every manager app
    (static via nav.js, Next via next/staff-bar.tsx, same class names). Lineup is separate
    (data-mode="solo": no tabs, no search) and opens in a new tab from here.
-     [iara mark → Home] [Rolling Title] | Home  Kitchen Ops  Analytics  Inbox  Private Dining  Lineup↗   [Search ⌘K] [avatar]
+     [iara mark → Home] [Rolling Title] | Home  Inbox▾  Private Dining  Lineup↗   [Search ⌘K] [avatar]
    Contents are capped at --k-content-max and centered. Below 1100px the tabs drop to a
    second row that scrolls sideways. Height = --k-appbar-h (changes with the layout). */
 :root { --k-content-max: 1200px; }
@@ -205,6 +205,11 @@
 .k-apptab:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
 .k-apptab[aria-current="page"] { color: var(--k-primary-ink); background: var(--k-primary); }
 .k-apptab svg { flex: none; }
+/* A tab that opens a menu (Inbox ▾: Messages, Reviews, Contacts, Analytics, Settings). Same pill as a link tab. */
+button.k-apptab { margin: 0; border: 0; background: none; cursor: pointer; }
+.k-apptab[aria-expanded="true"]:not([aria-current]) { color: var(--k-ink); background: var(--k-raised); }
+.k-apptab[aria-haspopup] svg { transition: transform var(--k-fast) var(--k-ease); }
+.k-apptab[aria-expanded="true"] svg { transform: rotate(180deg); }
 @media (pointer: coarse), (max-width: 1023px) { .k-apptab { min-height: var(--k-tap); } }
 
 .k-appbar .k-palette-trigger { border-color: transparent; background: none; }
@@ -231,6 +236,8 @@
 .k-menu { position: relative; min-width: 0; }
 .k-menu-list { position: absolute; right: 0; top: calc(100% + 6px); z-index: 950; min-width: 240px; max-width: calc(100vw - 24px); margin: 0; padding: 6px; list-style: none; box-sizing: border-box; background: var(--k-raised); border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); box-shadow: 0 12px 32px rgb(0 0 0 / .45); animation: k-menu-in var(--k-fast) var(--k-ease); }
 .k-menu-list[hidden] { display: none; }
+/* Tab menus sit outside the sideways-scrolling tab row (so they are never clipped); nav.js / staff-bar.tsx set top/left. */
+.k-menu-list.k-menu-fixed { position: fixed; right: auto; top: 0; left: 0; min-width: 200px; }
 @keyframes k-menu-in { from { transform: translateY(-4px); } }
 .k-menu-label { padding: 8px 10px 4px; font: 600 12px/1.3 var(--k-font-sans); color: var(--k-muted); overflow-wrap: anywhere; }
 .k-menu-item { display: flex; align-items: center; gap: 10px; width: 100%; min-height: var(--k-tap); padding: 0 10px; box-sizing: border-box; border: 0; border-radius: var(--k-radius); background: none; color: var(--k-ink); font: 500 15px/1.2 var(--k-font-sans); text-align: left; text-decoration: none; cursor: pointer; }
@@ -239,7 +246,22 @@
 .k-menu-item[aria-current="page"] { font-weight: 700; }
 .k-menu-item[aria-current="page"]::after { content: "Current"; margin-left: auto; font: 600 12px/1 var(--k-font-sans); color: var(--k-accent-text); }
 .k-menu-sep { height: 1px; margin: 6px 4px; background: var(--k-border); }
-@media (prefers-reduced-motion: reduce) { .k-menu-list { animation: none; } .k-apptab { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .k-menu-list { animation: none; } .k-apptab, .k-apptab svg { transition: none; } }
+
+/* ---- Sub-tabs: an app family's own pages, first row in the page frame ----
+   Inbox's tabs (Inbox, Reviews, Contacts, Analytics, Settings). Static: <nav class="k-subtabs" aria-label="Inbox">
+   <div class="k-subtabs-row"><a class="k-subtab" href aria-current="page">. Next: InboxTabs in Inbox's app-header.tsx
+   (Tailwind, same measurements). Current = quiet fill + primary underline, never orange fill (the app tab is the marker). */
+.k-subtabs { margin-bottom: 20px; }
+.k-subtabs-row { display: inline-flex; max-width: 100%; gap: 4px; padding: 4px; overflow-x: auto; box-sizing: border-box; border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); background: var(--k-surface); }
+.k-subtab { display: inline-flex; align-items: center; min-height: 36px; padding: 0 14px; border-radius: var(--k-radius); color: var(--k-muted); font: 600 14px/20px var(--k-font-sans); text-decoration: none; white-space: nowrap; transition: color var(--k-fast) var(--k-ease); }
+.k-subtab:hover { color: var(--k-ink); }
+.k-subtab:active { transform: scale(0.98); }
+.k-subtab:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+.k-subtab[aria-current="page"] { background: var(--k-raised); color: var(--k-ink); box-shadow: inset 0 -2px 0 var(--k-primary); }
+@media (max-width: 1023px) { .k-subtab { min-height: var(--k-tap); } }
+@media (max-width: 767px) { .k-subtabs { margin-bottom: 16px; } }
+@media (prefers-reduced-motion: reduce) { .k-subtab { transition: none; } .k-subtab:active { transform: none; } }
 
 /* App subtitle: one plain line under the bar saying what the app does (text lives in nav.js / staff-bar.tsx). */
 .k-app-sub { margin: 0 0 16px; padding: 0; color: var(--k-muted); font: 400 15px/1.4 var(--k-font-sans); text-wrap: pretty; }

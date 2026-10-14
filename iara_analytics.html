@@ -309,11 +309,19 @@
      Firebase restores a session asynchronously, so there is no synchronous
      signed-in signal; the bar holds no private data, so it shows at once and
      hides only while the password gate is on screen. -->
-<div data-k-appbar data-app="Analytics" data-home="/analytics" id="an-bar"></div>
+<!-- Analytics is part of the Inbox family (Jay, 2026-10-14): the bar title is "Inbox" (from nav.js), the Inbox tab is current. -->
+<div data-k-appbar data-home="/analytics" id="an-bar"></div>
 <div id="app" hidden>
 <main class="k-page">
   <p data-k-subtitle></p>
   <h1 class="k-sr-only">Analytics</h1>
+  <nav class="k-subtabs" aria-label="Inbox"><div class="k-subtabs-row">
+    <a class="k-subtab" href="/inbox">Inbox</a>
+    <a class="k-subtab" href="/inbox/reviews">Reviews</a>
+    <a class="k-subtab" href="/inbox/contacts">Contacts</a>
+    <a class="k-subtab" href="/analytics" aria-current="page">Analytics</a>
+    <a class="k-subtab" href="/inbox/settings">Settings</a>
+  </div></nav>
   <div class="k-tabs" role="tablist" aria-label="Channel">
     <button class="k-tab" role="tab" data-t="overview">Overview</button>
     <button class="k-tab" role="tab" data-t="phone">Phone</button>

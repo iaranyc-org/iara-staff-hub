@@ -18,19 +18,30 @@
   // Manager app tabs, in order (keep identical to TABS in next/staff-bar.tsx). `title` is the
   // rolling name shown by the logo. Lineup is a separate staff app: it opens in a new tab.
   // "/" is the public staff landing (password gate + Lineup/Manager Login); it has no bar.
+  // Inbox family (Jay, 2026-10-14: "analytics for the inbox needs to be a drop-down from inbox"):
+  // the Inbox tab opens a menu of its pages; Analytics is part of Inbox (no tab of its own),
+  // shares the "Inbox" rolling title (no roll between them) and keeps its own subtitle.
+  var INBOX_MENU = [
+    { label: "Messages", href: "/inbox" },
+    { label: "Reviews", href: "/inbox/reviews" },
+    { label: "Contacts", href: "/inbox/contacts" },
+    { label: "Analytics", href: "/analytics" },
+    { label: "Settings", href: "/inbox/settings" }
+  ];
   var APPS = [
     { label: "Home", title: "Home", href: "/home", sub: "A summary of everything, coming soon." },
     // Hidden (Jay, 2026-10-14: still being built). /ops keeps working and its bar still renders,
     // but nothing links to it: no tab, no palette entry, no shortcut.
     { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders.", hidden: true },
-    { label: "Analytics", title: "Analytics", href: "/analytics", sub: "See how fast we answer guests and how bookings are going." },
-    { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send." },
+    { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send.", menu: INBOX_MENU },
+    { label: "Analytics", title: "Inbox", href: "/analytics", sub: "See how fast we answer guests and how bookings are going.", hidden: true, parent: "/inbox" },
     { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
   var ICON = {
     ext: '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
+    down: '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
     out: '<svg ' + P + '><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>'
   };
   var FILES = { "/iara_home.html": "/home", "/iara_hub.html": "/", "/iara_staff_hub.html": "/lineup", "/iara_kitchen_ops.html": "/ops", "/iara_analytics.html": "/analytics" };
@@ -54,17 +65,30 @@
     var name = el.getAttribute("data-app") || (cur ? cur.title : "iara Staff");
     var solo = el.getAttribute("data-mode") === "solo";   // Lineup: its own instance, no manager tabs or search
     if (solo) document.documentElement.setAttribute("data-k-nav", "solo");
+    var lists = "";
     var tabs = solo ? "" : '<nav class="k-apptabs" aria-label="Manager apps">' + APPS.filter(function (a) { return !a.hidden; }).map(function (a) {
-      return '<a class="k-apptab" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") +
+      var on = cur && (a === cur || a.href === cur.parent);
+      if (a.menu) {
+        // Button in the (sideways-scrolling) tab row; its list lives outside the row so it is never clipped.
+        var id = "k-tabmenu-" + a.href.slice(1), p = here(), best = null;
+        a.menu.forEach(function (m) { if (p === m.href || p.indexOf(m.href + "/") === 0) { if (!best || m.href.length > best.href.length) best = m; } });
+        lists += '<div class="k-menu-list k-menu-fixed" role="menu" id="' + id + '" aria-label="' + a.label + '" hidden>' + a.menu.map(function (m) {
+          return '<a class="k-menu-item" role="menuitem" href="' + m.href + '"' + (m === best ? ' aria-current="page"' : "") + ">" + m.label + "</a>";
+        }).join("") + "</div>";
+        return '<button type="button" class="k-apptab" aria-haspopup="menu" aria-expanded="false" aria-controls="' + id + '"' + (on ? ' aria-current="page"' : "") + ">" + a.label + ICON.down + "</button>";
+      }
+      return '<a class="k-apptab" href="' + a.href + '"' + (on ? ' aria-current="page"' : "") +
         (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
     }).join("") + "</nav>";
     el.innerHTML = '<header class="k-appbar"' + (solo ? ' data-mode="solo"' : "") + '><div class="k-appbar-inner">' +
       '<a class="k-appbar-mark" href="' + (solo ? "/" : "/home") + '" aria-label="' + (solo ? "iara Staff, home" : "Manager Home") + '"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
       '<span class="k-appbar-title"><span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span></span>" +
       tabs + '<div class="k-appbar-spacer"></div>' + (solo ? "" : "<span data-k-palette-slot></span>") +
-      '<span data-k-acct class="k-acct-slot"></span></div></header>';
+      '<span data-k-acct class="k-acct-slot"></span>' + lists + '</div></header>';
     var slot = el.querySelector("[data-k-palette-slot]");
     if (slot && window.iaraPalette) slot.appendChild(window.iaraPalette.trigger());
+    var row = el.querySelector(".k-apptabs");
+    if (row) row.addEventListener("scroll", function () { closeAll(); }, { passive: true });
     paintAccount(el);
     roll(el.querySelector(".k-roll"), name);
     // The one-line subtitle (what this app does) goes wherever the app put [data-k-subtitle].
@@ -105,9 +129,18 @@
     document.querySelectorAll(".k-appbar .k-menu-list").forEach(function (m) {
       if (m === except) return;
       m.hidden = true;
-      var b = m.parentNode.querySelector("[aria-haspopup=menu]"); if (b) b.setAttribute("aria-expanded", "false");
+      var b = btnOf(m); if (b) b.setAttribute("aria-expanded", "false");
     });
   }
+  function btnOf(m) { return document.querySelector('[aria-controls="' + m.id + '"]'); }
+  // Fixed menus (tab menus) hang under their button, clamped to the viewport.
+  function place(m) {
+    if (!m.classList.contains("k-menu-fixed")) return;
+    var r = btnOf(m).getBoundingClientRect(), w = m.offsetWidth, vw = document.documentElement.clientWidth;
+    m.style.top = Math.round(r.bottom + 6) + "px";
+    m.style.left = Math.round(Math.max(12, Math.min(r.left, vw - w - 12))) + "px";
+  }
+  window.addEventListener("resize", function () { document.querySelectorAll(".k-appbar .k-menu-fixed:not([hidden])").forEach(place); });
   function items(m) { return Array.prototype.slice.call(m.querySelectorAll('[role="menuitem"]')); }
 
   document.addEventListener("click", function (e) {
@@ -115,7 +148,7 @@
     if (b) {
       var m = document.getElementById(b.getAttribute("aria-controls")), opening = m.hidden;
       closeAll(m); m.hidden = !opening; b.setAttribute("aria-expanded", String(opening));
-      if (opening) { var it = items(m); (it.filter(function (x) { return x.getAttribute("aria-current"); })[0] || it[0] || b).focus(); }
+      if (opening) { place(m); var it = items(m); (it.filter(function (x) { return x.getAttribute("aria-current"); })[0] || it[0] || b).focus(); }
       return;
     }
     if (!(e.target.closest && e.target.closest(".k-menu-list"))) closeAll();
@@ -124,7 +157,7 @@
     var m = document.activeElement && document.activeElement.closest && document.activeElement.closest(".k-appbar .k-menu-list");
     if (!m) return;
     var it = items(m), i = it.indexOf(document.activeElement);
-    if (e.key === "Escape") { e.preventDefault(); closeAll(); m.parentNode.querySelector("[aria-haspopup=menu]").focus(); }
+    if (e.key === "Escape") { e.preventDefault(); closeAll(); btnOf(m).focus(); }
     else if (e.key === "ArrowDown") { e.preventDefault(); it[(i + 1) % it.length].focus(); }
     else if (e.key === "ArrowUp") { e.preventDefault(); it[(i - 1 + it.length) % it.length].focus(); }
     else if (e.key === "Home") { e.preventDefault(); it[0].focus(); }

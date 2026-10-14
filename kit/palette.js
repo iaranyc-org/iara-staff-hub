@@ -17,16 +17,18 @@
   if (window.iaraPalette) return;
 
   // Canonical list of staff apps. Keep in sync with iara-staff-hub/vercel.json.
+  // Order follows the bar: Home, the Inbox family (Analytics and Phone are part of Inbox, Jay 2026-10-14),
+  // then Private Dining and Lineup. Keep identical (labels, hrefs, order) to STAFF_APPS in next/apps.ts.
   var APPS = [
     { label: "Home", href: "/home", keywords: "manager summary start hub" },
-    { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" },
-    { label: "Analytics", href: "/analytics", keywords: "stats reply rate dashboard" },
-    { label: "Phone", href: "/analytics#t=phone", keywords: "calls texts quo answer rate" },
     { label: "Inbox", href: "/inbox", keywords: "guest messages email dm replies" },
-    { label: "Reviews", href: "/inbox/reviews", keywords: "google yelp stars" },
-    { label: "Contacts", href: "/inbox/contacts", keywords: "guests people crm" },
-    { label: "Inbox Settings", href: "/inbox/settings", keywords: "preferences config" },
-    { label: "Private Dining", href: "/private-dining", keywords: "pdr events parties" }
+    { label: "Reviews", href: "/inbox/reviews", keywords: "inbox google yelp stars" },
+    { label: "Contacts", href: "/inbox/contacts", keywords: "inbox guests people crm" },
+    { label: "Analytics", href: "/analytics", keywords: "inbox stats reply rate dashboard" },
+    { label: "Phone", href: "/analytics#t=phone", keywords: "inbox analytics calls texts quo answer rate" },
+    { label: "Inbox Settings", href: "/inbox/settings", keywords: "inbox preferences config" },
+    { label: "Private Dining", href: "/private-dining", keywords: "pdr events parties" },
+    { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" }
   ];
   window.IARA_APPS = APPS;
 
