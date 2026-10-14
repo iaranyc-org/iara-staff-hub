@@ -45,29 +45,57 @@
 
   var account = null, bars = [];
 
-  function menu(id, btnHtml, label, itemsHtml) {
-    return '<div class="k-menu"><button type="button" class="k-appbar-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="' + id + '" aria-label="' + label + '">' + btnHtml + '</button>' +
+  function menu(id, cls, btnHtml, label, itemsHtml) {
+    return '<div class="k-menu"><button type="button" class="' + cls + '" aria-haspopup="menu" aria-expanded="false" aria-controls="' + id + '" aria-label="' + label + '">' + btnHtml + '</button>' +
       '<div class="k-menu-list" role="menu" id="' + id + '" hidden>' + itemsHtml + '</div></div>';
   }
 
+  var CHEV = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+
   function render(el) {
-    var name = el.getAttribute("data-app") || currentApp().label;
-    var home = el.getAttribute("data-home") || currentApp().href;
     var cur = currentApp();
+    var name = el.getAttribute("data-app") || cur.label;
     var apps = APPS.map(function (a) {
       return '<a class="k-menu-item" role="menuitem" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") + ">" + ICON[a.icon] + "<span>" + a.label + "</span></a>";
     }).join("");
-    var acct = account ? menu("k-acct-menu", '<span class="k-avatar">' + esc((account.email || "?").charAt(0)) + "</span>", "Account",
-      '<div class="k-menu-label">' + esc(account.email || "Signed in") + '</div><div class="k-menu-sep" role="separator"></div>' +
-      (account.signOut ? '<button type="button" class="k-menu-item" role="menuitem" data-k-signout>' + ICON.out + "<span>Sign Out</span></button>" : "")) : "";
     el.innerHTML = '<header class="k-appbar">' +
-      '<a class="k-lockup" href="' + home + '" aria-label="iara ' + esc(name) + ' home"><img src="/kit/iara-orange.svg" alt="iara"><span>' + esc(name) + "</span></a>" +
-      '<div class="k-appbar-spacer"></div><div class="k-appbar-actions"><span data-k-palette-slot></span>' +
-      menu("k-apps-menu", ICON.grid + '<span class="k-appbar-label">Apps</span>', "Apps", apps) + acct + "</div></header>";
+      '<a class="k-appbar-mark" href="/" aria-label="iara Staff Home"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
+      '<div class="k-menu k-switch">' + switchBtn(name) + '<div class="k-menu-list" role="menu" id="k-apps-menu" aria-label="Staff apps" hidden>' + apps + "</div></div>" +
+      '<span data-k-palette-slot></span><div class="k-appbar-spacer"></div><span data-k-acct style="display:contents"></span></header>';
     var slot = el.querySelector("[data-k-palette-slot]");
     if (slot && window.iaraPalette) slot.appendChild(window.iaraPalette.trigger());
-    var so = el.querySelector("[data-k-signout]");
+    paintAccount(el);
+    roll(el.querySelector(".k-roll"), name);
+  }
+  // Account menu repaints on its own, so a late sign-in never interrupts the name roll.
+  function paintAccount(el) {
+    var box = el.querySelector("[data-k-acct]"); if (!box) return;
+    box.innerHTML = account ? menu("k-acct-menu", "k-appbar-btn", '<span class="k-avatar">' + esc((account.email || "?").charAt(0)) + "</span>", "Account",
+      '<div class="k-menu-label">' + esc(account.email || "Signed in") + '</div><div class="k-menu-sep" role="separator"></div>' +
+      (account.signOut ? '<button type="button" class="k-menu-item" role="menuitem" data-k-signout>' + ICON.out + "<span>Sign Out</span></button>" : "")) : "";
+    var so = box.querySelector("[data-k-signout]");
     if (so) so.addEventListener("click", function () { closeAll(); account.signOut(); });
+  }
+  function switchBtn(name) {
+    return '<button type="button" class="k-switch-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="k-apps-menu" aria-label="' + esc(name) + ', switch app">' +
+      '<span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span>" + CHEV + "</button>";
+  }
+
+  // Vertical roll when arriving from a different staff app (same origin, so sessionStorage is shared).
+  // Transform-only: the resting state is the new name in place, so a frozen frame is still readable.
+  var rolled = false;
+  function roll(box, name) {
+    var prev = null;
+    try { prev = sessionStorage.getItem("iara-last-app"); sessionStorage.setItem("iara-last-app", name); } catch (e) {}
+    if (rolled || !box || !prev || prev === name) return;
+    rolled = true;
+    if (document.visibilityState !== "visible" || !box.animate) return;
+    if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var out = document.createElement("span"); out.className = "k-roll-out"; out.setAttribute("aria-hidden", "true"); out.textContent = prev;
+    box.appendChild(out);
+    var opts = { duration: 320, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
+    box.querySelector(".k-roll-in").animate([{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], opts);
+    out.animate([{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], opts).onfinish = function () { out.remove(); };
   }
 
   function closeAll(except) {
@@ -109,7 +137,7 @@
 
   window.iaraNav = {
     apps: APPS,
-    setAccount: function (a) { account = a && (a.email || a.signOut) ? a : null; bars.forEach(render); },
+    setAccount: function (a) { account = a && (a.email || a.signOut) ? a : null; bars.forEach(paintAccount); },
     refresh: mount
   };
 })();
