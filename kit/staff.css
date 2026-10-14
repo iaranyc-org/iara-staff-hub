@@ -267,3 +267,17 @@
 /* The account slot always takes the avatar's width, so Search sits in the same spot in every app,
    with or without a signed-in account (the bar must not shift between apps). */
 .k-acct-slot { display: inline-flex; align-items: center; justify-content: center; min-width: var(--k-tap); }
+
+/* ---- Spotlight (house SpotlightCard, vanilla) -----------------------------
+   <section class="k-card k-spotlight">...</section> + /kit/spotlight.js.
+   A soft orange glow follows the pointer. Decorative only: it paints BEHIND
+   the content (isolation + z-index:-1, so above the card fill, below text),
+   never takes pointer events, and is off on touch, coarse pointers and
+   reduced motion. Primary at 12% peak alpha; text contrast stays AA on it. */
+.k-spotlight { position: relative; isolation: isolate; }
+.k-spotlight::after { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: radial-gradient(420px circle at var(--x, 50%) var(--y, 50%), color-mix(in srgb, var(--k-primary) 12%, transparent), transparent 70%);
+  transition: opacity 240ms var(--k-ease); }
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .k-spotlight[data-lit]::after { opacity: 1; }
+}

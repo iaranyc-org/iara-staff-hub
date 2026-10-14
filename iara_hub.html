@@ -25,6 +25,7 @@
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
 <script src="/kit/nav.js" defer blocking="render"></script>
+<script src="/kit/spotlight.js" defer></script>
 <style>
   /* Legacy names mapped onto the iara staff kit (kit/tokens.css). */
   :root{
@@ -91,14 +92,15 @@
 
   /* ===================== Launcher ===================== */
   #launcher{
-    min-height:100vh; min-height:100dvh; display:flex; flex-direction:column;
+    min-height:calc(100vh - var(--k-appbar-h, 107px)); min-height:calc(100dvh - var(--k-appbar-h, 107px)); display:flex; flex-direction:column;
     background:
       linear-gradient(160deg,
         color-mix(in srgb, var(--forest) 11%, var(--paper)) 0%,
         var(--paper) 42%,
         color-mix(in srgb, var(--sun) 13%, var(--paper)) 100%);
   }
-  #launcher > [data-k-appbar]{ position:sticky; top:0; z-index:900; }
+  #hub-bar{ position:sticky; top:0; z-index:900; }
+  #hub-bar[hidden]{ display:none; }
   /* Content sits in the kit page frame (.k-page), aligned to the app bar like every manager app. */
   #launcher > .k-page{ flex:1; padding-bottom:max(64px, env(safe-area-inset-bottom)); }
   /* The grain overlay that used to live here (feTurbulence + mix-blend-mode
@@ -174,13 +176,18 @@
   </div>
 </div>
 
+<!-- The bar sits OUTSIDE #launcher so it is in the first frame for the
+     cross-document title roll. Firebase restores a session asynchronously
+     (IndexedDB), so there is no synchronous "signed in" signal to unhide the
+     launcher with; the bar holds no private data, so it shows at once and is
+     hidden only while the password gate is actually on screen. -->
+<div data-k-appbar data-app="iara Staff" data-home="/" id="hub-bar"></div>
 <div id="launcher" hidden>
-  <div data-k-appbar data-app="iara Staff" data-home="/"></div>
   <main class="k-page">
     <p data-k-subtitle></p>
     <h1 class="k-sr-only">iara Staff</h1>
     <div class="cols">
-      <section class="card" aria-labelledby="lineup-title">
+      <section class="card k-spotlight" aria-labelledby="lineup-title">
         <h2 class="card-title" id="lineup-title">Lineup</h2>
         <p class="card-desc">Learn the menu and service, then test what you know.</p>
         <form id="lineup-form">
@@ -213,7 +220,7 @@
       <!-- Every staff app on staff.iara.nyc. Lineup is the form on the left;
            the rest are manager tools and link straight out. Keep this list
            in sync with the rewrites in vercel.json. -->
-      <nav class="card" aria-labelledby="mgr-title">
+      <nav class="card k-spotlight" aria-labelledby="mgr-title">
         <h2 class="card-title" id="mgr-title">Manager Apps</h2>
         <ul class="app-list">
           <li><a class="app-row" href="/ops"><span class="app-row-text"><span class="app-row-name">Kitchen Ops</span><span class="app-row-desc">Track ingredient costs, recipes, inventory and orders.</span></span><span class="app-row-arrow" aria-hidden="true">&rarr;</span></a></li>
@@ -249,6 +256,7 @@
 
   var gate = document.getElementById("gate");
   var launcher = document.getElementById("launcher");
+  var bar = document.getElementById("hub-bar");
   var form = document.getElementById("gate-form");
   var pwField = document.getElementById("hub-pw");
   var err = document.getElementById("hub-err");
@@ -256,6 +264,7 @@
 
   function unlock(){
     gate.hidden = true;
+    bar.hidden = false;
     launcher.hidden = false;
   }
 
@@ -268,7 +277,7 @@
   firebase.auth().onAuthStateChanged(function(user){
     if (user) unlock();
     else {
-      gate.hidden = false; launcher.hidden = true;
+      gate.hidden = false; launcher.hidden = true; bar.hidden = true;
       // Single-field gate: put the cursor in it so staff can just type.
       // preventScroll keeps the card where it is on phones.
       try { pwField.focus({ preventScroll: true }); } catch(e){ pwField.focus(); }

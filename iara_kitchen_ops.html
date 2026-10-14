@@ -321,8 +321,13 @@
   .pr-strong .muted{color:var(--ink-secondary);}
   .search-box{border:1px solid var(--k-border-input); border-radius:var(--k-radius); padding:10px 12px; min-height:var(--k-tap); font-size:16px; background:var(--k-surface); color:var(--ink); width:100%; max-width:320px;}
   .toolbar-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:2px;}
-  th.sortable{cursor:pointer; user-select:none;}
-  th.sortable:hover{color:var(--ink);}
+  th.sortable{user-select:none;}
+  .th-sort{all:unset; box-sizing:border-box; display:inline-flex; align-items:center; gap:2px; cursor:pointer; color:inherit; font:inherit; text-transform:inherit; letter-spacing:inherit; border-radius:4px;}
+  th.num .th-sort{justify-content:flex-end;}
+  .th-sort:hover{color:var(--ink);}
+  .th-sort:focus-visible{outline:2px solid var(--k-ring); outline-offset:2px;}
+  .pr-link{all:unset; box-sizing:border-box; cursor:pointer; color:inherit; font:inherit; border-radius:4px;}
+  .pr-link:focus-visible{outline:2px solid var(--k-ring); outline-offset:2px;}
   .sort-arrow{font-size:9px; margin-left:2px; color:var(--accent-strong);}
   .filter-row select, .filter-row input{border:1px solid var(--k-border-input); background:var(--k-surface); border-radius:var(--k-radius); padding:7px 10px; min-height:36px; font-size:16px;}
   .pr-clickable td{cursor:pointer;}
@@ -512,7 +517,9 @@ function sortTh(label, scope, key, sortState, cls){
   var active = sortState && sortState.key===key;
   var arrow = active ? (sortState.dir==='asc' ? ' ▲' : ' ▼') : '';
   var ariaSort = active ? (sortState.dir==='asc' ? 'ascending' : 'descending') : 'none';
-  return '<th class="'+(cls||'')+' sortable" data-action="setSort" data-scope="'+scope+'" data-key="'+key+'" title="Sort by '+esc(label)+'" aria-sort="'+ariaSort+'">'+esc(label)+'<span class="sort-arrow">'+arrow+'</span></th>';
+  // A real button in the header: Tab-reachable, Enter/Space sort, name = the column label
+  // (aria-sort on the th announces the current order); the kit tooltip says what it does.
+  return '<th class="'+(cls||'')+' sortable" aria-sort="'+ariaSort+'"><button type="button" class="th-sort" data-action="setSort" data-scope="'+scope+'" data-key="'+key+'" data-k-tip="Sort by '+esc(label)+'">'+esc(label)+'<span class="sort-arrow" aria-hidden="true">'+arrow+'</span></button></th>';
 }
 function daysLeftLabel(d){ var n = Math.max(0, Math.round(d)); return n+(n===1?' Day Left':' Days Left'); }
 function searchBoxHtml(id, placeholder, value){
@@ -1531,7 +1538,7 @@ function posTableHtml(){
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(po){
     var badgeClass = po.status==='received' ? 'good' : (po.status==='sent' ? 'warning' : 'neutral');
-    html += '<tr><td>'+dateLong(po.date)+(po.receiptAssetId?' <button class="k-btn k-btn-sm k-btn-icon k-btn-ghost" data-action="viewReceipt" data-asset-id="'+esc(po.receiptAssetId)+'" title="View scanned receipt">'+icon('receipt')+'</button>':'')+'</td><td>'+esc(po.vendor)+'</td><td class="num">'+(po.lines||[]).length+'</td><td class="num">'+money(poTotal(po))+'</td>'+
+    html += '<tr><td>'+dateLong(po.date)+(po.receiptAssetId?' <button class="k-btn k-btn-sm k-btn-icon k-btn-ghost" data-action="viewReceipt" data-asset-id="'+esc(po.receiptAssetId)+'" aria-label="View Scanned Receipt" data-k-tip="Open the photo of this invoice">'+icon('receipt')+'</button>':'')+'</td><td>'+esc(po.vendor)+'</td><td class="num">'+(po.lines||[]).length+'</td><td class="num">'+money(poTotal(po))+'</td>'+
       '<td><span class="badge '+badgeClass+'">'+po.status+'</span></td><td class="row-actions">'+
       (po.status==='draft' ? '<button class="k-btn k-btn-sm k-btn-ghost" data-action="poStatus" data-id="'+po.id+'" data-status="sent">Mark Sent</button>' : '') +
       (po.status==='sent' ? '<button class="k-btn k-btn-sm k-btn-primary" data-action="poStatus" data-id="'+po.id+'" data-status="received">Mark Received</button>' : '') +
@@ -1638,8 +1645,11 @@ function renderPurchaseReportCard(){
   function row(label, val, catKey, opts){
     opts = opts || {};
     var clickable = catKey != null;
-    return '<tr class="'+(opts.strong?'pr-strong ':'')+(clickable?'pr-clickable':'')+'"'+(clickable?' data-action="viewPurchaseDrilldown" data-category="'+esc(catKey)+'" data-k-tip="See what, when and who this was purchased from"':'')+'>'+
-      '<td'+(opts.indent?' style="padding-left:28px"':'')+'>'+esc(label)+(clickable?' <span class="muted" style="font-size:11px">→</span>':'')+'</td>'+
+    // Whole row still opens on click; the label is a real button so Enter/Space open it too.
+    return '<tr class="'+(opts.strong?'pr-strong ':'')+(clickable?'pr-clickable':'')+'"'+(clickable?' data-action="viewPurchaseDrilldown" data-category="'+esc(catKey)+'"':'')+'>'+
+      '<td'+(opts.indent?' style="padding-left:28px"':'')+'>'+(clickable
+        ? '<button type="button" class="pr-link" data-action="viewPurchaseDrilldown" data-category="'+esc(catKey)+'" aria-label="See '+esc(/Purchases$/.test(label) ? label : label+' Purchases')+'" data-k-tip="See what, when and who this was purchased from">'+esc(label)+' <span class="muted" style="font-size:11px" aria-hidden="true">→</span></button>'
+        : esc(label))+'</td>'+
       '<td class="num">'+money(val)+'</td>'+
       '<td class="num">'+pctOfAll(val)+'</td>'+
     '</tr>';
@@ -2057,7 +2067,7 @@ function invoicePhotoAreaHtml(){
     '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
       '<button type="button" class="k-btn k-btn-ghost" data-action="invoicePickPhoto">'+(hasPhoto?'Choose Another Photo':(icon('camera')+' Add Photo'))+'</button>' +
       (canExtract ? '<button type="button" class="k-btn k-btn-primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract with AI</button>' : '') +
-      (hasPhoto && !canExtract ? '<button type="button" class="k-btn k-btn-primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract with AI</button>' : '') +
+      (hasPhoto && !canExtract ? '<button type="button" class="k-btn k-btn-primary" data-action="invoiceExtract" disabled aria-describedby="invoiceNote">'+icon('sparkles')+' Extract with AI</button>' : '') +
     '</div>' +
   '</div>';
 }
@@ -2072,7 +2082,8 @@ function openInvoiceModal(){
       ? 'This view can’t send photos to Claude for reading: attach the photo for your records and enter the order by hand below.'
       : 'Take a photo of the invoice, or choose one from your library, then extract it with AI. Review the matched items before saving.');
   var h = '<h2>Scan Invoice</h2>' +
-    '<p class="hint">'+esc(note)+'</p>' +
+    // Visible reason for the disabled Extract with AI button (it points here with aria-describedby).
+    '<p class="hint" id="invoiceNote">'+esc(note)+'</p>' +
     '<input type="file" id="invoicePhotoInput" accept="image/*" capture="environment" hidden>' +
     '<div id="invoicePhotoArea">' + invoicePhotoAreaHtml() + '</div>' +
     '<div class="modal-actions"><button type="button" class="k-btn k-btn-ghost" data-action="enterInvoiceManually">Enter by Hand</button><div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button></div></div>';
@@ -2246,6 +2257,8 @@ document.addEventListener('click', function(e){
         purchaseDrilldown: renderPurchaseDrilldownTableWrap
       };
       if(refreshers[scope]) refreshers[scope]();
+      var again = document.querySelector('.th-sort[data-scope="'+scope+'"][data-key="'+key+'"]');
+      if(again && t !== again) again.focus();
       break;
     }
     case 'selectPriceItem': state.priceSelectedId = t.dataset.id; render(); break;
