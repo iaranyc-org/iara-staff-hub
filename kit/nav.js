@@ -56,7 +56,7 @@
         (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
     }).join("") + "</nav>";
     el.innerHTML = '<header class="k-appbar"' + (solo ? ' data-mode="solo"' : "") + '><div class="k-appbar-inner">' +
-      '<a class="k-appbar-mark" href="/" aria-label="iara Staff Home"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
+      '<a class="k-appbar-mark" href="/" aria-label="iara Staff, home"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
       '<span class="k-appbar-title"><span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span></span>" +
       tabs + '<div class="k-appbar-spacer"></div>' + (solo ? "" : "<span data-k-palette-slot></span>") +
       '<span data-k-acct class="k-acct-slot"></span></div></header>';
