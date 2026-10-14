@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v44';   // v44: public landing + Manager Home (/home); Kitchen Ops hidden from nav
+const VERSION = 'iara-lineup-v45';   // v45: /analytics precached so an offline reload shows the cached page; kit tabs.js
 const CORE = [
   './',
   './iara_hub.html',
@@ -26,6 +26,10 @@ const CORE = [
   './iara_home.html',
   './lineup',
   './iara_staff_hub.html',
+  './analytics',
+  './iara_analytics.html',
+  './kit/tokens.css',
+  './kit/staff.css',
   './ops',
   './iara_kitchen_ops.html',
   './manifest.json',
