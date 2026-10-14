@@ -19,6 +19,7 @@
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
+<script src="/kit/nav.js" defer></script>
 <style>
   #panel-phone #ph-err.k-alert{ border-color:var(--k-critical); color:var(--k-critical); border-radius:var(--k-radius); }
   /* Same tokens and components as Phone Analytics (iara_phone.html), so the embedded Phone tab is seamless. */
@@ -34,6 +35,7 @@
   html,body{ background:var(--paper); }
   body{ margin:0; color:var(--ink); font-family:var(--k-font-sans); -webkit-font-smoothing:antialiased; }
   [hidden]{ display:none !important; }
+  [data-k-appbar]{ position:sticky; top:0; z-index:900; }
   .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
   .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:20px; box-shadow:var(--shadow); }
   .gate{ width:100%; max-width:380px; }
@@ -47,14 +49,8 @@
   .btn:hover:not(:disabled){ background:var(--k-primary-hover); }
   a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .err{ padding:12px 14px; border-radius:var(--k-radius); border:1px solid var(--k-critical); background:var(--k-surface); color:var(--k-critical); font-size:14px; margin:-4px 0 12px; }
-  header.topbar{ position:sticky; top:env(safe-area-inset-top,0px); z-index:20; background:var(--paper); border-bottom:1px solid var(--line);
-    padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px; }
-  .brand{ display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; border-radius:8px; min-width:0; }
-  .brand-mark{ width:var(--k-lockup-mark); height:auto; display:block; flex:none; }
-  .brand h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:var(--k-lockup-word); color:var(--k-display); margin:0; white-space:nowrap; }
-  .topbar-end{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:flex-end; min-width:0; }
   .loading-skel{ padding:4px 0 24px; }
-  .updated{ font-size:13px; color:var(--river); white-space:nowrap; }
+  .updated{ font-size:13px; color:var(--river); white-space:nowrap; margin-left:auto; }
   main{ max-width:1080px; margin:0 auto; padding:18px 16px 64px; }
   .tabs{ display:flex; gap:4px; padding:4px; background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
   .tabs::-webkit-scrollbar{ display:none; }
@@ -119,7 +115,7 @@
   .xl{ display:flex; gap:3px; font-size:12px; color:var(--river); margin-top:6px; }
   .xl div{ flex:1; min-width:0; text-align:center; white-space:nowrap; overflow:visible; }
   /* Narrow phones: smaller axis text so 10/10-style labels don't touch; tighter header so the title and Updated time fit side by side. */
-  @media (max-width:420px){ .xl{ font-size:11px; } .updated{ font-size:12px; } header.topbar{ padding:12px 16px; } }
+  @media (max-width:420px){ .xl{ font-size:11px; } .updated{ font-size:12px; } }
   .hbar{ display:grid; grid-template-columns:96px 1fr 36px; align-items:center; gap:10px; font-size:14px; margin-bottom:8px; }
   .hbar .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
   .hbar .fill{ height:100%; background:var(--river); border-radius:5px; }
@@ -145,8 +141,6 @@
   .muted{ color:var(--ink-soft); }
   @media (max-width:760px){ .grid2.even{ grid-template-columns:1fr; } .wrow{ grid-template-columns:1fr auto; } .wch{ grid-column:1 / -1; justify-self:start; } }
   .loading{ color:var(--k-muted); padding:60px 0; text-align:center; }
-  /* Comfortable tap target for the home link on phones. */
-  .brand{ min-height:44px; }
   /* Phones: tabs and range chips scroll sideways; fade the right edge so it reads as "more this way". */
   @media (max-width:560px){
     .tabs, .seg{ -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
@@ -157,7 +151,6 @@
     .kpis{ grid-template-columns:1fr 1fr; }
     .grid2{ grid-template-columns:1fr; }
     .kpi .v{ font-size:28px; }
-    header.topbar{ padding:12px 16px; }
     .hbar{ grid-template-columns:80px 1fr 32px; }
   }
 
@@ -306,14 +299,9 @@
 </div>
 
 <div id="app" hidden>
-<header class="topbar">
-  <a class="brand" href="/" aria-label="Back to iara Staff">
-    <img class="brand-mark" src="/img/iara-mark.png" alt="iara" width="80">
-    <h1>Inbox Analytics</h1>
-  </a>
-  <div class="topbar-end"><span class="updated" id="updated"></span><span data-k-palette-slot></span></div>
-</header>
+<div data-k-appbar data-app="Analytics" data-home="/analytics"></div>
 <main>
+  <h1 class="k-sr-only">Inbox Analytics</h1>
   <div class="tabs" role="tablist" aria-label="Channel">
     <button class="tab" role="tab" data-t="overview">Overview</button>
     <button class="tab" role="tab" data-t="phone">Phone</button>
@@ -331,6 +319,7 @@
       <button class="chip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="range-custom">Custom ▾</button>
     </div>
     <span class="range-text" id="range-text"></span>
+    <span class="updated" id="updated"></span>
     <form class="range-pop" id="range-custom" hidden>
       <label>From <input type="date" id="rc-from" required></label>
       <label>To <input type="date" id="rc-to" required></label>
