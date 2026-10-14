@@ -9,6 +9,16 @@
 .k-body h1, .k-body h2, .k-body h3 { text-wrap: balance; }
 .k-body p { text-wrap: pretty; }
 .k-muted { color: var(--k-muted); }
+
+/* Type scale (tokens.css --k-text-*). Display serif only for page + section headings.
+   Next twin: same class names as Tailwind utilities in next/theme.css, plus text-page/section/... sizes. */
+.k-h-page    { margin: 0; font-family: var(--k-font-display); font-size: var(--k-text-page);    line-height: var(--k-text-page-lh);    font-weight: var(--k-text-page-w);    letter-spacing: -0.02em; color: var(--k-display); text-wrap: balance; }
+.k-h-section { margin: 0; font-family: var(--k-font-display); font-size: var(--k-text-section); line-height: var(--k-text-section-lh); font-weight: var(--k-text-section-w); letter-spacing: -0.01em; color: var(--k-display); text-wrap: balance; }
+.k-h-card    { margin: 0; font-family: var(--k-font-sans);    font-size: var(--k-text-card);    line-height: var(--k-text-card-lh);    font-weight: var(--k-text-card-w);    color: var(--k-ink); text-wrap: balance; }
+.k-text-body  { font-family: var(--k-font-sans); font-size: var(--k-text-body);  line-height: var(--k-text-body-lh);  font-weight: var(--k-text-body-w); }
+.k-text-small { font-family: var(--k-font-sans); font-size: var(--k-text-small); line-height: var(--k-text-small-lh); font-weight: var(--k-text-small-w); }
+.k-text-meta  { font-family: var(--k-font-sans); font-size: var(--k-text-meta);  line-height: var(--k-text-meta-lh);  font-weight: var(--k-text-meta-w); color: var(--k-muted); font-variant-numeric: tabular-nums; }
+.k-text-label { font-family: var(--k-font-sans); font-size: var(--k-text-label); line-height: var(--k-text-label-lh); font-weight: var(--k-text-label-w); color: var(--k-ink); }
 :where(.k-body) :focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
 
 /* Lockup: mark big, word small */
@@ -55,16 +65,29 @@
 /* Badges (status, square-ish) and chips (filters, pill) */
 .k-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--k-radius-sm); font: 600 12px/1.4 var(--k-font-sans); background: var(--k-raised); color: var(--k-ink); font-variant-numeric: tabular-nums; }
 .k-badge-good { color: var(--k-good); } .k-badge-critical { color: var(--k-critical); } .k-badge-warning { color: var(--k-warning); } .k-badge-accent { color: var(--k-accent-text); }
+.k-badge-info { color: var(--k-info); } .k-badge-ask { color: var(--k-ask); } .k-badge-muted { color: var(--k-muted); } .k-badge-display { color: var(--k-display); }
+/* One badge per status (tokens.css --k-status-*; Next: STATUS_BADGE in next/status.ts). Never hand-roll a status pill. */
+.k-badge-inquiry { color: var(--k-status-inquiry); }   .k-badge-offered { color: var(--k-status-offered); }
+.k-badge-hold { color: var(--k-status-hold); }         .k-badge-ask-to-confirm { color: var(--k-status-ask); }
+.k-badge-confirmed { color: var(--k-status-confirmed); } .k-badge-completed { color: var(--k-status-completed); }
+.k-badge-lost { color: var(--k-status-lost); }         .k-badge-needs-answer { color: var(--k-status-needs-answer); }
+.k-badge-private-dining { color: var(--k-status-private-dining); } .k-badge-vendor { color: var(--k-status-vendor); }
+.k-badge-done { color: var(--k-status-done); }         .k-badge-skipped { color: var(--k-status-skipped); }
 .k-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: var(--k-radius-pill); border: 1px solid var(--k-border-input); background: none; color: var(--k-ink); font: 500 14px/1 var(--k-font-sans); cursor: pointer; font-variant-numeric: tabular-nums; }
+.k-chip { transition: background-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease), border-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease); }
 .k-chip:active { transform: scale(0.97); }
 .k-chip[aria-pressed="true"] { background: var(--k-ink); color: var(--k-page); border-color: var(--k-ink); }
+/* Identical to next/controls Chip: 36px, 44px below 1024px or on touch; border --k-border-input (3.46+ control boundary); pressed = ink fill. Group them in role="group" + aria-label. */
+@media (pointer: coarse), (max-width: 1023px) { .k-chip { min-height: var(--k-tap); } }
 
 /* Tabs: one style everywhere, segmented */
 .k-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--k-radius-lg); background: var(--k-surface); border: 1px solid var(--k-border); max-width: 100%; overflow-x: auto; }
 .k-tab { min-height: 36px; padding: 0 14px; border: 0; border-radius: var(--k-radius); background: none; color: var(--k-muted); font: 600 14px/1 var(--k-font-sans); cursor: pointer; white-space: nowrap; font-variant-numeric: tabular-nums; }
 .k-tab:hover { color: var(--k-ink); }
 .k-tab[aria-selected="true"] { background: var(--k-primary); color: var(--k-primary-ink); }
-@media (pointer: coarse) { .k-tab { min-height: var(--k-tap); } }
+@media (pointer: coarse), (max-width: 1023px) { .k-tab { min-height: var(--k-tap); } }
+.k-tab { transition: background-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease); } /* not outline-color: the ring must not fade in */
+/* Arrow keys: load /kit/tabs.js; it wires roving tabindex + Left/Right/Home/End on every [role=tablist] (WAI-ARIA tabs, automatic activation = click). */
 
 /* Cards */
 .k-card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); padding: 16px; }
@@ -83,13 +106,20 @@
 
 /* States */
 /* Empty states sit on the left edge like everything else (Jay, 2026-10-14: "everything justified to the left"). */
+/* Empty state: say which empty, teach, offer an action (secondary action optional):
+   <div class="k-empty"><svg aria-hidden="true">…</svg><h3>No messages match "tony"</h3><p>Try a name, phone number or handle.</p>
+     <div class="k-empty-actions"><button class="k-btn k-btn-outline">Clear Search</button></div></div> */
 .k-empty { max-width: 560px; margin: 32px 0; text-align: left; display: grid; justify-items: start; gap: 8px; }
 .k-empty h3 { margin: 0; font: 600 16px/1.3 var(--k-font-sans); color: var(--k-ink); }
 .k-empty p { margin: 0 0 8px; color: var(--k-muted); font-size: 14px; }
-.k-alert { padding: 12px 14px; border-radius: var(--k-radius); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font-size: 14px; }
+.k-empty-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+/* One error box per failed load, with Try Again:
+   <div class="k-alert" role="alert"><p>Couldn't load analytics. Try again in a minute.</p><button class="k-btn k-btn-outline k-btn-sm">Try Again</button></div> */
+.k-alert { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: var(--k-radius-lg); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font: 400 14px/1.4 var(--k-font-sans); }
+.k-alert > p { margin: 0; flex: 1 1 240px; }
 .k-skeleton { border-radius: var(--k-radius); background: var(--k-raised); animation: k-pulse 1.5s ease-in-out infinite; }
 @keyframes k-pulse { 50% { background: var(--k-raised-hover); } }
-@media (prefers-reduced-motion: reduce) { .k-skeleton { animation: none; } .k-btn, .k-chip { transition: none; } .k-btn:active { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .k-skeleton, .k-skel-card, [class*="k-skel"] { animation: none; } .k-btn, .k-chip, .k-tab { transition: none; } .k-btn:active, .k-chip:active { transform: none; } }
 
 /* Sign-in gate */
 .k-gate { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }

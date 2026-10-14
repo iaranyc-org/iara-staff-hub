@@ -67,10 +67,6 @@
   .an-err[hidden]{ display:none; }
   .an-err p{ margin:0; }
   .an-offline{ margin:0 0 12px; padding:10px 14px; border-radius:var(--k-radius); border:1px solid var(--k-border); background:var(--k-surface); font-size:14px; }
-  .wnames{ list-style:none; margin:8px 0 0; padding:0; display:grid; gap:2px; font-size:13.5px; }
-  .wnames a{ display:flex; gap:6px; align-items:baseline; min-height:28px; color:var(--k-ink); text-decoration:none; }
-  .wnames .wn-ch{ color:var(--k-muted); font-size:12px; white-space:nowrap; }
-  .wnames .wn-who{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-decoration:underline; text-underline-offset:2px; }
   .whint{ margin-top:6px; font-size:12px; color:var(--k-muted); }
   .whint [data-k-tip]{ text-decoration:underline dotted; text-underline-offset:2px; cursor:help; }
   .kpi .n a{ white-space:nowrap; }
@@ -716,16 +712,6 @@
     return ctCard + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
 
-  // Who is waiting (Jay: "who's still waiting?"): oldest first, up to 5, each linking to where it gets answered.
-  function waitingNames(a, p){
-    var items = (a.waiting || []).map(function(w){ return { ch: w.channel, who: w.name, at: w.at, href: "/inbox" }; })
-      .concat(((p && p.open) || []).map(function(o){ return { ch: "phone", who: "…" + o.last4, at: o.at, href: "#t=phone" }; }))
-      .sort(function(x, y){ return x.at - y.at; });
-    var more = items.length - 5;
-    return '<ul class="wnames">' + items.slice(0, 5).map(function(it){
-      return '<li><a href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '><span class="wn-who">' + esc(it.who) + '</span><span class="wn-ch">' + CH[it.ch].label + " · " + ago(it.at) + '</span></a></li>'; }).join("") +
-      '</ul><a href="/inbox" target="_blank" rel="noopener" style="color:var(--river);display:inline-block;margin-top:6px">' + (more > 0 ? "+" + more + " more in " : "Open ") + 'iara Inbox</a>';
-  }
   function render(a, p){
     var e = a.email, dm = a.instagram.dms, cm = a.instagram.comments, rv = a.reviews.resy;
     // Phone: same definition as the Phone tab (handled / (total - autoOnly)); email/IG replies to a phone guest already count there.
@@ -751,7 +737,7 @@
       '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings", dlt(tot.in, prevTot)) +
         kpi(tot.needed ? pct(tot.replied, tot.needed) : "-", "Replied To", tot.needed ? "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply" : "Nothing needed a reply") +
         // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
-        kpi(nowCount, "Waiting", (nowCount ? waitingNames(a, p) : "All caught up") +
+        kpi(nowCount, "Waiting", (nowCount ? 'Across every channel · <a href="/inbox" target="_blank" rel="noopener" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
           '<div class="whint"><span tabindex="0" data-k-tip="Counts people waiting on a first reply: emails, DMs and comments still open in iara Inbox, plus callers and texters on the Phone tab we haven\'t called or texted back. Inbox&rsquo;s To Approve counts drafted cards instead, including texts, story replies and vendor mail, so the two numbers can differ.">How this differs from Inbox</span></div>') +
         kpi(rv.avg == null ? "-" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
       // Volume first (where guests came from), then how fast we replied, then outcomes.
