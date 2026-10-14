@@ -38,6 +38,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
+<script src="/kit/palette.js" defer></script>
 <style>
   /* ===================== Design tokens =====================
      Legacy names mapped onto the iara staff kit (kit/tokens.css).
@@ -975,7 +976,11 @@
   .sidebar .sb-vibes:focus-visible{ outline:2px solid #fbbf56; outline-offset:2px; }
   .vb-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--k-primary-ink); margin-right:5px; animation:vb-pulse 1.6s infinite; }
   @keyframes vb-pulse{ 50%{ opacity:.3; } }
-  .tb-heart{ margin-left:auto; position:relative; font-size:22px; line-height:1; background:none; border:none; color:var(--k-sun); padding:10px; min-width:44px; min-height:44px; cursor:pointer; }
+  .sb-search{ padding:0 0 12px; }
+  .sb-search .k-palette-trigger{ width:100%; }
+  .sb-search .k-palette-trigger kbd{ margin-left:auto; }
+  .topbar [data-k-palette-slot]{ margin-left:auto; }
+  .tb-heart{ position:relative; font-size:22px; line-height:1; background:none; border:none; color:var(--k-sun); padding:10px; min-width:44px; min-height:44px; cursor:pointer; }
   .tb-heart.active, .tb-heart:hover{ background:none; color:var(--k-sun); }
   .tb-heart .tb-dot{ position:absolute; top:9px; right:8px; width:8px; height:8px; border-radius:50%; background:var(--k-primary); box-shadow:0 0 0 2px var(--paper-raised); }
   .home-vibes{ display:block; width:100%; text-align:left; margin:0 0 18px; padding:16px 18px; border-radius:12px; border:none; cursor:pointer;
@@ -1197,6 +1202,7 @@
       <a href="/lineup" class="sb-mark-link" aria-label="iara Lineup home"><img class="logo-img logo-img-md" src="/img/lineup-logo.png" width="320" height="96" decoding="async" alt="iara"><span class="word">Lineup</span>
     </a>
     </div>
+    <div class="sb-search"><span data-k-palette-slot></span></div>
     <button class="nav-btn sb-vibes" data-view="vibes"><b>Good Vibes</b><span id="sb-vibes-sub">Love for iara</span></button>
     <button class="nav-btn active" data-view="home">Home</button>
     <div class="nav-rule"></div>
@@ -1222,6 +1228,7 @@
     <div class="topbar">
       <a href="/lineup" class="sb-mark-link" aria-label="iara Lineup home"><img class="logo-img logo-img-sm" src="/img/lineup-logo.png" width="320" height="96" decoding="async" alt="iara"><span class="word">Lineup</span>
     </a>
+      <span data-k-palette-slot></span>
       <button class="nav-btn tb-heart" data-view="vibes" aria-label="Good Vibes"><span aria-hidden="true">&#9829;</span><i class="tb-dot" id="tb-vibes-dot" hidden></i></button>
     </div>
 
@@ -7395,7 +7402,7 @@ function vibeCard(v, seen){
 function renderVibes(){
   var area = document.getElementById("vibes-area");
   if (!area) return;
-  if (!VIBES.length) { area.innerHTML = '<p class="wl-empty">Loading the good stuff…</p>'; loadVibes(); return; }
+  if (!VIBES.length) { area.innerHTML = '<div class="k-skel-cols" role="status" aria-busy="true"><span class="k-sr-only">Loading the good stuff…</span><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>'; loadVibes(); return; }
   var seen = vibesSeen();
   var weekAgo = new Date(Date.now() - 7*86400000).toISOString().slice(0,10);
   var count = function(t, recent){ return VIBES.filter(function(v){ return v.type === t && (!recent || (v.date || "") >= weekAgo); }).length; };
@@ -8114,7 +8121,7 @@ async function renderProgress(){
     area.innerHTML = '<p class="placeholder-note">Team progress needs the app\'s shared database, which isn\'t available in this preview.</p>';
     return;
   }
-  area.innerHTML = '<p class="placeholder-note">Loading\u2026</p>';
+  area.innerHTML = '<div class="k-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading\u2026</span><div class="k-skeleton k-skel-title"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div></div>';
   try {
     var CATS = Object.keys(QUIZ_META).map(function(k){ return { key:k, name:QUIZ_META[k].name }; });
     var staffSnap = await (adminDb || db).collection("staff").orderBy("name").get();
@@ -8393,4 +8400,19 @@ if (window.claude && window.claude.hot) {
 }
 
 })();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
+  {label:'Open Home', keywords:'lineup start dashboard', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="home"]'); if(b) b.click(); }},
+  {label:'Open Good Vibes', keywords:'lineup reviews press love', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="vibes"]'); if(b) b.click(); }},
+  {label:'Open The Manual', keywords:'lineup service handbook', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="manual"]'); if(b) b.click(); }},
+  {label:'Open The Menu', keywords:'lineup food drinks dishes pronunciation', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="fnb"]'); if(b) b.click(); }},
+  {label:'Open Cleaning', keywords:'lineup checklist', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="cleaning"]'); if(b) b.click(); }},
+  {label:'Open Watch List', keywords:'lineup vip guests press', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="watch"]'); if(b) b.click(); }},
+  {label:'Open Team', keywords:'lineup staff people', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="team"]'); if(b) b.click(); }},
+  {label:'Open Study', keywords:'lineup practice flashcards', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="study"]'); if(b) b.click(); }},
+  {label:'Open Final Exam', keywords:'lineup test quiz', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="quiz"]'); if(b) b.click(); }},
+  {label:'Open Admin', keywords:'lineup team progress manager', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="progress"]'); if(b) b.click(); }}
+]); });
 </script>

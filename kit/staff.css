@@ -80,3 +80,48 @@
 .k-gate-card { width: 100%; max-width: 380px; box-sizing: border-box; display: grid; gap: 16px; justify-items: center; text-align: center; }
 .k-gate-card p { margin: 0; color: var(--k-muted); }
 .k-gate-card .k-btn { width: 100%; }
+
+/* Screen-reader-only text */
+.k-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+/* Skeleton layouts: wrap in role="status" aria-busy="true" with a .k-sr-only label.
+   Shape them like the content that replaces them. */
+.k-skel { display: grid; gap: 12px; }
+.k-skel-kpis { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+@media (max-width: 760px) { .k-skel-kpis { grid-template-columns: 1fr 1fr; } }
+.k-skel-cols { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; }
+.k-skel-tile { height: 88px; border-radius: var(--k-radius-lg); }
+.k-skel-row  { height: 56px; }
+.k-skel-card { height: 160px; border-radius: var(--k-radius-lg); }
+.k-skel-line { height: 14px; border-radius: var(--k-radius-sm); }
+.k-skel-title { height: 22px; width: 40%; border-radius: var(--k-radius-sm); }
+
+/* Command palette (palette.js) */
+.k-palette-trigger { display: inline-flex; align-items: center; gap: 8px; min-height: var(--k-tap); padding: 0 8px 0 12px; border-radius: var(--k-radius); border: 1px solid var(--k-border-input); background: var(--k-surface); color: var(--k-ink); font: 500 14px/1 var(--k-font-sans); cursor: pointer; white-space: nowrap; transition: background-color var(--k-fast) var(--k-ease); }
+.k-palette-trigger:hover { background: var(--k-raised); }
+.k-palette-trigger:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+.k-palette-trigger svg { color: var(--k-muted); flex: none; }
+.k-palette-trigger kbd, .k-palette-esc { font: 500 12px/1 var(--k-font-sans); color: var(--k-muted); background: var(--k-raised); border: 1px solid var(--k-border); border-radius: var(--k-radius-sm); padding: 4px 6px; }
+@media (pointer: coarse) { .k-palette-trigger kbd { display: none; } .k-palette-trigger { padding-right: 12px; } }
+
+.k-palette { position: fixed; inset: 0; z-index: 2000; display: flex; justify-content: center; align-items: flex-start; padding: max(12vh, 16px) 16px 16px; box-sizing: border-box; font-family: var(--k-font-sans); }
+.k-palette[hidden] { display: none; }
+.k-palette-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .55); }
+.k-palette-dialog { position: relative; width: 100%; max-width: 560px; max-height: min(70vh, 520px); display: flex; flex-direction: column; background: var(--k-raised); color: var(--k-ink); border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); box-shadow: 0 16px 48px rgb(0 0 0 / .45); overflow: hidden; animation: k-palette-in var(--k-base) var(--k-ease); }
+@keyframes k-palette-in { from { transform: translateY(-8px) scale(0.98); } }
+.k-palette-head { display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; border-bottom: 1px solid var(--k-border); }
+.k-palette-input { flex: 1; min-width: 0; min-height: var(--k-tap); border: 0; background: none; color: var(--k-ink); font: 16px/1.3 var(--k-font-sans); padding: 0 4px; }
+.k-palette-input::placeholder { color: var(--k-muted); }
+.k-palette-input:focus { outline: none; }
+.k-palette-dialog:focus-within .k-palette-head { box-shadow: inset 0 -2px 0 var(--k-ring); }
+.k-palette-esc { cursor: pointer; min-height: 32px; padding: 0 8px; }
+@media (pointer: coarse) { .k-palette-esc { min-height: var(--k-tap); min-width: var(--k-tap); } }
+.k-palette-esc:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+.k-palette-list { list-style: none; margin: 0; padding: 6px; overflow-y: auto; overscroll-behavior: contain; }
+.k-palette-group { padding: 10px 10px 4px; font: 600 12px/1.3 var(--k-font-sans); color: var(--k-muted); }
+.k-palette-list [role="option"] { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: var(--k-tap); padding: 0 10px; border-radius: var(--k-radius); cursor: pointer; font: 500 15px/1.3 var(--k-font-sans); }
+.k-palette-list [role="option"][aria-selected="true"] { background: var(--k-raised-hover); }
+.k-palette-hint { font-size: 12px; color: var(--k-muted); }
+.k-palette-empty { padding: 20px 10px; text-align: center; color: var(--k-muted); font-size: 14px; }
+.k-palette-open, .k-palette-open body { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .k-palette-dialog { animation: none; } .k-palette-trigger { transition: none; } }

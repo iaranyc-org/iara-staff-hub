@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
+<script src="/kit/palette.js" defer></script>
 <style>
   #panel-phone #ph-err.k-alert{ border-color:var(--k-critical); color:var(--k-critical); border-radius:var(--k-radius); }
   /* Same tokens and components as Phone Analytics (iara_phone.html), so the embedded Phone tab is seamless. */
@@ -51,6 +52,8 @@
   .brand{ display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; border-radius:8px; min-width:0; }
   .brand-mark{ width:var(--k-lockup-mark); height:auto; display:block; flex:none; }
   .brand h1{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:var(--k-lockup-word); color:var(--k-display); margin:0; white-space:nowrap; }
+  .topbar-end{ display:flex; align-items:center; gap:12px; flex-wrap:wrap; justify-content:flex-end; min-width:0; }
+  .loading-skel{ padding:4px 0 24px; }
   .updated{ font-size:13px; color:var(--river); white-space:nowrap; }
   main{ max-width:1080px; margin:0 auto; padding:18px 16px 64px; }
   .tabs{ display:flex; gap:4px; padding:4px; background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
@@ -308,7 +311,7 @@
     <img class="brand-mark" src="/img/iara-mark.png" alt="iara" width="80">
     <h1>Inbox Analytics</h1>
   </a>
-  <span class="updated" id="updated"></span>
+  <div class="topbar-end"><span class="updated" id="updated"></span><span data-k-palette-slot></span></div>
 </header>
 <main>
   <div class="tabs" role="tablist" aria-label="Channel">
@@ -334,7 +337,7 @@
       <button class="btn btn-ghost" type="submit">Apply</button>
     </form>
   </div>
-  <p class="loading" id="loading">Loading…</p>
+  <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true"><span class="k-sr-only">Loading…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
   <p class="err" id="err" hidden></p>
   <section id="panel-overview" role="tabpanel"></section>
   <section id="panel-phone" role="tabpanel" hidden>
@@ -342,7 +345,7 @@
 
   <!-- Range comes from the shared date bar above the tabs; these two spans keep the Phone render's range/updated text. -->
   <div hidden><span id="ph-sub"></span><span id="ph-updated-m"></span></div>
-  <div id="ph-loading" class="loading">Loading calls and texts…</div>
+  <div id="ph-loading" class="k-skel loading-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading calls and texts…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
   <div id="ph-err" class="card k-alert" hidden></div>
   <div id="ph-body" hidden>
     <div class="kpis">
@@ -994,4 +997,14 @@
   window.addEventListener("analytics:range", function(){ range = shared(); if (started) load(false); else maybeStart(); });
   firebase.auth().onAuthStateChanged(function(){ setTimeout(maybeStart, 0); });
 })();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
+  {label:'Show Overview', keywords:'analytics tab summary all channels', run:function(){ var b=document.querySelector('.tab[data-t="overview"]'); if(b) b.click(); }},
+  {label:'Show Phone', keywords:'analytics tab calls texts quo', run:function(){ var b=document.querySelector('.tab[data-t="phone"]'); if(b) b.click(); }},
+  {label:'Show Email', keywords:'analytics tab gmail contact', run:function(){ var b=document.querySelector('.tab[data-t="email"]'); if(b) b.click(); }},
+  {label:'Show Instagram', keywords:'analytics tab ig dms', run:function(){ var b=document.querySelector('.tab[data-t="instagram"]'); if(b) b.click(); }},
+  {label:'Show Reviews', keywords:'analytics tab google stars', run:function(){ var b=document.querySelector('.tab[data-t="reviews"]'); if(b) b.click(); }}
+]); });
 </script>

@@ -26,6 +26,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
+<script src="/kit/palette.js" defer></script>
 <style>
   /* iara signage palette (the same tokens iara_staff_hub.html and
      iara_hub.html use), pinned dark on every device - iara.nyc has no
@@ -380,6 +381,7 @@
       </div>
     </button>
     <div class="topbar-right">
+      <span data-k-palette-slot></span>
       <div class="today-label" id="todayLabel"></div>
       <div class="sync-chip" id="syncChip"><span class="sync-dot off"></span><span>Connecting…</span></div>
     </div>
@@ -1232,7 +1234,7 @@ function render(){
   document.title = (activeTab ? activeTab.label + ' · ' : '') + 'iara Kitchen Ops';
   var main = $('#main');
   if(!isReady()){
-    main.innerHTML = '<div class="empty-state card">Loading kitchen data…</div>';
+    main.innerHTML = '<div class="k-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading kitchen data…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div></div>';
     return;
   }
   var html = '';
@@ -2408,4 +2410,16 @@ document.getElementById('authGateBtn').addEventListener('click', function(){
 initApp();
 
 })();
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
+  {label:'Open Dashboard', keywords:'ops kitchen home overview attention', run:function(){ var b=document.querySelector('#tabNav button[data-tab="dashboard"]'); if(b) b.click(); }},
+  {label:'Open Ingredients', keywords:'ops kitchen costs items', run:function(){ var b=document.querySelector('#tabNav button[data-tab="ingredients"]'); if(b) b.click(); }},
+  {label:'Open Recipes', keywords:'ops kitchen food cost dishes', run:function(){ var b=document.querySelector('#tabNav button[data-tab="recipes"]'); if(b) b.click(); }},
+  {label:'Open Inventory Counts', keywords:'ops kitchen stock count', run:function(){ var b=document.querySelector('#tabNav button[data-tab="counts"]'); if(b) b.click(); }},
+  {label:'Open Purchasing', keywords:'ops kitchen orders vendors', run:function(){ var b=document.querySelector('#tabNav button[data-tab="purchasing"]'); if(b) b.click(); }},
+  {label:'Open Price Search', keywords:'ops kitchen prices compare', run:function(){ var b=document.querySelector('#tabNav button[data-tab="pricing"]'); if(b) b.click(); }},
+  {label:'Open Reports', keywords:'ops kitchen export print', run:function(){ var b=document.querySelector('#tabNav button[data-tab="reports"]'); if(b) b.click(); }}
+]); });
 </script>
