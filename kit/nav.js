@@ -3,7 +3,8 @@
    The one cross-app navigation. Next apps render the same markup from
    next/staff-bar.tsx; both use the .k-appbar styles in staff.css.
 
-   Use:  <div data-k-appbar data-app="Kitchen Ops" data-home="/ops"></div>
+   Use:  <div data-k-appbar></div>   (title + current tab come from the URL)
+         Lineup only: <div data-k-appbar data-mode="solo"></div>  (no manager tabs, no search)
          <script src="/kit/palette.js" defer></script>
          <script src="/kit/nav.js" defer></script>
    Account: window.iaraNav.setAccount({ email: "x@iara.nyc", signOut: fn })
@@ -14,24 +15,19 @@
 (function () {
   if (window.iaraNav) return;
 
-  // Top-level apps for the switcher. Sub-pages live in the palette (palette.js / next/apps.ts).
+  // Manager app tabs, in order (keep identical to TABS in next/staff-bar.tsx). `title` is the
+  // rolling name shown by the logo. Lineup is a separate staff app: it opens in a new tab.
   var APPS = [
-    { label: "Staff Home", href: "/", icon: "home" },
-    { label: "Lineup", href: "/lineup", icon: "list" },
-    { label: "Kitchen Ops", href: "/ops", icon: "chef" },
-    { label: "Analytics", href: "/analytics", icon: "chart" },
-    { label: "Inbox", href: "/inbox", icon: "inbox" },
-    { label: "Private Dining", href: "/private-dining", icon: "wine" }
+    { label: "Home", title: "Staff Home", href: "/" },
+    { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops" },
+    { label: "Analytics", title: "Analytics", href: "/analytics" },
+    { label: "Inbox", title: "Inbox", href: "/inbox" },
+    { label: "Private Dining", title: "Private Dining", href: "/private-dining" },
+    { label: "Lineup", title: "Lineup", href: "/lineup", external: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
   var ICON = {
-    grid: '<svg ' + P + '><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>',
-    home: '<svg ' + P + '><path d="M3 10.5 12 3l9 7.5V21H3z"/><path d="M9 21v-6h6v6"/></svg>',
-    list: '<svg ' + P + '><path d="M13 5h8M13 12h8M13 19h8"/><path d="m3 5 2 2 4-4M3 12l2 2 4-4M3 19l2 2 4-4"/></svg>',
-    chef: '<svg ' + P + '><path d="M6 13.9A4 4 0 1 1 8.3 6a5 5 0 0 1 7.4 0A4 4 0 1 1 18 13.9V21H6z"/><path d="M6 17h12"/></svg>',
-    chart: '<svg ' + P + '><path d="M3 3v18h18"/><path d="M7 16v-5M12 16V8M17 16v-8"/></svg>',
-    inbox: '<svg ' + P + '><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13L22 12v7H2v-7z"/></svg>',
-    wine: '<svg ' + P + '><path d="M8 22h8M12 15v7M7 3h10l-1 7a4 4 0 0 1-8 0z"/></svg>',
+    ext: '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
     out: '<svg ' + P + '><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>'
   };
   var FILES = { "/iara_hub.html": "/", "/iara_staff_hub.html": "/lineup", "/iara_kitchen_ops.html": "/ops", "/iara_analytics.html": "/analytics" };
@@ -50,23 +46,26 @@
       '<div class="k-menu-list" role="menu" id="' + id + '" hidden>' + itemsHtml + '</div></div>';
   }
 
-  var CHEV = '<svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
-
   function render(el) {
     var cur = currentApp();
-    var name = el.getAttribute("data-app") || cur.label;
-    var apps = APPS.map(function (a) {
-      return '<a class="k-menu-item" role="menuitem" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") + ">" + ICON[a.icon] + "<span>" + a.label + "</span></a>";
-    }).join("");
-    el.innerHTML = '<header class="k-appbar">' +
+    var name = el.getAttribute("data-app") || cur.title;
+    var solo = el.getAttribute("data-mode") === "solo";   // Lineup: its own instance, no manager tabs or search
+    if (solo) document.documentElement.setAttribute("data-k-nav", "solo");
+    var tabs = solo ? "" : '<nav class="k-apptabs" aria-label="Manager apps">' + APPS.map(function (a) {
+      return '<a class="k-apptab" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") +
+        (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
+    }).join("") + "</nav>";
+    el.innerHTML = '<header class="k-appbar"' + (solo ? ' data-mode="solo"' : "") + '><div class="k-appbar-inner">' +
       '<a class="k-appbar-mark" href="/" aria-label="iara Staff Home"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
-      '<div class="k-menu k-switch">' + switchBtn(name) + '<div class="k-menu-list" role="menu" id="k-apps-menu" aria-label="Staff apps" hidden>' + apps + "</div></div>" +
-      '<span data-k-palette-slot></span><div class="k-appbar-spacer"></div><span data-k-acct style="display:contents"></span></header>';
+      '<span class="k-appbar-title"><span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span></span>" +
+      tabs + '<div class="k-appbar-spacer"></div>' + (solo ? "" : "<span data-k-palette-slot></span>") +
+      '<span data-k-acct style="display:contents"></span></div></header>';
     var slot = el.querySelector("[data-k-palette-slot]");
     if (slot && window.iaraPalette) slot.appendChild(window.iaraPalette.trigger());
     paintAccount(el);
     roll(el.querySelector(".k-roll"), name);
   }
+
   // Account menu repaints on its own, so a late sign-in never interrupts the name roll.
   function paintAccount(el) {
     var box = el.querySelector("[data-k-acct]"); if (!box) return;
@@ -75,10 +74,6 @@
       (account.signOut ? '<button type="button" class="k-menu-item" role="menuitem" data-k-signout>' + ICON.out + "<span>Sign Out</span></button>" : "")) : "";
     var so = box.querySelector("[data-k-signout]");
     if (so) so.addEventListener("click", function () { closeAll(); account.signOut(); });
-  }
-  function switchBtn(name) {
-    return '<button type="button" class="k-switch-btn" aria-haspopup="menu" aria-expanded="false" aria-controls="k-apps-menu" aria-label="' + esc(name) + ', switch app">' +
-      '<span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span>" + CHEV + "</button>";
   }
 
   // Vertical roll when arriving from a different staff app (same origin, so sessionStorage is shared).
