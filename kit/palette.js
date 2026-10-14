@@ -18,9 +18,8 @@
 
   // Canonical list of staff apps. Keep in sync with iara-staff-hub/vercel.json.
   var APPS = [
-    { label: "iara Staff", href: "/", keywords: "hub launcher start" },
+    { label: "Home", href: "/home", keywords: "manager summary start hub" },
     { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" },
-    { label: "Kitchen Ops", href: "/ops", keywords: "costing inventory recipes purchasing" },
     { label: "Analytics", href: "/analytics", keywords: "stats reply rate dashboard" },
     { label: "Phone", href: "/analytics#t=phone", keywords: "calls texts quo answer rate" },
     { label: "Inbox", href: "/inbox", keywords: "guest messages email dm replies" },
@@ -37,7 +36,7 @@
 
   function norm(s) { return String(s || "").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, ""); }
   // Raw hub filenames (local preview) map to their rewritten paths.
-  var FILES = { "/iara_hub.html": "/", "/iara_staff_hub.html": "/lineup", "/iara_kitchen_ops.html": "/ops", "/iara_analytics.html": "/analytics" };
+  var FILES = { "/iara_home.html": "/home", "/iara_hub.html": "/", "/iara_staff_hub.html": "/lineup", "/iara_kitchen_ops.html": "/ops", "/iara_analytics.html": "/analytics" };
   function path() { var p = location.pathname; return FILES[p] || p.replace(/\/+$/, "") || "/"; }
   // Current = the longest app href that the page path matches (so /inbox/reviews is Reviews, not Inbox).
   function currentHref() {

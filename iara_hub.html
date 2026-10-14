@@ -3,7 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>iara Staff</title>
-<meta name="description" content="Staff tools for iara: Lineup, Kitchen Ops, Inbox, Analytics and Private Dining.">
+<meta name="description" content="Staff tools for iara: Lineup for the team, plus manager tools.">
 <meta name="robots" content="noindex, nofollow">
 <meta property="og:title" content="iara Staff">
 <meta property="og:description" content="Staff tools for iara.">
@@ -23,8 +23,6 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
-<script src="/kit/palette.js" defer></script>
-<script src="/kit/nav.js" defer blocking="render"></script>
 <script src="/kit/spotlight.js" defer></script>
 <style>
   /* Legacy names mapped onto the iara staff kit (kit/tokens.css). */
@@ -59,7 +57,7 @@
   /* #gate/#launcher set their own `display:flex` below, which otherwise
      outranks the UA [hidden]{display:none} rule and defeats the attribute
      entirely - both screens would stack instead of one replacing the other. */
-  #gate[hidden], #launcher[hidden]{ display:none; }
+  #gate[hidden], #launcher[hidden], #launcher [hidden]{ display:none; }
 
   /* ===================== Gate ===================== */
   #gate{
@@ -90,30 +88,27 @@
   .field input:focus{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .form-err{ margin:-4px 0 16px; padding:12px 14px; border-radius:var(--k-radius); border:1px solid var(--k-critical); background:var(--k-surface); color:var(--k-critical); font-size:14px; }
 
-  /* ===================== Launcher ===================== */
+  /* ===================== Landing =====================
+     Public: everyone who knows the staff password sees it, so there is no
+     manager app bar here (Jay, 2026-10-14). One centered composition:
+     lockup, one line, two choices (Lineup for staff, Manager Login). */
   #launcher{
-    min-height:calc(100vh - var(--k-appbar-h, 107px)); min-height:calc(100dvh - var(--k-appbar-h, 107px)); display:flex; flex-direction:column;
+    min-height:100vh; min-height:100dvh; display:flex; flex-direction:column; justify-content:center;
+    padding:48px 16px max(48px, env(safe-area-inset-bottom));
     background:
       linear-gradient(160deg,
         color-mix(in srgb, var(--forest) 11%, var(--paper)) 0%,
         var(--paper) 42%,
         color-mix(in srgb, var(--sun) 13%, var(--paper)) 100%);
   }
-  #hub-bar{ position:sticky; top:0; z-index:900; }
-  #hub-bar[hidden]{ display:none; }
-  /* Content sits in the kit page frame (.k-page), aligned to the app bar like every manager app. */
-  #launcher > .k-page{ flex:1; padding-bottom:max(64px, env(safe-area-inset-bottom)); }
-  /* The grain overlay that used to live here (feTurbulence + mix-blend-mode
-     :overlay on a position:fixed pseudo-element) is a known-bad combination
-     on real iOS Safari - it paints as a blown-out solid color. Removed. */
-
-  /* One grid for the whole page: a single 8px rhythm, one radius, one card
-     padding. Phone = one column (Lineup first, it is what most staff open);
-     900px+ = two equal-height columns so the page fills a laptop screen. */
+  .landing{ width:100%; max-width:880px; margin:0 auto; }
+  .landing-head{ display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; margin-bottom:32px; }
+  .landing-head .k-lockup{ display:flex; align-items:center; gap:12px; margin:0; font-weight:400; }
+  .landing-sub{ margin:0; font-size:15px; line-height:1.5; color:var(--ink-soft); }
+  /* Phone = one column (Lineup first, it is what most staff open);
+     768px+ = two equal-height columns, buttons aligned on one baseline. */
   .cols{ display:grid; gap:16px; }
-  @media (min-width:900px){
-    .cols{ grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; }
-  }
+  @media (min-width:768px){ .cols{ grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; } }
 
   .card{
     background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg);
@@ -125,35 +120,18 @@
     background:linear-gradient(90deg, transparent, rgba(255,255,255,.10) 22%, rgba(255,255,255,.10) 78%, transparent);
     pointer-events:none;
   }
-  .card-eyebrow{ margin:0 0 8px; font-size:12px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
   .card-title{ margin:0 0 8px; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:26px; line-height:1.15; color:var(--display); letter-spacing:-.01em; }
   .card-desc{ margin:0 0 24px; font-size:15px; line-height:1.5; color:var(--ink-soft); }
   #lineup-form{ display:flex; flex-direction:column; flex:1; }
-  #lineup-form .k-btn{ margin-top:auto; }
-  .app-list li:last-child .app-row{ padding-bottom:0; min-height:60px; }
+  #lineup-form .k-btn, .mgr-actions{ margin-top:auto; }
   #lineup-form .field:last-of-type{ margin-bottom:24px; }
+  .mgr-actions .form-err{ margin:0 0 16px; }
   .field select{
     width:100%; padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input);
     background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; min-height:48px;
   }
   .field input{ min-height:48px; }
   .field select:focus{ outline:2px solid var(--k-ring); outline-offset:2px; }
-
-  /* Manager apps: one row per app, identical height, whole row is the link. */
-  .app-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; flex:1; }
-  .app-list li + li{ border-top:1px solid var(--line); }
-  .app-row{
-    display:flex; align-items:center; gap:16px; min-height:72px; padding:12px 8px; margin:0 -8px;
-    border-radius:8px; transition:background .12s ease;
-  }
-  .app-row:hover{ background:var(--k-raised); }
-  .app-row:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
-  .app-row-text{ flex:1; min-width:0; }
-  .app-row-name{ display:block; font-size:16px; font-weight:700; color:var(--k-ink); margin-bottom:2px; }
-  .app-row-desc{ display:block; font-size:13.5px; line-height:1.45; color:var(--ink-soft); }
-  .app-row-arrow{ flex:none; width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
-    border:1px solid var(--line); color:var(--k-muted); font-size:15px; transition:border-color .12s ease, color .12s ease; }
-  .app-row:hover .app-row-arrow{ border-color:var(--forest); color:var(--ink); }
   .field input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
 </style>
 
@@ -176,16 +154,12 @@
   </div>
 </div>
 
-<!-- The bar sits OUTSIDE #launcher so it is in the first frame for the
-     cross-document title roll. Firebase restores a session asynchronously
-     (IndexedDB), so there is no synchronous "signed in" signal to unhide the
-     launcher with; the bar holds no private data, so it shows at once and is
-     hidden only while the password gate is actually on screen. -->
-<div data-k-appbar data-app="iara Staff" data-home="/" id="hub-bar"></div>
 <div id="launcher" hidden>
-  <main class="k-page">
-    <p data-k-subtitle></p>
-    <h1 class="k-sr-only">iara Staff</h1>
+  <main class="landing">
+    <header class="landing-head">
+      <h1 class="k-lockup"><img src="/kit/iara-orange.svg" alt="iara"><span>Staff</span></h1>
+      <p class="landing-sub">Everything the iara team needs, in one place.</p>
+    </header>
     <div class="cols">
       <section class="card k-spotlight" aria-labelledby="lineup-title">
         <h2 class="card-title" id="lineup-title">Lineup</h2>
@@ -217,18 +191,15 @@
         </form>
       </section>
 
-      <!-- Every staff app on staff.iara.nyc. Lineup is the form on the left;
-           the rest are manager tools and link straight out. Keep this list
-           in sync with the rewrites in vercel.json. -->
-      <nav class="card k-spotlight" aria-labelledby="mgr-title">
-        <h2 class="card-title" id="mgr-title">Manager Apps</h2>
-        <ul class="app-list">
-          <li><a class="app-row" href="/ops"><span class="app-row-text"><span class="app-row-name">Kitchen Ops</span><span class="app-row-desc">Track ingredient costs, recipes, inventory and orders.</span></span><span class="app-row-arrow" aria-hidden="true">&rarr;</span></a></li>
-          <li><a class="app-row" href="/inbox"><span class="app-row-text"><span class="app-row-name">Inbox</span><span class="app-row-desc">Review drafted replies to guest texts, emails and DMs before they send.</span></span><span class="app-row-arrow" aria-hidden="true">&rarr;</span></a></li>
-          <li><a class="app-row" href="/analytics"><span class="app-row-text"><span class="app-row-name">Analytics</span><span class="app-row-desc">See how fast we answer guests and how bookings are going.</span></span><span class="app-row-arrow" aria-hidden="true">&rarr;</span></a></li>
-          <li><a class="app-row" href="/private-dining"><span class="app-row-text"><span class="app-row-name">Private Dining</span><span class="app-row-desc">Track every private dining party from first inquiry to dinner night.</span></span><span class="app-row-arrow" aria-hidden="true">&rarr;</span></a></li>
-        </ul>
-      </nav>
+      <section class="card k-spotlight" aria-labelledby="mgr-title">
+        <h2 class="card-title" id="mgr-title">Manager Login</h2>
+        <p class="card-desc">Inbox, Private Dining and Analytics. Sign in with your iara.nyc Google account.</p>
+        <div class="mgr-actions">
+          <p class="form-err" id="mgr-err" role="alert" hidden></p>
+          <button type="button" id="mgr-signin" class="k-btn k-btn-primary k-btn-lg k-btn-block">Sign In with Google</button>
+          <a id="mgr-go" class="k-btn k-btn-primary k-btn-lg k-btn-block" href="/home" hidden>Go to Manager Home</a>
+        </div>
+      </section>
     </div>
   </main>
 </div>
@@ -256,7 +227,6 @@
 
   var gate = document.getElementById("gate");
   var launcher = document.getElementById("launcher");
-  var bar = document.getElementById("hub-bar");
   var form = document.getElementById("gate-form");
   var pwField = document.getElementById("hub-pw");
   var err = document.getElementById("hub-err");
@@ -264,7 +234,6 @@
 
   function unlock(){
     gate.hidden = true;
-    bar.hidden = false;
     launcher.hidden = false;
   }
 
@@ -277,7 +246,7 @@
   firebase.auth().onAuthStateChanged(function(user){
     if (user) unlock();
     else {
-      gate.hidden = false; launcher.hidden = true; bar.hidden = true;
+      gate.hidden = false; launcher.hidden = true;
       // Single-field gate: put the cursor in it so staff can just type.
       // preventScroll keeps the card where it is on phones.
       try { pwField.focus({ preventScroll: true }); } catch(e){ pwField.focus(); }
@@ -345,6 +314,50 @@
     var profile = { id: stableId(name, role), name: name, role: role };
     try { localStorage.setItem("iara_hub_profile_v1", JSON.stringify(profile)); } catch(e){}
     location.href = "/lineup";
+  });
+
+  // ---- Manager Login ----
+  // Same Google sign-in as Kitchen Ops and Lineup's admin: a SECOND Firebase
+  // app instance named "manager", so the shared staff session on the default
+  // instance is never evicted, and a manager session started on any of these
+  // pages carries over to the others (and to /home).
+  // Keep this list in step with MANAGERS in iara_kitchen_ops.html,
+  // iara_staff_hub.html and iara_home.html.
+  var MANAGERS = ["ronald@iara.nyc", "vitor@iara.nyc", "jay@iara.nyc", "eli@iara.nyc", "contact@iara.nyc"];
+  function isManagerEmail(e){ return !!e && MANAGERS.indexOf(String(e).toLowerCase()) !== -1; }
+  var adminApp = firebase.apps.filter(function(a){ return a.name === "manager"; })[0]
+              || firebase.initializeApp(FIREBASE_CONFIG, "manager");
+  var adminAuth = adminApp.auth();
+  var mgrBtn = document.getElementById("mgr-signin");
+  var mgrGo = document.getElementById("mgr-go");
+  var mgrErr = document.getElementById("mgr-err");
+  function showMgrErr(t){ mgrErr.textContent = t; mgrErr.hidden = false; }
+  // Already a manager on this device: the one button becomes a link to /home.
+  adminAuth.onAuthStateChanged(function(u){
+    var ok = !!(u && isManagerEmail(u.email));
+    mgrBtn.hidden = ok; mgrGo.hidden = !ok;
+    if (ok) mgrErr.hidden = true;
+  });
+  mgrBtn.addEventListener("click", function(){
+    mgrErr.hidden = true;
+    var provider = new firebase.auth.GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account", hd: "iara.nyc" });
+    mgrBtn.disabled = true;
+    adminAuth.signInWithPopup(provider).then(function(res){
+      var u = res && res.user;
+      if (u && isManagerEmail(u.email)) { location.href = "/home"; return; }
+      mgrBtn.disabled = false;
+      return adminAuth.signOut().then(function(){
+        showMgrErr("That account isn't on the manager list. Ask Jay to add it.");
+      });
+    }).catch(function(e){
+      mgrBtn.disabled = false;
+      var c = e && e.code;
+      if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;  // they backed out; nothing went wrong
+      if (c === "auth/popup-blocked") showMgrErr("Your browser blocked the sign-in window. Allow pop-ups for this site and try again.");
+      else if (c === "auth/network-request-failed") showMgrErr("Couldn't reach sign-in. Check your connection and try again.");
+      else showMgrErr("Sign-in didn't finish. Try again.");
+    });
   });
 })();
 </script>

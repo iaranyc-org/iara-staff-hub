@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iara Home</title>
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="/icon-512.png">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<meta name="theme-color" content="#391d1f">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/kit/tokens.css">
+<link rel="stylesheet" href="/kit/staff.css">
+<script src="/kit/palette.js" defer></script>
+<script src="/kit/nav.js" defer blocking="render"></script>
+<script src="/kit/spotlight.js" defer></script>
+<style>
+  :root{ color-scheme: dark; }
+  *{ box-sizing:border-box; }
+  html, body{ background:var(--k-page); }
+  body{ margin:0; color:var(--k-ink); font-family:var(--k-font-sans); -webkit-font-smoothing:antialiased; }
+  [hidden]{ display:none !important; }
+  [data-k-appbar]{ position:sticky; top:0; z-index:900; }
+  /* Empty state (UX-WRITING §13): what's here, why it's empty, where to go next. */
+  .home-empty{ max-width:560px; margin:48px auto 0; }
+  .home-empty h2{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:24px; line-height:1.2; color:var(--k-display); }
+  .home-empty p{ font-size:15px; line-height:1.5; }
+  .home-links{ display:flex; flex-wrap:wrap; justify-content:center; gap:8px; margin-top:8px; }
+  @media (max-width:479px){ .home-links{ display:grid; grid-template-columns:1fr; width:100%; } .home-links .k-btn{ width:100%; } }
+</style>
+
+<!-- The bar is in the first frame (title roll); the content waits for the manager check. -->
+<div data-k-appbar data-app="Home" data-home="/home"></div>
+<main class="k-page" id="home" hidden>
+  <p data-k-subtitle></p>
+  <h1 class="k-sr-only">Manager Home</h1>
+  <section class="k-empty home-empty" aria-labelledby="home-empty-title">
+    <h2 id="home-empty-title">Your summary will live here</h2>
+    <p>Highlights from Inbox, Private Dining and Analytics will show up here. For now, jump in below.</p>
+    <nav class="home-links" aria-label="Manager apps">
+      <a class="k-btn k-btn-secondary k-btn-lg" href="/inbox">Inbox</a>
+      <a class="k-btn k-btn-secondary k-btn-lg" href="/private-dining">Private Dining</a>
+      <a class="k-btn k-btn-secondary k-btn-lg" href="/analytics">Analytics</a>
+      <a class="k-btn k-btn-outline k-btn-lg" href="/lineup" target="_blank" rel="noopener" aria-label="Lineup, opens in a new tab">Lineup<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+    </nav>
+  </section>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+(function(){
+  // Manager-only. Same Google sign-in as the landing (/) and Kitchen Ops: the
+  // named "manager" Firebase app, so the session carries over between pages.
+  // Not signed in, or not a manager: back to the landing, which has the
+  // Manager Login button. Keep MANAGERS in step with iara_hub.html,
+  // iara_kitchen_ops.html and iara_staff_hub.html.
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE",
+    authDomain: "iara-lineup.firebaseapp.com",
+    projectId: "iara-lineup",
+    storageBucket: "iara-lineup.firebasestorage.app",
+    messagingSenderId: "840712867607",
+    appId: "1:840712867607:web:2003c145731aa85a13b152"
+  };
+  var MANAGERS = ["ronald@iara.nyc", "vitor@iara.nyc", "jay@iara.nyc", "eli@iara.nyc", "contact@iara.nyc"];
+  function isManagerEmail(e){ return !!e && MANAGERS.indexOf(String(e).toLowerCase()) !== -1; }
+  if (!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+  var adminApp = firebase.apps.filter(function(a){ return a.name === "manager"; })[0]
+              || firebase.initializeApp(FIREBASE_CONFIG, "manager");
+  var adminAuth = adminApp.auth();
+  // kit/nav.js is deferred; an auth callback can land before it runs.
+  function setNavAccount(a){
+    if (window.iaraNav) iaraNav.setAccount(a);
+    else document.addEventListener("DOMContentLoaded", function(){ if (window.iaraNav) iaraNav.setAccount(a); });
+  }
+  adminAuth.onAuthStateChanged(function(u){
+    if (u && isManagerEmail(u.email)) {
+      setNavAccount({ email: u.email, signOut: function(){ adminAuth.signOut(); } });
+      document.getElementById("home").hidden = false;
+    } else {
+      location.replace("/");
+    }
+  });
+})();
+</script>

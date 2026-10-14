@@ -17,9 +17,12 @@
 
   // Manager app tabs, in order (keep identical to TABS in next/staff-bar.tsx). `title` is the
   // rolling name shown by the logo. Lineup is a separate staff app: it opens in a new tab.
+  // "/" is the public staff landing (password gate + Lineup/Manager Login); it has no bar.
   var APPS = [
-    { label: "Home", title: "iara Staff", href: "/", sub: "Every iara staff tool in one place." },
-    { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders." },
+    { label: "Home", title: "Home", href: "/home", sub: "A summary of everything, coming soon." },
+    // Hidden (Jay, 2026-10-14: still being built). /ops keeps working and its bar still renders,
+    // but nothing links to it: no tab, no palette entry, no shortcut.
+    { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders.", hidden: true },
     { label: "Analytics", title: "Analytics", href: "/analytics", sub: "See how fast we answer guests and how bookings are going." },
     { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send." },
     { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
@@ -30,12 +33,12 @@
     ext: '<svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7M8 7h9v9"/></svg>',
     out: '<svg ' + P + '><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5M21 12H9"/></svg>'
   };
-  var FILES = { "/iara_hub.html": "/", "/iara_staff_hub.html": "/lineup", "/iara_kitchen_ops.html": "/ops", "/iara_analytics.html": "/analytics" };
+  var FILES = { "/iara_home.html": "/home", "/iara_hub.html": "/", "/iara_staff_hub.html": "/lineup", "/iara_kitchen_ops.html": "/ops", "/iara_analytics.html": "/analytics" };
   function here() { var p = location.pathname; return FILES[p] || p; }
   function currentApp() {
-    var p = here(), best = APPS[0];
-    APPS.forEach(function (a) { if (a.href !== "/" && (p === a.href || p.indexOf(a.href + "/") === 0)) best = a; });
-    return best;
+    var p = here(), best = null;
+    APPS.forEach(function (a) { if (p === a.href || p.indexOf(a.href + "/") === 0) best = a; });
+    return best;   // null on a page with no tab (e.g. Lineup solo): no tab is marked
   }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 
@@ -48,15 +51,15 @@
 
   function render(el) {
     var cur = currentApp();
-    var name = el.getAttribute("data-app") || cur.title;
+    var name = el.getAttribute("data-app") || (cur ? cur.title : "iara Staff");
     var solo = el.getAttribute("data-mode") === "solo";   // Lineup: its own instance, no manager tabs or search
     if (solo) document.documentElement.setAttribute("data-k-nav", "solo");
-    var tabs = solo ? "" : '<nav class="k-apptabs" aria-label="Manager apps">' + APPS.map(function (a) {
+    var tabs = solo ? "" : '<nav class="k-apptabs" aria-label="Manager apps">' + APPS.filter(function (a) { return !a.hidden; }).map(function (a) {
       return '<a class="k-apptab" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") +
         (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
     }).join("") + "</nav>";
     el.innerHTML = '<header class="k-appbar"' + (solo ? ' data-mode="solo"' : "") + '><div class="k-appbar-inner">' +
-      '<a class="k-appbar-mark" href="/" aria-label="iara Staff, home"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
+      '<a class="k-appbar-mark" href="' + (solo ? "/" : "/home") + '" aria-label="' + (solo ? "iara Staff, home" : "Manager Home") + '"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
       '<span class="k-appbar-title"><span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span></span>" +
       tabs + '<div class="k-appbar-spacer"></div>' + (solo ? "" : "<span data-k-palette-slot></span>") +
       '<span data-k-acct class="k-acct-slot"></span></div></header>';
@@ -65,7 +68,7 @@
     paintAccount(el);
     roll(el.querySelector(".k-roll"), name);
     // The one-line subtitle (what this app does) goes wherever the app put [data-k-subtitle].
-    document.querySelectorAll("[data-k-subtitle]").forEach(function (p) { p.textContent = cur.sub; p.classList.add("k-app-sub"); });
+    document.querySelectorAll("[data-k-subtitle]").forEach(function (p) { if (cur) p.textContent = cur.sub; p.classList.add("k-app-sub"); });
   }
 
   // Account menu repaints on its own, so a late sign-in never interrupts the name roll.

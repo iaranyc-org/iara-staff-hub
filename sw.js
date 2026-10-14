@@ -18,10 +18,12 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v43';   // v43: kit files network-first (stale kit CSS/JS broke the new nav); skip /private-dining
+const VERSION = 'iara-lineup-v44';   // v44: public landing + Manager Home (/home); Kitchen Ops hidden from nav
 const CORE = [
   './',
   './iara_hub.html',
+  './home',
+  './iara_home.html',
   './lineup',
   './iara_staff_hub.html',
   './ops',

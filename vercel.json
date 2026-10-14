@@ -5,6 +5,10 @@
       "destination": "/iara_hub.html"
     },
     {
+      "source": "/home",
+      "destination": "/iara_home.html"
+    },
+    {
       "source": "/lineup",
       "destination": "/iara_staff_hub.html"
     },
