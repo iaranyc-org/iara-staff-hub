@@ -55,6 +55,7 @@
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
 <script src="/kit/nav.js" defer></script>
+<script src="/kit/tabs.js" defer></script>
 <style>
   /* ===================== Design tokens =====================
      Legacy names mapped onto the iara staff kit (kit/tokens.css).
@@ -312,7 +313,7 @@
   .hero-banner .view-intro{ color:var(--ink); margin-bottom:0; }
 
   /* cards / accordions */
-  .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); box-shadow:var(--shadow); }
+  .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); }
   .stat-row{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin-bottom:30px; }
   .stat{ padding:18px 18px; }
   .stat .num{ font-family:'IBM Plex Mono',monospace; font-size:24px; font-weight:600; }
@@ -323,7 +324,7 @@
     width:100%; display:flex; align-items:center; justify-content:space-between; gap:12px;
     padding:16px 18px; background:none; border:none; cursor:pointer; text-align:left;
   }
-  .acc-head h3{ margin:0; font-size:20px; }
+  .acc-head h2, .acc-head h3{ margin:0; font-size:20px; }
   .acc-head .chev{ transition:transform .15s ease; color:var(--ink-soft); flex:none; }
   .accordion.open .acc-head .chev{ transform:rotate(180deg); }
   .acc-body{ display:none; padding:0 18px 22px; }
@@ -348,7 +349,7 @@
   /* team bios */
   .bio{ display:grid; grid-template-columns:64px 1fr; gap:16px; padding:20px; margin-bottom:14px; }
   .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:24px; }
-  .bio h3{ margin:0 0 2px; font-size:18px; }
+  .bio h2, .bio h3{ margin:0 0 2px; font-size:18px; }
   .bio .title{ color:var(--river); font-weight:700; font-size:13px;  letter-spacing:.01em; margin-bottom:8px; }
   .bio p{ margin:0; font-size:16px; line-height:1.7; color:var(--ink-mid); }
   .bio-body.is-clamped p{ display:-webkit-box; -webkit-box-orient:vertical;
@@ -366,7 +367,7 @@
     border-radius:var(--k-radius-lg); background:var(--k-surface); border:1px solid var(--k-border); }
   .dish-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; }
   .dish{ padding:16px; position:relative; }
-  .dish h4{ margin:0 0 4px; font-family:var(--font-display); font-size:16px; }
+  .dish h2, .dish h3, .dish h4{ margin:0 0 4px; font-family:var(--font-display); font-size:16px; }
   .dish .price{ font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--river); font-weight:600; }
   .dish .pron-line{ font-size:12px; color:var(--ink-soft); font-style:italic; margin:6px 0 10px; display:flex; align-items:center; flex-wrap:wrap; gap:4px 10px; }
   .say{ display:inline-flex; align-items:center; gap:8px; vertical-align:middle; }
@@ -436,7 +437,7 @@
     pointer-events:none; }
 
   /* Section numbers give the manual a spine to scan. */
-  .acc-head h3{ flex:1; text-align:left; margin:0; }
+  .acc-head h2, .acc-head h3{ flex:1; text-align:left; margin:0; }
   .acc-head:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; border-radius:6px; }
   .acc-num{ font-size:11px; color:var(--k-muted); flex:none; letter-spacing:.04em; font-variant-numeric:tabular-nums; }
   .accordion.open .acc-num{ color:var(--k-display); }
@@ -502,7 +503,7 @@
   .avatar{ width:52px; height:52px; border-radius:3px; background:none;
     border:1px solid var(--rule-strong); color:var(--display);
     font-family:var(--font-display); font-weight:400; font-size:18px; letter-spacing:.02em; }
-  .bio h3{ margin:0; font-size:20px; font-weight:400; }
+  .bio h2, .bio h3{ margin:0; font-size:20px; font-weight:400; }
   .bio .title{ margin:2px 0 8px; font-size:13px; letter-spacing:.01em;
     color:var(--sun); font-weight:600; }
   .bio p{ margin:0; font-size:15px; line-height:1.65; color:var(--ink-soft); max-width:58ch; }
@@ -567,7 +568,7 @@
   .dish{ position:relative; padding:22px 0 24px; border-bottom:1px solid var(--rule); background:none; border-radius:0; }
   .dish:last-of-type{ border-bottom:none; }
   .dish-line{ display:flex; align-items:baseline; gap:8px; }
-  .dish-line h4{ margin:0; font-family:var(--font-display); font-weight:400; font-size:24px;
+  .dish-line h2, .dish-line h3, .dish-line h4{ margin:0; font-family:var(--font-display); font-weight:400; font-size:24px;
     color:var(--display); letter-spacing:.01em; flex:none; max-width:78%; }
   .leader{ flex:1; min-width:16px; align-self:flex-end; position:relative; bottom:4px;
     border-bottom:1.5px dotted var(--rule-strong); }
@@ -705,7 +706,7 @@
     /* The dot leader only reads as a menu when the name fits on one line. */
     .dish-line{ flex-wrap:wrap; }
     .dish-line .leader{ display:none; }
-    .dish-line h4{ flex:1 1 auto; }
+    .dish-line h2, .dish-line h3, .dish-line h4{ flex:1 1 auto; }
   }
   .fb-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
   /* Same kit segmented tabs as .fb-tabs: one tab style across the app. */
@@ -1060,6 +1061,8 @@
   .fbk-status{ min-height:20px; margin:8px 0 0; font-size:14px; color:var(--sun); }
   .fbk-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:8px; }
   html.fbk-open .fbk-fab{ visibility:hidden; }
+  /* Home already has its own "Something broken…? Send Feedback" line: no second button there. */
+  html.on-home .fbk-fab{ display:none; }
   /* Phones: a bottom sheet that sits on top of the keyboard (visualViewport
      sets --fbk-kb and --fbk-vh), scrolls inside, and keeps Send pinned. */
   @media (max-width:860px){
@@ -1081,8 +1084,8 @@
   .cl-where dt{ font-size:12px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-soft); }
   .cl-where dd{ margin:4px 0 0; font-size:15px; line-height:1.5; color:var(--ink); }
   .cl-group{ margin:0 0 18px; }
-  .cl-group h4{ margin:0 0 8px; font-size:18px; color:var(--display); }
-  .cl-group h4 span{ font-size:13px; font-weight:500; color:var(--ink-soft); margin-left:6px; }
+  .cl-group h4, .cl-group h3{ margin:0 0 8px; font-size:18px; color:var(--display); font-family:inherit; letter-spacing:normal; }
+  .cl-group h4 span, .cl-group h3 span{ font-size:13px; font-weight:500; color:var(--ink-soft); margin-left:6px; }
   .cl-list{ list-style:none; margin:0; padding:0; max-width:62ch; }
   .cl-list li{ position:relative; padding-left:28px; margin-bottom:9px; line-height:1.55; font-size:16px; color:var(--ink-mid); }
   .cl-list li::before{ content:""; position:absolute; left:0; top:4px; width:15px; height:15px; border:1.5px solid var(--ink-soft); border-radius:3px; }
@@ -1097,8 +1100,8 @@
   [hidden]{ display:none !important; }
 
   /* The home screen is the docket you are handed at the start of a shift. */
-  .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:6px;
-    padding:26px 28px 22px; margin-bottom:26px; position:relative; box-shadow:var(--shadow); max-width:var(--measure); }
+  .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:var(--k-radius-lg);
+    padding:26px 28px 22px; margin-bottom:26px; position:relative; max-width:var(--measure); }
   .sc-date{
     margin:0; font-variant-numeric:tabular-nums; font-size:13px; font-weight:700;
     letter-spacing:.08em; text-transform:uppercase; color:var(--sun);
@@ -2570,6 +2573,7 @@ function showView(name, opts){
   if (VIEW_NAMES.indexOf(name) === -1) name = "home";
   document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
   document.getElementById("view-" + name).classList.add("active");
+  document.documentElement.classList.toggle("on-home", name === "home");
   var lit = (name === "checklist") ? "home" : name;
   document.querySelectorAll(".nav-btn[data-view]").forEach(function(b){
     var on = b.getAttribute("data-view") === lit;
@@ -2786,12 +2790,12 @@ function renderCleaning(){
     var where = '<dl class="cl-where">' + a.where.map(function(w){
       return '<div><dt>'+esc(w[0])+'</dt><dd>'+esc(w[1])+'</dd></div>'; }).join("") + '</dl>';
     var groups = a.groups.map(function(g){
-      return '<div class="cl-group"><h4>'+esc(g.name)+' <span>'+esc(g.when)+'</span></h4><ul class="cl-list">' +
+      return '<div class="cl-group"><h3>'+esc(g.name)+' <span>'+esc(g.when)+'</span></h3><ul class="cl-list">' +
         g.items.map(function(t){ return '<li>'+esc(t)+'</li>'; }).join("") + '</ul></div>';
     }).join("");
     return '<div class="card accordion" data-sec="'+esc(a.id)+'">' +
       '<button class="acc-head" aria-expanded="false"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
-        '<h3>'+esc(a.title)+'</h3><span class="chev">▾</span></button>' +
+        '<h2>'+esc(a.title)+'</h2><span class="chev">▾</span></button>' +
       '<div class="acc-body">' + (a.warn ? '<p class="cl-warn">⚠ '+esc(a.warn)+'</p>' : '') + where + groups + '</div></div>';
   }).join("");
   wrap.querySelectorAll(".acc-head").forEach(function(h){
@@ -2806,7 +2810,7 @@ function renderManual(){
     var extra = sec.id === "loop" ? loopDiagram() : "";
     return '<div class="card accordion" data-i="'+i+'" data-sec="'+esc(sec.id||String(i))+'">' +
       '<button class="acc-head"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
-        '<h3>'+sec.title+'</h3><span class="acc-read-tag">Read</span><span class="chev">▾</span></button>' +
+        '<h2>'+sec.title+'</h2><span class="acc-read-tag">Read</span><span class="chev">▾</span></button>' +
       '<div class="acc-body"><ul>'+items+'</ul>'+extra+'</div></div>';
   }).join("");
   wrap.querySelectorAll(".acc-head").forEach(function(h){
@@ -2858,7 +2862,7 @@ function renderTeam(){
       (p.photo
         ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy">'
         : '<div class="avatar">'+esc(p.initials)+'</div>') +
-      '<div><h3>'+esc(p.name)+'</h3><div class="title">'+esc(p.title)+'</div>' +
+      '<div><h2>'+esc(p.name)+'</h2><div class="title">'+esc(p.title)+'</div>' +
       '<div class="bio-body"><p>'+p.bio+'</p>' +
       '<button class="bio-more" aria-expanded="false">Read More<span class="sr-only"> about '+esc(p.name)+'</span></button></div>' +
       '</div></div>';
@@ -2889,7 +2893,7 @@ function renderLore(){
       (p.photo
         ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.title)+'" loading="lazy">'
         : '<div class="avatar">'+esc((p.title||"").slice(0,2).toUpperCase())+'</div>') +
-      '<div><h3>'+esc(p.title)+'</h3>' +
+      '<div><h2>'+esc(p.title)+'</h2>' +
       (p.subtitle ? '<div class="title">'+esc(p.subtitle)+'</div>' : '') +
       '<div class="bio-body"><p>'+p.story+'</p>' +
       '<button class="bio-more" aria-expanded="false">Read More<span class="sr-only"> about '+esc(p.title)+'</span></button></div>' +
@@ -3001,7 +3005,7 @@ function renderIngredientCards(){
     var speakBtn = (it.pronunciation && it.speak) ? sayControl(it.term, it.id, it.speak) : '';
     var used = dishesForIngredient(it).map(function(d){ return d.name; });
     return '<article class="dish">' +
-      '<div class="dish-line"><h4>'+esc(it.term)+'</h4></div>' +
+      '<div class="dish-line"><h2>'+esc(it.term)+'</h2></div>' +
       (pron ? '<div class="pron-line">'+speakBtn+pron+'</div>' : '') +
       '<p class="desc">'+esc(it.def)+'</p>' +
       (used.length ? '<p class="used-in">'+esc(used.join(", "))+'</p>' : '') +
@@ -3028,11 +3032,13 @@ function renderFbGrid(){
       items.length + (items.length === 1 ? " item matches" : " items match") + " across the menu";
   }
   var prevGroup = null;
+  // Dish names sit under a group h2 when the course is grouped, else directly under the page h1.
+  var hTag = (!term && items.some(function(it){ return it.group; })) ? "h3" : "h2";
   var intro = (!term && COURSE_INTROS[fbActiveCat]) ? COURSE_INTROS[fbActiveCat]() : "";
   var html = (intro ? '<p class="course-intro">'+esc(intro)+'</p>' : '') + items.map(function(it){
     var sub = "";
     if (it.group && it.group !== prevGroup && !term) {
-      sub = '<h3 class="dish-group">'+esc(it.group)+'</h3>' +
+      sub = '<h2 class="dish-group">'+esc(it.group)+'</h2>' +
         (it.group === "Beer" && storyIntro("Beer") ? '<p class="course-intro">'+esc(storyIntro("Beer"))+'</p>' : '');
     }
     prevGroup = it.group || null;
@@ -3049,7 +3055,7 @@ function renderFbGrid(){
     // page and it costs nothing.
     return sub + '<article class="dish">'+editBtn+
       '<div class="dish-line">' +
-        '<h4>'+it.name+(it.example ? '<span class="badge badge-example">Example</span>' : '')+'</h4>' +
+        '<'+hTag+'>'+it.name+(it.example ? '<span class="badge badge-example">Example</span>' : '')+'</'+hTag+'>' +
         '<span class="leader"></span>' +
         (it.price ? '<span class="price">'+it.price+'</span>' : '') +
       '</div>' +
@@ -3745,7 +3751,7 @@ function renderStudyPicker(){
         : 'Nothing waiting. Everything is either solid or already counted for this shift.') + '</p>' +
       (ready ? '<button class="k-btn k-btn-primary" id="lineup-go">Run the Lineup</button>' : '') +
     '</div>';
-  html += '<h2 class="drill-head">Every Deck</h2><div class="deck-grid">';
+  html += '<h2 class="drill-head k-h-section">Every Deck</h2><div class="deck-grid">';
   studyDecks().forEach(function(d){
     var cards = buildDeck(d.key);
     var pct = deckMastery(cards);
@@ -7309,7 +7315,7 @@ function wlDeckPct(key){
 
 function renderWatchPicker(){
   var area = wlArea();
-  var html = '<h2 class="drill-head">Pick a Drill</h2><div class="deck-grid">';
+  var html = '<h2 class="drill-head k-h-section">Pick a Drill</h2><div class="deck-grid">';
   wlDecks().forEach(function(d){
     var pct = wlDeckPct(d.key);
     html += '<button class="deck" data-wl-deck="'+d.key+'"'+(d.cards ? '' : ' disabled')+'>' +
@@ -7492,7 +7498,7 @@ function vibeCard(v, seen){
     return '<article class="vb-card vb-press">'+tag+open+
       (img ? '<div class="vb-press-img"><img src="'+esc(img)+'" alt="" loading="lazy"></div>' : '') +
       '<div class="vb-badge">'+esc(v.source || "Press")+(when ? ' &middot; '+whenH : '')+'</div>' +
-      '<h3 class="vb-press-title">'+esc(v.title || "")+'</h3>' +
+      '<h2 class="vb-press-title">'+esc(v.title || "")+'</h2>' +
       (v.text ? '<p class="vb-txt">'+esc(v.text)+'</p>' : '') + close + '</article>';
   }
   if (v.type === "instagram" || v.type === "note") {
@@ -8146,7 +8152,7 @@ function nextQuizQuestion(){
 document.addEventListener("keydown", function(e){
   if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
   var t = e.target;
-  if (t && t.closest && t.closest("input, textarea, select, [contenteditable], dialog")) return;
+  if (t && t.closest && t.closest("input, textarea, select, [contenteditable], dialog, [role=\"tab\"]")) return;  // tabs: arrows belong to kit tabs.js
   var v = document.querySelector(".view.active");
   if (!v || (v.id !== "view-study" && v.id !== "view-watch")) return;
   var card = v.querySelector(".studycard");
@@ -8258,7 +8264,7 @@ async function renderProgress(){
     // clicking Admin just goes straight to the dashboard. This card only
     // stays on screen if the prompt gets cancelled or fails, as a retry.
     area.innerHTML = '<div class="card pin-gate">' +
-      '<h3 style="margin-top:0;">Manager Access</h3>' +
+      '<h2 style="margin-top:0;font-size:1.17em;">Manager Access</h2>' +
       '<p class="placeholder-note" style="margin-bottom:14px;">Sign in with your iara Google account to see team-wide progress.</p>' +
       '<button class="k-btn k-btn-primary" id="pg-unlock">Sign In with Google</button></div>';
     var unlock = function(){ openManagerGate(function(){ progressUnlocked = true; renderProgress(); }); };
@@ -8348,7 +8354,7 @@ async function renderProgress(){
       return stuck || quiet;
     }).sort(function(a,b){ return (b.lastDays||0) - (a.lastDays||0); });
     if (nudge.length) {
-      html += '<h2 class="admin-h2">Needs a Nudge</h2>' +
+      html += '<h2 class="admin-h2 k-h-section">Needs a Nudge</h2>' +
         '<div class="card"><ul class="nudge-list">' + nudge.map(function(r){
           var bits = [];
           if (!r.clComplete && r.hireDays !== null && r.hireDays >= 7) {
@@ -8367,7 +8373,7 @@ async function renderProgress(){
       .map(function(m){ m.people = Object.keys(m.who).length; return m; })
       .sort(function(a,b){ return b.n - a.n || b.people - a.people; })
       .slice(0, 8);
-    html += '<h2 class="admin-h2">What the Team Keeps Missing</h2>';
+    html += '<h2 class="admin-h2 k-h-section">What the Team Keeps Missing</h2>';
     if (!misses.length) {
       html += '<p class="placeholder-note">Nothing yet. This fills in as the team runs tests.</p>';
     } else {
@@ -8383,7 +8389,7 @@ async function renderProgress(){
     // ---- full roster ----
     progressRows = rows;
     progressCats = CATS;
-    html += '<h2 class="admin-h2">Whole Team</h2>' +
+    html += '<h2 class="admin-h2 k-h-section">Whole Team</h2>' +
       '<p class="placeholder-note" style="margin-bottom:10px;">Each test section shows average score across attempts, with the number of attempts in parentheses. Select a column to sort.</p>' +
       '<div id="progress-table-wrap"></div>';
 

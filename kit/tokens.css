@@ -31,6 +31,24 @@
   --k-good:     #bad7bc;
   --k-critical: #f6c8ca;
   --k-warning:  #fbbf56;
+  --k-info:     #b9d3f0;  /* 9.96 page / 8.60 surface / 7.82 raised / 6.75 raised-hover */
+  --k-ask:      #dcc4f7;  /* lavender, 9.70 / 8.37 / 7.61 / 6.58. Only "Ask To Confirm". */
+
+  /* status: ONE colour per booking/message status (QA ux3 plan2 #2/#3, 2026-10-14).
+     Badge ground is --k-raised. Ratios: page / surface / raised. All AA (4.5+) on every ground.
+     Static: .k-badge-<status>.  Next: <Badge variant={STATUS_BADGE[status]}> (next/status.ts). */
+  --k-status-inquiry:       var(--k-info);        /* 9.96 / 8.60 / 7.82 */
+  --k-status-offered:       var(--k-accent-text); /* 7.90 / 6.82 / 6.20 */
+  --k-status-hold:          var(--k-warning);     /* 9.27 / 8.00 / 7.27  On Hold */
+  --k-status-ask:           var(--k-ask);         /* 9.70 / 8.37 / 7.61  Ask To Confirm (was #fbbf56, same as On Hold) */
+  --k-status-confirmed:     var(--k-good);        /* 9.88 / 8.53 / 7.76 */
+  --k-status-completed:     var(--k-muted);       /* 8.43 / 7.28 / 6.62 */
+  --k-status-lost:          var(--k-critical);    /* 10.25 / 8.85 / 8.04 */
+  --k-status-needs-answer:  var(--k-accent-text); /* 7.90 / 6.82 / 6.20  Needs an Answer */
+  --k-status-private-dining: var(--k-display);    /* 9.90 / 8.55 / 7.77 */
+  --k-status-vendor:        var(--k-muted);       /* 8.43 / 7.28 / 6.62 */
+  --k-status-done:          var(--k-good);        /* 9.88 / 8.53 / 7.76 */
+  --k-status-skipped:       var(--k-muted);       /* 8.43 / 7.28 / 6.62 */
 
   /* lines */
   --k-border:       #5f3b3e;  /* decorative dividers only */
@@ -42,10 +60,28 @@
   --k-font-display: "forevs", "Fraunces", Georgia, serif;
   --k-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
 
+  /* type scale (QA ux3 plan2 #6/#7, 2026-10-14). Display serif ONLY for page + section headings.
+     Values are the most common measured ones across Inbox / PD / Analytics:
+     page    32/1.15 forevs 400   (the only 32 in use: app h1s; PD display headings are forevs 400)
+     section 20/1.25 forevs 400   (PD "Today"/"Upcoming", the plan2 pick; Inbox h2 14/600 + Lineup 19-23 migrate here)
+     card    16/1.3  sans 600     (kit EmptyState/.k-empty h3, Inbox+PD card titles text-base semibold)
+     body    15/1.45 sans 400     (subtitle 15/21, confirm body, menu items)
+     small   14/1.4  sans 400     (text-sm: the commonest size in every Next app; rows, alerts, buttons)
+     meta    12/1.4  sans 500     (badges 12, timestamps, palette group labels; muted colour)
+     label   13/1.3  sans 600     (kit .k-label form labels, unchanged) */
+  --k-text-page: 32px;     --k-text-page-lh: 1.15;    --k-text-page-w: 400;
+  --k-text-section: 20px;  --k-text-section-lh: 1.25; --k-text-section-w: 400;
+  --k-text-card: 16px;     --k-text-card-lh: 1.3;     --k-text-card-w: 600;
+  --k-text-body: 15px;     --k-text-body-lh: 1.45;    --k-text-body-w: 400;
+  --k-text-small: 14px;    --k-text-small-lh: 1.4;    --k-text-small-w: 400;
+  --k-text-meta: 12px;     --k-text-meta-lh: 1.4;     --k-text-meta-w: 500;
+  --k-text-label: 13px;    --k-text-label-lh: 1.3;    --k-text-label-w: 600;
+
   /* shape */
   --k-radius-sm: 6px;   /* badges */
   --k-radius:    8px;   /* buttons, inputs, tabs */
-  --k-radius-lg: 12px;  /* cards, dialogs */
+  --k-radius-lg: 12px;  /* cards, dialogs, alerts, list containers: EVERY card is 12px.
+                           Tailwind: rounded-lg / rounded-xl / rounded-2xl = 12px; rounded-md = 8px (controls); rounded-sm = 6px (badges). */
   --k-radius-pill: 999px; /* chips */
   --k-tap: 44px;        /* min touch target */
 
