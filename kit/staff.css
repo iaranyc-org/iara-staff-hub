@@ -213,3 +213,25 @@
 @media (max-width: 479px) { .k-confirm-actions { flex-direction: column-reverse; } .k-confirm-actions .k-btn { width: 100%; } }
 .k-confirm-open, .k-confirm-open body { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .k-tip, .k-confirm-dialog { animation: none; } }
+
+/* Desktop app-switch motion (Jay, 2026-10-13). Staff apps share one origin, so a cross-document
+   View Transition keeps the bar perfectly still while the page swaps underneath, and only the
+   title rolls (old up and out, new up and in). Desktop only; phones/tablets get no motion.
+   The title slot has a fixed width so the tabs never slide when the name changes.
+   Page content does NOT fade (no opacity animation on primary content): it swaps instantly. */
+@media (min-width: 1100px) and (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  .k-appbar { view-transition-name: k-appbar; }
+  .k-roll { view-transition-name: k-title; }
+  ::view-transition-old(root), ::view-transition-new(root),
+  ::view-transition-old(k-appbar), ::view-transition-new(k-appbar) { animation: none; }
+  ::view-transition-group(k-title) { animation-duration: 600ms; overflow: hidden; }
+  ::view-transition-old(k-title) { animation: k-title-out 600ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+  ::view-transition-new(k-title) { animation: k-title-in 600ms cubic-bezier(0.65, 0, 0.35, 1) both; }
+}
+@keyframes k-title-out { to { transform: translateY(-110%); } }
+@keyframes k-title-in { from { transform: translateY(110%); } }
+@media (min-width: 1100px) { .k-appbar-title { width: 8.4em; box-sizing: content-box; } }
+/* The account slot always takes the avatar's width, so Search sits in the same spot in every app,
+   with or without a signed-in account (the bar must not shift between apps). */
+.k-acct-slot { display: inline-flex; align-items: center; justify-content: center; min-width: var(--k-tap); }

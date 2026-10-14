@@ -59,7 +59,7 @@
       '<a class="k-appbar-mark" href="/" aria-label="iara Staff Home"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
       '<span class="k-appbar-title"><span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span></span>" +
       tabs + '<div class="k-appbar-spacer"></div>' + (solo ? "" : "<span data-k-palette-slot></span>") +
-      '<span data-k-acct style="display:contents"></span></div></header>';
+      '<span data-k-acct class="k-acct-slot"></span></div></header>';
     var slot = el.querySelector("[data-k-palette-slot]");
     if (slot && window.iaraPalette) slot.appendChild(window.iaraPalette.trigger());
     paintAccount(el);
@@ -88,9 +88,12 @@
     rolled = true;
     if (document.visibilityState !== "visible" || !box.animate) return;
     if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    // Desktop only. Browsers with cross-document View Transitions roll the title in CSS
+    // (staff.css) while the bar stays still; this script is the fallback for the rest.
+    if (!(window.matchMedia && matchMedia("(min-width: 1100px)").matches) || "onpagereveal" in window) return;
     var out = document.createElement("span"); out.className = "k-roll-out"; out.setAttribute("aria-hidden", "true"); out.textContent = prev;
     box.appendChild(out);
-    var opts = { duration: 320, easing: "cubic-bezier(0.16, 1, 0.3, 1)" };
+    var opts = { duration: 600, easing: "cubic-bezier(0.65, 0, 0.35, 1)" };
     box.querySelector(".k-roll-in").animate([{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], opts);
     out.animate([{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], opts).onfinish = function () { out.remove(); };
   }
