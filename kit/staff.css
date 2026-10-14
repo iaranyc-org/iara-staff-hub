@@ -82,7 +82,8 @@
 .k-toast button { background: none; border: 0; color: var(--k-sun); font: 700 14px/1 var(--k-font-sans); cursor: pointer; min-height: 36px; }
 
 /* States */
-.k-empty { max-width: 300px; margin: 32px auto; text-align: center; display: grid; justify-items: center; gap: 8px; }
+/* Empty states sit on the left edge like everything else (Jay, 2026-10-14: "everything justified to the left"). */
+.k-empty { max-width: 560px; margin: 32px 0; text-align: left; display: grid; justify-items: start; gap: 8px; }
 .k-empty h3 { margin: 0; font: 600 16px/1.3 var(--k-font-sans); color: var(--k-ink); }
 .k-empty p { margin: 0 0 8px; color: var(--k-muted); font-size: 14px; }
 .k-alert { padding: 12px 14px; border-radius: var(--k-radius); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font-size: 14px; }
