@@ -13,7 +13,7 @@
 
 /* Lockup: mark big, word small */
 .k-lockup { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; color: var(--k-display); text-decoration: none; min-height: var(--k-tap); border-radius: var(--k-radius); }
-.k-lockup img { height: var(--k-lockup-mark); width: auto; display: block; }
+.k-lockup img { width: var(--k-lockup-mark); height: auto; display: block; }
 .k-lockup span { white-space: nowrap; font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: var(--k-lockup-word); line-height: 1; color: var(--k-display); }
 
 /* Header */

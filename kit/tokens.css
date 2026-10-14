@@ -50,7 +50,7 @@
   --k-tap: 44px;        /* min touch target */
 
   /* lockup: mark big, word small. 80/18 everywhere (Jay, 2026-10-13) */
-  --k-lockup-mark: 80px;
+  --k-lockup-mark: 80px;  /* WIDTH of the mark (about 24px tall). Never height: 80px tall is ~270px wide. */
   --k-lockup-word: 18px;
 
   /* motion */
