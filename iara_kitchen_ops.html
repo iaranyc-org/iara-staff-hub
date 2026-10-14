@@ -24,6 +24,8 @@
 <meta name="theme-color" content="#391d1f">
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/kit/tokens.css">
+<link rel="stylesheet" href="/kit/staff.css">
 <style>
   /* iara signage palette (the same tokens iara_staff_hub.html and
      iara_hub.html use), pinned dark on every device - iara.nyc has no
@@ -31,41 +33,26 @@
      is measured against the background it actually sits on (design-review
      rule), not guessed: badge/critical text against its own tinted card,
      not the flat page. See git history for the contrast numbers. */
+  /* Legacy Ops token names, now aliases onto the iara staff kit
+     (/kit/tokens.css). Dark maroon only: no light theme (Jay, 2026-10-13). */
   :root{
-    --accent:#e0633f; --accent-strong:#f4a88b; --accent-soft:rgba(224,99,63,0.16); --accent-ink:#2a1206;
-    --surface:#4a2528; --surface-raised:#55292f; --page:#391d1f;
-    --ink:#faf6f0; --ink-secondary:#ded5c7; --ink-muted:#b3a695;
-    --border:#5f3b3e; --grid:#5a3a3c; --baseline:#7a5153;
-    --display:#e8cbab;
-    --good:#bad7bc; --good-soft:rgba(186,215,188,0.16); --warning:#fccb76; --warning-soft:rgba(252,203,118,0.16);
-    --serious:#f2cab1; --serious-soft:rgba(242,202,177,0.16); --critical:#f6c8ca; --critical-soft:rgba(246,200,202,0.16);
-    --cat-1:#e0633f; --cat-2:#fbbf56; --cat-3:#6fb572; --cat-4:#c97a4a; --cat-5:#ce6f77; --cat-6:#cbb08a;
-    /* Same six hues, lightened for the one place a cat color is small text on
-       a neutral pill (recipe category badge) rather than a chart fill -
-       the saturated versions above measure under 3:1 there. */
-    --cat-1-text:#efac99; --cat-2-text:#fbbf56; --cat-3-text:#94c896;
+    --accent:var(--k-primary); --accent-strong:var(--k-accent-text); --accent-soft:color-mix(in srgb, var(--k-primary) 16%, transparent); --accent-ink:var(--k-primary-ink);
+    --surface:var(--k-surface); --surface-raised:var(--k-raised); --page:var(--k-page);
+    --ink:var(--k-ink); --ink-secondary:var(--k-muted); --ink-muted:var(--k-muted);
+    --border:var(--k-border); --grid:var(--k-border); --baseline:var(--k-border-input);
+    --display:var(--k-display);
+    --good:var(--k-good); --warning:var(--k-warning); --serious:var(--k-accent-text); --critical:var(--k-critical);
+    /* chart/category fills (non-text) */
+    --cat-1:var(--k-primary); --cat-2:var(--k-sun); --cat-3:#6fb572; --cat-4:#c97a4a; --cat-5:#ce6f77; --cat-6:#cbb08a;
+    /* text versions for category labels on the raised badge ground */
+    --cat-1-text:var(--k-accent-text); --cat-2-text:var(--k-sun); --cat-3-text:#94c896;
     --cat-4-text:#e0b297; --cat-5-text:#e3aeb2; --cat-6-text:#d0b896;
-    --font-sans:'Instrument Sans',system-ui,-apple-system,"Segoe UI",sans-serif;
-    --font-display:'Fraunces',Georgia,serif;
-    --font-mono:'IBM Plex Mono',ui-monospace,"SFMono-Regular",Menlo,monospace;
-    --shadow-card:0 1px 2px rgba(0,0,0,0.4), 0 1px 1px rgba(0,0,0,0.3);
-    --shadow-modal:0 20px 60px rgba(0,0,0,0.6);
+    --font-sans:var(--k-font-sans);
+    --font-display:var(--k-font-display);
+    --font-mono:var(--k-font-mono);
+    --shadow-card:0 1px 2px rgb(0 0 0 / .4);
+    --shadow-modal:0 8px 24px rgb(0 0 0 / .35);
     color-scheme: dark;
-  }
-  /* Kept only as the one-line revert Lineup also keeps - nothing switches
-     this on today. */
-  :root[data-theme="light"]{
-    --accent:#875228; --accent-strong:#875228; --accent-soft:rgba(135,82,40,0.12); --accent-ink:#ffffff;
-    --surface:#ffffff; --surface-raised:#faf6ef; --page:#faf6ef;
-    --ink:#1c3a2b; --ink-secondary:#3f5b4c; --ink-muted:#6b7f73;
-    --border:rgba(28,58,43,0.14); --grid:#e7e0d2; --baseline:#cfc6b0;
-    --display:#88301c;
-    --good:#2f7a3d; --good-soft:#e3f1e5; --warning:#88621d; --warning-soft:#f8ecd3;
-    --serious:#a1471f; --serious-soft:#f6e2d6; --critical:#b3313a; --critical-soft:#f7dcdd;
-    --cat-1:#88301c; --cat-2:#88621d; --cat-3:#1c3a2b; --cat-4:#935026; --cat-5:#a1471f; --cat-6:#6b7f73;
-    --shadow-card:0 1px 2px rgba(28,58,43,0.06), 0 1px 1px rgba(28,58,43,0.04);
-    --shadow-modal:0 20px 60px rgba(28,58,43,0.18);
-    color-scheme: light;
   }
 
   *{box-sizing:border-box;}
@@ -73,9 +60,9 @@
   body{
     background:
       linear-gradient(160deg,
-        color-mix(in srgb, #e0633f 11%, var(--page)) 0%,
+        color-mix(in srgb, var(--k-primary) 11%, var(--page)) 0%,
         var(--page) 42%,
-        color-mix(in srgb, #fbbf56 13%, var(--page)) 100%);
+        color-mix(in srgb, var(--k-sun) 13%, var(--page)) 100%);
     background-attachment:fixed;
     color:var(--ink); font-family:var(--font-sans); padding-inline:0;
     -webkit-font-smoothing:antialiased;
@@ -100,19 +87,23 @@
 
   /* header */
   header.topbar{
-    position:sticky; top:env(safe-area-inset-top,0px); z-index:20;
+    position:relative; z-index:20;
     background:var(--surface); border-bottom:1px solid var(--border);
-    padding:14px 20px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:14px 20px; display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px 12px;
   }
-  .brand{display:flex; align-items:center; gap:10px; color:inherit; text-decoration:none; border-radius:8px; min-width:0; background:none; border:none; padding:0; font:inherit; text-align:left; cursor:pointer;}
-  .brand:focus-visible{outline:2px solid var(--sun,#fbbf56); outline-offset:3px;}
-  .brand-mark{width:38px; height:auto; display:block; flex:none;}
+  .brand{display:flex; align-items:center; gap:12px; min-height:var(--k-tap); color:inherit; text-decoration:none; border-radius:8px; min-width:0; background:none; border:none; padding:0; font:inherit; text-align:left; cursor:pointer;}
+  .brand:focus-visible{outline:2px solid var(--k-ring); outline-offset:3px;}
+  .brand{flex-wrap:wrap; row-gap:6px;}
+  .gate-lockup{cursor:default; justify-content:center;}
+  .brand-text h1, .brand-word{white-space:nowrap;}
+  .brand-word{font-family:"Fraunces",Georgia,serif; font-style:italic; font-size:var(--k-lockup-word); line-height:1; color:var(--k-display);}
+  .brand-mark{height:var(--k-lockup-mark); width:auto; display:block; flex:none;}
   .brand-text{min-width:0;}
   /* Same lockup as Lineup's sidebar/topbar and Staff's gate (Fraunces,
      mark + one word, nothing else) - this used to be its own three-part
      "iara Kitchen Ops" + "Costing & Inventory" treatment, unrelated to
      the rest of the family. */
-  .brand-text h1{font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:19px; letter-spacing:-.005em; color:var(--display);}
+  .brand-text h1{font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:var(--k-lockup-word); line-height:1; color:var(--k-display);}
   .topbar-right{display:flex; align-items:center; gap:14px; flex:none;}
   .today-label{font-size:12px; color:var(--ink-muted); white-space:nowrap;}
   .sync-chip{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-muted); flex:none; white-space:nowrap;}
@@ -127,10 +118,15 @@
     .sync-chip .sync-label-short{display:none;}
   }
 
+  /* Sticky bar holds the kit segmented track (#tabNav). The topbar no
+     longer sticks: with the 80px lockup mark it would eat a phone screen. */
+  .tabs-bar{
+    position:sticky; top:env(safe-area-inset-top,0px); z-index:19;
+    background:var(--page); border-bottom:1px solid var(--border); padding:8px 16px;
+  }
   nav.tabs{
-    position:sticky; top:calc(env(safe-area-inset-top,0px) + 62px); z-index:19;
-    background:var(--page); border-bottom:1px solid var(--border);
-    display:flex; gap:4px; padding:8px 16px; overflow-x:auto; scrollbar-width:none;
+    display:flex; width:fit-content; max-width:100%; gap:4px; padding:4px; overflow-x:auto; scrollbar-width:none;
+    border-radius:var(--k-radius-lg); background:var(--k-surface); border:1px solid var(--k-border);
   }
   nav.tabs::-webkit-scrollbar{display:none;}
   /* Scroll cue: fade the trailing edge while more tabs sit off-screen
@@ -138,15 +134,16 @@
   nav.tabs.more-right{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);}
   @media (min-width:641px){ nav.tabs{flex-wrap:wrap; overflow-x:visible;} nav.tabs.more-right{-webkit-mask-image:none; mask-image:none;} }
   nav.tabs button{
-    flex:none; border:1px solid transparent; background:transparent; color:var(--ink-secondary);
-    padding:7px 13px; min-height:44px; display:inline-flex; align-items:center;
-    border-radius:8px; font-size:13.5px; font-weight:600; cursor:pointer; white-space:nowrap;
+    flex:none; border:0; background:none; color:var(--k-muted);
+    padding:0 14px; min-height:36px; display:inline-flex; align-items:center;
+    border-radius:var(--k-radius); font:600 14px/1 var(--k-font-sans); cursor:pointer; white-space:nowrap; font-variant-numeric:tabular-nums;
   }
-  nav.tabs button:hover{background:var(--surface-raised); border-color:var(--border);}
-  nav.tabs button.active{background:var(--accent-soft); color:var(--accent-strong); border-color:transparent;}
+  @media (pointer:coarse){ nav.tabs button{min-height:var(--k-tap);} }
+  nav.tabs button:hover{color:var(--k-ink);}
+  nav.tabs button.active{background:var(--k-primary); color:var(--k-primary-ink);}
 
   main{flex:1; padding:20px; padding-inline:20px; max-width:1180px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:18px;}
-  @media (max-width:640px){ main{padding:14px;} header.topbar{padding:12px 14px;} nav.tabs{padding:8px 10px; top:calc(env(safe-area-inset-top,0px) + 58px);} }
+  @media (max-width:640px){ main{padding:14px;} header.topbar{padding:12px 14px;} .tabs-bar{padding:8px 10px;} }
 
   .panel-head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   /* Page titles were 23px/600 against 13.5px body - only a ~1.7x ratio,
@@ -157,89 +154,91 @@
   .panel-head .desc{font-size:13px; color:var(--ink-muted); margin-top:2px;}
 
   .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:6px; border-radius:8px; border:1px solid transparent;
-    padding:8px 14px; min-height:40px; font-size:13.5px; font-weight:600; cursor:pointer; background:var(--surface-raised);
-    border-color:var(--border); color:var(--ink); transition:transform .08s ease, filter .08s ease;
+    display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:var(--k-radius); border:1px solid var(--k-border);
+    padding:0 16px; min-height:var(--k-tap); font:600 15px/1 var(--k-font-sans); cursor:pointer; background:var(--k-raised);
+    color:var(--k-ink); text-decoration:none; transition:background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease);
   }
-  .btn:hover{filter:brightness(0.97);}
-  .btn:active{transform:scale(0.97);}
-  :root[data-theme="dark"] .btn:hover{filter:brightness(1.15);}
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .btn:hover{filter:brightness(1.15);} }
-  .btn.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink);}
-  .btn.ghost{background:transparent;}
+  .btn:hover:not(:disabled){background:var(--k-raised-hover);}
+  .btn:active{transform:translateY(1px);}
+  .btn.primary{background:var(--k-primary); border-color:transparent; color:var(--k-primary-ink);}
+  .btn.primary:hover:not(:disabled){background:var(--k-primary-hover);}
+  .btn.ghost{background:none; border-color:transparent;}
+  .btn.ghost:hover:not(:disabled){background:var(--k-raised);}
   /* Every "small" button (table row actions, filter pills) used to have no
      minimum height - about 26px tall in practice, well under a comfortable
      tap target, and the single biggest reason the app read as fiddly to use.
      36px keeps them visibly lighter than a full .btn while staying easy to
      hit; the row's own padding already gives it room. */
-  .btn.small{padding:6px 12px; min-height:36px; font-size:12.5px;}
-  .btn.danger{color:var(--critical); border-color:var(--critical-soft);}
-  .btn:disabled{opacity:0.45; cursor:not-allowed;}
+  .btn.small{padding:0 12px; min-height:36px; font-size:14px;}
+  @media (pointer:coarse){ .btn.small{min-height:var(--k-tap);} }
+  .btn.danger{background:var(--k-raised); color:var(--k-critical); border-color:var(--k-critical);}
+  .btn:disabled{cursor:not-allowed; background:var(--k-raised); color:var(--k-muted); border-color:transparent;}
   .icon{flex:none; display:block;}
 
-  .card{background:var(--surface-raised); border:1px solid var(--border); border-radius:12px; padding:16px; box-shadow:var(--shadow-card);}
+  .card{background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:16px;}
+  @media (min-width:900px){ .card{padding:20px;} }
   .grid{display:grid; gap:12px;}
   .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
   @media (max-width:860px){ .kpis{grid-template-columns:repeat(2,1fr);} }
-  .kpi{background:var(--surface-raised); border:1px solid var(--border); border-radius:12px; padding:14px 16px; box-shadow:var(--shadow-card); display:flex; flex-direction:column; gap:4px;}
-  .kpi .label{font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted); font-weight:600;}
+  .kpi{background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:14px 16px; display:flex; flex-direction:column; gap:4px;}
+  .kpi .label{font-size:13px; color:var(--k-muted); font-weight:600;}
   .kpi .value{font-family:var(--font-mono); font-size:24px; font-weight:600; font-variant-numeric:tabular-nums;}
   .kpi .foot{font-size:12px; color:var(--ink-secondary);}
   .kpi.alert .value{color:var(--critical);}
 
-  .badge{display:inline-flex; align-items:center; gap:5px; font-size:11.5px; font-weight:700; padding:3px 8px; border-radius:100px; text-transform:uppercase; letter-spacing:0.03em;}
-  .badge.good{background:var(--good-soft); color:var(--good);}
-  .badge.warning{background:var(--warning-soft); color:var(--warning);}
-  .badge.serious{background:var(--serious-soft); color:var(--serious);}
-  .badge.critical{background:var(--critical-soft); color:var(--critical);}
-  .badge.neutral{background:var(--border); color:var(--ink-secondary);}
+  /* kit .k-badge: solid raised ground, colour text, radius 6. The dot stays:
+     it encodes status alongside the colour. */
+  .badge{display:inline-flex; align-items:center; gap:4px; font:600 12px/1.4 var(--k-font-sans); padding:2px 8px; border-radius:var(--k-radius-sm); background:var(--k-raised); color:var(--k-ink); font-variant-numeric:tabular-nums;}
+  .badge.good{color:var(--k-good);}
+  .badge.warning{color:var(--k-warning);}
+  .badge.serious{color:var(--k-accent-text);}
+  .badge.critical{color:var(--k-critical);}
+  .badge.neutral{color:var(--k-muted);}
   .badge::before{content:''; width:6px; height:6px; border-radius:50%; background:currentColor; flex:none;}
 
   .table-wrap{overflow-x:auto; border:1px solid var(--border); border-radius:12px;
     /* Scroll shadows: show an edge shadow only where more columns are hidden. */
     background:
-      linear-gradient(90deg, var(--surface-raised) 30%, transparent) left/40px 100% no-repeat local,
-      linear-gradient(270deg, var(--surface-raised) 30%, transparent) right/40px 100% no-repeat local,
+      linear-gradient(90deg, var(--surface) 30%, transparent) left/40px 100% no-repeat local,
+      linear-gradient(270deg, var(--surface) 30%, transparent) right/40px 100% no-repeat local,
       radial-gradient(farthest-side at 0 50%, rgba(0,0,0,.55), transparent) left/14px 100% no-repeat scroll,
       radial-gradient(farthest-side at 100% 50%, rgba(0,0,0,.55), transparent) right/14px 100% no-repeat scroll;
-    background-color:var(--surface-raised);}
+    background-color:var(--surface);}
   .table-wrap table{background:transparent;}
   /* Phone/tablet: pin the name column so key numbers scroll beside it. */
   @media (max-width:860px){
-    .table-wrap th:first-child, .table-wrap td:first-child{position:sticky; left:0; z-index:1; background:var(--surface-raised); min-width:130px; max-width:170px; box-shadow:1px 0 0 var(--border);}
-    .table-wrap thead th:first-child{background:var(--surface); z-index:2;}
-    .table-wrap tbody tr:hover td:first-child{background:color-mix(in srgb, var(--accent-soft) 100%, var(--surface-raised));}
+    .table-wrap th:first-child, .table-wrap td:first-child{position:sticky; left:0; z-index:1; background:var(--surface); min-width:130px; max-width:170px; box-shadow:1px 0 0 var(--border);}
+    .table-wrap thead th:first-child{background:var(--surface-raised); z-index:2;}
+    .table-wrap tbody tr:hover td:first-child{background:var(--k-raised);}
   }
-  table{width:100%; border-collapse:collapse; min-width:560px; background:var(--surface-raised);}
-  thead th{position:sticky; top:0; background:var(--surface); text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:0.05em; color:var(--ink-muted); font-weight:700; padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap;}
+  table{width:100%; border-collapse:collapse; min-width:560px; background:var(--surface);}
+  thead th{position:sticky; top:0; background:var(--surface-raised); text-align:left; font-size:12px; color:var(--k-muted); font-weight:700; padding:10px 12px; border-bottom:1px solid var(--border); white-space:nowrap;}
   tbody td{padding:10px 12px; border-bottom:1px solid var(--border); font-size:13.5px; vertical-align:middle;}
   tbody tr:last-child td{border-bottom:none;}
-  tbody tr:hover{background:var(--accent-soft);}
+  tbody tr:hover{background:var(--k-raised);}
   td.num, th.num{text-align:right; font-family:var(--font-mono); font-variant-numeric:tabular-nums;}
   .row-actions{display:flex; gap:8px; justify-content:flex-end;}
-  .empty-state{padding:36px 20px; text-align:center; color:var(--ink-muted); font-size:13.5px;}
-  .section-title{font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:var(--ink-secondary); margin-bottom:8px;}
+  .empty-state{padding:32px 20px; text-align:center; color:var(--k-muted); font-size:14px;}
+  .section-title{font-size:14px; font-weight:700; color:var(--k-ink); margin-bottom:8px;}
 
-  .sample-banner{display:flex; align-items:center; gap:10px; background:var(--accent-soft); color:var(--accent-strong); border:1px solid var(--accent); border-radius:10px; padding:9px 14px; font-size:12.5px; font-weight:600;}
+  .sample-banner{display:flex; align-items:center; gap:10px; background:var(--k-surface); color:var(--k-accent-text); border:1px solid var(--k-accent-text); border-radius:var(--k-radius); padding:12px 14px; font-size:14px; font-weight:600;}
   .toast-stack{position:fixed; bottom:calc(env(safe-area-inset-bottom,0px) + 16px); left:50%; transform:translateX(-50%); z-index:60; display:flex; flex-direction:column; gap:8px; align-items:center;}
-  .toast{background:var(--ink); color:var(--surface); padding:9px 16px; border-radius:100px; font-size:13px; font-weight:600; box-shadow:var(--shadow-modal);}
-  :root[data-theme="dark"] .toast{background:var(--surface-raised); border:1px solid var(--border); color:var(--ink);}
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .toast{background:var(--surface-raised); border:1px solid var(--border); color:var(--ink);} }
-
+  .toast{display:flex; align-items:center; gap:16px; background:var(--k-raised); color:var(--k-ink); border:1px solid var(--k-border); padding:12px 16px; border-radius:var(--k-radius-lg); font:500 14px/1.3 var(--k-font-sans); box-shadow:0 8px 24px rgb(0 0 0 / .35);}
+  .toast button{background:none; border:0; color:var(--k-sun); font:700 14px/1 var(--k-font-sans); cursor:pointer; min-height:36px;}
   /* modal */
-  #modalRoot .modal-backdrop{position:fixed; inset:0; background:rgba(11,11,11,0.45); z-index:49;}
+  #modalRoot .modal-backdrop{position:fixed; inset:0; background:rgb(0 0 0 / .5); z-index:49;}
   #modalRoot .modal-card{
     position:fixed; z-index:50; left:50%; top:50%; transform:translate(-50%,-50%);
     width:min(560px, calc(100vw - 32px)); max-height:min(88vh, 820px); overflow-y:auto;
-    background:var(--surface-raised); border-radius:14px; box-shadow:var(--shadow-modal); padding:20px;
+    background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); box-shadow:var(--shadow-modal); padding:20px;
     display:flex; flex-direction:column; gap:14px;
   }
   #modalRoot .modal-card.wide{width:min(760px, calc(100vw - 32px));}
-  #authGate .modal-backdrop{position:fixed; inset:0; background:rgba(11,11,11,0.45); z-index:49;}
+  #authGate .modal-backdrop{position:fixed; inset:0; background:var(--k-page); z-index:49;}
   #authGate .modal-card{
     position:fixed; z-index:50; left:50%; top:50%; transform:translate(-50%,-50%);
     width:min(420px, calc(100vw - 32px));
-    background:var(--surface-raised); border-radius:14px; box-shadow:var(--shadow-modal); padding:24px;
+    background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); box-shadow:var(--shadow-modal); padding:24px;
     display:flex; flex-direction:column;
   }
   #modalRoot h2{font-size:17px;}
@@ -248,9 +247,9 @@
      edge to edge despite looking "roomy enough" in a screenshot. This is
      what actually read as cramped/hard-to-use, more than any single field. */
   form{display:flex; flex-direction:column; gap:16px;}
-  form label{display:flex; flex-direction:column; gap:6px; font-size:12.5px; font-weight:600; color:var(--ink-secondary);}
+  form label{display:flex; flex-direction:column; gap:6px; font:600 13px/1.3 var(--k-font-sans); color:var(--k-ink);}
   .qmark{
-    display:inline-flex; align-items:center; justify-content:center; width:14px; height:14px; border-radius:50%;
+    display:inline-flex; align-items:center; justify-content:center; width:16px; height:16px; border-radius:50%;
     background:var(--surface-raised); border:1px solid var(--border); color:var(--ink-secondary);
     font-size:10px; font-weight:700; cursor:help; flex:none;
   }
@@ -260,19 +259,20 @@
      (adding an ingredient, logging a count, anything) yanks the whole page
      in. Was 13.5px. */
   form input, form select, form textarea{
-    border:1px solid var(--border); border-radius:8px; padding:9px 12px; min-height:40px; background:var(--surface); color:var(--ink); font-size:16px; width:100%;
+    border:1px solid var(--k-border-input); border-radius:var(--k-radius); padding:10px 12px; min-height:var(--k-tap); background:var(--k-surface); color:var(--k-ink); font:16px/1.3 var(--k-font-sans); width:100%;
   }
   form textarea{min-height:80px;}
-  form input:focus, form select:focus, form textarea:focus{outline:2px solid var(--accent); outline-offset:1px;}
+  form input:focus-visible, form select:focus-visible, form textarea:focus-visible{outline:2px solid var(--k-ring); outline-offset:2px;}
+  input::placeholder, textarea::placeholder{color:var(--k-muted);}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
   .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;}
   @media (max-width:480px){ .grid2, .grid3{grid-template-columns:1fr;} }
-  .hint{font-size:12px; color:var(--ink-muted);}
+  .hint{font-size:13px; color:var(--k-muted);}
   .modal-actions{display:flex; align-items:center; justify-content:space-between; gap:10px; padding-top:6px; border-top:1px solid var(--border);}
   .modal-actions .right{display:flex; gap:8px;}
   /* Save/Cancel stay pinned to the bottom of the scrolling modal card so a
      long form never hides them below the fold (phone, iPad landscape). */
-  #modalRoot .modal-actions{position:sticky; bottom:-20px; z-index:2; background:var(--surface-raised); margin:0 -20px -20px; padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 16px -12px rgba(0,0,0,0.6);}
+  #modalRoot .modal-actions{position:sticky; bottom:-20px; z-index:2; background:var(--k-surface); margin:0 -20px -20px; padding:12px 20px calc(12px + env(safe-area-inset-bottom,0px)); box-shadow:0 -8px 16px -12px rgba(0,0,0,0.6);}
   .line-row{display:grid; grid-template-columns:1fr 110px 90px auto; gap:8px; align-items:end; padding:8px 0; border-bottom:1px solid var(--border);}
   .line-row:last-child{border-bottom:none;}
   @media (max-width:480px){
@@ -286,7 +286,7 @@
   }
   .line-total{font-family:var(--font-mono); font-size:13px; color:var(--ink-secondary); align-self:center; text-align:right;}
   .lines-box{border:1px solid var(--border); border-radius:10px; padding:10px 12px; max-height:280px; overflow-y:auto;}
-  .cost-preview{display:flex; justify-content:space-between; align-items:center; background:var(--accent-soft); border-radius:10px; padding:10px 14px; font-size:13px;}
+  .cost-preview{display:flex; justify-content:space-between; align-items:center; background:var(--k-raised); border-radius:var(--k-radius); padding:10px 14px; font-size:13px;}
   .cost-preview strong{font-family:var(--font-mono); font-size:16px; color:var(--accent-strong);}
   /* --ink-muted reads fine on the page/card grounds .hint is normally on,
      but not on this tinted pill - it measured 4.14 here. */
@@ -295,9 +295,7 @@
 
   /* charts */
   .chart-card svg{width:100%; height:auto; display:block; overflow:visible;}
-  .chart-tooltip{position:absolute; pointer-events:none; background:var(--ink); color:var(--surface); font-size:12px; padding:6px 9px; border-radius:7px; white-space:nowrap; box-shadow:var(--shadow-card); transform:translate(-50%,-115%); z-index:5;}
-  :root[data-theme="dark"] .chart-tooltip{background:var(--surface-raised); border:1px solid var(--border); color:var(--ink);}
-  @media (prefers-color-scheme:dark){ :root:not([data-theme="light"]) .chart-tooltip{background:var(--surface-raised); border:1px solid var(--border); color:var(--ink);} }
+  .chart-tooltip{position:absolute; pointer-events:none; background:var(--k-raised); border:1px solid var(--k-border); color:var(--k-ink); font-size:12px; padding:6px 9px; border-radius:var(--k-radius); white-space:nowrap; box-shadow:var(--shadow-card); transform:translate(-50%,-115%); z-index:5;}
   .chart-wrap{position:relative;}
   .legend{display:flex; gap:14px; flex-wrap:wrap; font-size:12px; color:var(--ink-secondary); margin-top:8px;}
   .legend .item{display:flex; align-items:center; gap:6px;}
@@ -306,7 +304,7 @@
   @media (max-width:860px){ .two-col{grid-template-columns:1fr;} }
   .attn-item{display:flex; align-items:center; gap:10px; padding:11px 0; border-bottom:1px solid var(--border); font-size:13px;}
   .attn-item:last-child{border-bottom:none;}
-  .attn-card{border-color:var(--warning);}
+  .attn-card{border-color:var(--k-warning);}
   .attn-dot{width:8px; height:8px; border-radius:50%; flex:none; background:var(--ink-muted);}
   .attn-dot.critical{background:var(--critical);}
   .attn-dot.serious{background:var(--serious);}
@@ -339,18 +337,18 @@
   .combo-wrap{position:relative;}
   .combo-wrap input{padding-right:30px;}
   .combo-caret{position:absolute; right:10px; top:50%; transform:translateY(-50%); pointer-events:none; color:var(--ink-muted); font-size:11px;}
-  .combo-panel{position:absolute; left:0; right:0; top:calc(100% + 4px); background:var(--surface-raised); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow-modal); max-height:220px; overflow-y:auto; z-index:5; padding:4px;}
+  .combo-panel{position:absolute; left:0; right:0; top:calc(100% + 4px); background:var(--k-raised); border:1px solid var(--k-border); border-radius:var(--k-radius); box-shadow:var(--shadow-modal); max-height:220px; overflow-y:auto; z-index:5; padding:4px;}
   .combo-option{padding:8px 10px; font-size:13.5px; border-radius:7px; cursor:pointer;}
-  .combo-option:hover{background:var(--accent-soft); color:var(--accent-strong);}
+  .combo-option:hover{background:var(--k-raised-hover); color:var(--k-ink);}
   .combo-empty{padding:8px 10px; font-size:12px; color:var(--ink-muted);}
-  .pr-strong td{font-weight:700; background:var(--accent-soft);}
+  .pr-strong td{font-weight:700; background:var(--k-raised);}
   .pr-strong .muted{color:var(--ink-secondary);}
-  .search-box{border:1px solid var(--border); border-radius:8px; padding:8px 12px; font-size:13.5px; background:var(--surface-raised); color:var(--ink); width:100%; max-width:320px;}
+  .search-box{border:1px solid var(--k-border-input); border-radius:var(--k-radius); padding:10px 12px; min-height:var(--k-tap); font-size:16px; background:var(--k-surface); color:var(--ink); width:100%; max-width:320px;}
   .toolbar-row{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-bottom:2px;}
   th.sortable{cursor:pointer; user-select:none;}
   th.sortable:hover{color:var(--ink);}
   .sort-arrow{font-size:9px; margin-left:2px; color:var(--accent-strong);}
-  .filter-row select, .filter-row input{border:1px solid var(--border); background:var(--surface-raised); border-radius:8px; padding:7px 10px; font-size:16px;}
+  .filter-row select, .filter-row input{border:1px solid var(--k-border-input); background:var(--k-surface); border-radius:var(--k-radius); padding:7px 10px; min-height:36px; font-size:16px;}
   .pr-clickable td{cursor:pointer;}
   @media (max-width:640px){
     .btn, .btn.small, .search-box, .filter-row select, .filter-row input{min-height:44px;}
@@ -359,7 +357,7 @@
   [hidden]{display:none!important;}
 
   @media print{
-    header.topbar, nav.tabs, .toast-stack, #modalRoot, .no-print, .sample-banner{display:none!important;}
+    header.topbar, .tabs-bar, .toast-stack, #modalRoot, .no-print, .sample-banner{display:none!important;}
     body, #app, .page, main{background:#fff!important;}
     main{padding:0!important; max-width:100%!important; gap:10px!important;}
     .card{box-shadow:none!important; border:1px solid #ccc!important; break-inside:avoid; page-break-inside:avoid;}
@@ -386,17 +384,18 @@
       <div class="sync-chip" id="syncChip"><span class="sync-dot off"></span><span>Connecting…</span></div>
     </div>
   </header>
-  <nav class="tabs" id="tabNav"></nav>
+  <div class="tabs-bar"><nav class="tabs" id="tabNav" aria-label="Sections"></nav></div>
   <main id="main"></main>
 </div>
 <div id="modalRoot" hidden></div>
 <div id="authGate" hidden>
   <div class="modal-backdrop"></div>
-  <div class="modal-card" style="text-align:center; gap:16px;">
-    <h2>Manager sign-in required</h2>
-    <div style="color:var(--ink-secondary); font-size:13.5px;">Kitchen Ops holds costing and business data, so it's manager-only. Sign in with your @iara.nyc Google account.</div>
-    <button class="btn primary" id="authGateBtn" style="align-self:center;">Sign in with Google</button>
-    <div id="authGateMsg" style="color:var(--critical); font-size:12.5px; display:none;"></div>
+  <div class="modal-card" style="text-align:center; gap:16px; align-items:center;">
+    <div class="brand gate-lockup" aria-hidden="true"><img class="brand-mark" id="gateMark" alt=""><span class="brand-word">Kitchen Ops</span></div>
+    <h2>Manager Sign-In Required</h2>
+    <div style="color:var(--k-muted); font-size:14px;">Kitchen Ops holds costing and business data, so it's manager-only. Sign in with your @iara.nyc Google account.</div>
+    <button class="btn primary" id="authGateBtn" style="align-self:stretch;">Sign In With Google</button>
+    <div id="authGateMsg" class="k-alert" style="display:none;"></div>
   </div>
 </div>
 <div class="toast-stack" id="toastStack"></div>
@@ -503,11 +502,11 @@ function localDateFromIso(iso){
   var m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
   return m ? new Date(+m[1], +m[2]-1, +m[3]) : new Date(iso);
 }
-function dateShort(iso){ if(!iso) return '—'; var d = localDateFromIso(iso); return d.toLocaleDateString('en-US',{month:'short', day:'numeric'}); }
-function dateLong(iso){ if(!iso) return '—'; var d = localDateFromIso(iso); return d.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'}); }
+function dateShort(iso){ if(!iso) return 'Not set'; var d = localDateFromIso(iso); return d.toLocaleDateString('en-US',{month:'short', day:'numeric'}); }
+function dateLong(iso){ if(!iso) return 'Not set'; var d = localDateFromIso(iso); return d.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'}); }
 function formatDateStr(val){
   var parts = String(val||'').split('-');
-  if(parts.length!==3) return val || '—';
+  if(parts.length!==3) return val || 'Not set';
   var d = new Date(+parts[0], +parts[1]-1, +parts[2]);
   return d.toLocaleDateString('en-US',{month:'short', day:'numeric', year:'numeric'});
 }
@@ -811,7 +810,7 @@ async function signInManager(){
   return u;
 }
 
-function showAuthGate(){ document.getElementById('authGate').hidden = false; }
+function showAuthGate(){ var gm=document.getElementById('gateMark'), hm=document.querySelector('header.topbar .brand-mark'); if(gm && hm && !gm.src) gm.src=hm.src;  document.getElementById('authGate').hidden = false; }
 function hideAuthGate(){ document.getElementById('authGate').hidden = true; }
 
 function isReady(){ return state.ready.ingredients && state.ready.recipes && state.ready.counts && state.ready.pos && state.ready.sales; }
@@ -1010,7 +1009,7 @@ function updateSyncChip(ok){
   chip.innerHTML = ok
     ? '<span class="sync-dot"></span><span>Synced</span>'
     : '<span class="sync-dot off"></span>'
-      + '<span class="sync-label-full">Preview — changes not saved</span>'
+      + '<span class="sync-label-full">Preview: Changes Not Saved</span>'
       + '<span class="sync-label-short">Preview</span>';
 }
 
@@ -1074,7 +1073,7 @@ function saveRecipe(form, linesData){
 
 function saveCount(label, dateVal, linesArr){
   var total = round2(sum(linesArr, function(l){ return l.extValue; }));
-  var body = {date: new Date(dateVal).toISOString(), label: label || ('Count — ' + dateShort(new Date(dateVal).toISOString())), lines: linesArr, totalValue: total};
+  var body = {date: new Date(dateVal).toISOString(), label: label || ('Count: ' + dateShort(new Date(dateVal).toISOString())), lines: linesArr, totalValue: total};
   persistCollection('counts', uid(), body).then(function(){ toast('Count saved'); closeModal(); });
 }
 
@@ -1104,7 +1103,7 @@ function setPOStatus(id, status){
   var po = byId(state.pos, id); if(!po) return;
   if(status === 'received'){
     applyReceivedEffects(po);
-    updateCollection('pos', id, {status:'received', receivedAt: isoNow()}).then(function(){ toast('PO received — inventory updated'); });
+    updateCollection('pos', id, {status:'received', receivedAt: isoNow()}).then(function(){ toast('PO received: inventory updated'); });
   } else {
     updateCollection('pos', id, {status:status}).then(function(){ toast('PO marked ' + status); });
   }
@@ -1113,7 +1112,7 @@ function saveInvoicePO(vendor, dateVal, linesArr, assetId, skipIds){
   var body = {date: new Date(dateVal).toISOString(), vendor: vendor, status:'received', receivedAt: isoNow(), lines: linesArr, fromInvoice:true};
   if(assetId) body.receiptAssetId = assetId;
   applyReceivedEffects(body, skipIds);
-  persistCollection('pos', uid(), body).then(function(){ toast('Invoice saved — inventory updated'); closeModal(); });
+  persistCollection('pos', uid(), body).then(function(){ toast('Invoice saved: inventory updated'); closeModal(); });
 }
 
 function saveSales(dateFrom, dateTo, label, linesArr){
@@ -1240,7 +1239,7 @@ function render(){
   if(state.dbAvailable === false){
     html += '<div class="sample-banner">Preview mode: this view isn’t connected to shared storage, so edits here won’t be saved. Example data shown below.</div>';
   } else if(state.ingredients.some(function(i){ return i.seed; })){
-    html += '<div class="sample-banner">Loaded with example iara ingredients, recipes &amp; counts so you can see how everything works — edit or delete anything below to make it yours.</div>';
+    html += '<div class="sample-banner">Loaded with example iara ingredients, recipes &amp; counts so you can see how everything works: edit or delete anything below to make it yours.</div>';
   }
   switch(state.tab){
     case 'dashboard': html += renderDashboard(); break;
@@ -1297,20 +1296,20 @@ function renderDashboard(){
   // Needs Attention leads the page - it's the only section that changes
   // what someone does next, so it shouldn't be buried under four KPI tiles
   // and a chart first. An all-clear state still gets a card, not nothing.
-  html += '<div class="card'+(attn.length?' attn-card':'')+'"><div class="section-title">Needs attention</div>' + (attn.length ? attn.slice(0,6).map(function(a){
+  html += '<div class="card'+(attn.length?' attn-card':'')+'"><div class="section-title">Needs Attention</div>' + (attn.length ? attn.slice(0,6).map(function(a){
     return '<div class="attn-item"><span class="attn-dot '+esc(a.badge)+'"></span><div class="attn-body"><div class="t">'+esc(a.t)+'</div><div class="s">'+esc(a.s)+'</div></div><button class="btn small ghost" data-action="setTab" data-tab="'+a.tab+'">View</button></div>';
   }).join('') : '<div class="empty-state">Nothing needs attention right now.</div>') + '</div>';
 
   html += '<div class="kpis">'+
-    '<div class="kpi"><div class="label">Inventory value</div><div class="value">'+money(invVal)+'</div><div class="foot">'+plural(state.ingredients.length,'item')+' tracked</div></div>'+
-    '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Avg. cost %</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+plural(state.recipes.length,'recipe')+'</div></div>'+
-    '<div class="kpi'+(low.length?' alert':'')+'"><div class="label">Low stock items</div><div class="value">'+low.length+'</div><div class="foot">at risk of stockout</div></div>'+
-    '<div class="kpi'+(incr.length?' alert':'')+'"><div class="label">Price increases</div><div class="value">'+incr.length+'</div><div class="foot">last 30 days</div></div>'+
+    '<div class="kpi"><div class="label">Inventory Value</div><div class="value">'+money(invVal)+'</div><div class="foot">'+plural(state.ingredients.length,'item')+' tracked</div></div>'+
+    '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Avg. Cost %</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+plural(state.recipes.length,'recipe')+'</div></div>'+
+    '<div class="kpi'+(low.length?' alert':'')+'"><div class="label">Low Stock Items</div><div class="value">'+low.length+'</div><div class="foot">at risk of stockout</div></div>'+
+    '<div class="kpi'+(incr.length?' alert':'')+'"><div class="label">Price Increases</div><div class="value">'+incr.length+'</div><div class="foot">last 30 days</div></div>'+
   '</div>';
 
   html += '<div class="two-col">';
   chartPointsMap.dashboardTrend = trend.points;
-  html += '<div class="card chart-card" data-chart-id="dashboardTrend"><div class="section-title">Inventory value over time</div><div class="chart-wrap">'+trend.svg+'</div></div>';
+  html += '<div class="card chart-card" data-chart-id="dashboardTrend"><div class="section-title">Inventory Value Over Time</div><div class="chart-wrap">'+trend.svg+'</div></div>';
 
   // One card instead of three separate KPI-weight tiles: a single
   // proportional bar shows the $ split at a glance, then compact rows carry
@@ -1319,7 +1318,7 @@ function renderDashboard(){
   var deptTotal = Math.max(0.01, foodStats.inventoryValue + bevStats.inventoryValue + supStats.inventoryValue);
   var fPct = foodStats.inventoryValue/deptTotal*100, bPct = bevStats.inventoryValue/deptTotal*100, sPct = supStats.inventoryValue/deptTotal*100;
   html += '<div class="card">'+
-    '<div class="section-title">By department</div>'+
+    '<div class="section-title">By Department</div>'+
     '<div class="dept-bar">'+
       (fPct>0?'<div class="seg food" style="width:'+fPct+'%" title="Food '+pct(fPct,0)+'"></div>':'')+
       (bPct>0?'<div class="seg bev" style="width:'+bPct+'%" title="Beverage '+pct(bPct,0)+'"></div>':'')+
@@ -1380,7 +1379,7 @@ function ingredientsTableHtml(){
       '<td>'+esc(ing.name)+'<div class="muted" style="font-size:11.5px">'+esc(ing.storageArea||'')+'</div></td>'+
       '<td>'+esc(ing.category)+'</td>'+
       '<td><span class="badge neutral">'+ingDept(ing)+'</span></td>'+
-      '<td>'+esc(ing.vendor||'—')+'</td>'+
+      '<td>'+esc(ing.vendor||'None')+'</td>'+
       '<td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td>'+
       '<td class="num">'+ing.onHand+' '+esc(ing.invUnit)+'</td>'+
       '<td class="num">'+ing.parLevel+' '+esc(ing.invUnit)+'</td>'+
@@ -1395,7 +1394,7 @@ function renderIngredientsTableWrap(){ var el = $('#ingredientsTableWrap'); if(e
 
 function renderIngredients(){
   var filter = state.ingredientsDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items — pack cost, count unit, par &amp; on-hand.</div></div><button class="btn primary" data-action="newIngredient">+ Add Ingredient</button></div>';
+  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items: pack cost, count unit, par &amp; on-hand.</div></div><button class="btn primary" data-action="newIngredient">+ Add Ingredient</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('ingredientsDept', filter)+searchBoxHtml('ingredientsSearchInput','Search ingredients or vendor…', state.ingredientsSearch)+'</div>';
   html += '<div id="ingredientsTableWrap">'+ingredientsTableHtml()+'</div>';
   return html;
@@ -1493,7 +1492,7 @@ function renderCounts(){
 function renderPurchasing(){
   var guide = orderGuide();
   var vendors = Object.keys(guide).sort();
-  var html = '<div class="panel-head"><div><h2>Purchasing</h2><div class="desc">Order guide, grouped by vendor — usage-predicted where there\'s count history, par level otherwise.</div></div>'+
+  var html = '<div class="panel-head"><div><h2>Purchasing</h2><div class="desc">Order guide, grouped by vendor: usage-predicted where there\'s count history, par level otherwise.</div></div>'+
     '<button class="btn primary" data-action="scanInvoice">'+icon('camera')+' Scan Invoice</button></div>';
 
   html += '<div class="card">';
@@ -1545,7 +1544,7 @@ function posTableHtml(){
     var badgeClass = po.status==='received' ? 'good' : (po.status==='sent' ? 'warning' : 'neutral');
     html += '<tr><td>'+dateLong(po.date)+(po.receiptAssetId?' <button class="btn small ghost" data-action="viewReceipt" data-asset-id="'+esc(po.receiptAssetId)+'" title="View scanned receipt">'+icon('receipt')+'</button>':'')+'</td><td>'+esc(po.vendor)+'</td><td class="num">'+(po.lines||[]).length+'</td><td class="num">'+money(poTotal(po))+'</td>'+
       '<td><span class="badge '+badgeClass+'">'+po.status+'</span></td><td class="row-actions">'+
-      (po.status==='draft' ? '<button class="btn small ghost" data-action="poStatus" data-id="'+po.id+'" data-status="sent">Mark sent</button>' : '') +
+      (po.status==='draft' ? '<button class="btn small ghost" data-action="poStatus" data-id="'+po.id+'" data-status="sent">Mark Sent</button>' : '') +
       (po.status==='sent' ? '<button class="btn small primary" data-action="poStatus" data-id="'+po.id+'" data-status="received">Mark Received</button>' : '') +
       '</td></tr>';
   });
@@ -1581,7 +1580,7 @@ function pricingResultsHtml(){
     '<th></th></tr></thead><tbody>' +
     list.map(function(ing){
       var hist = (ing.priceHistory||[]).slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
-      var trend = '<span class="badge neutral">—</span>';
+      var trend = '<span class="badge neutral">No Data</span>';
       if(hist.length>=2){
         var prevC = hist[hist.length-2].costPerUnit, lastC = hist[hist.length-1].costPerUnit;
         var delta = lastC - prevC;
@@ -1590,7 +1589,7 @@ function pricingResultsHtml(){
         else trend = '<span class="badge good">▼ '+pct(Math.abs(delta/prevC*100),1)+'</span>';
       }
       var selected = state.priceSelectedId===ing.id;
-      return '<tr><td>'+esc(ing.name)+'</td><td>'+esc(ing.vendor||'—')+'</td><td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td><td>'+trend+'</td>'+
+      return '<tr><td>'+esc(ing.name)+'</td><td>'+esc(ing.vendor||'None')+'</td><td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td><td>'+trend+'</td>'+
         '<td class="row-actions"><button class="btn small '+(selected?'primary':'ghost')+'" data-action="selectPriceItem" data-id="'+ing.id+'">'+(selected?'Selected':'View')+'</button></td></tr>';
     }).join('') + '</tbody></table></div>';
 }
@@ -1615,11 +1614,11 @@ function pricingDetailHtml(){
   }).join('');
   return '<div class="card" data-chart-id="priceDetail" style="margin-top:14px">'+
     '<div class="panel-head"><div><h3>'+esc(ing.name)+'</h3><div class="desc">'+esc(ing.vendor||'No vendor set')+' · '+esc(ing.category)+' · '+ingDept(ing)+'</div></div>'+
-      '<div class="kpi" style="padding:8px 14px"><div class="label">Current cost</div><div class="value" style="font-size:18px">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</div></div></div>'+
+      '<div class="kpi" style="padding:8px 14px"><div class="label">Current Cost</div><div class="value" style="font-size:18px">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</div></div></div>'+
     '<div class="chart-wrap" style="margin-top:10px">'+trendChart.svg+'</div>'+
     '<div class="two-col" style="margin-top:14px">'+
-      '<div><div class="section-title">Price history</div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Cost/pack</th><th class="num">Cost/unit</th></tr></thead><tbody>'+(histRows||'<tr><td colspan="3" class="empty-state">No history yet.</td></tr>')+'</tbody></table></div></div>'+
-      '<div><div class="section-title">Purchase history</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit Cost</th><th>Status</th></tr></thead><tbody>'+(poRows||'<tr><td colspan="5" class="empty-state">No purchase orders yet.</td></tr>')+'</tbody></table></div></div>'+
+      '<div><div class="section-title">Price History</div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Cost/Pack</th><th class="num">Cost/Unit</th></tr></thead><tbody>'+(histRows||'<tr><td colspan="3" class="empty-state">No history yet.</td></tr>')+'</tbody></table></div></div>'+
+      '<div><div class="section-title">Purchase History</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit Cost</th><th>Status</th></tr></thead><tbody>'+(poRows||'<tr><td colspan="5" class="empty-state">No purchase orders yet.</td></tr>')+'</tbody></table></div></div>'+
     '</div>'+
   '</div>';
 }
@@ -1646,7 +1645,7 @@ function renderPurchaseReportCard(){
   var presetBtns = presets.map(function(p){
     return '<button type="button" class="btn small '+(state.purchaseReportPreset===p.key?'primary':'ghost')+'" data-action="purchaseReportPreset" data-preset="'+p.key+'">'+esc(p.label)+'</button>';
   }).join('');
-  function pctOfAll(v){ return data.all ? pct(v/data.all*100, 1) : '—'; }
+  function pctOfAll(v){ return data.all ? pct(v/data.all*100, 1) : 'n/a'; }
   function row(label, val, catKey, opts){
     opts = opts || {};
     var clickable = catKey != null;
@@ -1677,7 +1676,7 @@ function renderPurchaseReportCard(){
       '</div>'+
     '</div>'+
     (data.all === 0 ? '<div class="empty-state">No received purchases in this date range.</div>' :
-      '<div class="table-wrap"><table><thead><tr><th>Category</th><th class="num">Total</th><th class="num">% of purchases</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>')+
+      '<div class="table-wrap"><table><thead><tr><th>Category</th><th class="num">Total</th><th class="num">% of Purchases</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>')+
     '<div class="hint" style="margin-top:8px">Based on received purchase orders (including scanned invoices) with a delivery date in this range. Click any row to see exactly what, when and who each purchase was from.</div>'+
   '</div>';
 }
@@ -1695,7 +1694,7 @@ function purchaseDrilldownRows(categoryKey, startVal, endVal){
     var ing = byId(state.ingredients, x.line.ingredientId);
     return {
       date: x.po.receivedAt || x.po.date,
-      vendor: x.po.vendor || '—',
+      vendor: x.po.vendor || 'None',
       item: ing ? ing.name : (x.line.description || '(deleted item)'),
       category: purchaseCategoryOf(ing),
       qty: num(x.line.qty),
@@ -1771,7 +1770,7 @@ function renderReports(){
 
   var trend = lineChartSvg(valueTrendPoints());
   chartPointsMap.reportsTrend = trend.points;
-  html += '<div class="card chart-card" data-chart-id="reportsTrend"><div class="section-title">Inventory value over time</div><div class="chart-wrap">'+trend.svg+'</div></div>';
+  html += '<div class="card chart-card" data-chart-id="reportsTrend"><div class="section-title">Inventory Value Over Time</div><div class="chart-wrap">'+trend.svg+'</div></div>';
 
   var catData = RECIPE_CATS.map(function(cat){
     var recs = state.recipes.filter(function(r){ return r.category===cat && num(r.menuPrice)>0; });
@@ -1779,18 +1778,18 @@ function renderReports(){
     var avg = sum(recs, recipeFoodCostPct)/recs.length;
     return {label:cat, y:round2(avg), color:CAT_COLOR[cat]};
   }).filter(Boolean);
-  html += '<div class="card"><div class="section-title">Avg. food cost % by category</div>';
+  html += '<div class="card"><div class="section-title">Avg. Food Cost % by Category</div>';
   html += catData.length ? '<div class="chart-wrap">'+barChartSvg(catData, {pctAxis:true, targetY:30})+'</div><div class="hint">Dashed line marks a 30% reference target.</div>' : '<div class="empty-state">Add recipes with a menu price to see this chart.</div>';
   html += '</div>';
 
   var foodStats = departmentStats('Food'), bevStats = departmentStats('Beverage');
   var deptData = [{label:'Food', y:round2(foodStats.avgCostPct), color:'var(--cat-1)'}, {label:'Beverage', y:round2(bevStats.avgCostPct), color:'var(--cat-5)'}];
-  html += '<div class="card"><div class="section-title">Cost % — Food vs. Beverage</div><div class="chart-wrap">'+barChartSvg(deptData, {pctAxis:true})+'</div>'+
+  html += '<div class="card"><div class="section-title">Cost %: Food vs. Beverage</div><div class="chart-wrap">'+barChartSvg(deptData, {pctAxis:true})+'</div>'+
     '<div class="hint">Food inventory '+money(foodStats.inventoryValue)+' across '+plural(foodStats.itemCount,'item')+' · Beverage inventory '+money(bevStats.inventoryValue)+' across '+plural(bevStats.itemCount,'item')+'.</div></div>';
 
   var over = overTargetRecipes();
-  html += '<div class="card"><div class="section-title">Recipes over target food cost</div>';
-  html += over.length ? ('<div class="table-wrap"><table><thead><tr><th>Recipe</th><th class="num">Food cost %</th><th class="num">Target</th></tr></thead><tbody>'+
+  html += '<div class="card"><div class="section-title">Recipes Over Target Food Cost</div>';
+  html += over.length ? ('<div class="table-wrap"><table><thead><tr><th>Recipe</th><th class="num">Food Cost %</th><th class="num">Target</th></tr></thead><tbody>'+
     over.map(function(r){ return '<tr><td>'+esc(r.name)+'</td><td class="num"><span class="badge warning">'+pct(recipeFoodCostPct(r))+'</span></td><td class="num">'+pct(r.targetFoodCostPct)+'</td></tr>'; }).join('') + '</tbody></table></div>')
     : '<div class="empty-state">All recipes are within their target food cost.</div>';
   html += '</div>';
@@ -1802,14 +1801,14 @@ function renderReports(){
 function renderVarianceCard(){
   var sortedCounts = state.counts.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
   if(sortedCounts.length < 2){
-    return '<div class="card"><div class="section-title">Theoretical vs. actual COGS</div><div class="empty-state">Save at least two inventory counts to calculate a period variance.</div></div>';
+    return '<div class="card"><div class="section-title">Theoretical vs. Actual COGS</div><div class="empty-state">Save at least two inventory counts to calculate a period variance.</div></div>';
   }
   var beginId = state.varianceBegin || sortedCounts[0].id;
   var endId = state.varianceEnd || sortedCounts[sortedCounts.length-1].id;
   var begin = byId(sortedCounts, beginId) || sortedCounts[0];
   var end = byId(sortedCounts, endId) || sortedCounts[sortedCounts.length-1];
 
-  var options = sortedCounts.map(function(c){ return {id:c.id, label:dateLong(c.date)+' — '+esc(c.label)}; });
+  var options = sortedCounts.map(function(c){ return {id:c.id, label:dateLong(c.date)+': '+esc(c.label)}; });
   var beginSel = '<select data-action="varianceBegin">' + options.map(function(o){ return '<option value="'+o.id+'" '+(o.id===begin.id?'selected':'')+'>'+o.label+'</option>'; }).join('') + '</select>';
   var endSel = '<select data-action="varianceEnd">' + options.map(function(o){ return '<option value="'+o.id+'" '+(o.id===end.id?'selected':'')+'>'+o.label+'</option>'; }).join('') + '</select>';
   var dept = state.varianceDept || 'All';
@@ -1829,7 +1828,7 @@ function renderVarianceCard(){
   var bars = barChartSvg([{label:'Theoretical', y:round2(theoretical), color:'var(--cat-1)'},{label:'Actual', y:actual, color:'var(--cat-2)'}]);
 
   return '<div class="card">'+
-    '<div class="section-title">Theoretical vs. actual COGS</div>'+
+    '<div class="section-title">Theoretical vs. Actual COGS</div>'+
     '<div class="filter-row" style="margin-bottom:12px">Begin: '+beginSel+' End: '+endSel+' Department: '+deptSel+'</div>'+
     '<div class="chart-wrap">'+bars+'</div>'+
     '<div class="grid3" style="margin-top:12px">'+
@@ -1867,8 +1866,8 @@ function vendorComboOptionsHtml(query){
   var vendors = allVendors();
   var q = (query||'').trim().toLowerCase();
   var filtered = q ? vendors.filter(function(v){ return v.toLowerCase().indexOf(q)!==-1; }) : vendors;
-  if(!vendors.length) return '<div class="combo-empty">No purveyors tracked yet — just type the vendor name.</div>';
-  if(!filtered.length) return '<div class="combo-empty">No match — press Save to use "'+esc(query)+'" as a new purveyor.</div>';
+  if(!vendors.length) return '<div class="combo-empty">No purveyors tracked yet: just type the vendor name.</div>';
+  if(!filtered.length) return '<div class="combo-empty">No match: press Save to use "'+esc(query)+'" as a new purveyor.</div>';
   return filtered.map(function(v){ return '<div class="combo-option" data-action="pickVendorCombo" data-vendor="'+esc(v)+'">'+esc(v)+'</div>'; }).join('');
 }
 function openVendorCombo(query){
@@ -1966,7 +1965,7 @@ function openRecipeModal(existing){
       '<label>Menu price ($)<input type="number" step="0.01" min="0" name="menuPrice" value="'+(existing?existing.menuPrice:'')+'"></label>'+
       '<label><span class="label-row">Target food cost % <span class="qmark" title="Your goal ceiling for this dish - ingredient cost as a share of menu price. Recipes over target get flagged on the Dashboard and in Reports.">?</span></span><input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
     '</div>'+
-    '<div><div class="section-title">Ingredient lines</div><div class="lines-box" id="linesBox">'+recipeLinesHtml(state.tempLines)+'</div>'+
+    '<div><div class="section-title">Ingredient Lines</div><div class="lines-box" id="linesBox">'+recipeLinesHtml(state.tempLines)+'</div>'+
     '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add Ingredient Line</button></div>'+
     '<div class="cost-preview" id="recipeCostPreview"></div>'+
     '<div class="modal-actions">'+
@@ -2068,8 +2067,8 @@ function invoicePhotoAreaHtml(){
     (hasPhoto ? '<img src="'+state.invoicePhotoUrl+'" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); object-fit:contain">' : '') +
     '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
       '<button type="button" class="btn ghost" data-action="invoicePickPhoto">'+(hasPhoto?'Retake / choose different photo':(icon('camera')+' Take or choose photo'))+'</button>' +
-      (canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract with AI</button>' : '') +
-      (hasPhoto && !canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract with AI</button>' : '') +
+      (canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract With AI</button>' : '') +
+      (hasPhoto && !canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract With AI</button>' : '') +
     '</div>' +
   '</div>';
 }
@@ -2079,9 +2078,9 @@ function openInvoiceModal(){
   state.invoiceAssetId = null;
   var canImages = !!(state.sampleCaps && state.sampleCaps.images);
   var note = !sampleFn
-    ? 'AI extraction isn’t available in this view — attach the photo for your records and enter the order by hand below.'
+    ? 'AI extraction isn’t available in this view: attach the photo for your records and enter the order by hand below.'
     : (!canImages
-      ? 'This view can’t send photos to Claude for reading — attach the photo for your records and enter the order by hand below.'
+      ? 'This view can’t send photos to Claude for reading: attach the photo for your records and enter the order by hand below.'
       : 'Take a photo of the invoice, or choose one from your library, then extract it with AI. Review the matched items before saving.');
   var h = '<h2>Scan Invoice</h2>' +
     '<p class="hint">'+esc(note)+'</p>' +
@@ -2118,22 +2117,22 @@ async function runInvoiceExtraction(){
     renderInvoiceReview(data);
   }catch(e){
     console.error('invoice extraction failed', e);
-    var msg = e.code==='not_granted' ? 'AI access was declined for this session — enter the order by hand below.' :
-      e.code==='image_rejected' ? 'That photo couldn’t be read — try a clearer shot of the invoice.' :
-      e.code==='rate_limited' ? 'Too many requests right now — try again shortly.' :
-      'Couldn’t read that invoice automatically — enter it by hand below.';
+    var msg = e.code==='not_granted' ? 'AI access was declined for this session: enter the order by hand below.' :
+      e.code==='image_rejected' ? 'That photo couldn’t be read: try a clearer shot of the invoice.' :
+      e.code==='rate_limited' ? 'Too many requests right now: try again shortly.' :
+      'Couldn’t read that invoice automatically: enter it by hand below.';
     toast(msg);
     renderInvoiceReview(null);
   }
 }
 
 function invoiceLinesHtml(lines){
-  if(!lines.length) return '<div class="empty-state" style="padding:16px">No line items yet — add one below.</div>';
+  if(!lines.length) return '<div class="empty-state" style="padding:16px">No line items yet: add one below.</div>';
   return lines.map(function(l, idx){
     var cat = l.category || 'Food';
     var catSelect = '<label>Category<select data-line-field="category" data-idx="'+idx+'">'+ING_CATS.map(function(c){ return '<option '+(c===cat?'selected':'')+'>'+c+'</option>'; }).join('')+'</select></label>';
     return '<div class="line-row" data-idx="'+idx+'" style="grid-template-columns:1.15fr 115px 80px 95px auto">'+
-      (l.description ? ('<div><div style="font-weight:600; font-size:13px">'+esc(l.description)+'</div><select data-line-field="ingredientId" data-idx="'+idx+'" style="margin-top:4px"><option value="">— new item, not tracked yet —</option>'+ingredientOptionsHtml(l.ingredientId)+'</select></div>')
+      (l.description ? ('<div><div style="font-weight:600; font-size:13px">'+esc(l.description)+'</div><select data-line-field="ingredientId" data-idx="'+idx+'" style="margin-top:4px"><option value="">New Item, Not Tracked Yet</option>'+ingredientOptionsHtml(l.ingredientId)+'</select></div>')
         : ('<label>Ingredient<select data-line-field="ingredientId" data-idx="'+idx+'"><option value="">Select…</option>'+ingredientOptionsHtml(l.ingredientId)+'</select></label>')) +
       catSelect+
       '<label>Qty<input type="number" step="0.0001" min="0" data-line-field="qty" data-idx="'+idx+'" value="'+(l.qty||'')+'"></label>'+
@@ -2154,7 +2153,7 @@ function renderInvoiceReview(data){
   var unmatched = state.tempLines.filter(function(l){ return l.description && !l.ingredientId; }).length;
   var h = '<h2>Review Invoice</h2>'+
     (state.invoicePhotoUrl ? '<img src="'+state.invoicePhotoUrl+'" style="max-width:150px; max-height:150px; border-radius:8px; border:1px solid var(--border); object-fit:contain">' : '')+
-    (unmatched ? '<p class="hint">'+unmatched+' line item(s) didn’t match an existing ingredient — match one from the dropdown, or set its Category and save to add it as a new item. Mixed invoices (e.g. limes/juices on a liquor bill) are common — set each line’s own Category so it lands in the right purchase report.</p>' : '<p class="hint">Check each line’s Category — mixed invoices (e.g. limes/juices on a liquor bill) are common, and the category controls which purchase report an item counts toward.</p>')+
+    (unmatched ? '<p class="hint">'+unmatched+' line item(s) didn’t match an existing ingredient: match one from the dropdown, or set its Category and save to add it as a new item. Mixed invoices (e.g. limes/juices on a liquor bill) are common: set each line’s own Category so it lands in the right purchase report.</p>' : '<p class="hint">Check each line’s Category: mixed invoices (e.g. limes/juices on a liquor bill) are common, and the category controls which purchase report an item counts toward.</p>')+
     '<form data-form="invoice">'+
     '<div class="grid2">'+
       '<label>Vendor<div class="combo-wrap">'+
@@ -2164,9 +2163,9 @@ function renderInvoiceReview(data){
       '</div></label>'+
       '<label>Date<input type="date" name="date" value="'+esc(dateGuess)+'"></label>'+
     '</div>'+
-    '<div><div class="section-title">Line items</div><div class="lines-box" id="linesBox" style="max-height:280px">'+invoiceLinesHtml(state.tempLines)+'</div>'+
-    '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add line</button></div>'+
-    '<p class="hint">Saving creates a received purchase order — matched items restock on-hand and log any price change automatically. Unmatched lines are added as new ingredients using the quantity, cost and category shown.</p>'+
+    '<div><div class="section-title">Line Items</div><div class="lines-box" id="linesBox" style="max-height:280px">'+invoiceLinesHtml(state.tempLines)+'</div>'+
+    '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add Line</button></div>'+
+    '<p class="hint">Saving creates a received purchase order: matched items restock on-hand and log any price change automatically. Unmatched lines are added as new ingredients using the quantity, cost and category shown.</p>'+
     '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Purchase Order</button></div></div>'+
     '</form>';
   openModal(h, true);
@@ -2197,7 +2196,7 @@ function viewCountModal(count){
     return '<tr><td>'+esc(l.name)+'</td><td class="num">'+l.countedQty+' '+esc(l.unit)+'</td><td class="num">'+money(l.unitCost)+'</td><td class="num">'+money(l.extValue)+'</td></tr>';
   }).join('');
   var h = '<h2>'+esc(count.label)+'</h2><p class="hint">'+dateLong(count.date)+'</p>'+
-    '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit Cost</th><th class="num">Ext. value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit Cost</th><th class="num">Ext. Value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div class="cost-preview"><span>Total value</span><strong>'+money(count.totalValue)+'</strong></div>'+
     '<div class="modal-actions"><button type="button" class="btn ghost danger" data-action="deleteCount" data-id="'+count.id+'">Delete Count</button><div class="right"><button type="button" class="btn primary" data-action="closeModal">Close</button></div></div>';
   openModal(h, true);

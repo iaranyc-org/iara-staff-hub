@@ -1,0 +1,60 @@
+/* ==========================================================================
+   iara staff kit: tokens. Single source of truth for every app under
+   staff.iara.nyc. Edit HERE, then run ./sync.sh. Never edit vendored copies.
+
+   Theme: dark maroon only (Jay, 2026-10-13). No light theme.
+   Every text pairing below is measured WCAG 2.1 on the painted ground
+   (page / surface / raised). Do not add a colour without measuring it.
+   ========================================================================== */
+:root {
+  color-scheme: dark;
+
+  /* grounds */
+  --k-page:    #391d1f;  /* maroon */
+  --k-surface: #4a2528;  /* cards, inputs */
+  --k-raised:  #55292f;  /* popovers, hovers, selected chips */
+  --k-raised-hover: #62313a;
+
+  /* text: 11.18+ / 6.62+ / 7.77+ on every ground */
+  --k-ink:     #faf6f0;
+  --k-muted:   #c9bfae;  /* de-emphasis. NEVER opacity. */
+  --k-display: #e8cbab;  /* sand: lockup word, display headings */
+
+  /* accent */
+  --k-primary:      #e0633f;  /* fills only; as text 3.45-4.4, large only */
+  --k-primary-ink:  #2a1206;  /* label on primary fill, 5.07 */
+  --k-primary-hover: #e8795a;
+  --k-accent-text:  #f4a88b;  /* orange-family TEXT/links, 6.2+ */
+  --k-sun:          #fbbf56;  /* highlight text, 7.27+ */
+
+  /* states (text-safe on every ground, 7.7+) */
+  --k-good:     #bad7bc;
+  --k-critical: #f6c8ca;
+  --k-warning:  #fbbf56;
+
+  /* lines */
+  --k-border:       #5f3b3e;  /* decorative dividers only */
+  --k-border-input: #a8807a;  /* input/control boundary, 3.46+ (WCAG 1.4.11) */
+  --k-ring:         #f4a88b;
+
+  /* type */
+  --k-font-sans:    "peridot-pe-variable", "Instrument Sans", system-ui, -apple-system, sans-serif;
+  --k-font-display: "forevs", "Fraunces", Georgia, serif;
+  --k-font-mono:    "IBM Plex Mono", ui-monospace, monospace;
+
+  /* shape */
+  --k-radius-sm: 6px;   /* badges */
+  --k-radius:    8px;   /* buttons, inputs, tabs */
+  --k-radius-lg: 12px;  /* cards, dialogs */
+  --k-radius-pill: 999px; /* chips */
+  --k-tap: 44px;        /* min touch target */
+
+  /* lockup: mark big, word small. 80/18 everywhere (Jay, 2026-10-13) */
+  --k-lockup-mark: 80px;
+  --k-lockup-word: 18px;
+
+  /* motion */
+  --k-fast: 150ms;
+  --k-base: 200ms;
+  --k-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}

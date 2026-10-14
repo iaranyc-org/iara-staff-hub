@@ -21,20 +21,23 @@
 <meta name="theme-color" content="#391d1f">
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/kit/tokens.css">
+<link rel="stylesheet" href="/kit/staff.css">
 <style>
+  /* Legacy names mapped onto the iara staff kit (kit/tokens.css). */
   :root{
-    --ink:#faf6f0;
-    --ink-soft:#b3a695;
-    --ink-mid:#ded5c7;
-    --paper:#391d1f;
-    --paper-raised:#4a2528;
-    --line:#5f3b3e;
-    --forest:#e0633f;
-    --forest-ink:#2a1206;
-    --sun:#fbbf56;
-    --sun-ink:#391d1f;
-    --river:#e8cbab;
-    --display:#e8cbab;
+    --ink:var(--k-ink);
+    --ink-soft:var(--k-muted);
+    --ink-mid:var(--k-muted);
+    --paper:var(--k-page);
+    --paper-raised:var(--k-surface);
+    --line:var(--k-border);
+    --forest:var(--k-primary);
+    --forest-ink:var(--k-primary-ink);
+    --sun:var(--k-sun);
+    --sun-ink:var(--k-page);
+    --river:var(--k-display);
+    --display:var(--k-display);
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
     color-scheme: dark;
   }
@@ -43,13 +46,13 @@
   body{
     margin:0; min-height:100vh; min-height:100dvh;
     color:var(--ink);
-    font-family:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+    font-family:var(--k-font-sans);
     -webkit-font-smoothing:antialiased;
   }
   ::selection{ background:var(--sun); color:var(--sun-ink); }
   a{ color:inherit; text-decoration:none; }
   .logo-img{ display:block; }
-  ::placeholder{ color: color-mix(in srgb, var(--ink) 45%, transparent); }
+  ::placeholder{ color:var(--k-muted); }
   /* #gate/#launcher set their own `display:flex` below, which otherwise
      outranks the UA [hidden]{display:none} rule and defeats the attribute
      entirely - both screens would stack instead of one replacing the other. */
@@ -61,35 +64,37 @@
     padding:40px 16px;
     background:
       linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
-      url("/img/amazon.jpg") center/cover no-repeat, #391d1f;
+      url("/img/amazon.jpg") center/cover no-repeat, var(--k-page);
   }
   .gate-card{
-    width:100%; max-width:400px; background:var(--paper-raised); border:1px solid var(--line);
-    border-radius:12px; padding:32px; box-shadow:var(--shadow);
+    width:100%; max-width:400px; background:var(--k-surface); border:1px solid var(--k-border);
+    border-radius:var(--k-radius-lg); padding:32px; box-shadow:var(--shadow);
   }
   .gate-mark{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:32px; }
   @media (max-width:420px){ .gate-card{ padding:24px; } }
-  .gate-mark .logo-img{ width:64px; height:auto; flex:none; }
+  .gate-mark .logo-img{ width:var(--k-lockup-mark); height:auto; flex:none; }
   /* Same lockup as Lineup's gate and every OG card in the family (Fraunces,
      cream) - matches the identical fix in iara_staff_hub.html. */
-  .gate-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:17px;
+  .gate-mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:var(--k-lockup-word);
     letter-spacing:-.005em; color:var(--river); }
   .field{ margin-bottom:16px; }
-  .field label{ display:block; font-size:12.5px; font-weight:700; letter-spacing:.01em; color:var(--ink-soft); margin-bottom:6px; }
+  .field label{ display:block; font-size:13px; font-weight:600; line-height:1.3; color:var(--k-ink); margin-bottom:6px; }
   .field input{
-    width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line);
-    background:var(--paper); color:var(--ink); font:inherit; font-size:16px;
+    width:100%; padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input);
+    background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px;
   }
-  .field input:focus{ outline:2px solid var(--river); outline-offset:1px; border-color:var(--river); }
+  .field input:focus{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .btn{
     display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border-radius:6px; border:1.5px solid transparent; padding:11px 18px; min-height:44px;
-    font-family:inherit; font-weight:700; font-size:15px; cursor:pointer; transition:transform .08s ease, opacity .15s ease;
+    border-radius:var(--k-radius); border:1px solid transparent; padding:0 16px; min-height:var(--k-tap);
+    font-family:var(--k-font-sans); font-weight:600; font-size:15px; line-height:1; cursor:pointer;
+    transition:background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease);
   }
   .btn:active{ transform:translateY(1px); }
-  .btn-primary{ background:var(--forest); color:var(--forest-ink); width:100%; }
-  .btn-primary:hover{ opacity:.92; }
-  .form-err{ color:var(--sun); font-size:12.5px; margin:-6px 0 14px; }
+  .btn-primary{ background:var(--k-primary); color:var(--k-primary-ink); width:100%; }
+  .btn-primary:hover:not(:disabled){ background:var(--k-primary-hover); }
+  .btn:disabled{ cursor:not-allowed; background:var(--k-raised); color:var(--k-muted); }
+  .form-err{ margin:-4px 0 16px; padding:12px 14px; border-radius:var(--k-radius); border:1px solid var(--k-critical); background:var(--k-surface); color:var(--k-critical); font-size:14px; }
 
   /* ===================== Launcher ===================== */
   #launcher{
@@ -110,8 +115,8 @@
      900px+ = two equal-height columns so the page fills a laptop screen. */
   .wrap{ width:100%; max-width:480px; }
   .mark{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:32px; }
-  .mark .logo-img{ width:80px; height:auto; }
-  .mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:18px;
+  .mark .logo-img{ width:var(--k-lockup-mark); height:auto; }
+  .mark .word{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:var(--k-lockup-word);
     color:var(--display); letter-spacing:-.01em; }
   .cols{ display:grid; gap:16px; }
   @media (min-width:900px){
@@ -119,10 +124,10 @@
     .cols{ grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; }
     .mark{ margin-bottom:40px; }
   }
-  @media (min-width:1600px){ .wrap{ max-width:1040px; } .mark .logo-img{ width:96px; } .mark .word{ font-size:20px; } }
+  @media (min-width:1600px){ .wrap{ max-width:1040px; } }
 
   .card{
-    background:var(--paper-raised); border:1px solid var(--line); border-radius:12px;
+    background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg);
     padding:24px; box-shadow:var(--shadow); position:relative; display:flex; flex-direction:column;
   }
   @media (min-width:900px){ .card{ padding:32px; } }
@@ -139,11 +144,11 @@
   .app-list li:last-child .app-row{ padding-bottom:0; min-height:60px; }
   #lineup-form .field:last-of-type{ margin-bottom:24px; }
   .field select{
-    width:100%; padding:11px 13px; border-radius:6px; border:1.5px solid var(--line);
-    background:var(--paper); color:var(--ink); font:inherit; font-size:16px; min-height:48px;
+    width:100%; padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input);
+    background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; min-height:48px;
   }
   .field input{ min-height:48px; }
-  .field select:focus{ outline:2px solid var(--river); outline-offset:1px; border-color:var(--river); }
+  .field select:focus{ outline:2px solid var(--k-ring); outline-offset:2px; }
 
   /* Manager apps: one row per app, identical height, whole row is the link. */
   .app-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; flex:1; }
@@ -152,15 +157,15 @@
     display:flex; align-items:center; gap:16px; min-height:72px; padding:12px 8px; margin:0 -8px;
     border-radius:8px; transition:background .12s ease;
   }
-  .app-row:hover{ background:color-mix(in srgb, var(--ink) 5%, transparent); }
-  .app-row:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .app-row:hover{ background:var(--k-raised); }
+  .app-row:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .app-row-text{ flex:1; min-width:0; }
-  .app-row-name{ display:block; font-size:16px; font-weight:700; color:var(--ink); margin-bottom:2px; }
+  .app-row-name{ display:block; font-size:16px; font-weight:700; color:var(--k-ink); margin-bottom:2px; }
   .app-row-desc{ display:block; font-size:13.5px; line-height:1.45; color:var(--ink-soft); }
   .app-row-arrow{ flex:none; width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
-    border:1px solid var(--line); color:var(--ink-mid); font-size:15px; transition:border-color .12s ease, color .12s ease; }
+    border:1px solid var(--line); color:var(--k-muted); font-size:15px; transition:border-color .12s ease, color .12s ease; }
   .app-row:hover .app-row-arrow{ border-color:var(--forest); color:var(--ink); }
-  .btn-primary:focus-visible, .field input:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .btn-primary:focus-visible, .field input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
 </style>
 
 <div id="gate" hidden>

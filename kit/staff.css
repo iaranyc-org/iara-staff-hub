@@ -1,0 +1,82 @@
+/* ==========================================================================
+   iara staff kit: components for STATIC apps (no build step).
+   Requires tokens.css. Classes are prefixed .k- so they never collide with
+   an app's legacy CSS during migration. React apps use next/ instead; both
+   render the same pixels from the same tokens.
+   ========================================================================== */
+.k-body { margin: 0; background: var(--k-page); color: var(--k-ink); font-family: var(--k-font-sans); -webkit-font-smoothing: antialiased; }
+.k-num, .k-body td, .k-body .num { font-variant-numeric: tabular-nums; }
+.k-body h1, .k-body h2, .k-body h3 { text-wrap: balance; }
+.k-body p { text-wrap: pretty; }
+.k-muted { color: var(--k-muted); }
+:where(.k-body) :focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+
+/* Lockup: mark big, word small */
+.k-lockup { display: inline-flex; align-items: center; gap: 12px; color: var(--k-display); text-decoration: none; min-height: var(--k-tap); border-radius: var(--k-radius); }
+.k-lockup img { height: var(--k-lockup-mark); width: auto; display: block; }
+.k-lockup span { font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: var(--k-lockup-word); line-height: 1; color: var(--k-display); }
+
+/* Header */
+.k-header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 12px 16px; }
+.k-nav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.k-nav a, .k-nav button { display: inline-flex; align-items: center; min-height: var(--k-tap); padding: 0 10px; border-radius: var(--k-radius); color: var(--k-muted); text-decoration: none; font: 500 14px/1 var(--k-font-sans); background: none; border: 0; cursor: pointer; }
+.k-nav a:hover, .k-nav button:hover { color: var(--k-ink); background: var(--k-raised); }
+.k-nav [aria-current="page"] { color: var(--k-ink); font-weight: 700; }
+
+/* Buttons */
+.k-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--k-tap); padding: 0 16px; border-radius: var(--k-radius); border: 1px solid transparent; font: 600 15px/1 var(--k-font-sans); cursor: pointer; text-decoration: none; transition: background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease); }
+.k-btn:active { transform: translateY(1px); }
+.k-btn:disabled { cursor: not-allowed; background: var(--k-raised); color: var(--k-muted); border-color: transparent; }
+.k-btn-primary { background: var(--k-primary); color: var(--k-primary-ink); }
+.k-btn-primary:hover:not(:disabled) { background: var(--k-primary-hover); }
+.k-btn-secondary { background: var(--k-raised); color: var(--k-ink); border-color: var(--k-border); }
+.k-btn-secondary:hover:not(:disabled) { background: var(--k-raised-hover); }
+.k-btn-ghost { background: none; color: var(--k-ink); }
+.k-btn-ghost:hover:not(:disabled) { background: var(--k-raised); }
+.k-btn-danger { background: var(--k-raised); color: var(--k-critical); border-color: var(--k-critical); }
+.k-btn-sm { min-height: 36px; padding: 0 12px; font-size: 14px; }
+@media (pointer: coarse) { .k-btn-sm { min-height: var(--k-tap); } }
+
+/* Badges (status, square-ish) and chips (filters, pill) */
+.k-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--k-radius-sm); font: 600 12px/1.4 var(--k-font-sans); background: var(--k-raised); color: var(--k-ink); font-variant-numeric: tabular-nums; }
+.k-badge-good { color: var(--k-good); } .k-badge-critical { color: var(--k-critical); } .k-badge-warning { color: var(--k-warning); } .k-badge-accent { color: var(--k-accent-text); }
+.k-chip { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 14px; border-radius: var(--k-radius-pill); border: 1px solid var(--k-border-input); background: none; color: var(--k-ink); font: 500 14px/1 var(--k-font-sans); cursor: pointer; font-variant-numeric: tabular-nums; }
+.k-chip:active { transform: scale(0.97); }
+.k-chip[aria-pressed="true"] { background: var(--k-ink); color: var(--k-page); border-color: var(--k-ink); }
+
+/* Tabs: one style everywhere, segmented */
+.k-tabs { display: inline-flex; gap: 4px; padding: 4px; border-radius: var(--k-radius-lg); background: var(--k-surface); border: 1px solid var(--k-border); max-width: 100%; overflow-x: auto; }
+.k-tab { min-height: 36px; padding: 0 14px; border: 0; border-radius: var(--k-radius); background: none; color: var(--k-muted); font: 600 14px/1 var(--k-font-sans); cursor: pointer; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.k-tab:hover { color: var(--k-ink); }
+.k-tab[aria-selected="true"] { background: var(--k-primary); color: var(--k-primary-ink); }
+@media (pointer: coarse) { .k-tab { min-height: var(--k-tap); } }
+
+/* Cards */
+.k-card { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); padding: 16px; }
+@media (min-width: 900px) { .k-card { padding: 20px; } }
+
+/* Inputs */
+.k-field { display: grid; gap: 6px; }
+.k-label { font: 600 13px/1.3 var(--k-font-sans); color: var(--k-ink); }
+.k-label .req { color: var(--k-critical); }
+.k-input, .k-select, .k-textarea { width: 100%; box-sizing: border-box; min-height: var(--k-tap); padding: 10px 12px; border-radius: var(--k-radius); border: 1px solid var(--k-border-input); background: var(--k-surface); color: var(--k-ink); font: 16px/1.3 var(--k-font-sans); }
+.k-input::placeholder, .k-textarea::placeholder { color: var(--k-muted); }
+
+/* Toast */
+.k-toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); display: flex; align-items: center; gap: 16px; padding: 12px 16px; border-radius: var(--k-radius-lg); background: var(--k-raised); color: var(--k-ink); border: 1px solid var(--k-border); box-shadow: 0 8px 24px rgb(0 0 0 / .35); font: 500 14px/1.3 var(--k-font-sans); z-index: 1000; }
+.k-toast button { background: none; border: 0; color: var(--k-sun); font: 700 14px/1 var(--k-font-sans); cursor: pointer; min-height: 36px; }
+
+/* States */
+.k-empty { max-width: 300px; margin: 32px auto; text-align: center; display: grid; justify-items: center; gap: 8px; }
+.k-empty h3 { margin: 0; font: 600 16px/1.3 var(--k-font-sans); color: var(--k-ink); }
+.k-empty p { margin: 0 0 8px; color: var(--k-muted); font-size: 14px; }
+.k-alert { padding: 12px 14px; border-radius: var(--k-radius); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font-size: 14px; }
+.k-skeleton { border-radius: var(--k-radius); background: var(--k-raised); animation: k-pulse 1.5s ease-in-out infinite; }
+@keyframes k-pulse { 50% { background: var(--k-raised-hover); } }
+@media (prefers-reduced-motion: reduce) { .k-skeleton { animation: none; } .k-btn, .k-chip { transition: none; } }
+
+/* Sign-in gate */
+.k-gate { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }
+.k-gate-card { width: 100%; max-width: 380px; box-sizing: border-box; display: grid; gap: 16px; justify-items: center; text-align: center; }
+.k-gate-card p { margin: 0; color: var(--k-muted); }
+.k-gate-card .k-btn { width: 100%; }
