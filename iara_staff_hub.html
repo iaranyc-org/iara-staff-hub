@@ -189,7 +189,7 @@
   .sb-user #sb-switch{ margin:8px 0 0 -12px; color:var(--sidebar-muted); }
   .sb-user #sb-switch:hover{ color:var(--sidebar-ink); }
 
-  .content{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; }
+  .content{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
 
   /* Fast Facts: Home only, per Jay's own phrasing ("home should also
      have..."). Every value here is sourced and verified, never guessed -
@@ -283,8 +283,9 @@
   .bottom-nav .nav-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:-2px; }
 
   .view{ display:none; width:100%;
-    padding:36px clamp(56px, 3.2vw, 104px) 90px;
-    max-width:calc(var(--measure) + 2 * clamp(56px, 3.2vw, 104px)); }
+    /* Left-justified: a fixed 40px gutter from the sidebar, not centred. */
+    padding:36px 40px 90px;
+    max-width:calc(var(--measure) + 80px); }
   .view.active{ display:block; }
   .eyebrow{ letter-spacing:.01em; font-size:12.5px; font-weight:700; color:var(--river); margin:0 0 6px; }
   .view h1{ font-size:clamp(34px, 5vw, 46px); line-height:1.04; margin:0 0 10px; letter-spacing:-.018em; }
@@ -1011,12 +1012,20 @@
   @media (max-width:860px){ .vb-wall{ columns:1; } .vb-hero{ padding:20px 18px 34px; } }
   @media (prefers-reduced-motion:reduce){ .vb-dot{ animation:none; } .vb-polaroid, .vb-polaroid:nth-child(even){ transform:none; } }
   /* Feedback */
-  .fbk-fab{ position:fixed; z-index:30; right:calc(16px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px));
-    box-shadow:0 6px 20px rgb(0 0 0 / .4); }
+  /* Desktop: pinned to the window's bottom edge inside the sidebar column
+     (which reserves the room), so it can never cover the content column. */
+  .fbk-fab{ position:fixed; z-index:30; width:198px; left:max(16px, calc((100vw - 1560px) / 2 + 16px));
+    bottom:calc(16px + env(safe-area-inset-bottom, 0px)); }
+  .sidebar{ padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px)); }
   .fbk-fab svg{ width:18px; height:18px; flex:none; }
   .fbk-fab:focus-visible{ outline:2px solid var(--k-ring); outline-offset:3px; }
-  /* Phones: sit above the tab bar (52px buttons + 4px padding + safe area). */
-  @media (max-width:860px){ .fbk-fab{ right:12px; bottom:calc(56px + 12px + env(safe-area-inset-bottom, 0px)); } }
+  /* Phones: in the flow after the view, left-aligned to the 16px gutter; the
+     content area pads for the tab bar instead of each view. */
+  @media (max-width:860px){
+    .fbk-fab{ position:static; width:auto; align-self:flex-start; margin:0 16px; }
+    .content{ padding-bottom:calc(56px + 32px + env(safe-area-inset-bottom, 0px)); }
+    .view{ padding-bottom:32px !important; }
+  }
   @media print{ .fbk-fab{ display:none; } }
   #fbk-dialog{ border:1px solid var(--line); border-radius:14px; padding:0; width:min(92vw,460px); background:var(--paper-raised); color:var(--ink); }
   #fbk-dialog::backdrop{ background:rgba(0,0,0,.55); }
@@ -1135,10 +1144,10 @@
     border-radius:2px; padding:0 1px; }
   /* Kit: tabular figures on every numeric display. */
   .num, .mono, td, th, .stat, .qprog, .stamp-score, .sc-stats, .vb-stat, .cl-count{ font-variant-numeric:tabular-nums; }
-  /* Focus scrolling (Next Question gets focus) keeps targets clear of the
-     floating Send Feedback button and, on phones, the tab bar. */
-  html{ scroll-padding-bottom:80px; }
-  @media (max-width:860px){ html{ scroll-padding-bottom:130px; } }
+  /* Focus scrolling keeps targets clear of the phone tab bar.
+     */
+  html{ scroll-padding-bottom:16px; }
+  @media (max-width:860px){ html{ scroll-padding-bottom:80px; } }
   /* ===== Study + Final Exam cards (QA pass 2026-10-13) =====
      One card frame for flashcards, allergen checks, Watch List drills and exam
      questions: same padding, same header row, actions pinned to the bottom so
@@ -1485,6 +1494,10 @@
       <p class="view-intro">Who is ready, and who needs another test.</p>
       <div id="progress-area"></div>
     </section>
+  <!-- The one Send Feedback control: desktop: fixed to the bottom of the window
+       in the sidebar column, so it never sits over content. Phones: the last
+       thing in the page, above the tab bar. -->
+  <button type="button" class="k-btn k-btn-primary fbk-fab" data-feedback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Send Feedback</span></button>
   </div>
 
   <nav class="bottom-nav">
@@ -1496,9 +1509,6 @@
       <button class="nav-btn more-btn" type="button" aria-haspopup="dialog" aria-controls="more-sheet">More</button>
     </div>
   </nav>
-  <!-- The one Send Feedback control: pinned to the bottom of the window
-       (bottom-right on desktop, above the tab bar on phones). -->
-  <button type="button" class="k-btn k-btn-primary fbk-fab" data-feedback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Send Feedback</span></button>
   <dialog id="more-sheet" aria-labelledby="more-title">
     <div class="more-inner">
       <div class="more-head"><h2 id="more-title">More</h2><button type="button" class="more-close" aria-label="Close">&times;</button></div>
