@@ -6,7 +6,7 @@
    Use:  <div data-k-appbar></div>   (title + current tab come from the URL)
          Lineup only: <div data-k-appbar data-mode="solo"></div>  (no manager tabs, no search)
          <script src="/kit/palette.js" defer></script>
-         <script src="/kit/nav.js" defer></script>
+         <script src="/kit/nav.js" defer blocking="render"></script>   (render-blocking: the bar must be in the first frame for the title roll)
    Account: window.iaraNav.setAccount({ email: "x@iara.nyc", signOut: fn })
             setAccount(null) hides the account menu (e.g. password-gated apps).
    Hide the bar while a sign-in gate shows: the app toggles [hidden] on the
