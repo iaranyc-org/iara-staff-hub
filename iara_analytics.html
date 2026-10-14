@@ -1,9 +1,9 @@
 <!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>iara Inbox Analytics</title>
+<title>iara Analytics</title>
 <meta name="robots" content="noindex, nofollow">
-<meta property="og:title" content="iara Inbox Analytics">
+<meta property="og:title" content="iara Analytics">
 <meta property="og:description" content="Calls, texts, email, DMs and reviews, from first contact to table.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://staff.iara.nyc/analytics">
@@ -11,7 +11,7 @@
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="iara Inbox Analytics">
+<meta name="twitter:title" content="iara Analytics">
 <meta name="twitter:image" content="https://staff.iara.nyc/img/og-analytics.png">
 <link rel="icon" href="/icon-512.png">
 <meta name="theme-color" content="#391d1f">
@@ -123,7 +123,8 @@
   .quote{ border-left:3px solid var(--forest); padding:2px 0 2px 12px; margin:0 0 14px; font-size:14.5px; line-height:1.5; }
   .quote small{ display:block; margin-top:4px; color:var(--river); font-size:13px; }
   .vip{ display:inline-block; padding:2px 8px; border-radius:var(--k-radius-sm); background:var(--k-raised); color:var(--k-accent-text); font:600 12px/1.4 var(--k-font-sans); letter-spacing:.06em; margin-right:6px; }
-  .note{ font-size:13.5px; color:var(--ink); line-height:1.5; margin:8px 0 0; }
+  .note{ font-size:13.5px; color:var(--ink); line-height:1.5; margin:8px 0 0; max-width:70ch; }
+  .field-hint{ margin:-4px 0 12px; font-size:13px; line-height:1.4; color:var(--k-muted); }
   .grid2.even{ grid-template-columns:1fr 1fr; }
   .wl{ display:flex; flex-direction:column; }
   .wrow{ display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:start; padding:11px 0; border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent); }
@@ -290,10 +291,12 @@
 
 <div id="gate" class="center" hidden>
   <form class="card gate" id="gate-form">
-    <div class="gate-mark"><img src="/img/iara-mark.png" alt="iara" width="80"><span>Inbox Analytics</span></div>
-    <label for="pw">Password</label>
-    <input id="pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
-    <p class="err" id="gate-err" hidden>That password is not right. Ask your manager.</p>
+    <h1 class="k-sr-only">Sign In</h1>
+    <div class="gate-mark"><img src="/img/iara-mark.png" alt="iara" width="80"><span>Analytics</span></div>
+    <label for="pw">Staff Password</label>
+    <input id="pw" type="password" autocomplete="current-password" aria-describedby="pw-hint gate-err">
+    <p class="field-hint" id="pw-hint">Ask your manager for the staff password</p>
+    <p class="err" id="gate-err" role="alert" hidden>That password is not right. Ask your manager.</p>
     <button class="btn" type="submit">Enter</button>
   </form>
 </div>
@@ -301,7 +304,7 @@
 <div id="app" hidden>
 <div data-k-appbar data-app="Analytics" data-home="/analytics"></div>
 <main>
-  <h1 class="k-sr-only">Inbox Analytics</h1>
+  <h1 class="k-sr-only">Analytics</h1>
   <div class="tabs" role="tablist" aria-label="Channel">
     <button class="tab" role="tab" data-t="overview">Overview</button>
     <button class="tab" role="tab" data-t="phone">Phone</button>
@@ -316,7 +319,7 @@
       <button class="chip" data-r="7d">7 Days</button>
       <button class="chip" data-r="30d">30 Days</button>
       <button class="chip" data-r="open">Since Opening</button>
-      <button class="chip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="range-custom">Custom ▾</button>
+      <button class="chip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="range-custom">Custom <span aria-hidden="true">▾</span></button>
     </div>
     <span class="range-text" id="range-text"></span>
     <span class="updated" id="updated"></span>
@@ -326,7 +329,7 @@
       <button class="btn btn-ghost" type="submit">Apply</button>
     </form>
   </div>
-  <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true"><span class="k-sr-only">Loading…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
+  <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true"><span class="k-sr-only">Loading analytics…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
   <p class="err" id="err" hidden></p>
   <section id="panel-overview" role="tabpanel"></section>
   <section id="panel-phone" role="tabpanel" hidden>
@@ -339,7 +342,7 @@
   <div id="ph-body" hidden>
     <div class="kpis">
       <div class="card kpi"><div class="v" id="ph-k-calls"></div><div class="l">Calls + Texts In</div><div class="n" id="ph-k-calls-n"></div></div>
-      <div class="card kpi"><div class="v" id="ph-k-ans"></div><div class="l" title="Business hours: Tue to Sat, 5 to 11 PM">Call Answer Rate</div><div class="n" id="ph-k-ans-n"></div></div>
+      <div class="card kpi"><div class="v" id="ph-k-ans"></div><div class="l">Call Answer Rate</div><div class="n">Business hours only, Tue to Sat, 5 to 11 PM</div><div class="n" id="ph-k-ans-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-k-handled"></div><div class="l">Guests Handled</div><div class="n" id="ph-k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-k-open"></div><div class="l">Waiting for a Reply</div><div class="n" id="ph-k-open-n"></div></div>
     </div>
@@ -426,9 +429,9 @@
     storageBucket: "iara-lineup.firebasestorage.app", messagingSenderId: "840712867607", appId: "1:840712867607:web:2003c145731aa85a13b152" });
   var $ = function(id){ return document.getElementById(id); };
   var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
-  var fmt = function(n){ return n == null ? "–" : String(n); };
-  var hrs = function(h){ return h == null ? "–" : h < 1 ? Math.round(h * 60) + " min" : (Math.round(h * 10) / 10) + " h"; };
-  var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
+  var fmt = function(n){ return n == null ? "-" : String(n); };
+  var hrs = function(h){ return h == null ? "-" : h < 1 ? Math.round(h * 60) + " min" : (Math.round(h * 10) / 10) + " h"; };
+  var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "-"; };
 
   // ---- Range (ET calendar days), shared with the Phone tab via its #r= hash ----
   var OPENED_DAY = "2026-10-02";
@@ -510,7 +513,7 @@
     else { $("gate").hidden = false; $("app").hidden = true; }
   });
   $("gate-form").addEventListener("submit", function(ev){ ev.preventDefault(); $("gate-err").hidden = true;
-    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(){ $("gate-err").hidden = false; }); });
+    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(e){ $("gate-err").textContent = e && e.code === "auth/network-request-failed" ? "Couldn't reach sign-in. Check your connection and try again." : "That password is not right. Ask your manager."; $("gate-err").hidden = false; }); });
 
   var seq = 0;
   function load(){
@@ -524,7 +527,7 @@
       if (mine !== seq) return;
       $("loading").hidden = true; render(res[0], res[1]);
       $("updated").textContent = "Updated " + new Date(res[0].generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
-    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; $("err").hidden = false; $("err").textContent = "Couldn't load analytics (" + e.message + "). Try again in a minute."; });
+    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; $("err").hidden = false; $("err").textContent = "Couldn't load analytics. Check your connection and try again in a minute."; });
   }
 
   // ---- Building blocks ----
@@ -544,17 +547,17 @@
   function dlt(cur, old, kind){
     if (!PREV || cur == null || old == null) return "";
     var n = PREV.days === 1 ? "day" : PREV.days + " days", x = cur - old, sg = function(v){ return (v > 0 ? "+" : v < 0 ? "−" : "±") + Math.abs(v); };
-    if (kind === "pts") return sg(Math.round(x)) + " pts vs prev " + n;
-    if (kind === "stars") return sg(Math.round(x * 100) / 100) + " vs prev " + n;
-    if (kind === "hrs") return sg(Math.round(x * 10) / 10) + " h vs prev " + n;
-    return sg(x) + " vs prev " + n;
+    if (kind === "pts") return sg(Math.round(x)) + " pts vs previous " + n;
+    if (kind === "stars") return sg(Math.round(x * 100) / 100) + " vs previous " + n;
+    if (kind === "hrs") return sg(Math.round(x * 10) / 10) + " h vs previous " + n;
+    return sg(x) + " vs previous " + n;
   }
   // Trend card (same shape as the Phone tab's): per open day for ranges up to 14 days, per Mon-Sun week otherwise; the
   // in-progress period is hatched, labeled "(so far)" and gets no %. Headline compares the last two complete periods.
   function trendCard(T, title, series, headFn, gapNote){
     var pts = (T && T.points) || [], wk = T && T.grain === "week";
     // One day (Today, Yesterday) can't make a trend: a one-line note instead of an empty chart.
-    if (pts.length < 2) return '<div class="card" style="margin-bottom:12px"><h2>' + title + ' · Trend</h2><p class="note" style="margin:0">A trend needs two or more open days. Pick 7 Days or longer to see one.</p></div>';
+    if (pts.length < 2) return '<div class="card" style="margin-bottom:12px"><h2>' + title + ' · Trend</h2><p class="note" style="margin:0">A trend needs 2 or more open days. Pick 7 Days or longer to see one.</p></div>';
     var name = function(p){ return wk ? "Week of " + p.label.replace("Wk ", "") : p.label; };
     var done = pts.filter(function(p){ return !p.partial && series[0].val(p) != null; }), head;
     if (done.length >= 2) head = headFn(done[done.length - 1], done[done.length - 2], name);
@@ -566,16 +569,16 @@
     var max = series[0].max || niceMax(Math.max.apply(null, pts.map(function(p){ return Math.max.apply(null, series.map(function(s){ return s.val(p) || 0; })); }).concat([1])));
     var bars = '<div class="bars tr">' + pts.map(function(p){
       var vals = series.map(function(s){ return s.val(p); });
-      var tip = esc(p.label + (p.partial ? " (so far)" : "") + ": " + series.map(function(s, i){ return s.name + " " + (vals[i] == null ? "–" : s.fmt(vals[i])); }).join(", "));
-      return '<div class="bar' + (p.partial ? " partial" : "") + '" title="' + tip + '">' + (vals.every(function(v){ return v == null; }) ? '<span class="none">–</span>' :
+      var tip = esc(p.label + (p.partial ? " (so far)" : "") + ": " + series.map(function(s, i){ return s.name + " " + (vals[i] == null ? "-" : s.fmt(vals[i])); }).join(", "));
+      return '<div class="bar' + (p.partial ? " partial" : "") + '" title="' + tip + '">' + (vals.every(function(v){ return v == null; }) ? '<span class="none" aria-label="No data">-</span>' :
         series.map(function(s, i){ var v = vals[i]; return '<span style="height:' + (v == null ? 0 : Math.max(100 * v / max, 1)) + '%;background:' + s.color + '">' + (v != null && !p.partial ? "<em>" + s.fmt(v) + "</em>" : "") + '</span>'; }).join("")) + '</div>'; }).join("") + '</div>';
     var xl = '<div class="xl">' + pts.map(function(p){ return '<div>' + esc((wk ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : "")) + '</div>'; }).join("") + '</div>';
-    return '<div class="card" style="margin-bottom:12px"><h2>' + title + (wk ? " · Week Over Week" : " · Day Over Day") + '</h2><p style="margin:0 0 10px">' + head + '</p>' +
+    return '<div class="card" style="margin-bottom:12px"><h2>' + title + (wk ? " · Week over Week" : " · Day over Day") + '</h2><p style="margin:0 0 10px">' + head + '</p>' +
       legend(series.map(function(s){ return { name: s.name, color: s.color }; })) + withAxis(max, bars, xl) +
       '<p class="note">' + (wk ? "Mon to Sun weeks" : "Open days only (closed Sun and Mon)") + ', from opening. The hatched bar is still in progress.</p></div>';
   }
   var upDown = function(a, b, unit){ var d = Math.round((a - b) * (unit === " ★" ? 100 : 1)) / (unit === " ★" ? 100 : 1); return d > 0 ? "up " + d + unit : d < 0 ? "down " + (-d) + unit : "level"; };
-  var dmGap = function(wk){ return "Instagram DMs are tracked from Oct 6, so earlier " + (wk ? "weeks" : "days") + " show –. A trend shows once two complete " + (wk ? "weeks" : "days") + " have data."; };
+  var dmGap = function(wk){ return "Instagram DMs are tracked from Oct 6, so earlier " + (wk ? "weeks" : "days") + " show -. A trend shows once 2 complete " + (wk ? "weeks" : "days") + " have data."; };
   function rateTrend(T, title, key, color, label){
     return trendCard(T, title, [
       { name: "Replied Within an Hour", color: color, max: 100, val: function(p){ return p[key] ? p[key].withinHourRate : null; }, fmt: function(v){ return v + "%"; } },
@@ -600,16 +603,16 @@
   }
 
   function topics(list){
-    if (!list.length) return '<p class="note">Nothing in this range.</p>';
+    if (!list.length) return '<p class="note">Nothing in this range. Pick a longer range to see more.</p>';
     var max = list[0].n, name = function(s){ return s.replace(/_/g, " ").replace(/\b\w/g, function(c){ return c.toUpperCase(); }); };
     return list.map(function(t){ return '<div class="hbar"><span>' + esc(name(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / max) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("");
   }
   // waitNow: the live count from the Needs a Reply Now list, so it never moves with the picked range.
   function channelKpis(c, label, pv, waitNow){
     return '<div class="kpis">' + kpi(fmt(c.in), label + " In", "<b>" + c.closedNoReply + "</b> needed no reply", pv && dlt(c.in, pv.in)) +
-      kpi(c.replyRate == null ? "–" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one", pv && dlt(c.replyRate, pv.replyRate, "pts")) +
+      kpi(c.replyRate == null ? "-" : c.replyRate + "%", "Replied", "<b>" + c.replied + "</b> of " + c.needed + " that needed one", pv && dlt(c.replyRate, pv.replyRate, "pts")) +
       kpi(hrs(c.medianReplyHours), "Median Reply Time", "From message to our reply", pv && dlt(c.medianReplyHours, pv.medianReplyHours, "hrs")) +
-      kpi(fmt(waitNow), "Waiting Now", waitNow ? '<a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") + '</div>';
+      kpi(fmt(waitNow), "Waiting", waitNow ? '<a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") + '</div>';
   }
   function channelDetail(c, color){
     var days = c.byDay.map(function(d){ return d.date; });
@@ -627,20 +630,20 @@
     var items = (a.waiting || []).map(function(w){ return { ch: w.channel, who: w.name, at: w.at, text: w.preview, href: "/inbox" }; })
       .concat(((p && p.open) || []).map(function(o){ return { ch: "phone", who: "…" + o.last4 + (o.landline ? " (landline)" : ""), at: o.at, text: o.type === "voicemail" ? "Voicemail" + (o.count > 1 ? " · " + o.count + " tries" : "") : (o.preview || "Text"), href: "#t=phone", key: o.key, failed: o.replyFailed }; }))
       .sort(function(x, y){ return x.at - y.at; });
-    var list = '<div class="card" style="margin-bottom:12px"><h2>Needs a Reply Now · ' + items.length + '</h2>' + (items.length ? '<div class="wl">' + items.map(function(it){
-      return '<div class="wrow"><span class="wch" style="background:' + CH[it.ch].color + '">' + CH[it.ch].label + '</span><div class="wbody"><div class="wtop"><b>' + esc(it.who) + '</b><span class="wage">' + ago(it.at) + ' ago</span></div><div class="wtext">' + esc(it.text) + (it.failed ? ' <span class="wfail">reply failed</span>' : "") + '</div></div>' +
-        '<div class="wact"><a class="wlink" href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '>Open</a>' + (it.key ? '<button class="wlink" data-dismiss="' + esc(it.key) + '">Dismiss</button>' : "") + '</div></div>'; }).join("") + '</div>' : '<p class="note">Nobody is waiting on us. 🎉'.replace(" 🎉", "") + '</p>') + '</div>';
+    var list = '<div class="card" style="margin-bottom:12px"><h2>Waiting for a Reply · ' + items.length + '</h2>' + (items.length ? '<div class="wl">' + items.map(function(it){
+      return '<div class="wrow"><span class="wch" style="background:' + CH[it.ch].color + '">' + CH[it.ch].label + '</span><div class="wbody"><div class="wtop"><b>' + esc(it.who) + '</b><span class="wage"><time datetime="' + new Date(it.at).toISOString() + '" title="' + esc(new Date(it.at).toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + '">' + ago(it.at) + ' ago</time></span></div><div class="wtext">' + esc(it.text) + (it.failed ? ' <span class="wfail">Reply Failed</span>' : "") + '</div></div>' +
+        '<div class="wact"><a class="wlink" href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '>Open<span class="k-sr-only"> ' + esc(it.who) + '\'s thread</span></a>' + (it.key ? '<button class="wlink" data-dismiss="' + esc(it.key) + '">Dismiss</button>' : "") + '</div></div>'; }).join("") + '</div>' : '<p class="note">Nobody is waiting on us. 🎉'.replace(" 🎉", "") + '</p>') + '</div>';
     // 2. Replied within an hour, same definition per channel (first reply ≤ 1h after the message).
     var rs = p && p.replySpeed, phT = rs ? (rs.under15m + rs.under1h + rs.under6h + rs.later) : 0;
     var speed = [ rs && { ch: "phone", v: phT ? Math.round(100 * (rs.under15m + rs.under1h) / phT) : null, n: (rs.under15m + rs.under1h) + " of " + phT },
       { ch: "email", v: a.email.withinHourRate, n: a.email.withinHour + " of " + a.email.needed },
       { ch: "dm", v: a.instagram.dms.withinHourRate, n: a.instagram.dms.withinHour + " of " + a.instagram.dms.needed },
       { ch: "comment", v: a.instagram.comments.withinHourRate, n: a.instagram.comments.withinHour + " of " + a.instagram.comments.needed } ].filter(Boolean);
-    var speedCard = '<div class="card"><h2>Replied Within an Hour</h2>' + speed.map(function(x){ return '<div class="hbar"><span>' + CH[x.ch].label + '</span><div class="track"><div class="fill" style="width:' + (x.v || 0) + '%;background:' + CH[x.ch].color + '"></div></div><span class="n">' + (x.v == null ? "–" : x.v + "%") + '</span></div>'; }).join("") +
+    var speedCard = '<div class="card"><h2>Replied Within an Hour</h2>' + speed.map(function(x){ return '<div class="hbar"><span>' + CH[x.ch].label + '</span><div class="track"><div class="fill" style="width:' + (x.v || 0) + '%;background:' + CH[x.ch].color + '"></div></div><span class="n">' + (x.v == null ? "-" : x.v + "%") + '</span></div>'; }).join("") +
       '<p class="note">Share of messages that needed a reply and got one within an hour. Phone counts missed calls and texts.</p></div>';
     // 5. Sellout speed (noon releases, from the Mac's release watch). Missed readings say so.
     var pace = (a.pace || []).slice().reverse();
-    var paceCard = '<div class="card"><h2>Noon Release Sellout</h2>' + (pace.length ? '<table><thead><tr><th>Night</th><th class="num">Sold Out In</th></tr></thead><tbody>' + pace.map(function(r){
+    var paceCard = '<div class="card"><h2>Fastest Sellout</h2>' + (pace.length ? '<table><thead><tr><th>Night</th><th class="num">Sold Out In</th></tr></thead><tbody>' + pace.map(function(r){
       return '<tr><td>' + esc(nice(r.night)) + ' <span class="muted">(released ' + esc(nice(r.released)) + ')</span></td><td class="num">' + (r.minutes != null ? r.minutes + " min" : r.final != null && r.cap && r.final < r.cap ? r.final + "/" + r.cap + " booked" : "No reading") + '</td></tr>'; }).join("") + '</tbody></table>' : '<p class="note">No release measured in this range.</p>') +
       '<p class="note">Read live from noon by the iara Mac. "No reading" means the Mac was asleep or started late, so no time was recorded.</p></div>';
     // 3. Busiest hours across channels (phone = incoming calls; email/IG = messages), ET.
@@ -649,18 +652,18 @@
     var lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
     hmax = niceMax(hmax);
     var hbars = '<div class="bars">' + hrs.map(function(x, h){ return '<div class="bar" title="' + lab(h) + ": " + (x.phone + x.email + x.dm + x.comment) + '">' + ["phone", "email", "dm", "comment"].map(function(k){ return x[k] ? '<span style="height:' + (100 * x[k] / hmax) + '%;background:' + CH[k].color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
-    var hoursCard = '<div class="card"><h2>Busiest Hours</h2>' + legend(["phone", "email", "dm", "comment"].map(function(k){ return { name: CH[k].label, color: CH[k].color }; })) +
+    var hoursCard = '<div class="card"><h2>Busiest Hours</h2>' + legend(["phone", "email", "dm", "comment"].map(function(k){ return { name: k === "dm" ? "Instagram DM" : CH[k].label, color: CH[k].color }; })) +
       withAxis(hmax, hbars, '<div class="xl">' + hrs.map(function(x, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>') + '<p class="note">Phone counts incoming calls; email and Instagram count messages. Eastern time.</p></div>';
     // 4. Top asks across channels (guests only; vendors, jobs, press left out).
     var asks = {}; ((p && p.topics) || []).forEach(function(t){ asks[t.c] = (asks[t.c] || 0) + t.n; }); (a.asks || []).forEach(function(t){ asks[t.c] = (asks[t.c] || 0) + t.n; });
     var top = Object.keys(asks).map(function(c){ return { name: c, n: asks[c] }; }).sort(function(x, y){ return y.n - x.n; }).slice(0, 7);
-    var asksCard = '<div class="card"><h2>What Guests Ask About</h2>' + (top.length ? top.map(function(t){ return '<div class="hbar"><span>' + esc(topicName(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / top[0].n) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("") : '<p class="note">Nothing in this range.</p>') + '</div>';
+    var asksCard = '<div class="card"><h2>What Guests Ask About</h2>' + (top.length ? top.map(function(t){ return '<div class="hbar"><span>' + esc(topicName(t.name)) + '</span><div class="track"><div class="fill" style="width:' + (100 * t.n / top[0].n) + '%"></div></div><span class="n">' + t.n + '</span></div>'; }).join("") : '<p class="note">Nothing in this range. Pick a longer range to see more.</p>') + '</div>';
     // Jay 2026-10-12: no reply lists here, that's what iara Inbox is for (the Waiting Now KPI links there).
     // 6. From Contact to Table: did people who reached us book? Phone from phone-stats (by phone number), email and
     // DMs from the analytics route (by email / exact full name), restaurant-wide numbers from the ResyOS book copy.
     var T = a.toTable, PR = p && p.resy, ctCard = "";
     if (T){
-      var share = function(n, d){ return !d ? "–" : n && 100 * n / d < 1 ? "<1%" : pct(n, d); };
+      var share = function(n, d){ return !d ? "-" : n && 100 * n / d < 1 ? "<1%" : pct(n, d); };
       var chs = [ PR && { ch: "phone", b: PR.didBook.booked, g: PR.didBook.guests, n: "called or texted" },
         T.email && { ch: "email", b: T.email.booked, g: T.email.guests, n: "emailed" },
         T.dm && { ch: "dm", b: T.dm.booked, g: T.dm.named, n: "DMed with a full name", lb: true } ].filter(Boolean);
@@ -673,15 +676,15 @@
       var nights = Object.keys(T.coversByDay).filter(function(k){ return k >= a.from && k <= a.to; }).sort().reverse();
       ctCard = '<h2 style="margin:22px 0 12px">From Contact to Table</h2><div class="kpis">' +
         kpi(share(tb, tg), "Booked After Reaching Us", "<b>" + tb + "</b> of " + tg + " people, all channels") +
-        kpi(rt.done ? pct(rt.returning, rt.done) : "–", "Returning Guests", rt.returning + " of " + rt.done + " seated reservations") + '</div>' +
+        kpi(rt.done ? pct(rt.returning, rt.done) : "-", "Returning Guests", rt.returning + " of " + rt.done + " seated reservations") + '</div>' +
         '<div class="grid2 even"><div class="card"><h2>Booked, by Channel</h2>' + chs.map(function(x){ var v = x.g ? 100 * x.b / x.g : 0;
           return '<div class="hbar"><span>' + CH[x.ch].label + '</span><div class="track"><div class="fill" style="width:' + v + '%;background:' + CH[x.ch].color + '"></div></div><span class="n">' + (x.lb ? "≥ " : "") + share(x.b, x.g) + '</span></div><p class="note" style="margin:-4px 0 8px">' + x.b + " of " + x.g + " who " + x.n + (x.lb ? " (" + T.dm.guests + " DMed in all)" : "") + '</p>'; }).join("") +
-          (PR ? "" : '<p class="note">Phone didn\'t load this time.</p>') + '</div>' +
+          (PR ? "" : '<p class="note">Phone data didn\'t load. Refresh the page to try again.</p>') + '</div>' +
         '<div class="card"><h2>Covers vs Touchpoints by Night</h2><div style="overflow-x:auto"><table><thead><tr><th>Night</th><th class="num">Covers</th><th class="num">Touchpoints</th></tr></thead><tbody>' +
-          (nights.length ? nights.map(function(k){ var tp = (pd[lab2(k)] || 0) + (msgs[k] || 0); return '<tr><td>' + lab2(k) + '</td><td class="num">' + T.coversByDay[k] + '</td><td class="num">' + (tp || "–") + '</td></tr>'; }).join("") : '<tr><td colspan="3" class="muted">No covers in this range.</td></tr>') +
+          (nights.length ? nights.map(function(k){ var tp = (pd[lab2(k)] || 0) + (msgs[k] || 0); return '<tr><td>' + lab2(k) + '</td><td class="num">' + T.coversByDay[k] + '</td><td class="num">' + (tp || "-") + '</td></tr>'; }).join("") : '<tr><td colspan="3" class="muted">No covers in this range.</td></tr>') +
           '</tbody></table></div></div></div>' +
         // One short line; the full counting rules sit behind a "How We Count" toggle (Jay, 2026-10-12: no wall of text).
-        '<div class="howcount"><p class="note">Booked = Resy reservation within 45 days of first contact · Updated ' + (T.updatedAt ? new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "never") + '</p>' +
+        '<div class="howcount"><p class="note">Booked = Resy reservation within 45 days of first contact · ' + (T.updatedAt ? "Updated " + new Date(T.updatedAt).toLocaleString("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/New_York" }) : "Not updated yet") + '</p>' +
         '<details><summary>How We Count</summary><p class="note">Matched by phone number (phone), email address (email) or exact full name (DMs, so a lower bound). Only bookings made after they first reached us count; booking time is estimated from Resy&rsquo;s reservation number (±a few hours). Someone who used two channels can count in both. The shared Iara Hold guest is left out. Covers include seated walk-ins; cancellations aren\'t in the ResyOS report.</p></details></div>';
     }
     return ctCard + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
@@ -712,14 +715,14 @@
       '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings", dlt(tot.in, prevTot)) +
         kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
         // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
-        kpi(nowCount, "Waiting Now", nowCount ? 'Across every channel · <a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
-        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
+        kpi(nowCount, "Waiting", nowCount ? 'Across every channel · <a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
+        kpi(rv.avg == null ? "-" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
       // Volume first (where guests came from), then how fast we replied, then outcomes.
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
-      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting Now</th></tr></thead><tbody>' +
-        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "–" : r.needed) + '</td><td class="num">' + (isR ? "–" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "–" : hrs(r.median)) + '</td><td class="num">' + (isR ? "–" : r.waiting) + '</td></tr>'; }).join("") +
+      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
+        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "-" : r.needed) + '</td><td class="num">' + (isR ? "-" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "-" : hrs(r.median)) + '</td><td class="num">' + (isR ? "-" : r.waiting) + '</td></tr>'; }).join("") +
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
       '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>' +
       trendCard(a.trend, "Replied Within an Hour", [
@@ -738,12 +741,12 @@
     var maxS = Math.max.apply(null, rv.dist.map(function(d){ return d.n; }).concat([1]));
     $("panel-reviews").innerHTML =
       '<div class="kpis">' + kpi(rv.count, "New Resy Ratings", rv.withComment + " with a written comment", pv && dlt(rv.count, pv.resy.count)) +
-        kpi(rv.avg == null ? "–" : rv.avg.toFixed(2) + " ★", "Average", "In this range", pv && dlt(rv.avg, pv.resy.avg, "stars")) +
-        kpi(rv.low, "4★ or Below", rv.low ? "Each one is in the Bom Dia" : "None") +
+        kpi(rv.avg == null ? "-" : rv.avg.toFixed(2) + " ★", "Average", "In this range", pv && dlt(rv.avg, pv.resy.avg, "stars")) +
+        kpi(rv.low, "4★ or Below", rv.low ? "Each one is in the Bom Dia morning email." : "None") +
         kpi(rv.vip, "From VIPs", "Tagged VIP in Resy") + '</div>' +
       trendCard(a.trend, "Resy Ratings", [
         { name: "Ratings", color: "var(--c-review)", val: function(p){ return p.resy.count || null; }, fmt: function(v){ return String(v); } },
-      ], function(b, x, name){ return name(b) + ": <b>" + b.resy.count + "</b> rating" + (b.resy.count === 1 ? "" : "s") + (b.resy.avg != null ? ", avg " + b.resy.avg.toFixed(2) + " ★" : "") + ", vs " + x.resy.count + (x.resy.avg != null ? " at " + x.resy.avg.toFixed(2) + " ★" : "") + (/^Week/.test(name(x)) ? " in the " + name(x).replace("Week", "week") : " on " + name(x)) + "."; }) +
+      ], function(b, x, name){ return name(b) + ": <b>" + b.resy.count + "</b> rating" + (b.resy.count === 1 ? "" : "s") + (b.resy.avg != null ? ", average " + b.resy.avg.toFixed(2) + " ★" : "") + ", vs " + x.resy.count + (x.resy.avg != null ? " at " + x.resy.avg.toFixed(2) + " ★" : "") + (/^Week/.test(name(x)) ? " in the " + name(x).replace("Week", "week") : " on " + name(x)) + "."; }) +
       '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(rv.byDay.map(function(d){ return d.date; }), [{ name: "Ratings", color: "var(--c-review)", vals: rv.byDay.map(function(d){ return d.n; }) }]) + '</div>' +
         '<div class="card"><h2>Stars</h2>' + rv.dist.slice().reverse().map(function(d){ return '<div class="hbar"><span>' + d.stars + ' ★</span><div class="track"><div class="fill" style="width:' + (100 * d.n / maxS) + '%"></div></div><span class="n">' + d.n + '</span></div>'; }).join("") +
         '<h2 style="margin-top:18px">Scores Today</h2>' + (a.reviews.scores.length ? a.reviews.scores.map(function(s){
@@ -784,7 +787,7 @@
         render(j);
         if (j.refreshing && followUps < 3){ followUps++; setTimeout(function(){ load(false, true); }, 8000); }
       })
-      .catch(function(e){ if (!quiet || !shown){ $("err").textContent = "Couldn't load phone data: " + e.message; $("err").hidden = false; } })
+      .catch(function(e){ if (!quiet || !shown){ $("err").textContent = "Couldn't load phone data. Refresh the page to try again."; $("err").hidden = false; } })
       .finally(function(){ $("loading").hidden = true; });
   }
 
@@ -801,7 +804,7 @@
     });
     y.innerHTML = html;
   }
-  var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "–"; };
+  var pct = function(a, b){ return b ? Math.round(100 * a / b) + "%" : "-"; };
   var when = function(t){ return new Date(t).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); };
   var esc = function(s){ return String(s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); };
 
@@ -814,7 +817,7 @@
   // or per week, with a headline comparing the last two periods that had calls.
   function renderTrend(d){
     var T = d.trend || { points: [], grain: "day" }, pts = T.points, unit = T.grain === "week" ? "week" : "day";
-    $("trend-h").textContent = T.grain === "week" ? "Week Over Week" : "Day Over Day";
+    $("trend-h").textContent = T.grain === "week" ? "Week over Week" : "Day over Day";
     var r = function(a, b){ return b ? Math.round(100 * a / b) : null; };
     var withCalls = pts.filter(function(p){ return p.svcTotal > 0 && !p.partial; });
     var head = "";
@@ -844,7 +847,7 @@
     $("trend-y").innerHTML = "<span style='bottom:0'>0</span><span style='bottom:50%'>50%</span><span style='bottom:100%'>100%</span>";
     bars.querySelectorAll(".grid").forEach(function(g){ g.remove(); });
     [50, 100].forEach(function(v){ var g = document.createElement("div"); g.className = "grid"; g.style.bottom = v + "%"; bars.appendChild(g); });
-    bars.setAttribute("aria-label", head.replace(/<[^>]+>/g, "") + " Per " + unit + " details are in the tooltips and the table below.");
+    bars.setAttribute("aria-label", head.replace(/<[^>]+>/g, "") + " Per-" + unit + " numbers are in the " + (unit === "week" ? "Week by Week" : "Day by Day") + " table.");
   }
 
   // Dismiss hides a row for everyone until that guest reaches out again; Undo puts it back.
@@ -861,7 +864,7 @@
       if (undo){ tr.classList.remove("gone"); tr.querySelector(".act").innerHTML = "<button class='link-btn' data-dismiss='" + esc(key) + "'>Dismiss</button>"; }
       else { tr.classList.add("gone"); tr.querySelector(".act").innerHTML = "<span class='muted'>Dismissed</span> <button class='link-btn' data-undo='" + esc(key) + "'>Undo</button>"; }
       var n = $("open").querySelectorAll("tr[data-key]:not(.gone)").length; $("k-open").textContent = n;
-    }).catch(function(){ b.disabled = false; b.textContent = "Try again"; });
+    }).catch(function(){ b.disabled = false; b.textContent = "Try Again"; });
   });
 
   function render(d){
@@ -874,26 +877,26 @@
     $("updated-m").textContent = updText; if (window.iaraAnalytics && window.iaraAnalytics.tab === "phone" && document.getElementById("updated")) document.getElementById("updated").textContent = updText;
     // vs the same-length period right before; none for ranges starting on day one.
     var P = d.prev, plural = R.days === 1 ? "day" : R.days + " days";
-    var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs prev " + plural + "</span>" : ""; };
+    var vs = function(diff, unit){ return P ? "<span class='delta'>" + (diff > 0 ? "+" : diff < 0 ? "−" : "±") + Math.abs(diff) + unit + " vs previous " + plural + "</span>" : ""; };
     var rate = function(a, b){ return b ? Math.round(100 * a / b) : null; };
     $("k-calls").textContent = c.total + d.texts.inbound;
     $("k-calls-n").innerHTML = c.total + " calls · " + d.texts.inbound + " texts" +
       vs(P ? (c.total + d.texts.inbound) - (P.calls.total + (P.textsIn || 0)) : 0, "");
     // Only calls while someone is at the host stand count; off-hours calls get the auto-text.
     var S = c.service, O = c.offHours;
-    $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "–";
+    $("k-ans").textContent = S.total ? pct(S.answered, S.total) : "-";
     var ar = rate(S.answered, S.total), par = P && rate(P.calls.service.answered, P.calls.service.total);
     $("k-ans-n").innerHTML = (S.total ? S.answered + " of " + S.total + " in business hours" : "No calls in business hours") +
       (O.total ? "<br>" + O.total + " after hours (not counted)" + (O.answered ? " (" + O.answered + " answered)" : "") : "") + (ar != null && par != null ? vs(ar - par, " pts") : "");
     // Guests the auto-text fully covered never needed a person, so they're not in this rate.
     var need = g.total - g.autoOnly, pneed = P && P.guests.total - P.guests.autoOnly;
-    $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "–";
+    $("k-handled").textContent = need > 0 ? pct(g.handled, need) : "-";
     var hr = rate(g.handled, need), phr = P && rate(P.guests.handled, pneed);
     $("k-handled-n").innerHTML = g.handled + " of " + need + " guests" + (d.medianCallbackHours != null ? " · reply ~" + d.medianCallbackHours + "h" : "") + (g.autoOnly ? "<br>" + g.autoOnly + " auto-text only" : "") + (hr != null && phr != null ? vs(hr - phr, " pts") : "");
     $("days-h").textContent = R.grain === "week" ? "Incoming Calls by Week" : "Incoming Calls by Day";
     $("daily-h").textContent = R.grain === "week" ? "Week by Week" : "Day by Day";
     $("k-open").textContent = g.open;
-    $("k-open-n").textContent = "All dates" + (g.stale ? " · " + g.stale + " older dropped" : "");
+    $("k-open-n").textContent = "All dates" + (g.stale ? " · " + g.stale + " older ones left off" : "");
 
     var max = niceMax(Math.max(1, Math.max.apply(null, d.days.map(function(x){ return x.answered + x.voicemail + x.missed; }))));
     $("days").innerHTML = ""; $("days-x").innerHTML = "";
@@ -939,7 +942,7 @@
 
     var rows = d.days.filter(function(x){ return x.answered + x.voicemail + x.missed + x.callsOut + x.textsIn + x.typed + x.auto > 0; }).reverse();
     var tot = rows.reduce(function(a, x){ ["answered","voicemail","missed","callsOut","talkMin","textsIn","typed","auto"].forEach(function(k){ a[k] = (a[k] || 0) + x[k]; }); return a; }, {});
-    var dash = function(n){ return n || "<span class='muted'>–</span>"; };
+    var dash = function(n){ return n || "<span class='muted' aria-label='No data'>-</span>"; };
     var row = function(x, label, cls){ return "<tr" + (cls ? " class='" + cls + "'" : "") + "><td>" + label + "</td><td class='num'>" + dash(x.answered + x.voicemail + x.missed) + "</td><td class='num'>" + dash(x.answered) + "</td><td class='num'>" + dash(x.voicemail) + "</td><td class='num'>" + dash(x.missed) + "</td><td class='num'>" + dash(x.callsOut) + "</td><td class='num'>" + (x.talkMin ? dur(x.talkMin) : dash(0)) + "</td><td class='num'>" + dash(x.textsIn) + "</td><td class='num'>" + dash(x.typed) + "</td><td class='num'>" + dash(x.auto) + "</td></tr>"; };
     $("daily").querySelector("tbody").innerHTML = rows.map(function(x){ return row(x, x.label, /^(Sun|Mon)/.test(x.label) ? "closed" : ""); }).join("") + row(tot, "<b>Total</b>");
     axis("days-y", "days", max); axis("hours-y", "hours", hmax);
@@ -953,19 +956,19 @@
       $("r-booked-n").textContent = b.booked + " of " + b.guests + " guests who called or texted";
       $("r-auto").textContent = pct(b.autoBooked, b.autoOnly);
       $("r-auto-n").textContent = b.autoBooked + " of " + b.autoOnly + " who only got the auto-text";
-      $("r-ns").textContent = !ns.reservations ? "–" : ns.noShows && 100 * ns.noShows / ns.reservations < 1 ? "<1%" : pct(ns.noShows, ns.reservations);
+      $("r-ns").textContent = !ns.reservations ? "-" : ns.noShows && 100 * ns.noShows / ns.reservations < 1 ? "<1%" : pct(ns.noShows, ns.reservations);
       $("r-ns-n").textContent = ns.noShows + " of " + ns.reservations + " past reservations" + (ns.covers ? " · " + ns.covers + " covers" : "");
-      $("r-ret").textContent = done ? pct(mx.returningRes, done) : "–";
+      $("r-ret").textContent = done ? pct(mx.returningRes, done) : "-";
       $("r-ret-n").textContent = mx.returningRes + " returning · " + mx.newRes + " first-time";
       var calls = {}; d.days.forEach(function(x){ calls[x.label] = x; });
       var nights = Object.keys(Z.coversByDay).filter(function(k){ return k >= d.range.from && k <= d.range.to; }).sort().reverse();
       var lab = function(ds){ var u = new Date(ds + "T12:00:00Z"); return u.toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" }) + " " + (u.getUTCMonth() + 1) + "/" + u.getUTCDate(); };
       $("r-nights").querySelector("tbody").innerHTML = nights.length ? nights.map(function(k){ var c = calls[lab(k)] || {}; var inn = (c.answered || 0) + (c.voicemail || 0) + (c.missed || 0);
-        return "<tr><td>" + lab(k) + "</td><td class='num'>" + Z.coversByDay[k] + "</td><td class='num'>" + (inn || "–") + "</td><td class='num'>" + (c.answered || "–") + "</td></tr>"; }).join("") : "<tr><td colspan='4' class='muted'>No covers in this range.</td></tr>";
+        return "<tr><td>" + lab(k) + "</td><td class='num'>" + Z.coversByDay[k] + "</td><td class='num'>" + (inn || "-") + "</td><td class='num'>" + (c.answered || "-") + "</td></tr>"; }).join("") : "<tr><td colspan='4' class='muted'>No covers in this range.</td></tr>";
       $("r-note").textContent = "No-shows, returning guests and other channels are on the Overview. Booked = a ResyOS reservation under the same phone number, made after their first call or text (booking time estimated from Resy's reservation number, ±a few hours) and dated within 45 days. Guests who already had a booking when they reached out don't count. Covers include seated walk-ins. Cancellations aren't in the ResyOS report. Book copied " + when(Z.updatedAt) + ".";
     }
     // What guests ask about + how fast we reply.
-    var TOPIC = { reservation: "Booking a table", fully_booked: "Booking a full night", running_late: "Running late", hours: "Hours", menu_dietary: "Menu & dietary", large_party: "Groups", catering: "Catering", complaint: "A complaint", other: "Something else" };
+    var TOPIC = { reservation: "Booking a Table", fully_booked: "Booking a Full Night", running_late: "Running Late", hours: "Hours", menu_dietary: "Menu and Dietary", large_party: "Groups", catering: "Catering", complaint: "Complaint", other: "Something Else" };
     var tp = d.topics || [], tmax = tp.reduce(function(m, x){ return Math.max(m, x.n); }, 1);
     $("topics").innerHTML = tp.length ? tp.map(function(x){ return "<div class='hrow'><span>" + esc(TOPIC[x.c] || x.c) + "</span><span class='track'><span class='fill' style='width:" + (100 * x.n / tmax) + "%'></span></span><span class='n'>" + x.n + "</span></div>"; }).join("") : "<p class='muted'>No texts or voicemails in this range.</p>";
     var sp = d.replySpeed || {}, rows2 = [["Under 15 min", sp.under15m], ["15 to 60 min", sp.under1h], ["1 to 6 hours", sp.under6h], ["Later", sp.later]];
@@ -990,10 +993,10 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
-  {label:'Show Overview', keywords:'analytics tab summary all channels', run:function(){ var b=document.querySelector('.tab[data-t="overview"]'); if(b) b.click(); }},
-  {label:'Show Phone', keywords:'analytics tab calls texts quo', run:function(){ var b=document.querySelector('.tab[data-t="phone"]'); if(b) b.click(); }},
-  {label:'Show Email', keywords:'analytics tab gmail contact', run:function(){ var b=document.querySelector('.tab[data-t="email"]'); if(b) b.click(); }},
-  {label:'Show Instagram', keywords:'analytics tab ig dms', run:function(){ var b=document.querySelector('.tab[data-t="instagram"]'); if(b) b.click(); }},
-  {label:'Show Reviews', keywords:'analytics tab google stars', run:function(){ var b=document.querySelector('.tab[data-t="reviews"]'); if(b) b.click(); }}
+  {label:'Open Overview', keywords:'analytics tab summary all channels', run:function(){ var b=document.querySelector('.tab[data-t="overview"]'); if(b) b.click(); }},
+  {label:'Open Phone', keywords:'analytics tab calls texts quo', run:function(){ var b=document.querySelector('.tab[data-t="phone"]'); if(b) b.click(); }},
+  {label:'Open Email', keywords:'analytics tab gmail contact', run:function(){ var b=document.querySelector('.tab[data-t="email"]'); if(b) b.click(); }},
+  {label:'Open Instagram', keywords:'analytics tab ig dms', run:function(){ var b=document.querySelector('.tab[data-t="instagram"]'); if(b) b.click(); }},
+  {label:'Open Reviews', keywords:'analytics tab google stars', run:function(){ var b=document.querySelector('.tab[data-t="reviews"]'); if(b) b.click(); }}
 ]); });
 </script>

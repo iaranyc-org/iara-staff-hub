@@ -323,6 +323,7 @@
   .attn-item .s{color:var(--ink-muted); font-size:12px;}
   .vendor-group{margin-bottom:16px;}
   .vendor-group h3{font-size:14px; margin-bottom:8px; display:flex; align-items:center; gap:8px;}
+  .inline-label{display:inline-flex; align-items:center; gap:6px;}
   .filter-row{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
   .combo-wrap{position:relative;}
   .combo-wrap input{padding-right:30px;}
@@ -380,7 +381,7 @@
     <div class="brand gate-lockup" aria-hidden="true"><img class="brand-mark" id="gateMark" src="/img/iara-mark.png" alt=""><span class="brand-word">Kitchen Ops</span></div>
     <h2>Manager Sign-In Required</h2>
     <div style="color:var(--k-muted); font-size:14px;">Kitchen Ops holds costing and business data, so it's manager-only. Sign in with your @iara.nyc Google account.</div>
-    <button class="btn primary" id="authGateBtn" style="align-self:stretch;">Sign In With Google</button>
+    <button class="btn primary" id="authGateBtn" style="align-self:stretch;">Sign In with Google</button>
     <div id="authGateMsg" class="k-alert" style="display:none;"></div>
   </div>
 </div>
@@ -417,6 +418,9 @@ var FIREBASE_CONFIG = {
 var REORDER_LEAD_DAYS = 3;
 var PAR_COVER_DAYS = 14;
 var ING_CATS = ["Protein","Produce","Dairy","Dry Goods","Pantry","Wine","Liquor","Beer","N/A Bev","Non-Food/Bev","Maintenance","Other"];
+// Display names only: stored category values stay "N/A Bev" / "Non-Food/Bev".
+var CAT_LABELS = {"N/A Bev":"Non-Alcoholic Bev", "Non-Food/Bev":"Non-Food Supplies"};
+function catLabel(c){ return CAT_LABELS[c] || c; }
 var STORAGE_AREAS = ["Walk-in Cooler","Freezer","Dry Storage","Bar","Front of House","Main Bathroom"];
 var COUNT_UNITS = ["each","ea","dozen","can","cans","count","ct","case","bottle","jar","bag","box","pack","pc","piece"];
 var UNITS = ["oz","lb","g","kg","ml","L","fl oz","each","dozen","qt","gal"];
@@ -522,8 +526,9 @@ function sortTh(label, scope, key, sortState, cls){
   var ariaSort = active ? (sortState.dir==='asc' ? 'ascending' : 'descending') : 'none';
   return '<th class="'+(cls||'')+' sortable" data-action="setSort" data-scope="'+scope+'" data-key="'+key+'" title="Sort by '+esc(label)+'" aria-sort="'+ariaSort+'">'+esc(label)+'<span class="sort-arrow">'+arrow+'</span></th>';
 }
+function daysLeftLabel(d){ var n = Math.max(0, Math.round(d)); return n+(n===1?' Day Left':' Days Left'); }
 function searchBoxHtml(id, placeholder, value){
-  return '<input id="'+id+'" type="text" class="search-box" placeholder="'+esc(placeholder)+'" value="'+esc(value||'')+'">';
+  return '<input id="'+id+'" type="text" class="search-box" aria-label="'+esc(placeholder.replace('…',''))+'" placeholder="'+esc(placeholder)+'" value="'+esc(value||'')+'">';
 }
 function toast(msg, kind){
   var stack = $('#toastStack');
@@ -912,7 +917,7 @@ function subscribeCollection(name){
     render();
   }, function(err){
     console.error('db error', name, err);
-    toast('Sync issue on ' + name + ' (' + err.code + ')');
+    toast('Couldn\'t sync ' + name + '. Refresh the page to try again.');
   });
 }
 
@@ -1011,7 +1016,7 @@ function updateSyncChip(ok){
 
 /* ---------------- mutations ---------------- */
 function persistCollection(name, id, body){
-  if(db){ return db.collection(name).doc(id).set(body).catch(function(e){ console.error(e); toast('Save failed: '+e.code); }); }
+  if(db){ return db.collection(name).doc(id).set(body).catch(function(e){ console.error(e); toast('Couldn\'t save. Check your connection and try again.'); }); }
   var arr = state[name];
   var idx = arr.findIndex(function(x){ return x.id===id; });
   var doc = Object.assign({id:id}, body);
@@ -1020,11 +1025,11 @@ function persistCollection(name, id, body){
   return Promise.resolve();
 }
 function updateCollection(name, id, patch){
-  if(db){ return db.collection(name).doc(id).update(patch).catch(function(e){ console.error(e); toast('Save failed: '+e.code); }); }
+  if(db){ return db.collection(name).doc(id).update(patch).catch(function(e){ console.error(e); toast('Couldn\'t save. Check your connection and try again.'); }); }
   var arr = state[name]; var doc = byId(arr, id); if(doc) Object.assign(doc, patch); render(); return Promise.resolve();
 }
 function deleteFromCollection(name, id){
-  if(db){ return db.collection(name).doc(id).delete().catch(function(e){ console.error(e); toast('Delete failed: '+e.code); }); }
+  if(db){ return db.collection(name).doc(id).delete().catch(function(e){ console.error(e); toast('Couldn\'t delete. Check your connection and try again.'); }); }
   state[name] = state[name].filter(function(x){ return x.id!==id; }); render(); return Promise.resolve();
 }
 
@@ -1099,9 +1104,9 @@ function setPOStatus(id, status){
   var po = byId(state.pos, id); if(!po) return;
   if(status === 'received'){
     applyReceivedEffects(po);
-    updateCollection('pos', id, {status:'received', receivedAt: isoNow()}).then(function(){ toast('PO received: inventory updated'); });
+    updateCollection('pos', id, {status:'received', receivedAt: isoNow()}).then(function(){ toast('Purchase order received. Inventory updated.'); });
   } else {
-    updateCollection('pos', id, {status:status}).then(function(){ toast('PO marked ' + status); });
+    updateCollection('pos', id, {status:status}).then(function(){ toast('Purchase order marked ' + status + '.'); });
   }
 }
 function saveInvoicePO(vendor, dateVal, linesArr, assetId, skipIds){
@@ -1112,7 +1117,7 @@ function saveInvoicePO(vendor, dateVal, linesArr, assetId, skipIds){
 }
 
 function saveSales(dateFrom, dateTo, label, linesArr){
-  var body = {dateFrom: new Date(dateFrom).toISOString(), dateTo: new Date(dateTo).toISOString(), label: label || (dateShort(new Date(dateFrom).toISOString())+' – '+dateShort(new Date(dateTo).toISOString())), lines: linesArr.filter(function(l){ return num(l.qty)>0; })};
+  var body = {dateFrom: new Date(dateFrom).toISOString(), dateTo: new Date(dateTo).toISOString(), label: label || (dateShort(new Date(dateFrom).toISOString())+' to '+dateShort(new Date(dateTo).toISOString())), lines: linesArr.filter(function(l){ return num(l.qty)>0; })};
   persistCollection('sales', uid(), body).then(function(){ toast('Sales logged'); closeModal(); });
 }
 
@@ -1148,7 +1153,7 @@ function lineChartSvg(points, opts){
     return '<rect data-i="'+i+'" x="'+(X(i)-innerW/Math.max(points.length,1)/2).toFixed(1)+'" y="0" width="'+(innerW/Math.max(points.length,1)).toFixed(1)+'" height="'+h+'" fill="transparent" class="hit"/>';
   }).join('');
   return {
-    svg: '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="line chart">'+gridHtml+'<path d="'+areaD+'" fill="var(--accent)" opacity="0.10" stroke="none"/><path d="'+pathD+'" fill="none" stroke="var(--accent)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>'+dots+xLabels+hitAreas+'</svg>',
+    svg: '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(opts.label||'Line chart')+'">'+gridHtml+'<path d="'+areaD+'" fill="var(--accent)" opacity="0.10" stroke="none"/><path d="'+pathD+'" fill="none" stroke="var(--accent)" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>'+dots+xLabels+hitAreas+'</svg>',
     points: points, X:X, Y:Y
   };
 }
@@ -1196,7 +1201,7 @@ function barChartSvg(data, opts){
       '<text x="'+cx.toFixed(1)+'" y="'+(h-10)+'" text-anchor="middle" font-size="10.5" fill="var(--ink-muted)">'+truncateLabel(d.label)+'</text>'+
       '</g>';
   }).join('');
-  return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="bar chart">'+gridHtml+bars+
+  return '<svg viewBox="0 0 '+w+' '+h+'" role="img" aria-label="'+esc(opts.label||'Bar chart')+'">'+gridHtml+bars+
     (opts.targetY!=null ? '<line x1="'+padL+'" x2="'+(w-padR)+'" y1="'+Y(opts.targetY).toFixed(1)+'" y2="'+Y(opts.targetY).toFixed(1)+'" stroke="var(--critical)" stroke-width="1.5" stroke-dasharray="4 3"/>' : '')
     +'</svg>';
 }
@@ -1272,7 +1277,7 @@ function renderDashboard(){
   var incr = recentPriceIncreases(30);
   var over = overTargetRecipes();
 
-  var trend = lineChartSvg(valueTrendPoints());
+  var trend = lineChartSvg(valueTrendPoints(), {label:'Inventory value over time'});
 
   var attn = [];
   low.slice(0,4).forEach(function(x){
@@ -1298,7 +1303,7 @@ function renderDashboard(){
 
   html += '<div class="kpis">'+
     '<div class="kpi"><div class="label">Inventory Value</div><div class="value">'+money(invVal)+'</div><div class="foot">'+plural(state.ingredients.length,'item')+' tracked</div></div>'+
-    '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Avg. Cost %</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+plural(state.recipes.length,'recipe')+'</div></div>'+
+    '<div class="kpi'+(afc>30?' alert':'')+'"><div class="label">Average Food Cost</div><div class="value">'+pct(afc)+'</div><div class="foot">across '+plural(state.recipes.length,'recipe')+'</div></div>'+
     '<div class="kpi'+(low.length?' alert':'')+'"><div class="label">Low Stock Items</div><div class="value">'+low.length+'</div><div class="foot">at risk of stockout</div></div>'+
     '<div class="kpi'+(incr.length?' alert':'')+'"><div class="label">Price Increases</div><div class="value">'+incr.length+'</div><div class="foot">last 30 days</div></div>'+
   '</div>';
@@ -1368,12 +1373,12 @@ function ingredientsTableHtml(){
     var risk = stockRisk(ing);
     var statusHtml = risk.level==='ok'
       ? '<span class="badge good">OK</span>'
-      : '<span class="badge '+risk.level+'" title="'+(risk.method==='usage'?'Predicted from usage history':'Below par level')+'">'+
-          (risk.method==='usage' ? Math.max(0,Math.round(risk.daysLeft))+'d left' : 'Low')+
+      : '<span class="badge '+risk.level+'">'+
+          (risk.method==='usage' ? daysLeftLabel(risk.daysLeft) : 'Below Par')+
         '</span>';
     html += '<tr>'+
       '<td>'+esc(ing.name)+'<div class="muted" style="font-size:11.5px">'+esc(ing.storageArea||'')+'</div></td>'+
-      '<td>'+esc(ing.category)+'</td>'+
+      '<td>'+esc(catLabel(ing.category))+'</td>'+
       '<td><span class="badge neutral">'+ingDept(ing)+'</span></td>'+
       '<td>'+esc(ing.vendor||'None')+'</td>'+
       '<td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td>'+
@@ -1413,13 +1418,13 @@ function recipesTableHtml(){
     foodCostPct: function(r){ return recipeFoodCostPct(r); }
   });
   if(!rows.length){
-    var empty = state.recipes.length ? 'No recipes match your search or filter.' : 'No recipes yet.';
+    var empty = state.recipes.length ? 'No recipes match your search or filter.' : 'No recipes yet. Add one to see its plate cost.';
     return '<div class="card empty-state">'+empty+'</div>';
   }
   var s = state.recipesSort;
   var html = '<div class="table-wrap"><table><thead><tr>'+
     sortTh('Recipe','recipes','name',s)+sortTh('Category','recipes','category',s)+sortTh('Dept','recipes','department',s)+
-    sortTh('Yield','recipes','yield',s,'num')+sortTh('Plate cost','recipes','plateCost',s,'num')+sortTh('Menu price','recipes','menuPrice',s,'num')+sortTh('Food cost %','recipes','foodCostPct',s,'num')+
+    sortTh('Yield','recipes','yield',s,'num')+sortTh('Plate Cost','recipes','plateCost',s,'num')+sortTh('Menu Price','recipes','menuPrice',s,'num')+sortTh('Food Cost %','recipes','foodCostPct',s,'num')+
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(r){
     var fc = recipeFoodCostPct(r);
@@ -1442,7 +1447,7 @@ function renderRecipesTableWrap(){ var el = $('#recipesTableWrap'); if(el) el.in
 
 function renderRecipes(){
   var filter = state.recipesDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Recipes &amp; Plate Costing</h2><div class="desc">Build recipes from ingredients to see plate cost and food cost %.</div></div><button class="btn primary" data-action="newRecipe">+ Add Recipe</button></div>';
+  var html = '<div class="panel-head"><div><h2>Recipes</h2><div class="desc">Build recipes from ingredients to see plate cost and food cost %.</div></div><button class="btn primary" data-action="newRecipe">+ Add Recipe</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('recipesDept', filter)+searchBoxHtml('recipesSearchInput','Search recipes…', state.recipesSearch)+'</div>';
   html += '<div id="recipesTableWrap">'+recipesTableHtml()+'</div>';
   return html;
@@ -1459,12 +1464,12 @@ function countsTableHtml(){
     totalValue: function(c){ return num(c.totalValue); }
   });
   if(!rows.length){
-    var empty = state.counts.length ? 'No counts match your search.' : 'No counts recorded yet.';
+    var empty = state.counts.length ? 'No counts match your search.' : 'No counts yet. Start a new count to track inventory value.';
     return '<div class="card empty-state">'+empty+'</div>';
   }
   var s = state.countsSort;
   var html = '<div class="table-wrap"><table><thead><tr>'+
-    sortTh('Date','counts','date',s)+sortTh('Label','counts','label',s)+sortTh('Items','counts','items',s,'num')+sortTh('Total value','counts','totalValue',s,'num')+
+    sortTh('Date','counts','date',s)+sortTh('Label','counts','label',s)+sortTh('Items','counts','items',s,'num')+sortTh('Total Value','counts','totalValue',s,'num')+
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(c){
     html += '<tr><td>'+dateLong(c.date)+'</td><td>'+esc(c.label)+'</td><td class="num">'+(c.lines||[]).length+'</td><td class="num">'+money(c.totalValue)+'</td>'+
@@ -1498,12 +1503,12 @@ function renderPurchasing(){
     vendors.forEach(function(v){
       var items = guide[v];
       var total = sum(items, function(x){ return x.cost; });
-      html += '<div class="vendor-group"><h3>'+esc(v)+' <span class="badge neutral">'+items.length+' item'+(items.length>1?'s':'')+' · '+money(total)+'</span> <button class="btn small primary" data-action="createPoFromGuide" data-vendor="'+esc(v)+'" style="margin-left:auto">Create PO</button></h3>';
-      html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On Hand</th><th class="num">Par</th><th class="num">Suggested Qty</th><th class="num">Est. Cost</th><th>Why</th></tr></thead><tbody>';
+      html += '<div class="vendor-group"><h3>'+esc(v)+' <span class="badge neutral">'+items.length+' item'+(items.length>1?'s':'')+' · '+money(total)+'</span> <button class="btn small primary" data-action="createPoFromGuide" data-vendor="'+esc(v)+'" style="margin-left:auto">Create Order</button></h3>';
+      html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On Hand</th><th class="num">Par</th><th class="num">Suggested Qty</th><th class="num">Estimated Cost</th><th>Why</th></tr></thead><tbody>';
       items.forEach(function(x){
         var why = x.risk.method==='usage'
-          ? '<span class="badge '+x.risk.level+'">~'+Math.max(0,Math.round(x.risk.daysLeft))+'d left</span>'
-          : '<span class="badge '+x.risk.level+'">Below par</span>';
+          ? '<span class="badge '+x.risk.level+'">About '+daysLeftLabel(x.risk.daysLeft)+'</span>'
+          : '<span class="badge '+x.risk.level+'">Below Par</span>';
         html += '<tr><td>'+esc(x.ing.name)+'</td><td class="num">'+x.ing.onHand+' '+esc(x.ing.invUnit)+'</td><td class="num">'+x.ing.parLevel+' '+esc(x.ing.invUnit)+'</td><td class="num">'+x.qty+' '+esc(x.ing.invUnit)+'</td><td class="num">'+money(x.cost)+'</td><td>'+why+'</td></tr>';
       });
       html += '</tbody></table></div></div>';
@@ -1511,7 +1516,7 @@ function renderPurchasing(){
   }
   html += '</div>';
 
-  html += '<div class="section-title" style="margin-top:4px">Purchase orders</div>';
+  html += '<div class="section-title" style="margin-top:4px">Purchase Orders</div>';
   if(state.pos.length){
     html += '<div class="toolbar-row" style="justify-content:flex-end">'+searchBoxHtml('posSearchInput','Search vendor or status…', state.posSearch)+'</div>';
   }
@@ -1529,7 +1534,7 @@ function posTableHtml(){
     status: function(po){ return po.status; }
   });
   if(!rows.length){
-    var empty = state.pos.length ? 'No purchase orders match your search.' : 'No purchase orders yet.';
+    var empty = state.pos.length ? 'No purchase orders match your search.' : 'No purchase orders yet. Create one from the order guide or scan an invoice.';
     return '<div class="card empty-state">'+empty+'</div>';
   }
   var s = state.posSort;
@@ -1569,10 +1574,10 @@ function pricingFilteredIngredients(){
 }
 function pricingResultsHtml(){
   var list = pricingFilteredIngredients();
-  if(!list.length) return '<div class="card empty-state">No ingredients match "'+esc(state.priceSearch)+'".</div>';
+  if(!list.length) return '<div class="card empty-state">No ingredients match "'+esc(state.priceSearch)+'". Try a shorter word.</div>';
   var s = state.pricingSort;
   return '<div class="table-wrap"><table><thead><tr>'+
-    sortTh('Item','pricing','name',s)+sortTh('Vendor','pricing','vendor',s)+sortTh('Current cost','pricing','unitCost',s,'num')+sortTh('Trend','pricing','trend',s)+
+    sortTh('Item','pricing','name',s)+sortTh('Vendor','pricing','vendor',s)+sortTh('Current Cost','pricing','unitCost',s,'num')+sortTh('Trend','pricing','trend',s)+
     '<th></th></tr></thead><tbody>' +
     list.map(function(ing){
       var hist = (ing.priceHistory||[]).slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
@@ -1580,7 +1585,7 @@ function pricingResultsHtml(){
       if(hist.length>=2){
         var prevC = hist[hist.length-2].costPerUnit, lastC = hist[hist.length-1].costPerUnit;
         var delta = lastC - prevC;
-        if(Math.abs(delta) < 0.0001) trend = '<span class="badge neutral">flat</span>';
+        if(Math.abs(delta) < 0.0001) trend = '<span class="badge neutral">Flat</span>';
         else if(delta>0) trend = '<span class="badge serious">▲ '+pct(Math.abs(delta/prevC*100),1)+'</span>';
         else trend = '<span class="badge good">▼ '+pct(Math.abs(delta/prevC*100),1)+'</span>';
       }
@@ -1598,7 +1603,7 @@ function pricingDetailHtml(){
   var hist = (ing.priceHistory||[]).slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
   var points = hist.length ? hist.map(function(h){ return {label: dateShort(h.date), y: h.costPerUnit}; }) : [{label:'Now', y: unitCostOf(ing)}];
   chartPointsMap.priceDetail = points;
-  var trendChart = lineChartSvg(points);
+  var trendChart = lineChartSvg(points, {label:'Price over time'});
   var histRows = hist.slice().reverse().map(function(h){
     return '<tr><td>'+dateLong(h.date)+'</td><td class="num">'+money(h.costPerPack)+'</td><td class="num">'+money(h.costPerUnit)+'/'+esc(ing.invUnit)+'</td></tr>';
   }).join('');
@@ -1609,12 +1614,12 @@ function pricingDetailHtml(){
     return '<tr><td>'+dateLong(l.date)+'</td><td>'+esc(l.vendor)+'</td><td class="num">'+l.qty+' '+esc(ing.invUnit)+'</td><td class="num">'+money(l.unitCost)+'</td><td><span class="badge '+(l.status==='received'?'good':'neutral')+'">'+l.status+'</span></td></tr>';
   }).join('');
   return '<div class="card" data-chart-id="priceDetail" style="margin-top:14px">'+
-    '<div class="panel-head"><div><h3>'+esc(ing.name)+'</h3><div class="desc">'+esc(ing.vendor||'No vendor set')+' · '+esc(ing.category)+' · '+ingDept(ing)+'</div></div>'+
+    '<div class="panel-head"><div><h3>'+esc(ing.name)+'</h3><div class="desc">'+esc(ing.vendor||'No vendor set')+' · '+esc(catLabel(ing.category))+' · '+ingDept(ing)+'</div></div>'+
       '<div class="kpi" style="padding:8px 14px"><div class="label">Current Cost</div><div class="value" style="font-size:18px">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</div></div></div>'+
     '<div class="chart-wrap" style="margin-top:10px">'+trendChart.svg+'</div>'+
     '<div class="two-col" style="margin-top:14px">'+
       '<div><div class="section-title">Price History</div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Cost/Pack</th><th class="num">Cost/Unit</th></tr></thead><tbody>'+(histRows||'<tr><td colspan="3" class="empty-state">No history yet.</td></tr>')+'</tbody></table></div></div>'+
-      '<div><div class="section-title">Purchase History</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit Cost</th><th>Status</th></tr></thead><tbody>'+(poRows||'<tr><td colspan="5" class="empty-state">No purchase orders yet.</td></tr>')+'</tbody></table></div></div>'+
+      '<div><div class="section-title">Purchase History</div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Vendor</th><th class="num">Qty</th><th class="num">Unit Cost</th><th>Status</th></tr></thead><tbody>'+(poRows||'<tr><td colspan="5" class="empty-state">No purchase orders yet. Create one from the order guide or scan an invoice.</td></tr>')+'</tbody></table></div></div>'+
     '</div>'+
   '</div>';
 }
@@ -1659,8 +1664,8 @@ function renderPurchaseReportCard(){
     row('Wine', data.wine, 'Wine', {indent:true}) +
     row('Liquor', data.liquor, 'Liquor', {indent:true}) +
     row('Beer', data.beer, 'Beer', {indent:true}) +
-    row('N/A Bev', data.naBev, 'N/A Bev', {indent:true}) +
-    row('Non-Food/Bev', data.nonFoodBev, 'Non-Food/Bev') +
+    row('Non-Alcoholic Bev', data.naBev, 'N/A Bev', {indent:true}) +
+    row('Non-Food Supplies', data.nonFoodBev, 'Non-Food/Bev') +
     row('Maintenance', data.maintenance, 'Maintenance');
   return '<div class="card">'+
     '<div class="section-title">Purchase Report</div>'+
@@ -1671,13 +1676,13 @@ function renderPurchaseReportCard(){
         '<label class="hint" style="display:flex; flex-direction:row; align-items:center; gap:6px">To <input type="date" data-action="purchaseReportEnd" value="'+esc(endVal)+'"></label>'+
       '</div>'+
     '</div>'+
-    (data.all === 0 ? '<div class="empty-state">No received purchases in this date range.</div>' :
+    (data.all === 0 ? '<div class="empty-state">No received purchases in this date range. Pick a wider range.</div>' :
       '<div class="table-wrap"><table><thead><tr><th>Category</th><th class="num">Total</th><th class="num">% of Purchases</th></tr></thead><tbody>'+rowsHtml+'</tbody></table></div>')+
     '<div class="hint" style="margin-top:8px">Based on received purchase orders (including scanned invoices) with a delivery date in this range. Click any row to see exactly what, when and who each purchase was from.</div>'+
   '</div>';
 }
 
-var PURCHASE_DRILLDOWN_LABELS = {all:'All Purchases', Food:'Food', 'Dry Goods':'Dry Goods', Beverage:'All Beverage', Wine:'Wine', Liquor:'Liquor', Beer:'Beer', 'N/A Bev':'N/A Bev', 'Non-Food/Bev':'Non-Food/Bev', Maintenance:'Maintenance'};
+var PURCHASE_DRILLDOWN_LABELS = {all:'All Purchases', Food:'Food', 'Dry Goods':'Dry Goods', Beverage:'All Beverage', Wine:'Wine', Liquor:'Liquor', Beer:'Beer', 'N/A Bev':'Non-Alcoholic Bev', 'Non-Food/Bev':'Non-Food Supplies', Maintenance:'Maintenance'};
 
 function purchaseDrilldownRows(categoryKey, startVal, endVal){
   return purchaseLinesInRange(startVal, endVal).filter(function(x){
@@ -1724,14 +1729,14 @@ function purchaseDrilldownTableHtml(){
   var html = '<div class="table-wrap"><table><thead><tr>'+
     sortTh('Date','purchaseDrilldown','date',s)+sortTh('Vendor','purchaseDrilldown','vendor',s)+sortTh('Item','purchaseDrilldown','item',s)+
     (showCatCol ? sortTh('Category','purchaseDrilldown','category',s) : '') +
-    sortTh('Qty','purchaseDrilldown','qty',s,'num')+sortTh('Unit Cost','purchaseDrilldown','unitCost',s,'num')+sortTh('Ext. Cost','purchaseDrilldown','ext',s,'num')+
+    sortTh('Qty','purchaseDrilldown','qty',s,'num')+sortTh('Unit Cost','purchaseDrilldown','unitCost',s,'num')+sortTh('Line Total','purchaseDrilldown','ext',s,'num')+
   '</tr></thead><tbody>';
   rows.forEach(function(r){
     html += '<tr>'+
       '<td>'+dateLong(r.date)+'</td>'+
       '<td>'+esc(r.vendor)+'</td>'+
       '<td>'+esc(r.item)+'</td>'+
-      (showCatCol ? '<td>'+esc(r.category)+'</td>' : '') +
+      (showCatCol ? '<td>'+esc(catLabel(r.category))+'</td>' : '') +
       '<td class="num">'+r.qty+' '+esc(r.unit)+'</td>'+
       '<td class="num">'+money(r.unitCost)+'</td>'+
       '<td class="num">'+money(r.ext)+'</td>'+
@@ -1748,7 +1753,7 @@ function renderPurchaseDrilldownPage(){
   var rows = purchaseDrilldownRows(dd.category, state.purchaseReportStart, state.purchaseReportEnd);
   var total = round2(sum(rows, function(r){ return r.ext; }));
   var html = '<div class="panel-head">'+
-    '<div><h2>'+esc(label)+' Purchases</h2><div class="desc">'+formatDateStr(state.purchaseReportStart)+' – '+formatDateStr(state.purchaseReportEnd)+' · '+money(total)+' total across '+plural(rows.length,'line item')+'</div></div>'+
+    '<div><h2>'+esc(/Purchases$/.test(label) ? label : label+' Purchases')+'</h2><div class="desc">'+formatDateStr(state.purchaseReportStart)+' to '+formatDateStr(state.purchaseReportEnd)+' · '+money(total)+' total across '+plural(rows.length,'line item')+'</div></div>'+
     '<div class="filter-row no-print"><button type="button" class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button type="button" class="btn ghost" data-action="closePurchaseDrilldown">← Back to Reports</button></div>'+
   '</div>';
   html += '<div class="card">'+
@@ -1760,11 +1765,11 @@ function renderPurchaseDrilldownPage(){
 
 function renderReports(){
   if(state.purchaseDrilldown) return renderPurchaseDrilldownPage();
-  var html = '<div class="panel-head"><div><h2>Reports</h2><div class="desc">Cost trends, food cost by category, and theoretical vs. actual COGS.</div></div><div class="filter-row no-print"><button class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button class="btn ghost" data-action="newSales">+ Log Period Sales</button></div></div>';
+  var html = '<div class="panel-head"><div><h2>Reports</h2><div class="desc">Cost trends, food cost by category, and theoretical vs. actual cost of goods sold (COGS).</div></div><div class="filter-row no-print"><button class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button class="btn ghost" data-action="newSales">+ Log Period Sales</button></div></div>';
 
   html += renderPurchaseReportCard();
 
-  var trend = lineChartSvg(valueTrendPoints());
+  var trend = lineChartSvg(valueTrendPoints(), {label:'Inventory value over time'});
   chartPointsMap.reportsTrend = trend.points;
   html += '<div class="card chart-card" data-chart-id="reportsTrend"><div class="section-title">Inventory Value Over Time</div><div class="chart-wrap">'+trend.svg+'</div></div>';
 
@@ -1774,14 +1779,14 @@ function renderReports(){
     var avg = sum(recs, recipeFoodCostPct)/recs.length;
     return {label:cat, y:round2(avg), color:CAT_COLOR[cat]};
   }).filter(Boolean);
-  html += '<div class="card"><div class="section-title">Avg. Food Cost % by Category</div>';
-  html += catData.length ? '<div class="chart-wrap">'+barChartSvg(catData, {pctAxis:true, targetY:30})+'</div><div class="hint">Dashed line marks a 30% reference target.</div>' : '<div class="empty-state">Add recipes with a menu price to see this chart.</div>';
+  html += '<div class="card"><div class="section-title">Average Food Cost % by Category</div>';
+  html += catData.length ? '<div class="chart-wrap">'+barChartSvg(catData, {pctAxis:true, targetY:30, label:'Food cost % by category'})+'</div><div class="hint">Dashed line marks a 30% reference target</div>' : '<div class="empty-state">Add recipes with a menu price to see this chart.</div>';
   html += '</div>';
 
   var foodStats = departmentStats('Food'), bevStats = departmentStats('Beverage');
   var deptData = [{label:'Food', y:round2(foodStats.avgCostPct), color:'var(--cat-1)'}, {label:'Beverage', y:round2(bevStats.avgCostPct), color:'var(--cat-5)'}];
-  html += '<div class="card"><div class="section-title">Cost %: Food vs. Beverage</div><div class="chart-wrap">'+barChartSvg(deptData, {pctAxis:true})+'</div>'+
-    '<div class="hint">Food inventory '+money(foodStats.inventoryValue)+' across '+plural(foodStats.itemCount,'item')+' · Beverage inventory '+money(bevStats.inventoryValue)+' across '+plural(bevStats.itemCount,'item')+'.</div></div>';
+  html += '<div class="card"><div class="section-title">Cost %: Food vs. Beverage</div><div class="chart-wrap">'+barChartSvg(deptData, {pctAxis:true, label:'Cost % for food vs. beverage'})+'</div>'+
+    '<div class="hint">Food inventory '+money(foodStats.inventoryValue)+' across '+plural(foodStats.itemCount,'item')+' · Beverage inventory '+money(bevStats.inventoryValue)+' across '+plural(bevStats.itemCount,'item')+'</div></div>';
 
   var over = overTargetRecipes();
   html += '<div class="card"><div class="section-title">Recipes Over Target Food Cost</div>';
@@ -1797,7 +1802,7 @@ function renderReports(){
 function renderVarianceCard(){
   var sortedCounts = state.counts.slice().sort(function(a,b){ return new Date(a.date)-new Date(b.date); });
   if(sortedCounts.length < 2){
-    return '<div class="card"><div class="section-title">Theoretical vs. Actual COGS</div><div class="empty-state">Save at least two inventory counts to calculate a period variance.</div></div>';
+    return '<div class="card"><div class="section-title">Theoretical vs. Actual COGS</div><div class="empty-state">Save at least 2 inventory counts to see the variance.</div></div>';
   }
   var beginId = state.varianceBegin || sortedCounts[0].id;
   var endId = state.varianceEnd || sortedCounts[sortedCounts.length-1].id;
@@ -1821,11 +1826,11 @@ function renderVarianceCard(){
   var variancePct = theoretical ? (variance/theoretical*100) : 0;
   var vClass = Math.abs(variancePct) < 5 ? 'good' : (Math.abs(variancePct) < 12 ? 'warning' : 'critical');
 
-  var bars = barChartSvg([{label:'Theoretical', y:round2(theoretical), color:'var(--cat-1)'},{label:'Actual', y:actual, color:'var(--cat-2)'}]);
+  var bars = barChartSvg([{label:'Theoretical', y:round2(theoretical), color:'var(--cat-1)'},{label:'Actual', y:actual, color:'var(--cat-2)'}], {label:'Theoretical vs. actual cost of goods sold'});
 
   return '<div class="card">'+
     '<div class="section-title">Theoretical vs. Actual COGS</div>'+
-    '<div class="filter-row" style="margin-bottom:12px">Begin: '+beginSel+' End: '+endSel+' Department: '+deptSel+'</div>'+
+    '<div class="filter-row" style="margin-bottom:12px"><label class="inline-label">Start '+beginSel+'</label><label class="inline-label">End '+endSel+'</label><label class="inline-label">Department '+deptSel+'</label></div>'+
     '<div class="chart-wrap">'+bars+'</div>'+
     '<div class="grid3" style="margin-top:12px">'+
       '<div><div class="hint">Beginning + purchases − ending</div><div class="num" style="font-size:16px">'+money(actual)+' actual</div></div>'+
@@ -1862,8 +1867,8 @@ function vendorComboOptionsHtml(query){
   var vendors = allVendors();
   var q = (query||'').trim().toLowerCase();
   var filtered = q ? vendors.filter(function(v){ return v.toLowerCase().indexOf(q)!==-1; }) : vendors;
-  if(!vendors.length) return '<div class="combo-empty">No purveyors tracked yet: just type the vendor name.</div>';
-  if(!filtered.length) return '<div class="combo-empty">No match: press Save to use "'+esc(query)+'" as a new purveyor.</div>';
+  if(!vendors.length) return '<div class="combo-empty">No vendors yet. Type the vendor name.</div>';
+  if(!filtered.length) return '<div class="combo-empty">No match. Save to add "'+esc(query)+'" as a new vendor.</div>';
   return filtered.map(function(v){ return '<div class="combo-option" data-action="pickVendorCombo" data-vendor="'+esc(v)+'">'+esc(v)+'</div>'; }).join('');
 }
 function openVendorCombo(query){
@@ -1882,22 +1887,22 @@ function openIngredientModal(existing){
   '<form data-form="ingredient" data-id="'+(existing?existing.id:'')+'">'+
     '<label>Name<input required name="name" value="'+esc(existing?existing.name:'')+'"></label>'+
     '<div class="grid3">'+
-      '<label>Category<select name="category" id="ingCategorySelect">'+ING_CATS.map(function(c){return '<option '+(existing&&existing.category===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
+      '<label>Category<select name="category" id="ingCategorySelect">'+ING_CATS.map(function(c){return '<option value="'+esc(c)+'" '+(existing&&existing.category===c?'selected':'')+'>'+esc(catLabel(c))+'</option>';}).join('')+'</select></label>'+
       '<label><span class="label-row">Department <span class="qmark" title="Which cost report this rolls into: Food, Beverage, or Supplies. Set automatically from Category, but you can override it here.">?</span></span><select name="department" id="ingDeptSelect">'+DEPARTMENTS.map(function(d){return '<option '+((existing?ingDept(existing):defaultDept(existing?existing.category:'Protein'))===d?'selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
-      '<label>Storage area<select name="storageArea">'+STORAGE_AREAS.map(function(c){return '<option '+(existing&&existing.storageArea===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
+      '<label>Storage Area<select name="storageArea">'+STORAGE_AREAS.map(function(c){return '<option '+(existing&&existing.storageArea===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
     '</div>'+
     '<label>Vendor<input name="vendor" value="'+esc(existing?existing.vendor:'')+'" placeholder="e.g. Baldor"></label>'+
     '<div class="hint" style="margin:-4px 0 2px">How you count it, what comes in a pack when you buy it, and what that pack costs - e.g. you count in <strong>lb</strong>, a case has <strong>25</strong> lb, and the case costs <strong>$30</strong>.</div>'+
     '<div class="grid3">'+
-      '<label><span class="label-row">Count unit <span class="qmark" title="The unit you count stock in on the shelf - lb, each, fl oz, etc.">?</span></span><select name="invUnit" id="ingInvUnitSelect">'+UNITS.map(function(u){return '<option '+(existing&&existing.invUnit===u?'selected':'')+'>'+u+'</option>';}).join('')+'</select></label>'+
-      '<label><span class="label-row">Units per pack <span class="qmark" title="How many count units come in one pack/case as purchased. If you buy and count the same way (e.g. one bottle = one bottle), leave this at 1.">?</span></span><input type="number" step="0.0001" min="0.0001" name="unitsPerPack" required value="'+(existing?existing.unitsPerPack:1)+'"></label>'+
-      '<label><span class="label-row">Cost per pack ($) <span class="qmark" title="What you paid for the whole pack/case, not the per-unit price.">?</span></span><input type="number" step="0.01" min="0" name="costPerPack" required value="'+(existing?existing.costPerPack:'')+'"></label>'+
+      '<label><span class="label-row">Count Unit <span class="qmark" title="The unit you count stock in on the shelf - lb, each, fl oz, etc.">?</span></span><select name="invUnit" id="ingInvUnitSelect">'+UNITS.map(function(u){return '<option '+(existing&&existing.invUnit===u?'selected':'')+'>'+u+'</option>';}).join('')+'</select></label>'+
+      '<label><span class="label-row">Units per Pack <span class="qmark" title="How many count units come in one pack/case as purchased. If you buy and count the same way (e.g. one bottle = one bottle), leave this at 1.">?</span></span><input type="number" step="0.0001" min="0.0001" name="unitsPerPack" required value="'+(existing?existing.unitsPerPack:1)+'"></label>'+
+      '<label><span class="label-row">Cost per Pack ($) <span class="qmark" title="What you paid for the whole pack/case, not the per-unit price.">?</span></span><input type="number" step="0.01" min="0" name="costPerPack" required value="'+(existing?existing.costPerPack:'')+'"></label>'+
     '</div>'+
     '<div class="grid2">'+
-      '<label id="ingParLabel">Par level<input type="number" step="0.01" min="0" name="parLevel" value="'+(existing?existing.parLevel:0)+'"></label>'+
-      '<label id="ingOnHandLabel">On hand<input type="number" step="0.01" min="0" name="onHand" value="'+(existing?existing.onHand:0)+'"></label>'+
+      '<label id="ingParLabel">Par Level<input type="number" step="0.01" min="0" name="parLevel" value="'+(existing?existing.parLevel:0)+'"></label>'+
+      '<label id="ingOnHandLabel">On Hand<input type="number" step="0.01" min="0" name="onHand" value="'+(existing?existing.onHand:0)+'"></label>'+
     '</div>'+
-    '<div class="cost-preview"><span>Cost per count unit</span><strong id="unitCostPreview">'+money(existing?unitCostOf(existing):0)+'</strong></div>'+
+    '<div class="cost-preview"><span>Cost per Count Unit</span><strong id="unitCostPreview">'+money(existing?unitCostOf(existing):0)+'</strong></div>'+
     '<div class="modal-actions">'+
       (existing ? '<button type="button" class="btn ghost danger" data-action="deleteIngredient" data-id="'+existing.id+'">Delete</button>' : '<span></span>')+
       '<div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save</button></div>'+
@@ -1921,7 +1926,7 @@ function openIngredientModal(existing){
 }
 
 function recipeLinesHtml(lines){
-  if(!lines.length) return '<div class="empty-state" style="padding:16px">No ingredients added yet.</div>';
+  if(!lines.length) return '<div class="empty-state" style="padding:16px">No ingredients added yet. Use Add Ingredient Line to start.</div>';
   return lines.map(function(l, idx){
     var ing = byId(state.ingredients, l.ingredientId);
     var lineCost = ing ? num(l.qty)*unitCostOf(ing) : 0;
@@ -1929,7 +1934,7 @@ function recipeLinesHtml(lines){
       '<label>Ingredient<select data-line-field="ingredientId" data-idx="'+idx+'">'+ '<option value="">Select…</option>' + ingredientOptionsHtml(l.ingredientId) +'</select></label>'+
       '<label>Qty ('+(ing?esc(ing.invUnit):'unit')+')<input type="number" step="0.0001" min="0" data-line-field="qty" data-idx="'+idx+'" value="'+(l.qty||'')+'"></label>'+
       '<div class="line-total">'+money(lineCost)+'</div>'+
-      '<button type="button" class="btn small ghost" data-action="removeLine" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
+      '<button type="button" class="btn small ghost" data-action="removeLine" aria-label="Remove Line" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
     '</div>';
   }).join('');
 }
@@ -1954,12 +1959,12 @@ function openRecipeModal(existing){
     '<div class="grid3">'+
       '<label>Category<select name="category" id="recCategorySelect">'+RECIPE_CATS.map(function(c){return '<option '+(existing&&existing.category===c?'selected':'')+'>'+c+'</option>';}).join('')+'</select></label>'+
       '<label><span class="label-row">Department <span class="qmark" title="Which cost report this rolls into: Food or Beverage. Set automatically from Category, but you can override it here.">?</span></span><select name="department" id="recDeptSelect">'+DEPARTMENTS.map(function(d){return '<option '+((existing?recipeDept(existing):defaultRecipeDept(existing?existing.category:'Entree'))===d?'selected':'')+'>'+d+'</option>';}).join('')+'</select></label>'+
-      '<label><span class="label-row">Yield qty <span class="qmark" title="How many portions one batch of this recipe makes.">?</span></span><input type="number" step="0.01" min="0.01" name="yieldQty" value="'+(existing?existing.yieldQty:1)+'"></label>'+
+      '<label><span class="label-row">Yield Quantity <span class="qmark" title="How many portions one batch of this recipe makes.">?</span></span><input type="number" step="0.01" min="0.01" name="yieldQty" value="'+(existing?existing.yieldQty:1)+'"></label>'+
     '</div>'+
     '<div class="grid3">'+
-      '<label>Yield unit<input name="yieldUnit" value="'+esc(existing?existing.yieldUnit:'plate')+'"></label>'+
-      '<label>Menu price ($)<input type="number" step="0.01" min="0" name="menuPrice" value="'+(existing?existing.menuPrice:'')+'"></label>'+
-      '<label><span class="label-row">Target food cost % <span class="qmark" title="Your goal ceiling for this dish - ingredient cost as a share of menu price. Recipes over target get flagged on the Dashboard and in Reports.">?</span></span><input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
+      '<label>Yield Unit<input name="yieldUnit" value="'+esc(existing?existing.yieldUnit:'plate')+'"></label>'+
+      '<label>Menu Price ($)<input type="number" step="0.01" min="0" name="menuPrice" value="'+(existing?existing.menuPrice:'')+'"></label>'+
+      '<label><span class="label-row">Target Food Cost % <span class="qmark" title="Your goal ceiling for this dish - ingredient cost as a share of menu price. Recipes over target get flagged on the Dashboard and in Reports.">?</span></span><input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
     '</div>'+
     '<div><div class="section-title">Ingredient Lines</div><div class="lines-box" id="linesBox">'+recipeLinesHtml(state.tempLines)+'</div>'+
     '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add Ingredient Line</button></div>'+
@@ -1988,7 +1993,7 @@ function openCountModal(){
   var byCat = {};
   state.ingredients.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).forEach(function(i){ (byCat[i.category]=byCat[i.category]||[]).push(i); });
   var rowsHtml = Object.keys(byCat).sort().map(function(cat){
-    return '<div class="section-title" style="margin-top:10px">'+esc(cat)+'</div>' + byCat[cat].map(function(ing){
+    return '<div class="section-title" style="margin-top:10px">'+esc(catLabel(cat))+'</div>' + byCat[cat].map(function(ing){
       return '<div class="line-row" style="grid-template-columns:1fr 110px 90px">'+
         '<div>'+esc(ing.name)+'</div>'+
         '<label>Qty<input type="number" step="0.0001" min="0" name="qty_'+ing.id+'" value="'+ing.onHand+'"></label>'+
@@ -2031,7 +2036,7 @@ function openPoModal(prefillVendor){
       '<label>Date<input type="date" name="date" value="'+nyDate()+'"></label>'+
     '</div>'+
     '<div class="lines-box" id="poLinesBox" style="max-height:320px">'+rowsFor(vendor)+'</div>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Create PO</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Create Order</button></div></div>'+
   '</form>';
   openModal(h, true);
   $('#poVendorSelect').addEventListener('change', function(e){ $('#poLinesBox').innerHTML = rowsFor(e.target.value); });
@@ -2041,7 +2046,7 @@ function openSalesModal(){
   var rows = state.recipes.slice().sort(function(a,b){return a.name.localeCompare(b.name);}).map(function(r){
     return '<div class="line-row" style="grid-template-columns:1fr 110px">'+
       '<div>'+esc(r.name)+'</div>'+
-      '<label>Qty sold<input type="number" step="1" min="0" name="qty_'+r.id+'" value="0"></label>'+
+      '<label>Quantity Sold<input type="number" step="1" min="0" name="qty_'+r.id+'" value="0"></label>'+
     '</div>';
   }).join('');
   var h = '<h2>Log Period Sales</h2>'+
@@ -2062,9 +2067,9 @@ function invoicePhotoAreaHtml(){
   return '<div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start">' +
     (hasPhoto ? '<img src="'+state.invoicePhotoUrl+'" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); object-fit:contain">' : '') +
     '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
-      '<button type="button" class="btn ghost" data-action="invoicePickPhoto">'+(hasPhoto?'Retake / choose different photo':(icon('camera')+' Take or choose photo'))+'</button>' +
-      (canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract With AI</button>' : '') +
-      (hasPhoto && !canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract With AI</button>' : '') +
+      '<button type="button" class="btn ghost" data-action="invoicePickPhoto">'+(hasPhoto?'Choose Another Photo':(icon('camera')+' Add Photo'))+'</button>' +
+      (canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract with AI</button>' : '') +
+      (hasPhoto && !canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract with AI</button>' : '') +
     '</div>' +
   '</div>';
 }
@@ -2082,7 +2087,7 @@ function openInvoiceModal(){
     '<p class="hint">'+esc(note)+'</p>' +
     '<input type="file" id="invoicePhotoInput" accept="image/*" capture="environment" hidden>' +
     '<div id="invoicePhotoArea">' + invoicePhotoAreaHtml() + '</div>' +
-    '<div class="modal-actions"><button type="button" class="btn ghost" data-action="enterInvoiceManually">Skip Photo, Enter by Hand</button><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button></div></div>';
+    '<div class="modal-actions"><button type="button" class="btn ghost" data-action="enterInvoiceManually">Enter by Hand</button><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button></div></div>';
   openModal(h, true);
 }
 
@@ -2126,14 +2131,14 @@ function invoiceLinesHtml(lines){
   if(!lines.length) return '<div class="empty-state" style="padding:16px">No line items yet: add one below.</div>';
   return lines.map(function(l, idx){
     var cat = l.category || 'Food';
-    var catSelect = '<label>Category<select data-line-field="category" data-idx="'+idx+'">'+ING_CATS.map(function(c){ return '<option '+(c===cat?'selected':'')+'>'+c+'</option>'; }).join('')+'</select></label>';
+    var catSelect = '<label>Category<select data-line-field="category" data-idx="'+idx+'">'+ING_CATS.map(function(c){ return '<option value="'+esc(c)+'" '+(c===cat?'selected':'')+'>'+esc(catLabel(c))+'</option>'; }).join('')+'</select></label>';
     return '<div class="line-row" data-idx="'+idx+'" style="grid-template-columns:1.15fr 115px 80px 95px auto">'+
       (l.description ? ('<div><div style="font-weight:600; font-size:13px">'+esc(l.description)+'</div><select data-line-field="ingredientId" data-idx="'+idx+'" style="margin-top:4px"><option value="">New Item, Not Tracked Yet</option>'+ingredientOptionsHtml(l.ingredientId)+'</select></div>')
         : ('<label>Ingredient<select data-line-field="ingredientId" data-idx="'+idx+'"><option value="">Select…</option>'+ingredientOptionsHtml(l.ingredientId)+'</select></label>')) +
       catSelect+
       '<label>Qty<input type="number" step="0.0001" min="0" data-line-field="qty" data-idx="'+idx+'" value="'+(l.qty||'')+'"></label>'+
       '<label>Unit Cost<input type="number" step="0.01" min="0" data-line-field="unitCost" data-idx="'+idx+'" value="'+(l.unitCost||'')+'"></label>'+
-      '<button type="button" class="btn small ghost" data-action="removeLine" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
+      '<button type="button" class="btn small ghost" data-action="removeLine" aria-label="Remove Line" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
     '</div>';
   }).join('');
 }
@@ -2149,11 +2154,11 @@ function renderInvoiceReview(data){
   var unmatched = state.tempLines.filter(function(l){ return l.description && !l.ingredientId; }).length;
   var h = '<h2>Review Invoice</h2>'+
     (state.invoicePhotoUrl ? '<img src="'+state.invoicePhotoUrl+'" style="max-width:150px; max-height:150px; border-radius:8px; border:1px solid var(--border); object-fit:contain">' : '')+
-    (unmatched ? '<p class="hint">'+unmatched+' line item(s) didn’t match an existing ingredient: match one from the dropdown, or set its Category and save to add it as a new item. Mixed invoices (e.g. limes/juices on a liquor bill) are common: set each line’s own Category so it lands in the right purchase report.</p>' : '<p class="hint">Check each line’s Category: mixed invoices (e.g. limes/juices on a liquor bill) are common, and the category controls which purchase report an item counts toward.</p>')+
+    (unmatched ? '<p class="hint">'+unmatched+' '+(unmatched===1?'line':'lines')+' didn’t match an ingredient. Pick a match, or set a Category to add each one as a new item</p>' : '<p class="hint">Check each line’s Category: mixed invoices (e.g. limes/juices on a liquor bill) are common, and the category controls which purchase report an item counts toward.</p>')+
     '<form data-form="invoice">'+
     '<div class="grid2">'+
       '<label>Vendor<div class="combo-wrap">'+
-        '<input required name="vendor" id="invoiceVendorInput" autocomplete="off" data-combo="vendor" value="'+esc(vendor)+'" placeholder="Search purveyors…">'+
+        '<input required name="vendor" id="invoiceVendorInput" autocomplete="off" data-combo="vendor" value="'+esc(vendor)+'" placeholder="Search vendors…">'+
         '<span class="combo-caret">'+icon('chevronDown',14)+'</span>'+
         '<div class="combo-panel" id="vendorComboPanel" hidden></div>'+
       '</div></label>'+
@@ -2192,8 +2197,8 @@ function viewCountModal(count){
     return '<tr><td>'+esc(l.name)+'</td><td class="num">'+l.countedQty+' '+esc(l.unit)+'</td><td class="num">'+money(l.unitCost)+'</td><td class="num">'+money(l.extValue)+'</td></tr>';
   }).join('');
   var h = '<h2>'+esc(count.label)+'</h2><p class="hint">'+dateLong(count.date)+'</p>'+
-    '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit Cost</th><th class="num">Ext. Value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
-    '<div class="cost-preview"><span>Total value</span><strong>'+money(count.totalValue)+'</strong></div>'+
+    '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit Cost</th><th class="num">Line Value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
+    '<div class="cost-preview"><span>Total Value</span><strong>'+money(count.totalValue)+'</strong></div>'+
     '<div class="modal-actions"><button type="button" class="btn ghost danger" data-action="deleteCount" data-id="'+count.id+'">Delete Count</button><div class="right"><button type="button" class="btn primary" data-action="closeModal">Close</button></div></div>';
   openModal(h, true);
 }
@@ -2343,7 +2348,7 @@ document.addEventListener('submit', function(e){
       var cost = parseFloat(fd2.get('cost_'+ing.id))||0;
       return {ingredientId:ing.id, qty:qty, unitCost:cost};
     }).filter(function(l){ return l.qty>0; });
-    if(!linesArr2.length){ toast('Add a quantity for at least one item'); return; }
+    if(!linesArr2.length){ toast('Add a quantity for at least 1 item.'); return; }
     savePO(vendor, fd2.get('date'), linesArr2);
   }
   else if(kind === 'sales'){
@@ -2355,8 +2360,8 @@ document.addEventListener('submit', function(e){
     var fd4 = new FormData(form);
     var vendor4 = (fd4.get('vendor')||'').trim();
     var candidateLines4 = state.tempLines.filter(function(l){ return num(l.qty)>0 && (l.ingredientId || (l.description||'').trim()); });
-    if(!vendor4){ toast('Enter a vendor name'); return; }
-    if(!candidateLines4.length){ toast('Match or add at least one line item with a quantity'); return; }
+    if(!vendor4){ toast('Enter a vendor name.'); return; }
+    if(!candidateLines4.length){ toast('Match or add at least 1 line item with a quantity.'); return; }
     var newlyCreatedIds4 = {};
     var linesArr4 = candidateLines4.map(function(l){
       if(l.ingredientId){
@@ -2394,8 +2399,8 @@ document.getElementById('authGateBtn').addEventListener('click', function(){
   msg.style.display = 'none';
   signInManager().catch(function(e){
     msg.textContent = e && e.email
-      ? ("Signed out: " + e.email + " isn't a manager account.")
-      : "Sign-in failed. Try again.";
+      ? (e.email + " isn't a manager account. Sign in with your @iara.nyc manager account.")
+      : "Couldn't sign in. Check your connection and try again.";
     msg.style.display = 'block';
   });
 });

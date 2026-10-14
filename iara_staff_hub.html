@@ -738,6 +738,8 @@
   .pips i.mark{ position:relative; }
   .pips i.mark::after{ content:""; position:absolute; right:-3px; top:-3px; bottom:-3px;
     border-right:1px solid var(--k-border); }
+  .pip-lvl{ font-size:11px; color:var(--ink-soft); margin-left:6px; }
+  .fbk-label{ display:block; font-size:13px; font-weight:600; margin:0 0 6px; }
   .pip-note{ font-size:11px; color:var(--ink-soft); margin-left:8px; }
   .jump-link{ display:inline; padding:0; background:none; border:none; font:inherit;
     color:var(--sun); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
@@ -999,7 +1001,7 @@
   .vb-stars{ color:var(--k-sun); letter-spacing:2px; font-size:14px; margin-top:3px; }
   .vb-txt{ font-size:15px; line-height:1.55; color:var(--ink); margin:8px 0 10px; }
   .vb-who{ font-size:12.5px; color:var(--ink-soft); }
-  .vb-new{ position:absolute; top:-8px; right:12px; z-index:1; background:var(--k-sun); color:var(--k-page); font-size:10.5px; font-weight:800; padding:3px 8px; border-radius:4px; letter-spacing:.06em; }
+  .vb-new{ position:absolute; top:-8px; right:12px; z-index:1; background:var(--k-sun); color:var(--k-page); font-size:10.5px; font-weight:800; padding:3px 8px; border-radius:4px; letter-spacing:.06em; text-transform:uppercase; }
   .vb-press{ background:#f0e2c8; border-color:#f0e2c8; padding:0; overflow:hidden; }
   .vb-press .vb-new{ top:10px; }
   .vb-press .vb-link{ padding:0 0 14px; }
@@ -1170,8 +1172,9 @@
         </select>
       </div>
       <div class="field" id="pw-field" hidden>
-        <label for="in-pw">Staff password</label>
-        <input id="in-pw" type="password" autocomplete="current-password" placeholder="Ask your manager">
+        <label for="in-pw">Staff Password</label>
+        <input id="in-pw" type="password" autocomplete="current-password" aria-describedby="in-pw-hint">
+        <p class="field-help" id="in-pw-hint">Ask your manager for the staff password</p>
       </div>
       <p class="form-err" id="gate-err" hidden></p>
       <button type="submit" class="btn btn-primary">Start</button>
@@ -1186,8 +1189,8 @@
     <button class="nav-btn sb-vibes" data-view="vibes"><b>Good Vibes</b><span id="sb-vibes-sub">Love for iara</span></button>
     <button class="nav-btn active" data-view="home">Home</button>
     <div class="nav-rule"></div>
-    <button class="nav-btn" data-view="manual">The Manual</button>
-    <button class="nav-btn" data-view="fnb">The Menu</button>
+    <button class="nav-btn" data-view="manual">Manual</button>
+    <button class="nav-btn" data-view="fnb">Menu</button>
     <button class="nav-btn" data-view="cleaning">Cleaning</button>
     <button class="nav-btn" data-view="watch">Watch List</button>
     <button class="nav-btn" data-view="team">Team</button>
@@ -1213,11 +1216,11 @@
         <h1 class="sc-name">Evening, <span id="home-name">there</span>.</h1>
         <p class="sc-sub">Your first week: Manual, Menu, Study, Final Exam.</p>
         <div class="sc-rule"></div>
-        <p class="sc-blank" id="sc-blank" hidden>No tests run yet.</p>
+        <p class="sc-blank" id="sc-blank" hidden>No tests run yet. Take the Final Exam when you're ready.</p>
         <div class="sc-stats">
-          <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Tests run</span></div>
-          <div><span class="num mono" id="stat-best">None</span><span class="lbl">Average score</span></div>
-          <div><span class="num mono" id="stat-last">None</span><span class="lbl">Last test</span></div>
+          <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Tests Run</span></div>
+          <div><span class="num mono" id="stat-best">None</span><span class="lbl">Average Score</span></div>
+          <div><span class="num mono" id="stat-last">None</span><span class="lbl">Last Test</span></div>
         </div>
       </div>
 
@@ -1239,7 +1242,7 @@
                 <a class="ff-value" href="tel:+19299305033">(929) 930-5033</a>
                 <button class="ff-copy" data-copy="(929) 930-5033" aria-label="Copy phone number"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
               </div>
-              <p class="field-help">Text or call, both work.</p>
+              <p class="field-help">Text or call, both work</p>
             </div>
             <div class="ff-item">
               <p class="ff-label">Reservations</p>
@@ -1250,12 +1253,12 @@
             </div>
             <div class="ff-item">
               <p class="ff-label">Hours</p>
-              <p class="ff-value">Tue&ndash;Sat, 5&ndash;11pm</p>
+              <p class="ff-value">Tue to Sat, 5 to 11 PM</p>
             </div>
             <div class="ff-item ff-item-wide">
-              <p class="ff-label">Dress code</p>
-              <p class="ff-value ff-value-text">FOH: iara tee, black bottoms. BOH: tee, iara hat. Both: closed-toe non-slip shoes.
-                <button class="jump jump-link" data-view="manual">Full uniform policy &rarr;</button>
+              <p class="ff-label">Dress Code</p>
+              <p class="ff-value ff-value-text">Front of house: iara tee, black bottoms. Back of house: tee, iara hat. Everyone: closed-toe non-slip shoes.
+                <button class="jump jump-link" data-view="manual">Full Uniform Policy &rarr;</button>
               </p>
             </div>
           </div>
@@ -1286,7 +1289,7 @@
       <ol class="startlist">
         <li><button class="jump" data-view="manual"><span class="sl-n mono">01</span>
           <span class="sl-t">Read the Manual</span>
-          <span class="sl-d">How a shift runs, in ten sections.</span></button></li>
+          <span class="sl-d">How a shift runs, in 10 sections.</span></button></li>
         <li><button class="jump" data-view="fnb"><span class="sl-n mono">02</span>
           <span class="sl-t">Learn the Menu</span>
           <span class="sl-d">Every dish, how to say it, what it sets off.</span></button></li>
@@ -1300,7 +1303,7 @@
     </section>
 
     <section class="view" id="view-manual">
-      <h1>The Manual</h1>
+      <h1>Manual</h1>
       <p class="view-intro">The printed manual, in the order a shift actually runs.</p>
       <div class="manual-search">
         <label class="sr-only" for="manual-q">Search the manual</label>
@@ -1309,7 +1312,7 @@
         <p class="manual-count" id="manual-count" hidden></p>
         <div class="manual-read-row">
           <p class="manual-read" id="manual-read"></p>
-          <button class="linkish" id="manual-expand-all" type="button">Expand all</button>
+          <button class="linkish" id="manual-expand-all" type="button">Expand All</button>
         </div>
       </div>
       <div id="manual-accordions"></div>
@@ -1341,7 +1344,8 @@
 
     <!-- FOOD & BEVERAGE -->
     <section class="view" id="view-fnb">
-      <h1>The Menu</h1>
+      <h1>Menu</h1>
+      <p class="view-intro">Tap Hear It again for another speaker.</p>
 
       <div id="fb-browse">
         <!-- Dishes vs Ingredients: two lenses on one search and one card
@@ -1451,7 +1455,7 @@
       <label><input type="radio" name="kind" value="Kudos"><span>Kudos</span></label>
       <label><input type="radio" name="kind" value="Other"><span>Other</span></label>
     </div>
-    <label class="sr-only" for="fbk-msg">Your feedback</label>
+    <label class="fbk-label" for="fbk-msg">Your Feedback</label>
     <textarea id="fbk-msg" maxlength="2000" rows="5" placeholder="What happened, or what would help?"></textarea>
     <input type="text" name="website" id="fbk-hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="fbk-hp">
     <p class="fbk-status" id="fbk-status" role="status"></p>
@@ -1564,7 +1568,7 @@ var MANUAL = [
     "Sidework is complete when the station is clean, fully stocked, organized and reset, and ready for immediate use. That same standard applies at the end of the night.",
   ] },
   { id:"uniform", title:"Uniform & Personal Appearance", body:[
-    "All team members (FOH and BOH) are provided two iara-branded t-shirts as part of their uniform.",
+    "All team members (FOH and BOH) are provided 2 iara-branded t-shirts as part of their uniform.",
     "FOH: iara t-shirt with black bottoms, closed-toe non-slip shoes, hair neat and tied back if past collar-length, minimal jewelry, natural nail length.",
     "BOH: iara t-shirt plus an iara-branded hat (also provided), closed-toe non-slip shoes, hair restrained or covered, no loose jewelry, apron worn at all times on the line.",
     "Visible tattoos and piercings are permitted as long as the content isn't offensive or explicit.",
@@ -1786,7 +1790,7 @@ var MENU_STORY = [
    },
    {
     "name": "Romeo and Juliet Martini",
-    "story": "In Brazil, \"Romeu e Julieta\" is the classic pairing of guava paste and cheese. When the team wanted an agave cocktail, Chef Vitor asked for guava and cheese, and the result is an agave martini. The base is Claridad Espadín, a mezcal Calvin wouldn't usually mix, but its minerality and clarity support the drink while letting the other ingredients' salinity and sweetness shine. We wash it with queijo minas, a fresh Brazilian cheese whose salinity carries into the spirit, and pair it with Rhine Hall guava eau de vie, which holds its own next to the mezcal. Blanc vermouth ties them together, and a touch of saline brings the cheese forward. It went from idea to finished drink in about four hours and worked on the first try."
+    "story": "In Brazil, \"Romeu e Julieta\" is the classic pairing of guava paste and cheese. When the team wanted an agave cocktail, Chef Vitor asked for guava and cheese, and the result is an agave martini. The base is Claridad Espadín, a mezcal Calvin wouldn't usually mix, but its minerality and clarity support the drink while letting the other ingredients' salinity and sweetness shine. We wash it with queijo minas, a fresh Brazilian cheese whose salinity carries into the spirit, and pair it with Rhine Hall guava eau de vie, which holds its own next to the mezcal. Blanc vermouth ties them together, and a touch of saline brings the cheese forward. It went from idea to finished drink in about 4 hours and worked on the first try."
    }
   ],
   "intro": "Calvin Czypinski keeps drinks simple and sources ingredients as close to the origin as possible. He peels the limes himself, tastes every spice before using it, makes nothing from a premix, and buys spirits from producers who show where they come from."
@@ -1802,7 +1806,7 @@ var MENU_STORY = [
    },
    {
     "name": "Luis Pato Vinha Formal Espumante",
-    "story": "Luis Pato is one of Bairrada’s leading growers, and Vinha Formal is his single vineyard in Óis do Bairro, on some of the region’s chalkiest soil. This 2019 sparkling wine comes from three native white grapes, Bical, Cerceal, and Sercial, and has fine bubbles with notes of pear and apricot.",
+    "story": "Luis Pato is one of Bairrada’s leading growers, and Vinha Formal is his single vineyard in Óis do Bairro, on some of the region’s chalkiest soil. This 2019 sparkling wine comes from 3 native white grapes, Bical, Cerceal, and Sercial, and has fine bubbles with notes of pear and apricot.",
     "group": "Sparkling"
    },
    {
@@ -1856,7 +1860,7 @@ var MENU_STORY = [
     "group": "Red"
    }
   ],
-  "intro": "General Manager Ronald Rufino, a Certified Sommelier through the Court of Master Sommeliers, built our wine and beer list. Half of the twelve wines by the glass come from Brazil, Portugal, and South America, many from small producers working with native yeast."
+  "intro": "General Manager Ronald Rufino, a Certified Sommelier through the Court of Master Sommeliers, built our wine and beer list. Half of the 12 wines by the glass come from Brazil, Portugal, and South America, many from small producers working with native yeast."
  },
  {
   "course": "Cerveja",
@@ -1915,7 +1919,7 @@ var FNB_DEFAULTS = [
   { id:"d23", category:"Cocktails", name:"Batida de Coco", price:"$18", pronunciation:"bah-CHEE-dah jee KOH-koo", speak:"Batida de Coco", desc:"Seleta Gold cachaça, cream of coconut, sweetened condensed milk, lime juice, coconut-puxuri rim.", allergens:["Coconut","Dairy"], example:false },
   { id:"d24", category:"Cocktails", name:"iara", price:"$20", pronunciation:"ee-AH-rah", speak:"iara", desc:"Pox, cupuaçu, Brazilian vanilla honey, jiquitaia tincture, Amazon spice rim. Milk-punched with coconut milk and strained clear. The restaurant's namesake cocktail.", allergens:["Coconut"], example:false },
   { id:"d25", category:"Cocktails", name:"Tucupi Martini", price:"$20", pronunciation:"too-koo-PEE", speak:"Tucupi", desc:"Amázzoni gin infused with tucupi spice, Tokki soju, preserved lemon brine, lemon twist.", allergens:[], example:false },
-  { id:"d26", category:"Cocktails", name:"Romeo and Juliet Martini", price:"$20", desc:"Mezcal, Queijo Minas–washed vermouth, guava eau de vie, blanc vermouth, Lillet, saline.", allergens:["Dairy"], example:false },
+  { id:"d26", category:"Cocktails", name:"Romeo and Juliet Martini", price:"$20", desc:"Mezcal, Queijo Minas-washed vermouth, guava eau de vie, blanc vermouth, Lillet, saline.", allergens:["Dairy"], example:false },
   { id:"d27", category:"Wine & Beer", group:"Sparkling", name:"Cave Geisse Brut Nature", price:"$20 / $100", desc:"Brazil, 2023. Chardonnay and Pinot Noir, traditional method, no added sugar.", allergens:["Sulfites"], example:false },
   { id:"d28", category:"Wine & Beer", group:"Sparkling", name:"Luis Pato Vinha Formal Espumante", price:"$25 / $125", desc:"Portugal, 2019. Bical, Cerceal, and Sercial from Bairrada.", allergens:["Sulfites"], example:false },
   { id:"d29", category:"Wine & Beer", group:"White", name:"Garzón Albariño Reserva", price:"$17 / $85", desc:"Uruguay, 2025.", allergens:["Sulfites"], example:false },
@@ -2094,7 +2098,7 @@ var QUIZ_GENERAL = [
   { q:"Who is iara's Head Bartender?", a:["Calvin Czypinski","Vitor Mendes","Daniel Babis","Tomer Blechman"], c:0 },
   { q:"Where did Calvin Czypinski start in 2020, as a back server?", a:["Miss Ada","Theodora","River Park","Dolores"], c:0 },
   { q:"Who is iara's Executive Sous Chef?", a:["Calvin Czypinski","Eli Gitelman","Vitor Mendes","Franco Sampogna"], c:1 },
-  { q:"Which restaurant did Executive Sous Chef Eli Gitelman help earn two Michelin stars within three months of opening?", a:["Le Pavillon","Restaurant Daniel","Al Coro","Foxface"], c:2 },
+  { q:"Which restaurant did Executive Sous Chef Eli Gitelman help earn 2 Michelin stars within 3 months of opening?", a:["Le Pavillon","Restaurant Daniel","Al Coro","Foxface"], c:2 },
   { q:"What is Executive Sous Chef Eli Gitelman's culinary specialty?", a:["Pastry and baking","Fermentation and wood-fire cooking","Raw bar and seafood","Pasta making"], c:1 },
   { q:"Who is iara's General Manager?", a:["Calvin Czypinski","Eli Gitelman","Ronald Rufino","Vitor Mendes"], c:2 },
   { q:"At which world-renowned working-farm restaurant did GM Ronald Rufino serve as Captain &amp; Service Manager?", a:["Blue Hill at Stone Barns","SHO Shaun Hergatt","The Finch","Frevo"], c:0 },
@@ -2108,7 +2112,7 @@ var QUIZ_GENERAL = [
   { q:"What is iara's payday schedule?", a:["Bi-weekly on Mondays","Weekly, every Friday","Monthly","Whenever payroll gets to it"], c:1 },
   { q:"What's the base FOH dress code?", a:["Bright colors encouraged","Black-on-black, wash-and-wear uniform","Formal suit and tie","All-white chef uniform"], c:1 },
   { q:"Are visible tattoos and piercings allowed at iara?", a:["Never allowed","Allowed if not offensive or explicit","Only for kitchen staff","Only with a manager's written note each shift"], c:1 },
-  { q:"What's the employee discount for dining at iara off duty?", a:["No discount","20–30% off","50% off","Free dining twice a month"], c:1 },
+  { q:"What's the employee discount for dining at iara off duty?", a:["No discount","20 to 30% off","50% off","Free dining twice a month"], c:1 },
 ];
 
 var QUIZ_GENERAL_EXTRA = [
@@ -2132,16 +2136,16 @@ var QUIZ_GENERAL_MORE = [
   { q:"What beverage does GM Ronald Rufino especially enjoy?", a:["Whiskey","Mezcal","Sake","Port wine"], c:1 },
   { q:"Where was Chef-Owner Vitor Mendes born?", a:["Rio de Janeiro","São Paulo","Parnana, Brazil","Salvador, Bahia"], c:2 },
   { q:"Where did Chef Vitor Mendes study culinary arts?", a:["Culinary Institute of America","International Culinary Center (ICC)","Institute of Culinary Education","Johnson &amp; Wales"], c:1 },
-  { q:"What personal experience shaped Chef Vitor Mendes's vision for iara?", a:["A cooking competition win","A seven-month trip to Brazil, ending in the Amazon, after his father's passing","A James Beard nomination","A collaboration with another chef"], c:1 },
+  { q:"What personal experience shaped Chef Vitor Mendes's vision for iara?", a:["A cooking competition win","A 7-month trip to Brazil, ending in the Amazon, after his father's passing","A James Beard nomination","A collaboration with another chef"], c:1 },
   { q:"Which of these restaurants is NOT part of Chef Vitor Mendes's résumé?", a:["The Modern","Chef's Table at Brooklyn Fare","Le Bernardin","The Fulton"], c:2 },
   { q:"Where must manager-approved comps always be logged?", a:["Nowhere, verbal approval is enough","In Toast","On a sticky note for the next shift","In a personal notebook"], c:1 },
-  { q:"How many free staff meals are provided per shift?", a:["None","One, kitchen-designated","Two, any item","Unlimited"], c:1 },
+  { q:"How many free staff meals are provided per shift?", a:["None","1, kitchen-designated","2, any item","Unlimited"], c:1 },
   { q:"If a guest is being aggressive or harassing toward staff, you should:", a:["Handle it yourself to avoid a scene","Alert your manager immediately and let them handle it","Ignore it and hope it stops","Ask another guest to intervene"], c:1 },
   { q:"Before pouring a VIP's welcome beverage, you should always:", a:["Just pour it, no need to check anything","Confirm with management first, and check allergies","Ask the guest their favorite spirit","Check the wine list"], c:1 },
   { q:"Where is a VIP's welcome beverage (if any) noted?", a:["Verbally to the kitchen only","On the guest chit","In a text to the GM","It's never noted anywhere"], c:1 },
   { q:"Which member of iara's leadership team holds a wine credential?", a:["Calvin Czypinski","Ronald Rufino","Eli Gitelman","Vitor Mendes"], c:1 },
   { q:"What is iara's name inspired by?", a:["A Brazilian city","A water-spirit/mermaid figure from Brazilian folklore","The chef's daughter's name","A river in Portugal"], c:1 },
-  { q:"How are iara-branded t-shirts distributed to team members?", a:["One shared shirt per station","Two per team member, provided by iara","Staff must buy their own","Only FOH receives shirts"], c:1 },
+  { q:"How are iara-branded t-shirts distributed to team members?", a:["1 shared shirt per station","2 per team member, provided by iara","Staff must buy their own","Only FOH receives shirts"], c:1 },
 ];
 
 /* ============================================================
@@ -2411,7 +2415,7 @@ function syncNavAccount(){
 }
 function switchUser(){
   confirmDialog({
-    title: "Switch user?",
+    title: "Switch User?",
     body: "This device will forget your name, your checklist and your card mastery. Your test history stays with your manager.",
     confirm: "Switch User"
   }, function(){
@@ -2424,7 +2428,7 @@ document.getElementById("sb-switch").addEventListener("click", switchUser);
 /* ============================================================
    Nav
    ============================================================ */
-var VIEW_TITLES = { home:"Home", manual:"The Manual", cleaning:"Cleaning", team:"Team", fnb:"The Menu", lore:"The Lore", study:"Study", watch:"Watch List", vibes:"Good Vibes", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
+var VIEW_TITLES = { home:"Home", manual:"Manual", cleaning:"Cleaning", team:"Team", fnb:"Menu", lore:"The Lore", study:"Study", watch:"Watch List", vibes:"Good Vibes", quiz:"Final Exam", checklist:"First Week", progress:"Admin" };
 
 /* Path routing: /lineup/<view>/<section>. A refresh, or the phone reloading
    the tab in the background, keeps your place; back works; a manager can send
@@ -2701,7 +2705,7 @@ function renderManual(){
     expandBtn.dataset.bound = "1";
     expandBtn.addEventListener("click", function(){
       manualAllOpen = !manualAllOpen;
-      expandBtn.textContent = manualAllOpen ? "Collapse all" : "Expand all";
+      expandBtn.textContent = manualAllOpen ? "Collapse All" : "Expand All";
       wrap.querySelectorAll(".accordion").forEach(function(c, i){
         if (c.hidden) return; // leave an active search filter alone
         c.classList.toggle("open", manualAllOpen || i === 0);
@@ -2723,7 +2727,7 @@ function renderTeam(){
         : '<div class="avatar">'+esc(p.initials)+'</div>') +
       '<div><h3>'+esc(p.name)+'</h3><div class="title">'+esc(p.title)+'</div>' +
       '<div class="bio-body"><p>'+p.bio+'</p>' +
-      '<button class="bio-more" aria-expanded="false">Read more</button></div>' +
+      '<button class="bio-more" aria-expanded="false">Read More<span class="sr-only"> about '+esc(p.name)+'</span></button></div>' +
       '</div></div>';
   }).join("");
   wrap.querySelectorAll(".bio-more").forEach(function(b){
@@ -2732,7 +2736,7 @@ function renderTeam(){
     body.classList.add("is-clamped");
     b.addEventListener("click", function(){
       var open = body.classList.toggle("is-open");
-      b.textContent = open ? "Show less" : "Read more";
+      b.firstChild.nodeValue = open ? "Show Less" : "Read More";
       b.setAttribute("aria-expanded", String(open));
     });
   });
@@ -2755,7 +2759,7 @@ function renderLore(){
       '<div><h3>'+esc(p.title)+'</h3>' +
       (p.subtitle ? '<div class="title">'+esc(p.subtitle)+'</div>' : '') +
       '<div class="bio-body"><p>'+p.story+'</p>' +
-      '<button class="bio-more" aria-expanded="false">Read more</button></div>' +
+      '<button class="bio-more" aria-expanded="false">Read More<span class="sr-only"> about '+esc(p.title)+'</span></button></div>' +
       '</div></div>';
   }).join("");
   wrap.querySelectorAll(".bio-more").forEach(function(b){
@@ -2763,7 +2767,7 @@ function renderLore(){
     body.classList.add("is-clamped");
     b.addEventListener("click", function(){
       var open = body.classList.toggle("is-open");
-      b.textContent = open ? "Show less" : "Read more";
+      b.firstChild.nodeValue = open ? "Show Less" : "Read More";
       b.setAttribute("aria-expanded", String(open));
     });
   });
@@ -2923,7 +2927,7 @@ function renderFbGrid(){
       '</article>';
   }).join("");
   if (fbAdminUnlocked) {
-    html += '<button class="add-dish" id="fb-add">Add an item to '+esc(fbActiveCat)+'</button>';
+    html += '<button class="add-dish" id="fb-add">Add Item to '+esc(fbActiveCat)+'</button>';
   }
   grid.innerHTML = html || (term
     ? '<div class="empty"><p class="empty-h">No match for that.</p>' +
@@ -3000,7 +3004,8 @@ function openDishForm(existing){
         '<div><label for="f-pron">Pronunciation</label>' +
         '<input id="f-pron" type="text" value="'+esc(e.pronunciation||"")+'" placeholder="pown deh KAY-zhoo"></div></div>' +
       '<div class="field"><label for="f-desc">Description</label>' +
-        '<textarea id="f-desc" rows="3" placeholder="What is in it, in a sentence a server can say to a guest.">'+esc(e.desc||"")+'</textarea></div>' +
+        '<textarea id="f-desc" rows="3" aria-describedby="f-desc-help">'+esc(e.desc||"")+'</textarea>' +
+        '<p class="field-help" id="f-desc-help">One sentence a server can say to a guest</p></div>' +
       '<div class="field"><label for="f-allerg">Allergens</label>' +
         '<input id="f-allerg" type="text" value="'+esc((e.allergens||[]).join(", "))+'" placeholder="Dairy, Gluten">' +
         '<p class="field-help">Separate with commas. Leave blank if there are none.</p></div>' +
@@ -3124,7 +3129,7 @@ async function deleteDish(item){
       await Promise.all(ops);
       await loadFbItems(); renderFbGrid();
       toast("Restored " + snapshot.name + ".");
-    } catch(err) { toast("Could not restore that item."); }
+    } catch(err) { toast("Couldn't restore that item. Try again."); }
   });
 }
 
@@ -3201,13 +3206,13 @@ function openManagerGate(onOk){
       '<p class="form-err" id="mg-err" hidden></p>' +
       '<div class="modal-actions"><span class="spacer"></span>' +
         '<button class="btn btn-ghost" id="mg-cancel">Cancel</button>' +
-        '<button class="btn btn-sun" id="mg-go">Sign in with Google</button></div></div>';
+        '<button class="btn btn-sun" id="mg-go">Sign In with Google</button></div></div>';
   document.body.appendChild(wrap);
   var goBtn = wrap.querySelector("#mg-go");
   var errEl = wrap.querySelector("#mg-err");
   goBtn.focus();
   function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
-  function fail(msg){ errEl.textContent = msg; errEl.hidden = false; goBtn.disabled = false; goBtn.textContent = "Sign in with Google"; }
+  function fail(msg){ errEl.textContent = msg; errEl.hidden = false; goBtn.disabled = false; goBtn.textContent = "Sign In with Google"; }
   async function submit(){
     errEl.hidden = true;
     goBtn.disabled = true; goBtn.textContent = "Opening Google\u2026";
@@ -3217,9 +3222,9 @@ function openManagerGate(onOk){
       onOk(u);
     } catch(e){
       if (e && e.message === "not-a-manager") {
-        fail((e.email || "That account") + " is not a manager on this app.");
+        fail((e.email || "That account") + " isn't a manager account. Sign in with your @iara.nyc manager account.");
       } else if (e && (e.code === "auth/popup-closed-by-user" || e.code === "auth/cancelled-popup-request")) {
-        fail("Sign-in was closed before it finished.");
+        fail("Sign-in was closed before it finished. Try again.");
       } else {
         fail("Could not sign in. Check the connection and try again.");
       }
@@ -3291,14 +3296,13 @@ function sayControl(name, id, speakText){
   for (var v = 1; v <= SAY_VOICES; v++) dots += '<i'+(v===1?' class="on"':'')+'></i>';
   return '<span class="say">' +
     '<button class="say-btn" data-say="'+esc(speakText)+'" data-id="'+esc(id)+'" data-v="1"' +
-      ' title="Hear a Brazilian speaker say it. Tap again for a different voice."' +
       ' aria-label="Hear ' + esc(name) + ' pronounced. Press again for another speaker.">' +
       '<svg class="say-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">' +
         '<path d="M4 9.5h3.2L12 5.2v13.6L7.2 14.5H4z"/>' +
         '<path class="w1" d="M15.4 9.4a3.6 3.6 0 0 1 0 5.2"/>' +
         '<path class="w2" d="M18 7a7 7 0 0 1 0 10"/>' +
       '</svg>' +
-      '<span class="say-txt">Hear it</span>' +
+      '<span class="say-txt">Hear It</span>' +
     '</button>' +
     '<span class="say-dots" aria-hidden="true">'+dots+'</span>' +
   '</span>';
@@ -3603,7 +3607,7 @@ function renderStudyPicker(){
   var html = '<div class="card lineup-card">' +
       '<div class="fw-head">Today\'s Lineup</div>' +
       '<p class="fw-lede">' + (ready
-        ? 'Four cards, whichever you are weakest on. Two minutes before the door opens.'
+        ? '4 cards, whichever you are weakest on. 2 minutes before the door opens.'
         : 'Nothing waiting. Everything is either solid or already counted for this shift.') + '</p>' +
       (ready ? '<button class="btn btn-sun" id="lineup-go">Run the Lineup</button>' : '') +
     '</div>';
@@ -3697,7 +3701,7 @@ function renderStudyCard(){
   var html = '<div class="card studycard">' +
     '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
       '<span class="qprog-m">'+esc(d.label)+'</span>' +
-      ' <span class="pips" title="'+esc(masteryLabel(m))+'">'+pips+'</span>'+creditedNote+'</div>' +
+      ' <span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span>'+creditedNote+'</div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
     '<h3 class="study-front">'+esc(c.front)+'</h3>' +
     (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
@@ -3741,7 +3745,7 @@ function studyCardHeader(d, c, m, mAll){
   var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
       '<span class="qprog-m">'+esc(d.label)+'</span>' +
-      ' <span class="pips" title="'+esc(masteryLabel(m))+'">'+pips+'</span>'+creditedNote+'</div>' +
+      ' <span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span>'+creditedNote+'</div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
     '<h3 class="study-front">'+esc(c.front)+'</h3>' +
     (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
@@ -3839,7 +3843,7 @@ function renderStudyDone(){
     '<div class="card result-wrap">' +
       '<div class="eyebrow">'+esc(d.label)+'</div>' +
       '<div class="result-num mono">'+pct+'%</div>' +
-      '<p class="result-note">'+(isLineup ? "right first try. " : "mastered. ")+d.right+' first try, '+d.wrong+' to revisit.</p>' +
+      '<p class="result-note">'+(isLineup ? "" : "Mastered: ")+d.right+' right first try, '+d.wrong+' to revisit.</p>' +
       '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' + actions + '</div></div>';
   var redo = document.getElementById("study-redo");
   if (redo) redo.addEventListener("click", function(){ startStudy(d.key); });
@@ -7014,7 +7018,7 @@ function renderWatchList(){
     .sort(function(a, b){ return (wlRank(a.p) - wlRank(b.p)) || (a.i - b.i); })
     .map(function(x){ return x.p; });
   var host = document.getElementById("wl-list");
-  if (!rows.length) { host.innerHTML = '<p class="wl-empty">Nobody matches that.</p>'; return; }
+  if (!rows.length) { host.innerHTML = '<p class="wl-empty">Nobody matches that. Try a shorter word.</p>'; return; }
   host.innerHTML = '<ul class="wl-grid">' + rows.map(function(p){
     var pics = wlPhotos(p), i = WL.cardPic[p.slug] || 0;
     if (i >= pics.length) i = 0;
@@ -7147,7 +7151,7 @@ function renderWatchPanel(keepScroll){
       (reviews.length ? '<div class="wl-row"><dt>Recent Reviews</dt><dd><ul class="wl-reviews"><li>'+reviews.join('</li><li>')+'</li></ul></dd></div>' : '') +
     '</dl><p class="wl-fine">' + esc(p.role) +
       (cur && cur.credit ? '. Photo: ' + esc(cur.credit) : '') +
-      ((p.sources && p.sources[0]) ? '. <a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source</a>' : '') +
+      ((p.sources && p.sources[0]) ? '. <a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source<span class="sr-only"> for '+esc(p.name)+'</span></a>' : '') +
     '</p></div>';
   if (!keepScroll) panel.scrollTop = 0;
   panel.querySelectorAll("[data-pic]").forEach(function(b){
@@ -7186,7 +7190,7 @@ function wlDeckPct(key){
 
 function renderWatchPicker(){
   var area = wlArea();
-  var html = '<h2 class="drill-head">Pick a drill</h2><div class="deck-grid">';
+  var html = '<h2 class="drill-head">Pick a Drill</h2><div class="deck-grid">';
   wlDecks().forEach(function(d){
     var pct = wlDeckPct(d.key);
     html += '<button class="deck" data-wl-deck="'+d.key+'"'+(d.cards ? '' : ' disabled')+'>' +
@@ -7216,7 +7220,7 @@ function wlHeader(d, c){
   var m = masteryOf(loadMastery(), c.id), pips = "";
   for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
-    '<span class="qprog-m">'+esc(d.label)+'</span> <span class="pips" title="'+esc(masteryLabel(m))+'">'+pips+'</span></div>' +
+    '<span class="qprog-m">'+esc(d.label)+'</span> <span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span></div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>';
 }
 
@@ -7290,7 +7294,7 @@ function renderWatchDone(){
   var d = WL.deck, pct = wlDeckPct(d.key);
   wlArea().innerHTML = '<div class="card result-wrap"><div class="eyebrow">'+esc(d.label)+'</div>' +
     '<div class="result-num mono">'+pct+'%</div>' +
-    '<p class="result-note">mastered. '+d.right+' first try, '+d.wrong+' to revisit.</p>' +
+    '<p class="result-note">Mastered: '+d.right+' right first try, '+d.wrong+' to revisit.</p>' +
     '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
     '<button class="btn btn-sun" id="wl-redo">Drill Again</button>' +
     '<button class="btn btn-ghost" id="wl-decks">Pick Another Drill</button></div></div>';
@@ -7351,22 +7355,24 @@ function vibeDate(d){
   var days = Math.round((Date.now() - t) / 86400000);
   if (days <= 0) return "Today";
   if (days === 1) return "Yesterday";
-  if (days < 7) return days + " days ago";
-  return t.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+  var abs = t.toLocaleDateString(undefined, { month:"short", day:"numeric" });
+  if (days < 7) return days + " days ago, " + abs;
+  return abs;
 }
 function vibeStars(n){ n = Math.max(0, Math.min(5, n || 0)); return n ? '<div class="vb-stars" aria-label="'+n+' out of 5 stars">'+"★".repeat(n)+'</div>' : ''; }
 
 function vibeCard(v, seen){
   var isNew = vibeStamp(v) > seen;
-  var tag = isNew ? '<span class="vb-new">NEW</span>' : '';
+  var tag = isNew ? '<span class="vb-new">New</span>' : '';
   var url = safeUrl(v.url), img = safeUrl(v.image);
   var open = url ? '<a class="vb-link" href="'+esc(url)+'" target="_blank" rel="noopener">' : '<div class="vb-link">';
   var close = url ? '<span class="sr-only"> (opens in a new tab)</span></a>' : '</div>';
   var when = vibeDate(v.date);
+  var whenH = when ? '<time datetime="'+esc(v.date)+'">'+esc(when)+'</time>' : '';
   if (v.type === "press") {
     return '<article class="vb-card vb-press">'+tag+open+
       (img ? '<div class="vb-press-img"><img src="'+esc(img)+'" alt="" loading="lazy"></div>' : '') +
-      '<div class="vb-badge">'+esc(v.source || "Press")+(when ? ' &middot; '+esc(when) : '')+'</div>' +
+      '<div class="vb-badge">'+esc(v.source || "Press")+(when ? ' &middot; '+whenH : '')+'</div>' +
       '<h3 class="vb-press-title">'+esc(v.title || "")+'</h3>' +
       (v.text ? '<p class="vb-txt">'+esc(v.text)+'</p>' : '') + close + '</article>';
   }
@@ -7374,14 +7380,14 @@ function vibeCard(v, seen){
     return '<article class="vb-card vb-polaroid">'+tag+open+
       (img ? '<div class="vb-ph"><img src="'+esc(img)+'" alt="'+esc(v.alt || "")+'" loading="lazy"></div>' : '') +
       (v.text ? '<p class="vb-cap">'+esc(v.text)+'</p>' : '') +
-      '<div class="vb-who">'+esc(v.author || "")+(v.source ? ' &middot; '+esc(v.source) : '')+(when ? ' &middot; '+esc(when) : '')+'</div>' + close + '</article>';
+      '<div class="vb-who">'+esc(v.author || "")+(v.source ? ' &middot; '+esc(v.source) : '')+(when ? ' &middot; '+whenH : '')+'</div>' + close + '</article>';
   }
   if (v.type === "shoutout") {
-    return '<article class="vb-card vb-shout">'+tag+'<div class="vb-badge">Team shoutout</div>' +
-      '<p class="vb-txt">'+esc(v.text || "")+'</p><div class="vb-who">'+(v.author ? 'From '+esc(v.author) : '')+(when ? ' &middot; '+esc(when) : '')+'</div></article>';
+    return '<article class="vb-card vb-shout">'+tag+'<div class="vb-badge">Team Shoutout</div>' +
+      '<p class="vb-txt">'+esc(v.text || "")+'</p><div class="vb-who">'+(v.author ? 'From '+esc(v.author) : '')+(when ? ' &middot; '+whenH : '')+'</div></article>';
   }
-  return '<article class="vb-card vb-review">'+tag+open+'<div class="vb-badge">'+esc(v.source || "Review")+' review</div>'+vibeStars(v.stars)+
-    '<p class="vb-txt">'+esc(v.text || "")+'</p><div class="vb-who">'+esc(v.author || "")+(when ? ' &middot; '+esc(when) : '')+'</div>'+close+'</article>';
+  return '<article class="vb-card vb-review">'+tag+open+'<div class="vb-badge">'+esc(v.source || "Review")+' Review</div>'+vibeStars(v.stars)+
+    '<p class="vb-txt">'+esc(v.text || "")+'</p><div class="vb-who">'+esc(v.author || "")+(when ? ' &middot; '+whenH : '')+'</div>'+close+'</article>';
 }
 
 function renderVibes(){
@@ -7392,9 +7398,9 @@ function renderVibes(){
   var weekAgo = new Date(Date.now() - 7*86400000).toISOString().slice(0,10);
   var count = function(t, recent){ return VIBES.filter(function(v){ return v.type === t && (!recent || (v.date || "") >= weekAgo); }).length; };
   var stats = [
-    [count("review", true), "5-star reviews this week"],
-    [count("instagram"), "posts about iara"],
-    [count("press"), "press features"]
+    [count("review", true), "5-Star Reviews This Week"],
+    [count("instagram"), "Posts About iara"],
+    [count("press"), "Press Features"]
   ].filter(function(x){ return x[0]; });
   var heroes = VIBES.filter(function(v){ return v.featured; });
   var present = VIBE_TYPES.filter(function(t){ return VIBES.some(function(v){ return v.type === t[0]; }); });
@@ -7418,7 +7424,7 @@ function renderVibes(){
       el.style.backgroundImage = img ? 'linear-gradient(100deg, rgba(57,29,31,.95) 30%, rgba(57,29,31,.55)), url("'+img.replace(/"/g, "")+'")' : '';
       el.innerHTML = '<div class="vb-hero-kicker">'+(h.type === "press" ? esc(h.source) : (h.stars ? "★".repeat(h.stars)+" " : "")+esc(h.source || ""))+'</div>' +
         '<div class="vb-hero-q">'+esc(h.type === "press" ? h.title : (h.pull || h.text))+'</div>' + (h.author ? '<div class="vb-hero-by">'+esc(h.author)+'</div>' : '') +
-        (url ? '<a class="vb-hero-link" href="'+esc(url)+'" target="_blank" rel="noopener">Read it<span class="sr-only"> (opens in a new tab)</span></a>' : '') +
+        (url ? '<a class="vb-hero-link" href="'+esc(url)+'" target="_blank" rel="noopener">Read the Article<span class="sr-only"> (opens in a new tab)</span></a>' : '') +
         (heroes.length > 1 ? '<div class="vb-hero-dots">'+heroes.map(function(_, i){ return '<i class="'+(i === vibesHeroIdx % heroes.length ? 'on' : '')+'"></i>'; }).join('')+'</div>' : '');
     };
     paint();
@@ -7460,7 +7466,7 @@ document.addEventListener("visibilitychange", function(){ if (!document.hidden) 
       body: JSON.stringify({ kind: kind, message: text, name: profile ? profile.name : "", role: profile ? profile.role : "",
         page: location.pathname, website: document.getElementById("fbk-hp").value })
     }).then(function(r){ if (!r.ok) throw new Error(r.status); return r.json(); }).then(function(){
-      msg.value = ""; close(); toast("Sent. Thank you!");
+      msg.value = ""; close(); toast("Feedback sent. Thank you.");
     }).catch(function(){
       send.disabled = false; status.textContent = "Could not send. Check your signal and try again.";
     });
@@ -7488,7 +7494,7 @@ var CHECKLIST = [
     { id:"toast-login", label:"Log in to Toast and set your own password",
       help:"Toast locks the login email once the account is active, so tell your manager straight away if the address is wrong." },
     { id:"uniform", label:"Pick up your iara t-shirts",
-      help:"Front and back of house are both provided two." },
+      help:"Front and back of house each get 2." },
     { id:"lineup-app", label:"Add this app to your phone home screen",
       help:"Open it in your browser, press Share, then Add to Home Screen. It works offline once installed." },
     { id:"email-sig", label:"Set up your email signature",
@@ -7617,8 +7623,8 @@ async function renderChecklist(){
           '</span>' +
         '</label>' +
         (it.help ? '<p class="cl-help">'+esc(it.help)+
-          (it.href ? ' <a href="'+esc(it.href)+'" target="_blank" rel="noopener">Open</a>' : '')+'</p>'
-          : (it.href ? '<p class="cl-help"><a href="'+esc(it.href)+'" target="_blank" rel="noopener">Open</a></p>' : '')) +
+          (it.href ? ' <a href="'+esc(it.href)+'" target="_blank" rel="noopener">Open<span class="sr-only"> '+esc(it.label)+'</span></a>' : '')+'</p>'
+          : (it.href ? '<p class="cl-help"><a href="'+esc(it.href)+'" target="_blank" rel="noopener">Open<span class="sr-only"> '+esc(it.label)+'</span></a></p>' : '')) +
         '</div>';
     });
     html += '</div>';
@@ -7822,7 +7828,7 @@ var QUIZ_BEVERAGE = [
   { q:"What tropical Amazonian fruit stars in the \"iara\" cocktail?", a:["Guava","Cupuaçu","Passion fruit","Pineapple"], c:1 },
   { q:"What agave spirit from Chiapas, Mexico appears in the \"iara\" cocktail?", a:["Mezcal","Pox","Tequila","Raicilla"], c:1 },
   { q:"What Amazonian pepper blend is added as a tincture to the \"iara\" cocktail for heat?", a:["Puxuri","Jiquitaia","Jambu","Guaraná"], c:1 },
-  { q:"What two clear spirits are shaken together in the Tucupi Martini?", a:["Vodka and sake","Gin and soju","Tequila and shochu","Rum and soju"], c:1 },
+  { q:"What 2 clear spirits are shaken together in the Tucupi Martini?", a:["Vodka and sake","Gin and soju","Tequila and shochu","Rum and soju"], c:1 },
   { q:"What Amazonian ingredient lends its name and tang to the Tucupi Martini, via an infused gin?", a:["Cassava","Tucupi","Jambu","Farofa"], c:1 },
   { q:"What briny ingredient rounds out the Tucupi Martini?", a:["Olive brine","Preserved lemon brine","Caper brine","Pickle brine"], c:1 },
   { q:"What Brazilian cheese is featured in the Romeo and Juliet Martini?", a:["Requeijão","Queijo Minas","Catupiry","Coalho"], c:1 },
@@ -7831,7 +7837,7 @@ var QUIZ_BEVERAGE = [
   { q:"Which classic pairing does the \"Romeo and Juliet Martini\" riff on?", a:["Wine and cheese","Guava and cheese (\"Romeu e Julieta\")","Chocolate and chili","Citrus and salt"], c:1 },
   { q:"How does iara's menu suggest guests taste cachaça on its own?", a:["Only blended into a smoothie","Neat, on ice, or mixed into a caipirinha","Only as a shot with salt and lime","Warmed, like a digestif"], c:1 },
   { q:"How is cachaça made, per iara's menu?", a:["Distilled from fermented grain mash","By juicing sugarcane, then fermenting and distilling it","Brewed and filtered like beer","Fermented from grapes, like brandy"], c:1 },
-  { q:"Which two listed cocktails should you steer a coconut-allergic guest away from?", a:["Classic Caipirinha and Tucupi Martini","Batida de Coco and iara","Tucupi Martini and Romeo and Juliet Martini","iara and Classic Caipirinha"], c:1 },
+  { q:"Which 2 listed cocktails should you steer a coconut-allergic guest away from?", a:["Classic Caipirinha and Tucupi Martini","Batida de Coco and iara","Tucupi Martini and Romeo and Juliet Martini","iara and Classic Caipirinha"], c:1 },
   { q:"Before recommending a cocktail to a guest who has stated an allergy, you should:", a:["Guess based on the name","Check the drink's listed allergens, and ask a manager if unsure","Recommend the most popular drink anyway","Tell them all cocktails are allergen-free"], c:1 },
 ];
 
@@ -8017,7 +8023,7 @@ function renderQuizResult(){
   var pct = Math.round((aq.score / aq.questions.length) * 100);
   saveQuizAttempt(QUIZ_META[aq.key].name, aq.score, aq.questions.length, aq.missed).then(refreshHomeStats);
   // Dry, specific, no confetti. The brand voice does not cheer.
-  var verdict = pct === 100 ? "Clean" : pct >= 80 ? "Passed" : pct >= 60 ? "Close" : "Run it again";
+  var verdict = pct === 100 ? "Clean" : pct >= 80 ? "Passed" : pct >= 60 ? "Close" : "Run It Again";
   var note = pct === 100 ? "Every one. Go again tomorrow so it sticks."
            : pct >= 80  ? "Good enough for the floor. The misses are worth a second pass."
            : pct >= 60  ? "Nearly. Study the deck for the ones you dropped, then come back."
@@ -8025,7 +8031,7 @@ function renderQuizResult(){
   var area = document.getElementById("quiz-area");
   var review = "";
   if (aq.missed.length) {
-    review = '<div class="misses"><h3>What to go over</h3><ol>' +
+    review = '<div class="misses"><h3>What to Go Over</h3><ol>' +
       aq.missed.map(function(m){
         return '<li><p class="miss-q">'+esc(m.q)+'</p>' +
           '<p class="miss-a"><span>Answer</span> '+esc(m.right)+'</p>' +
@@ -8094,7 +8100,7 @@ async function renderProgress(){
     area.innerHTML = '<div class="card pin-gate">' +
       '<h3 style="margin-top:0;">Manager Access</h3>' +
       '<p class="placeholder-note" style="margin-bottom:14px;">Sign in with your iara Google account to see team-wide progress.</p>' +
-      '<button class="btn btn-primary" id="pg-unlock">Sign in with Google</button></div>';
+      '<button class="btn btn-primary" id="pg-unlock">Sign In with Google</button></div>';
     var unlock = function(){ openManagerGate(function(){ progressUnlocked = true; renderProgress(); }); };
     document.getElementById("pg-unlock").addEventListener("click", unlock);
     // Signed in already: go straight through. Otherwise the card above is
@@ -8106,7 +8112,7 @@ async function renderProgress(){
     area.innerHTML = '<p class="placeholder-note">Team progress needs the app\'s shared database, which isn\'t available in this preview.</p>';
     return;
   }
-  area.innerHTML = '<div class="k-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading\u2026</span><div class="k-skeleton k-skel-title"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div></div>';
+  area.innerHTML = '<div class="k-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading team progress\u2026</span><div class="k-skeleton k-skel-title"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div></div>';
   try {
     var CATS = Object.keys(QUIZ_META).map(function(k){ return { key:k, name:QUIZ_META[k].name }; });
     var staffSnap = await (adminDb || db).collection("staff").orderBy("name").get();
@@ -8146,7 +8152,7 @@ async function renderProgress(){
       });
     }
     if (!rows.length) {
-      area.innerHTML = '<p class="placeholder-note">No staff have opened the hub yet.</p>';
+      area.innerHTML = '<p class="placeholder-note">No one has opened Lineup yet.</p>';
       return;
     }
 
@@ -8158,7 +8164,7 @@ async function renderProgress(){
     // ---- header: signed in as, sign out ----
     var html = '<div class="admin-head">' +
         '<p class="mg-who">Signed in as <span class="mono">'+esc(adminUser ? adminUser.email : "")+'</span></p>' +
-        '<button class="jump-link" id="mg-out">Sign out</button>' +
+        '<button class="jump-link" id="mg-out">Sign Out</button>' +
       '</div>';
 
     // ---- summary strip: the four numbers a manager actually wants first ----
@@ -8169,8 +8175,8 @@ async function renderProgress(){
     html += '<div class="sc-stats admin-stats">' +
       '<div><span class="num mono">'+rows.length+'</span><span class="lbl">Team</span></div>' +
       '<div><span class="num mono">'+onboarded+'/'+rows.length+'</span><span class="lbl">Onboarded</span></div>' +
-      '<div><span class="num mono">'+(teamAvg===null?'None':teamAvg+'%')+'</span><span class="lbl">Team test average</span></div>' +
-      '<div><span class="num mono">'+activeWeek+'/'+rows.length+'</span><span class="lbl">Active this week</span></div>' +
+      '<div><span class="num mono">'+(teamAvg===null?'None':teamAvg+'%')+'</span><span class="lbl">Team Test Average</span></div>' +
+      '<div><span class="num mono">'+activeWeek+'/'+rows.length+'</span><span class="lbl">Active This Week</span></div>' +
     '</div>';
 
     // ---- needs a nudge: incomplete onboarding that has had time to finish,
@@ -8182,14 +8188,14 @@ async function renderProgress(){
       return stuck || quiet;
     }).sort(function(a,b){ return (b.lastDays||0) - (a.lastDays||0); });
     if (nudge.length) {
-      html += '<h2 class="admin-h2">Needs a nudge</h2>' +
+      html += '<h2 class="admin-h2">Needs a Nudge</h2>' +
         '<div class="card"><ul class="nudge-list">' + nudge.map(function(r){
           var bits = [];
           if (!r.clComplete && r.hireDays !== null && r.hireDays >= 7) {
             bits.push((r.clTotal ? r.clDone+' of '+r.clTotal : 'First Week') + ' after '+r.hireDays+' days');
           }
           if (r.lastDays !== null && r.lastDays >= 14) bits.push('quiet '+r.lastDays+' days');
-          if (r.lastDays === null) bits.push('never opened the hub');
+          if (r.lastDays === null) bits.push('never opened Lineup');
           return '<li><span class="nudge-name">'+esc(r.name)+'</span>' +
             '<span class="nudge-role placeholder-note">'+esc(r.role||"")+'</span>' +
             '<span class="nudge-why">'+esc(bits.join(' \u00b7 '))+'</span></li>';
@@ -8201,7 +8207,7 @@ async function renderProgress(){
       .map(function(m){ m.people = Object.keys(m.who).length; return m; })
       .sort(function(a,b){ return b.n - a.n || b.people - a.people; })
       .slice(0, 8);
-    html += '<h2 class="admin-h2">What the team keeps missing</h2>';
+    html += '<h2 class="admin-h2">What the Team Keeps Missing</h2>';
     if (!misses.length) {
       html += '<p class="placeholder-note">Nothing yet. This fills in as the team runs tests.</p>';
     } else {
@@ -8217,8 +8223,8 @@ async function renderProgress(){
     // ---- full roster ----
     progressRows = rows;
     progressCats = CATS;
-    html += '<h2 class="admin-h2">Whole team</h2>' +
-      '<p class="placeholder-note" style="margin-bottom:10px;">Each test section shows average score across attempts, with the number of attempts in parentheses. Click a column to sort.</p>' +
+    html += '<h2 class="admin-h2">Whole Team</h2>' +
+      '<p class="placeholder-note" style="margin-bottom:10px;">Each test section shows average score across attempts, with the number of attempts in parentheses. Select a column to sort.</p>' +
       '<div id="progress-table-wrap"></div>';
 
     area.innerHTML = html;
@@ -8228,7 +8234,7 @@ async function renderProgress(){
   } catch(e) {
     area.innerHTML = '<p class="placeholder-note">Couldn\'t load team progress right now. ' +
       'If you have just been added as a manager, sign out and back in.</p>' +
-      '<p><button class="jump-link" id="mg-out">Sign out</button></p>';
+      '<p><button class="jump-link" id="mg-out">Sign Out</button></p>';
     var o2 = document.getElementById("mg-out");
     if (o2) o2.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
   }
@@ -8270,7 +8276,7 @@ function renderProgressTable(){
   var catHeaders = progressCats.map(function(c){ return th(c.key, c.name, true); }).join("");
   var html = '<div class="table-wrap"><table class="progress"><thead><tr>' +
     th("name", "Name") + th("role", "Role") + th("onboarding", "Onboarding", true) +
-    catHeaders + th("overall", "Overall", true) + th("last", "Last active", true) +
+    catHeaders + th("overall", "Overall", true) + th("last", "Last Active", true) +
     '<th></th>' +
     '</tr></thead><tbody>';
   rows.forEach(function(r){
@@ -8391,8 +8397,8 @@ if (window.claude && window.claude.hot) {
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
   {label:'Open Home', keywords:'lineup start dashboard', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="home"]'); if(b) b.click(); }},
   {label:'Open Good Vibes', keywords:'lineup reviews press love', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="vibes"]'); if(b) b.click(); }},
-  {label:'Open The Manual', keywords:'lineup service handbook', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="manual"]'); if(b) b.click(); }},
-  {label:'Open The Menu', keywords:'lineup food drinks dishes pronunciation', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="fnb"]'); if(b) b.click(); }},
+  {label:'Open Manual', keywords:'lineup service handbook', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="manual"]'); if(b) b.click(); }},
+  {label:'Open Menu', keywords:'lineup food drinks dishes pronunciation', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="fnb"]'); if(b) b.click(); }},
   {label:'Open Cleaning', keywords:'lineup checklist', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="cleaning"]'); if(b) b.click(); }},
   {label:'Open Watch List', keywords:'lineup vip guests press', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="watch"]'); if(b) b.click(); }},
   {label:'Open Team', keywords:'lineup staff people', run:function(){ var b=document.querySelector('.sidebar .nav-btn[data-view="team"]'); if(b) b.click(); }},
