@@ -23,19 +23,34 @@
 .k-nav a:hover, .k-nav button:hover { color: var(--k-ink); background: var(--k-raised); }
 .k-nav [aria-current="page"] { color: var(--k-ink); font-weight: 700; }
 
-/* Buttons */
-.k-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: var(--k-tap); padding: 0 16px; border-radius: var(--k-radius); border: 1px solid transparent; font: 600 15px/1 var(--k-font-sans); cursor: pointer; text-decoration: none; transition: background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease); }
-.k-btn:active { transform: translateY(1px); }
-.k-btn:disabled { cursor: not-allowed; background: var(--k-raised); color: var(--k-muted); border-color: transparent; }
+/* Buttons: ONE button (Jay, 2026-10-13). Never hand-roll a button: use .k-btn + a variant + optional size.
+   Pixel-identical to next/ui/button.tsx: 40 default / 32 sm / 44 lg, 8px radius, 600 14px (lg 15px),
+   2px ring outline offset 2, real-token hover and disabled. Below 1024px every size is at least 44px tall. */
+.k-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; box-sizing: border-box; min-height: 40px; padding: 0 16px; border-radius: var(--k-radius); border: 1px solid transparent; background: none; color: var(--k-ink); font: 600 14px/1 var(--k-font-sans); white-space: nowrap; cursor: pointer; text-decoration: none; user-select: none; transition: background-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease); }
+.k-btn svg { flex: none; width: 16px; height: 16px; pointer-events: none; }
+.k-btn:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+.k-btn:active:not(:disabled) { transform: translateY(1px); }
+.k-btn:disabled, .k-btn[aria-disabled="true"] { cursor: not-allowed; pointer-events: none; background: var(--k-raised); color: var(--k-muted); border-color: transparent; }
 .k-btn-primary { background: var(--k-primary); color: var(--k-primary-ink); }
-.k-btn-primary:hover:not(:disabled) { background: var(--k-primary-hover); }
+.k-btn-primary:hover { background: var(--k-primary-hover); }
 .k-btn-secondary { background: var(--k-raised); color: var(--k-ink); border-color: var(--k-border); }
-.k-btn-secondary:hover:not(:disabled) { background: var(--k-raised-hover); }
+.k-btn-secondary:hover { background: var(--k-raised-hover); }
+.k-btn-outline { background: none; color: var(--k-ink); border-color: var(--k-border-input); }
+.k-btn-outline:hover, .k-btn-outline[aria-expanded="true"] { background: var(--k-raised); }
 .k-btn-ghost { background: none; color: var(--k-ink); }
-.k-btn-ghost:hover:not(:disabled) { background: var(--k-raised); }
+.k-btn-ghost:hover, .k-btn-ghost[aria-expanded="true"] { background: var(--k-raised); }
 .k-btn-danger { background: var(--k-raised); color: var(--k-critical); border-color: var(--k-critical); }
-.k-btn-sm { min-height: 36px; padding: 0 12px; font-size: 14px; }
-@media (pointer: coarse) { .k-btn-sm { min-height: var(--k-tap); } }
+.k-btn-danger:hover { background: var(--k-raised-hover); }
+.k-btn-link { background: none; color: var(--k-accent-text); padding: 0 4px; text-underline-offset: 4px; }
+.k-btn-link:hover { text-decoration: underline; }
+.k-btn-sm { min-height: 32px; padding: 0 12px; }
+.k-btn-sm svg { width: 14px; height: 14px; }
+.k-btn-lg { min-height: 44px; padding: 0 20px; font-size: 15px; }
+.k-btn-icon { padding: 0; min-width: 40px; }
+.k-btn-icon.k-btn-sm { min-width: 32px; }
+.k-btn-icon.k-btn-lg { min-width: 44px; }
+.k-btn-block { width: 100%; }
+@media (pointer: coarse), (max-width: 1023px) { .k-btn { min-height: var(--k-tap); } .k-btn-icon { min-width: var(--k-tap); } }
 
 /* Badges (status, square-ish) and chips (filters, pill) */
 .k-badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: var(--k-radius-sm); font: 600 12px/1.4 var(--k-font-sans); background: var(--k-raised); color: var(--k-ink); font-variant-numeric: tabular-nums; }
@@ -73,7 +88,7 @@
 .k-alert { padding: 12px 14px; border-radius: var(--k-radius); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font-size: 14px; }
 .k-skeleton { border-radius: var(--k-radius); background: var(--k-raised); animation: k-pulse 1.5s ease-in-out infinite; }
 @keyframes k-pulse { 50% { background: var(--k-raised-hover); } }
-@media (prefers-reduced-motion: reduce) { .k-skeleton { animation: none; } .k-btn, .k-chip { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .k-skeleton { animation: none; } .k-btn, .k-chip { transition: none; } .k-btn:active { transform: none; } }
 
 /* Sign-in gate */
 .k-gate { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }
@@ -139,15 +154,17 @@
 .k-appbar-mark { display: inline-flex; align-items: center; min-height: var(--k-tap); padding: 0 4px; border-radius: var(--k-radius); flex: none; }
 .k-appbar-mark img { width: var(--k-lockup-mark); height: auto; display: block; }
 .k-appbar-mark:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
-.k-appbar-title { display: inline-flex; align-items: center; min-height: var(--k-tap); padding: 0 12px 0 8px; color: var(--k-display); flex: none; }
+.k-appbar-title { display: inline-flex; align-items: center; min-height: var(--k-tap); padding: 0 12px 0 8px; color: var(--k-display); flex: none; }  /* 12px to the divider, mirrored by the 12px after it */
 .k-appbar-spacer { flex: 1; min-width: 4px; }
 .k-roll { position: relative; display: inline-block; overflow: hidden; height: 1.3em; line-height: 1.3em; vertical-align: middle; white-space: nowrap; font-family: "Fraunces", Georgia, serif; font-style: italic; font-size: var(--k-lockup-word); }
 .k-roll > span { display: block; }
 .k-roll > .k-roll-out { position: absolute; left: 0; top: 0; }
 
 /* App tabs */
-.k-apptabs { display: flex; align-items: center; gap: 2px; min-width: 0; padding-left: 12px; border-left: 1px solid var(--k-border); }
-.k-apptab { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 10px; border-radius: var(--k-radius); color: var(--k-muted); font: 600 14px/1 var(--k-font-sans); text-decoration: none; white-space: nowrap; transition: background-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease); }
+/* Spacing (Jay, 2026-10-13: "not right"): one 4px gap between every pill (same as .k-tabs), 12px inside each pill,
+   and the divider sits with 12px on both sides (title slot padding | divider | first pill). */
+.k-apptabs { display: flex; align-items: center; gap: 4px; min-width: 0; padding-left: 12px; border-left: 1px solid var(--k-border); }
+.k-apptab { display: inline-flex; align-items: center; gap: 4px; min-height: 36px; padding: 0 12px; border-radius: var(--k-radius); color: var(--k-muted); font: 600 14px/1 var(--k-font-sans); text-decoration: none; white-space: nowrap; transition: background-color var(--k-fast) var(--k-ease), color var(--k-fast) var(--k-ease); }
 .k-apptab:hover { color: var(--k-ink); background: var(--k-raised); }
 .k-apptab:active { transform: scale(0.98); }
 .k-apptab:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
@@ -162,7 +179,7 @@
 @media (max-width: 1099px) {
   :root { --k-appbar-h: 107px; }
   .k-appbar-inner { padding: 8px 12px 6px; }
-  .k-apptabs { order: 10; flex-basis: 100%; padding: 4px 0 0; border-left: 0; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
+  .k-apptabs { order: 10; flex-basis: 100%; padding: 4px 0 0; margin-left: -8px; border-left: 0; overflow-x: auto; scrollbar-width: none; -webkit-mask-image: linear-gradient(90deg, #000 90%, transparent); mask-image: linear-gradient(90deg, #000 90%, transparent); }
   .k-apptabs::-webkit-scrollbar { display: none; }
   :root[data-k-nav="solo"] { --k-appbar-h: 61px; }
 }
@@ -190,8 +207,21 @@
 @media (prefers-reduced-motion: reduce) { .k-menu-list { animation: none; } .k-apptab { transition: none; } }
 
 /* App subtitle: one plain line under the bar saying what the app does (text lives in nav.js / staff-bar.tsx). */
-.k-app-sub { margin: 0 0 16px; color: var(--k-muted); font: 400 15px/1.4 var(--k-font-sans); text-wrap: pretty; }
-.k-app-sub-row { max-width: var(--k-content-max); margin: 16px auto 4px; padding: 0 16px; box-sizing: border-box; }
+.k-app-sub { margin: 0 0 16px; padding: 0; color: var(--k-muted); font: 400 15px/1.4 var(--k-font-sans); text-wrap: pretty; }
+.k-app-sub-row { max-width: var(--k-content-max); margin: 16px auto 4px; padding: 0 16px; box-sizing: border-box; } /* legacy, prefer .k-page */
+
+/* Page frame (Jay, 2026-10-13): every manager app's content sits in .k-page, which lines up with
+   the app bar: same max width as .k-appbar-inner, and its content edge is the iara mark's left edge
+   (bar side padding + the mark's 4px inset) at every breakpoint. The subtitle is always its first
+   child, so it sits the same distance under the bar in every app.
+   Static: <main class="k-page"><p data-k-subtitle></p> ...</main>.  Next: <PageShell home="/inbox">. */
+:root { --k-page-x: 20px; }
+@media (max-width: 1099px) { :root { --k-page-x: 16px; } }
+@media (max-width: 479px) { :root { --k-page-x: 12px; } }
+.k-page { display: block; width: 100%; max-width: var(--k-content-max); margin: 0 auto; padding: 24px var(--k-page-x) 64px; box-sizing: border-box; min-width: 0; }
+.k-page > .k-app-sub:first-child, .k-page > [data-k-subtitle]:first-child { margin: 0 0 16px; padding: 0; max-width: none; text-align: left; }
+.k-page-bleed { margin-left: calc(-1 * var(--k-page-x)); margin-right: calc(-1 * var(--k-page-x)); padding-left: var(--k-page-x); padding-right: var(--k-page-x); } /* rows that span the frame */
+@media (max-width: 767px) { .k-page { padding-top: 16px; } }
 
 /* Tooltip (tip.js): supplementary text on hover, focus and tap. WCAG 1.4.13. */
 .k-tip { position: fixed; z-index: 3000; max-width: min(260px, calc(100vw - 16px)); box-sizing: border-box; padding: 8px 10px; border-radius: var(--k-radius-lg); background: var(--k-raised); color: var(--k-ink); border: 1px solid var(--k-border); box-shadow: 0 8px 24px rgb(0 0 0 / .4); font: 400 13px/1.4 var(--k-font-sans); white-space: pre-line; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; text-align: left; animation: k-tip-in var(--k-fast) var(--k-ease); }
@@ -231,7 +261,8 @@
 }
 @keyframes k-title-out { to { transform: translateY(-110%); } }
 @keyframes k-title-in { from { transform: translateY(110%); } }
-@media (min-width: 1100px) { .k-appbar-title { width: 8.4em; box-sizing: content-box; } }
+/* Slot = the longest name ("Private Dining", 6.55em in Fraunces italic) so the divider hugs it and never moves. */
+@media (min-width: 1100px) { .k-appbar-title { width: 6.6em; box-sizing: content-box; } }
 /* The account slot always takes the avatar's width, so Search sits in the same spot in every app,
    with or without a signed-in account (the bar must not shift between apps). */
 .k-acct-slot { display: inline-flex; align-items: center; justify-content: center; min-width: var(--k-tap); }

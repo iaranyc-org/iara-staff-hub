@@ -18,7 +18,7 @@
   // Manager app tabs, in order (keep identical to TABS in next/staff-bar.tsx). `title` is the
   // rolling name shown by the logo. Lineup is a separate staff app: it opens in a new tab.
   var APPS = [
-    { label: "Home", title: "Staff Home", href: "/", sub: "Every iara staff tool in one place." },
+    { label: "Home", title: "iara Staff", href: "/", sub: "Every iara staff tool in one place." },
     { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders." },
     { label: "Analytics", title: "Analytics", href: "/analytics", sub: "See how fast we answer guests and how bookings are going." },
     { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send." },

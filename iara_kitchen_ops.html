@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
-<script src="/kit/nav.js" defer></script>
+<script src="/kit/nav.js" defer blocking="render"></script>
 <script src="/kit/tip.js" defer></script>
 <script src="/kit/confirm.js" defer></script>
 <style>
@@ -100,42 +100,46 @@
   .sync-chip{display:flex; align-items:center; gap:6px; font-size:12px; color:var(--ink-muted); flex:none; white-space:nowrap;}
   .sync-dot{width:7px; height:7px; border-radius:50%; background:var(--good); flex:none;}
   .sync-dot.off{background:var(--ink-muted);}
-  @media (max-width:480px){
+  /* The section tabs get the room below 1100px: date hides, sync status goes short. */
+  @media (max-width:1099px){
     .sync-chip .sync-label-full{display:none;}
     .sync-chip .sync-label-short{display:inline;}
     .today-label{display:none;}
   }
-  @media (min-width:481px){
+  @media (min-width:1100px){
     .sync-chip .sync-label-short{display:none;}
   }
 
-  /* Sticky section tabs sit directly under the sticky kit app bar
-     (60px tall, plus any safe-area inset beyond its own 8px padding). */
+  /* Sticky section tabs: inside the kit page frame (.k-page), directly under the sticky app bar.
+     Its contents line up with the frame (and the bar's iara mark); the ground and the bottom rule
+     run full width so nothing scrolls past at the sides. One row at every width: the tabs scroll
+     sideways when they don't fit, the sync status stays pinned right. */
   .tabs-bar{
     position:sticky; top:calc(var(--k-appbar-h) + max(0px, env(safe-area-inset-top,0px) - 8px)); z-index:19;
-    display:flex; align-items:center; gap:8px 12px; flex-wrap:wrap;
-    background:var(--page); border-bottom:1px solid var(--border); padding:8px 16px;
+    display:flex; align-items:center; gap:12px; margin:0 0 20px; padding:8px 0;
+    /* full-width ground + 1px bottom rule via shadows (shadows never add page scroll) */
+    background:var(--page); box-shadow:0 0 0 100vmax var(--page), 0 1px 0 100vmax var(--border); clip-path:inset(0 -100vmax -1px -100vmax);
   }
   nav.tabs{
-    display:flex; width:fit-content; max-width:100%; gap:4px; padding:4px; overflow-x:auto; scrollbar-width:none;
+    display:flex; flex:0 1 auto; min-width:0; gap:4px; padding:4px; overflow-x:auto; scrollbar-width:none;
     border-radius:var(--k-radius-lg); background:var(--k-surface); border:1px solid var(--k-border);
   }
   nav.tabs::-webkit-scrollbar{display:none;}
-  /* Scroll cue: fade the trailing edge while more tabs sit off-screen
-     (class toggled from JS on scroll/resize). Tablets wrap instead. */
+  /* Scroll cue: fade the trailing edge while more tabs sit off-screen (class toggled from JS). */
   nav.tabs.more-right{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent); mask-image:linear-gradient(90deg,#000 calc(100% - 48px),transparent);}
-  @media (min-width:641px){ nav.tabs{flex-wrap:wrap; overflow-x:visible;} nav.tabs.more-right{-webkit-mask-image:none; mask-image:none;} }
   nav.tabs button{
     flex:none; border:0; background:none; color:var(--k-muted);
     padding:0 14px; min-height:36px; display:inline-flex; align-items:center;
     border-radius:var(--k-radius); font:600 14px/1 var(--k-font-sans); cursor:pointer; white-space:nowrap; font-variant-numeric:tabular-nums;
   }
-  @media (pointer:coarse){ nav.tabs button{min-height:var(--k-tap);} }
+  @media (pointer:coarse), (max-width:1023px){ nav.tabs button{min-height:var(--k-tap);} }
   nav.tabs button:hover{color:var(--k-ink);}
   nav.tabs button.active{background:var(--k-primary); color:var(--k-primary-ink);}
+  nav.tabs button:focus-visible{outline:2px solid var(--k-ring); outline-offset:-2px;}
+  @media (max-width:767px){ .tabs-bar{margin-bottom:16px;} }
 
-  main{flex:1; padding:20px; padding-inline:20px; max-width:1180px; width:100%; margin:0 auto; display:flex; flex-direction:column; gap:18px;}
-  @media (max-width:640px){ main{padding:14px;} .tabs-bar{padding:8px 10px;} }
+  /* Page content (frame comes from the kit's .k-page). */
+  #main{display:flex; flex-direction:column; gap:18px; min-width:0;}
 
   .panel-head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   /* Page titles were 23px/600 against 13.5px body - only a ~1.7x ratio,
@@ -145,26 +149,7 @@
   .panel-head h2{font-size:30px; letter-spacing:-.015em;}
   .panel-head .desc{font-size:13px; color:var(--ink-muted); margin-top:2px;}
 
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px; border-radius:var(--k-radius); border:1px solid var(--k-border);
-    padding:0 16px; min-height:var(--k-tap); font:600 15px/1 var(--k-font-sans); cursor:pointer; background:var(--k-raised);
-    color:var(--k-ink); text-decoration:none; transition:background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease);
-  }
-  .btn:hover:not(:disabled){background:var(--k-raised-hover);}
-  .btn:active{transform:translateY(1px);}
-  .btn.primary{background:var(--k-primary); border-color:transparent; color:var(--k-primary-ink);}
-  .btn.primary:hover:not(:disabled){background:var(--k-primary-hover);}
-  .btn.ghost{background:none; border-color:transparent;}
-  .btn.ghost:hover:not(:disabled){background:var(--k-raised);}
-  /* Every "small" button (table row actions, filter pills) used to have no
-     minimum height - about 26px tall in practice, well under a comfortable
-     tap target, and the single biggest reason the app read as fiddly to use.
-     36px keeps them visibly lighter than a full .btn while staying easy to
-     hit; the row's own padding already gives it room. */
-  .btn.small{padding:0 12px; min-height:36px; font-size:14px;}
-  @media (pointer:coarse){ .btn.small{min-height:var(--k-tap);} }
-  .btn.danger{background:var(--k-raised); color:var(--k-critical); border-color:var(--k-critical);}
-  .btn:disabled{cursor:not-allowed; background:var(--k-raised); color:var(--k-muted); border-color:transparent;}
+  /* Buttons are the kit's .k-btn (staff.css). Never hand-roll one here. */
   .icon{flex:none; display:block;}
 
   .card{background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:16px;}
@@ -345,22 +330,22 @@
   .filter-row select, .filter-row input{border:1px solid var(--k-border-input); background:var(--k-surface); border-radius:var(--k-radius); padding:7px 10px; min-height:36px; font-size:16px;}
   .pr-clickable td{cursor:pointer;}
   @media (max-width:640px){
-    .btn, .btn.small, .search-box, .filter-row select, .filter-row input{min-height:44px;}
+    .search-box, .filter-row select, .filter-row input{min-height:44px;}
     th.sortable{padding-top:15px; padding-bottom:15px;}
   }
   [hidden]{display:none!important;}
 
   @media print{
     [data-k-appbar], .tabs-bar, .toast-stack, #modalRoot, .no-print, .sample-banner{display:none!important;}
-    body, #app, .page, main{background:#fff!important;}
-    main{padding:0!important; max-width:100%!important; gap:10px!important;}
+    body, #app, .page, .k-page, #main{background:#fff!important;}
+    .k-page{padding:0!important; max-width:100%!important;} #main{gap:10px!important;}
     .card{box-shadow:none!important; border:1px solid #ccc!important; break-inside:avoid; page-break-inside:avoid;}
     .table-wrap{border:1px solid #ccc!important; overflow:visible!important;}
     table{min-width:0!important;}
     thead th{position:static!important;}
     tr{break-inside:avoid; page-break-inside:avoid;}
     a[href]::after{content:'';}
-    .btn{display:none!important;}
+    .k-btn{display:none!important;}
     .panel-head .filter-row.no-print{display:none!important;}
   }
 </style>
@@ -368,7 +353,8 @@
 <div id="app">
   <div data-k-appbar data-app="Kitchen Ops" data-home="/ops"></div>
   <h1 class="k-sr-only">Kitchen Ops</h1>
-  <p data-k-subtitle class="k-app-sub-row"></p>
+  <main class="k-page">
+  <p data-k-subtitle></p>
   <div class="tabs-bar">
     <nav class="tabs" id="tabNav" aria-label="Sections"></nav>
     <div class="tabs-status">
@@ -376,7 +362,8 @@
       <div class="sync-chip" id="syncChip"><span class="sync-dot off"></span><span>Connecting…</span></div>
     </div>
   </div>
-  <main id="main"></main>
+  <div id="main"></div>
+  </main>
 </div>
 <div id="modalRoot" hidden></div>
 <div id="authGate" hidden>
@@ -385,7 +372,7 @@
     <div class="brand gate-lockup" aria-hidden="true"><img class="brand-mark" id="gateMark" src="/img/iara-mark.png" alt=""><span class="brand-word">Kitchen Ops</span></div>
     <h2>Manager Sign-In Required</h2>
     <div style="color:var(--k-muted); font-size:14px;">Kitchen Ops holds costing and business data, so it's manager-only. Sign in with your @iara.nyc Google account.</div>
-    <button class="btn primary" id="authGateBtn" style="align-self:stretch;">Sign In with Google</button>
+    <button class="k-btn k-btn-primary k-btn-lg k-btn-block" id="authGateBtn">Sign In with Google</button>
     <div id="authGateMsg" class="k-alert" style="display:none;"></div>
   </div>
 </div>
@@ -1302,7 +1289,7 @@ function renderDashboard(){
   // what someone does next, so it shouldn't be buried under four KPI tiles
   // and a chart first. An all-clear state still gets a card, not nothing.
   html += '<div class="card'+(attn.length?' attn-card':'')+'"><div class="section-title">Needs Attention</div>' + (attn.length ? attn.slice(0,6).map(function(a){
-    return '<div class="attn-item"><span class="attn-dot '+esc(a.badge)+'"></span><div class="attn-body"><div class="t">'+esc(a.t)+'</div><div class="s">'+esc(a.s)+'</div></div><button class="btn small ghost" data-action="setTab" data-tab="'+a.tab+'">View</button></div>';
+    return '<div class="attn-item"><span class="attn-dot '+esc(a.badge)+'"></span><div class="attn-body"><div class="t">'+esc(a.t)+'</div><div class="s">'+esc(a.s)+'</div></div><button class="k-btn k-btn-sm k-btn-ghost" data-action="setTab" data-tab="'+a.tab+'">View</button></div>';
   }).join('') : '<div class="empty-state">Nothing needs attention right now.</div>') + '</div>';
 
   html += '<div class="kpis">'+
@@ -1344,7 +1331,7 @@ function renderDashboard(){
 function deptPillsHtml(key, current){
   var opts = ['All'].concat(DEPARTMENTS);
   return '<div class="filter-row">' + opts.map(function(d){
-    return '<button class="btn small '+(current===d?'primary':'ghost')+'" data-action="setDeptFilter" data-key="'+key+'" data-dept="'+d+'">'+esc(d)+'</button>';
+    return '<button class="k-btn k-btn-sm '+(current===d?'k-btn-primary':'k-btn-ghost')+'" data-action="setDeptFilter" data-key="'+key+'" data-dept="'+d+'">'+esc(d)+'</button>';
   }).join('') + '</div>';
 }
 
@@ -1389,7 +1376,7 @@ function ingredientsTableHtml(){
       '<td class="num">'+ing.onHand+' '+esc(ing.invUnit)+'</td>'+
       '<td class="num">'+ing.parLevel+' '+esc(ing.invUnit)+'</td>'+
       '<td>'+statusHtml+'</td>'+
-      '<td class="row-actions"><button class="btn small ghost" data-action="editIngredient" data-id="'+ing.id+'">Edit</button></td>'+
+      '<td class="row-actions"><button class="k-btn k-btn-sm k-btn-ghost" data-action="editIngredient" data-id="'+ing.id+'">Edit</button></td>'+
     '</tr>';
   });
   html += '</tbody></table></div>';
@@ -1399,7 +1386,7 @@ function renderIngredientsTableWrap(){ var el = $('#ingredientsTableWrap'); if(e
 
 function renderIngredients(){
   var filter = state.ingredientsDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items: pack cost, count unit, par &amp; on-hand.</div></div><button class="btn primary" data-action="newIngredient">+ Add Ingredient</button></div>';
+  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items: pack cost, count unit, par &amp; on-hand.</div></div><button class="k-btn k-btn-primary" data-action="newIngredient">+ Add Ingredient</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('ingredientsDept', filter)+searchBoxHtml('ingredientsSearchInput','Search ingredients or vendor…', state.ingredientsSearch)+'</div>';
   html += '<div id="ingredientsTableWrap">'+ingredientsTableHtml()+'</div>';
   return html;
@@ -1441,7 +1428,7 @@ function recipesTableHtml(){
       '<td class="num">'+money(recipePortionCost(r))+'</td>'+
       '<td class="num">'+money(r.menuPrice)+'</td>'+
       '<td class="num">'+(over?'<span class="badge warning">'+pct(fc)+'</span>':'<span class="badge good">'+pct(fc)+'</span>')+'</td>'+
-      '<td class="row-actions"><button class="btn small ghost" data-action="editRecipe" data-id="'+r.id+'">Edit</button></td>'+
+      '<td class="row-actions"><button class="k-btn k-btn-sm k-btn-ghost" data-action="editRecipe" data-id="'+r.id+'">Edit</button></td>'+
     '</tr>';
   });
   html += '</tbody></table></div>';
@@ -1451,7 +1438,7 @@ function renderRecipesTableWrap(){ var el = $('#recipesTableWrap'); if(el) el.in
 
 function renderRecipes(){
   var filter = state.recipesDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Recipes</h2><div class="desc">Build recipes from ingredients to see plate cost and food cost %.</div></div><button class="btn primary" data-action="newRecipe">+ Add Recipe</button></div>';
+  var html = '<div class="panel-head"><div><h2>Recipes</h2><div class="desc">Build recipes from ingredients to see plate cost and food cost %.</div></div><button class="k-btn k-btn-primary" data-action="newRecipe">+ Add Recipe</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('recipesDept', filter)+searchBoxHtml('recipesSearchInput','Search recipes…', state.recipesSearch)+'</div>';
   html += '<div id="recipesTableWrap">'+recipesTableHtml()+'</div>';
   return html;
@@ -1477,7 +1464,7 @@ function countsTableHtml(){
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(c){
     html += '<tr><td>'+dateLong(c.date)+'</td><td>'+esc(c.label)+'</td><td class="num">'+(c.lines||[]).length+'</td><td class="num">'+money(c.totalValue)+'</td>'+
-      '<td class="row-actions"><button class="btn small ghost" data-action="viewCount" data-id="'+c.id+'">View</button></td></tr>';
+      '<td class="row-actions"><button class="k-btn k-btn-sm k-btn-ghost" data-action="viewCount" data-id="'+c.id+'">View</button></td></tr>';
   });
   html += '</tbody></table></div>';
   return html;
@@ -1485,7 +1472,7 @@ function countsTableHtml(){
 function renderCountsTableWrap(){ var el = $('#countsTableWrap'); if(el) el.innerHTML = countsTableHtml(); }
 
 function renderCounts(){
-  var html = '<div class="panel-head"><div><h2>Inventory Counts</h2><div class="desc">Snapshot on-hand quantities and track total inventory value.</div></div><button class="btn primary" data-action="newCount">+ New Count</button></div>';
+  var html = '<div class="panel-head"><div><h2>Inventory Counts</h2><div class="desc">Snapshot on-hand quantities and track total inventory value.</div></div><button class="k-btn k-btn-primary" data-action="newCount">+ New Count</button></div>';
   if(state.counts.length){
     html += '<div class="toolbar-row" style="justify-content:flex-end">'+searchBoxHtml('countsSearchInput','Search counts…', state.countsSearch)+'</div>';
   }
@@ -1498,7 +1485,7 @@ function renderPurchasing(){
   var guide = orderGuide();
   var vendors = Object.keys(guide).sort();
   var html = '<div class="panel-head"><div><h2>Purchasing</h2><div class="desc">Order guide, grouped by vendor: usage-predicted where there\'s count history, par level otherwise.</div></div>'+
-    '<button class="btn primary" data-action="scanInvoice">'+icon('camera')+' Scan Invoice</button></div>';
+    '<button class="k-btn k-btn-primary" data-action="scanInvoice">'+icon('camera')+' Scan Invoice</button></div>';
 
   html += '<div class="card">';
   if(!vendors.length){
@@ -1507,7 +1494,7 @@ function renderPurchasing(){
     vendors.forEach(function(v){
       var items = guide[v];
       var total = sum(items, function(x){ return x.cost; });
-      html += '<div class="vendor-group"><h3>'+esc(v)+' <span class="badge neutral">'+items.length+' item'+(items.length>1?'s':'')+' · '+money(total)+'</span> <button class="btn small primary" data-action="createPoFromGuide" data-vendor="'+esc(v)+'" style="margin-left:auto">Create Order</button></h3>';
+      html += '<div class="vendor-group"><h3>'+esc(v)+' <span class="badge neutral">'+items.length+' item'+(items.length>1?'s':'')+' · '+money(total)+'</span> <button class="k-btn k-btn-sm k-btn-primary" data-action="createPoFromGuide" data-vendor="'+esc(v)+'" style="margin-left:auto">Create Order</button></h3>';
       html += '<div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">On Hand</th><th class="num">Par</th><th class="num">Suggested Qty</th><th class="num">Estimated Cost</th><th>Why</th></tr></thead><tbody>';
       items.forEach(function(x){
         var why = x.risk.method==='usage'
@@ -1547,10 +1534,10 @@ function posTableHtml(){
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(po){
     var badgeClass = po.status==='received' ? 'good' : (po.status==='sent' ? 'warning' : 'neutral');
-    html += '<tr><td>'+dateLong(po.date)+(po.receiptAssetId?' <button class="btn small ghost" data-action="viewReceipt" data-asset-id="'+esc(po.receiptAssetId)+'" title="View scanned receipt">'+icon('receipt')+'</button>':'')+'</td><td>'+esc(po.vendor)+'</td><td class="num">'+(po.lines||[]).length+'</td><td class="num">'+money(poTotal(po))+'</td>'+
+    html += '<tr><td>'+dateLong(po.date)+(po.receiptAssetId?' <button class="k-btn k-btn-sm k-btn-icon k-btn-ghost" data-action="viewReceipt" data-asset-id="'+esc(po.receiptAssetId)+'" title="View scanned receipt">'+icon('receipt')+'</button>':'')+'</td><td>'+esc(po.vendor)+'</td><td class="num">'+(po.lines||[]).length+'</td><td class="num">'+money(poTotal(po))+'</td>'+
       '<td><span class="badge '+badgeClass+'">'+po.status+'</span></td><td class="row-actions">'+
-      (po.status==='draft' ? '<button class="btn small ghost" data-action="poStatus" data-id="'+po.id+'" data-status="sent">Mark Sent</button>' : '') +
-      (po.status==='sent' ? '<button class="btn small primary" data-action="poStatus" data-id="'+po.id+'" data-status="received">Mark Received</button>' : '') +
+      (po.status==='draft' ? '<button class="k-btn k-btn-sm k-btn-ghost" data-action="poStatus" data-id="'+po.id+'" data-status="sent">Mark Sent</button>' : '') +
+      (po.status==='sent' ? '<button class="k-btn k-btn-sm k-btn-primary" data-action="poStatus" data-id="'+po.id+'" data-status="received">Mark Received</button>' : '') +
       '</td></tr>';
   });
   html += '</tbody></table></div>';
@@ -1595,7 +1582,7 @@ function pricingResultsHtml(){
       }
       var selected = state.priceSelectedId===ing.id;
       return '<tr><td>'+esc(ing.name)+'</td><td>'+esc(ing.vendor||'None')+'</td><td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td><td>'+trend+'</td>'+
-        '<td class="row-actions"><button class="btn small '+(selected?'primary':'ghost')+'" data-action="selectPriceItem" data-id="'+ing.id+'">'+(selected?'Selected':'View')+'</button></td></tr>';
+        '<td class="row-actions"><button class="k-btn k-btn-sm '+(selected?'k-btn-primary':'k-btn-ghost')+'" data-action="selectPriceItem" data-id="'+ing.id+'">'+(selected?'Selected':'View')+'</button></td></tr>';
     }).join('') + '</tbody></table></div>';
 }
 function renderPricingList(){ var el = $('#priceResultsList'); if(el) el.innerHTML = pricingResultsHtml(); }
@@ -1648,7 +1635,7 @@ function renderPurchaseReportCard(){
     {key:'lastMonth', label:'Previous Month'}
   ];
   var presetBtns = presets.map(function(p){
-    return '<button type="button" class="btn small '+(state.purchaseReportPreset===p.key?'primary':'ghost')+'" data-action="purchaseReportPreset" data-preset="'+p.key+'">'+esc(p.label)+'</button>';
+    return '<button type="button" class="k-btn k-btn-sm '+(state.purchaseReportPreset===p.key?'k-btn-primary':'k-btn-ghost')+'" data-action="purchaseReportPreset" data-preset="'+p.key+'">'+esc(p.label)+'</button>';
   }).join('');
   function pctOfAll(v){ return data.all ? pct(v/data.all*100, 1) : 'n/a'; }
   function row(label, val, catKey, opts){
@@ -1758,7 +1745,7 @@ function renderPurchaseDrilldownPage(){
   var total = round2(sum(rows, function(r){ return r.ext; }));
   var html = '<div class="panel-head">'+
     '<div><h2>'+esc(/Purchases$/.test(label) ? label : label+' Purchases')+'</h2><div class="desc">'+formatDateStr(state.purchaseReportStart)+' to '+formatDateStr(state.purchaseReportEnd)+' · '+money(total)+' total across '+plural(rows.length,'line item')+'</div></div>'+
-    '<div class="filter-row no-print"><button type="button" class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button type="button" class="btn ghost" data-action="closePurchaseDrilldown">← Back to Reports</button></div>'+
+    '<div class="filter-row no-print"><button type="button" class="k-btn k-btn-ghost" data-action="printPage">'+icon('printer')+' Print</button><button type="button" class="k-btn k-btn-ghost" data-action="closePurchaseDrilldown">← Back to Reports</button></div>'+
   '</div>';
   html += '<div class="card">'+
     '<div class="toolbar-row no-print">'+searchBoxHtml('purchaseDrilldownSearchInput','Search item or vendor…', state.purchaseDrilldownSearch)+'</div>'+
@@ -1769,7 +1756,7 @@ function renderPurchaseDrilldownPage(){
 
 function renderReports(){
   if(state.purchaseDrilldown) return renderPurchaseDrilldownPage();
-  var html = '<div class="panel-head"><div><h2>Reports</h2><div class="desc">Cost trends, food cost by category, and theoretical vs. actual cost of goods sold (COGS).</div></div><div class="filter-row no-print"><button class="btn ghost" data-action="printPage">'+icon('printer')+' Print</button><button class="btn ghost" data-action="newSales">+ Log Period Sales</button></div></div>';
+  var html = '<div class="panel-head"><div><h2>Reports</h2><div class="desc">Cost trends, food cost by category, and theoretical vs. actual cost of goods sold (COGS).</div></div><div class="filter-row no-print"><button class="k-btn k-btn-ghost" data-action="printPage">'+icon('printer')+' Print</button><button class="k-btn k-btn-ghost" data-action="newSales">+ Log Period Sales</button></div></div>';
 
   html += renderPurchaseReportCard();
 
@@ -1908,8 +1895,8 @@ function openIngredientModal(existing){
     '</div>'+
     '<div class="cost-preview"><span>Cost per Count Unit</span><strong id="unitCostPreview">'+money(existing?unitCostOf(existing):0)+'</strong></div>'+
     '<div class="modal-actions">'+
-      (existing ? '<button type="button" class="btn ghost danger" data-action="deleteIngredient" data-id="'+existing.id+'">Delete</button>' : '<span></span>')+
-      '<div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save</button></div>'+
+      (existing ? '<button type="button" class="k-btn k-btn-danger" data-action="deleteIngredient" data-id="'+existing.id+'">Delete</button>' : '<span></span>')+
+      '<div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button><button type="submit" class="k-btn k-btn-primary">Save</button></div>'+
     '</div>'+
   '</form>';
   openModal(h);
@@ -1938,7 +1925,7 @@ function recipeLinesHtml(lines){
       '<label>Ingredient<select data-line-field="ingredientId" data-idx="'+idx+'">'+ '<option value="">Select…</option>' + ingredientOptionsHtml(l.ingredientId) +'</select></label>'+
       '<label>Qty ('+(ing?esc(ing.invUnit):'unit')+')<input type="number" step="0.0001" min="0" data-line-field="qty" data-idx="'+idx+'" value="'+(l.qty||'')+'"></label>'+
       '<div class="line-total">'+money(lineCost)+'</div>'+
-      '<button type="button" class="btn small ghost" data-action="removeLine" aria-label="Remove Line" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
+      '<button type="button" class="k-btn k-btn-sm k-btn-icon k-btn-ghost" data-action="removeLine" aria-label="Remove Line" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
     '</div>';
   }).join('');
 }
@@ -1971,11 +1958,11 @@ function openRecipeModal(existing){
       '<label><span class="label-row">Target Food Cost % <button type="button" class="qmark" aria-label="What is Target Food Cost?" data-k-tip="Your goal ceiling for this dish - ingredient cost as a share of menu price. Recipes over target get flagged on the Dashboard and in Reports.">?</button></span><input type="number" step="0.1" min="0" name="targetFoodCostPct" value="'+(existing?existing.targetFoodCostPct:30)+'"></label>'+
     '</div>'+
     '<div><div class="section-title">Ingredient Lines</div><div class="lines-box" id="linesBox">'+recipeLinesHtml(state.tempLines)+'</div>'+
-    '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add Ingredient Line</button></div>'+
+    '<button type="button" class="k-btn k-btn-sm k-btn-ghost" data-action="addLine" style="margin-top:8px">+ Add Ingredient Line</button></div>'+
     '<div class="cost-preview" id="recipeCostPreview"></div>'+
     '<div class="modal-actions">'+
-      (existing ? '<button type="button" class="btn ghost danger" data-action="deleteRecipe" data-id="'+existing.id+'">Delete</button>' : '<span></span>')+
-      '<div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save</button></div>'+
+      (existing ? '<button type="button" class="k-btn k-btn-danger" data-action="deleteRecipe" data-id="'+existing.id+'">Delete</button>' : '<span></span>')+
+      '<div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button><button type="submit" class="k-btn k-btn-primary">Save</button></div>'+
     '</div>'+
   '</form>';
   openModal(h, true);
@@ -2012,7 +1999,7 @@ function openCountModal(){
       '<label>Label<input name="label" placeholder="e.g. Weekly count"></label>'+
     '</div>'+
     '<div class="lines-box" style="max-height:340px">'+rowsHtml+'</div>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Count</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button><button type="submit" class="k-btn k-btn-primary">Save Count</button></div></div>'+
   '</form>';
   openModal(h, true);
 }
@@ -2040,7 +2027,7 @@ function openPoModal(prefillVendor){
       '<label>Date<input type="date" name="date" value="'+nyDate()+'"></label>'+
     '</div>'+
     '<div class="lines-box" id="poLinesBox" style="max-height:320px">'+rowsFor(vendor)+'</div>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Create Order</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button><button type="submit" class="k-btn k-btn-primary">Create Order</button></div></div>'+
   '</form>';
   openModal(h, true);
   $('#poVendorSelect').addEventListener('change', function(e){ $('#poLinesBox').innerHTML = rowsFor(e.target.value); });
@@ -2060,7 +2047,7 @@ function openSalesModal(){
       '<label>To<input type="date" name="dateTo" value="'+nyDate()+'"></label>'+
     '</div>'+
     '<div class="lines-box" style="max-height:320px">'+rows+'</div>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Sales</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button><button type="submit" class="k-btn k-btn-primary">Save Sales</button></div></div>'+
   '</form>';
   openModal(h, true);
 }
@@ -2071,9 +2058,9 @@ function invoicePhotoAreaHtml(){
   return '<div style="display:flex; flex-direction:column; gap:10px; align-items:flex-start">' +
     (hasPhoto ? '<img src="'+state.invoicePhotoUrl+'" style="max-width:220px; max-height:220px; border-radius:8px; border:1px solid var(--border); object-fit:contain">' : '') +
     '<div style="display:flex; gap:8px; flex-wrap:wrap">' +
-      '<button type="button" class="btn ghost" data-action="invoicePickPhoto">'+(hasPhoto?'Choose Another Photo':(icon('camera')+' Add Photo'))+'</button>' +
-      (canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract with AI</button>' : '') +
-      (hasPhoto && !canExtract ? '<button type="button" class="btn primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract with AI</button>' : '') +
+      '<button type="button" class="k-btn k-btn-ghost" data-action="invoicePickPhoto">'+(hasPhoto?'Choose Another Photo':(icon('camera')+' Add Photo'))+'</button>' +
+      (canExtract ? '<button type="button" class="k-btn k-btn-primary" data-action="invoiceExtract">'+icon('sparkles')+' Extract with AI</button>' : '') +
+      (hasPhoto && !canExtract ? '<button type="button" class="k-btn k-btn-primary" data-action="invoiceExtract" disabled title="AI extraction isn\'t available here">'+icon('sparkles')+' Extract with AI</button>' : '') +
     '</div>' +
   '</div>';
 }
@@ -2091,7 +2078,7 @@ function openInvoiceModal(){
     '<p class="hint">'+esc(note)+'</p>' +
     '<input type="file" id="invoicePhotoInput" accept="image/*" capture="environment" hidden>' +
     '<div id="invoicePhotoArea">' + invoicePhotoAreaHtml() + '</div>' +
-    '<div class="modal-actions"><button type="button" class="btn ghost" data-action="enterInvoiceManually">Enter by Hand</button><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button></div></div>';
+    '<div class="modal-actions"><button type="button" class="k-btn k-btn-ghost" data-action="enterInvoiceManually">Enter by Hand</button><div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button></div></div>';
   openModal(h, true);
 }
 
@@ -2142,7 +2129,7 @@ function invoiceLinesHtml(lines){
       catSelect+
       '<label>Qty<input type="number" step="0.0001" min="0" data-line-field="qty" data-idx="'+idx+'" value="'+(l.qty||'')+'"></label>'+
       '<label>Unit Cost<input type="number" step="0.01" min="0" data-line-field="unitCost" data-idx="'+idx+'" value="'+(l.unitCost||'')+'"></label>'+
-      '<button type="button" class="btn small ghost" data-action="removeLine" aria-label="Remove Line" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
+      '<button type="button" class="k-btn k-btn-sm k-btn-icon k-btn-ghost" data-action="removeLine" aria-label="Remove Line" data-idx="'+idx+'">'+icon('close',14)+'</button>'+
     '</div>';
   }).join('');
 }
@@ -2169,9 +2156,9 @@ function renderInvoiceReview(data){
       '<label>Date<input type="date" name="date" value="'+esc(dateGuess)+'"></label>'+
     '</div>'+
     '<div><div class="section-title">Line Items</div><div class="lines-box" id="linesBox" style="max-height:280px">'+invoiceLinesHtml(state.tempLines)+'</div>'+
-    '<button type="button" class="btn small ghost" data-action="addLine" style="margin-top:8px">+ Add Line</button></div>'+
+    '<button type="button" class="k-btn k-btn-sm k-btn-ghost" data-action="addLine" style="margin-top:8px">+ Add Line</button></div>'+
     '<p class="hint">Saving creates a received purchase order: matched items restock on-hand and log any price change automatically. Unmatched lines are added as new ingredients using the quantity, cost and category shown.</p>'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn ghost" data-action="closeModal">Cancel</button><button type="submit" class="btn primary">Save Purchase Order</button></div></div>'+
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="k-btn k-btn-ghost" data-action="closeModal">Cancel</button><button type="submit" class="k-btn k-btn-primary">Save Purchase Order</button></div></div>'+
     '</form>';
   openModal(h, true);
   var form = $('#modalRoot form');
@@ -2192,7 +2179,7 @@ function renderInvoiceReview(data){
 
 function openReceiptModal(assetId){
   var h = '<h2>Scanned Receipt</h2><img src="/_blob/'+esc(assetId)+'" style="max-width:100%; border-radius:8px; border:1px solid var(--border)">'+
-    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="btn primary" data-action="closeModal">Close</button></div></div>';
+    '<div class="modal-actions"><span></span><div class="right"><button type="button" class="k-btn k-btn-primary" data-action="closeModal">Close</button></div></div>';
   openModal(h, true);
 }
 
@@ -2203,7 +2190,7 @@ function viewCountModal(count){
   var h = '<h2>'+esc(count.label)+'</h2><p class="hint">'+dateLong(count.date)+'</p>'+
     '<div class="table-wrap" style="max-height:400px; overflow-y:auto"><table><thead><tr><th>Item</th><th class="num">Qty</th><th class="num">Unit Cost</th><th class="num">Line Value</th></tr></thead><tbody>'+rows+'</tbody></table></div>'+
     '<div class="cost-preview"><span>Total Value</span><strong>'+money(count.totalValue)+'</strong></div>'+
-    '<div class="modal-actions"><button type="button" class="btn ghost danger" data-action="deleteCount" data-id="'+count.id+'">Delete Count</button><div class="right"><button type="button" class="btn primary" data-action="closeModal">Close</button></div></div>';
+    '<div class="modal-actions"><button type="button" class="k-btn k-btn-danger" data-action="deleteCount" data-id="'+count.id+'">Delete Count</button><div class="right"><button type="button" class="k-btn k-btn-primary" data-action="closeModal">Close</button></div></div>';
   openModal(h, true);
 }
 

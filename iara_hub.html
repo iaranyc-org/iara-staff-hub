@@ -24,7 +24,7 @@
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
-<script src="/kit/nav.js" defer></script>
+<script src="/kit/nav.js" defer blocking="render"></script>
 <style>
   /* Legacy names mapped onto the iara staff kit (kit/tokens.css). */
   :root{
@@ -87,16 +87,6 @@
     background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px;
   }
   .field input:focus{ outline:2px solid var(--k-ring); outline-offset:2px; }
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    border-radius:var(--k-radius); border:1px solid transparent; padding:0 16px; min-height:var(--k-tap);
-    font-family:var(--k-font-sans); font-weight:600; font-size:15px; line-height:1; cursor:pointer;
-    transition:background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease);
-  }
-  .btn:active{ transform:translateY(1px); }
-  .btn-primary{ background:var(--k-primary); color:var(--k-primary-ink); width:100%; }
-  .btn-primary:hover:not(:disabled){ background:var(--k-primary-hover); }
-  .btn:disabled{ cursor:not-allowed; background:var(--k-raised); color:var(--k-muted); }
   .form-err{ margin:-4px 0 16px; padding:12px 14px; border-radius:var(--k-radius); border:1px solid var(--k-critical); background:var(--k-surface); color:var(--k-critical); font-size:14px; }
 
   /* ===================== Launcher ===================== */
@@ -109,8 +99,8 @@
         color-mix(in srgb, var(--sun) 13%, var(--paper)) 100%);
   }
   #launcher > [data-k-appbar]{ position:sticky; top:0; z-index:900; }
-  .launcher-main{ flex:1; display:flex; align-items:center; justify-content:center;
-    padding:40px 16px max(40px, env(safe-area-inset-bottom)); }
+  /* Content sits in the kit page frame (.k-page), aligned to the app bar like every manager app. */
+  #launcher > .k-page{ flex:1; padding-bottom:max(64px, env(safe-area-inset-bottom)); }
   /* The grain overlay that used to live here (feTurbulence + mix-blend-mode
      :overlay on a position:fixed pseudo-element) is a known-bad combination
      on real iOS Safari - it paints as a blown-out solid color. Removed. */
@@ -118,13 +108,10 @@
   /* One grid for the whole page: a single 8px rhythm, one radius, one card
      padding. Phone = one column (Lineup first, it is what most staff open);
      900px+ = two equal-height columns so the page fills a laptop screen. */
-  .wrap{ width:100%; max-width:480px; }
   .cols{ display:grid; gap:16px; }
   @media (min-width:900px){
-    .wrap{ max-width:920px; }
     .cols{ grid-template-columns:1fr 1fr; gap:24px; align-items:stretch; }
   }
-  @media (min-width:1600px){ .wrap{ max-width:1040px; } }
 
   .card{
     background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg);
@@ -140,7 +127,7 @@
   .card-title{ margin:0 0 8px; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:26px; line-height:1.15; color:var(--display); letter-spacing:-.01em; }
   .card-desc{ margin:0 0 24px; font-size:15px; line-height:1.5; color:var(--ink-soft); }
   #lineup-form{ display:flex; flex-direction:column; flex:1; }
-  #lineup-form .btn{ margin-top:auto; }
+  #lineup-form .k-btn{ margin-top:auto; }
   .app-list li:last-child .app-row{ padding-bottom:0; min-height:60px; }
   #lineup-form .field:last-of-type{ margin-bottom:24px; }
   .field select{
@@ -165,7 +152,7 @@
   .app-row-arrow{ flex:none; width:32px; height:32px; border-radius:50%; display:grid; place-items:center;
     border:1px solid var(--line); color:var(--k-muted); font-size:15px; transition:border-color .12s ease, color .12s ease; }
   .app-row:hover .app-row-arrow{ border-color:var(--forest); color:var(--ink); }
-  .btn-primary:focus-visible, .field input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
+  .field input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
 </style>
 
 <div id="gate" hidden>
@@ -182,17 +169,16 @@
         <p class="field-hint" id="hub-pw-hint">Ask your manager for the staff password</p>
       </div>
       <p class="form-err" id="hub-err" role="alert" hidden>That password is not right. Ask your manager.</p>
-      <button type="submit" class="btn btn-primary">Enter</button>
+      <button type="submit" class="k-btn k-btn-primary k-btn-lg k-btn-block">Enter</button>
     </form>
   </div>
 </div>
 
 <div id="launcher" hidden>
-  <div data-k-appbar data-app="Staff Home" data-home="/"></div>
-  <div class="launcher-main">
-  <h1 class="k-sr-only">iara Staff</h1>
-  <div class="wrap">
+  <div data-k-appbar data-app="iara Staff" data-home="/"></div>
+  <main class="k-page">
     <p data-k-subtitle></p>
+    <h1 class="k-sr-only">iara Staff</h1>
     <div class="cols">
       <section class="card" aria-labelledby="lineup-title">
         <h2 class="card-title" id="lineup-title">Lineup</h2>
@@ -220,7 +206,7 @@
               <option>General Manager</option>
             </select>
           </div>
-          <button type="submit" class="btn btn-primary">Continue to Lineup</button>
+          <button type="submit" class="k-btn k-btn-primary k-btn-lg k-btn-block">Continue to Lineup</button>
         </form>
       </section>
 
@@ -237,8 +223,7 @@
         </ul>
       </nav>
     </div>
-  </div>
-  </div>
+  </main>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>

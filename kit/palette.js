@@ -18,7 +18,7 @@
 
   // Canonical list of staff apps. Keep in sync with iara-staff-hub/vercel.json.
   var APPS = [
-    { label: "Staff Home", href: "/", keywords: "hub launcher start" },
+    { label: "iara Staff", href: "/", keywords: "hub launcher start" },
     { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" },
     { label: "Kitchen Ops", href: "/ops", keywords: "costing inventory recipes purchasing" },
     { label: "Analytics", href: "/analytics", keywords: "stats reply rate dashboard" },

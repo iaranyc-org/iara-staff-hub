@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
-<script src="/kit/nav.js" defer></script>
+<script src="/kit/nav.js" defer blocking="render"></script>
 <script src="/kit/tip.js" defer></script>
 <script src="/kit/confirm.js" defer></script>
 <style>
@@ -47,13 +47,12 @@
   h2{ font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
   label{ display:block; font-size:13px; font-weight:600; line-height:1.3; color:var(--k-ink); margin-bottom:6px; }
   input{ width:100%; min-height:var(--k-tap); padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input); background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; margin-bottom:14px; }
-  .btn{ border-radius:var(--k-radius); border:1px solid transparent; padding:0 16px; min-height:var(--k-tap); font:600 15px/1 var(--k-font-sans); cursor:pointer; background:var(--k-primary); color:var(--k-primary-ink); width:100%; transition:background-color var(--k-fast) var(--k-ease); }
-  .btn:hover:not(:disabled){ background:var(--k-primary-hover); }
+  /* Buttons are the kit's .k-btn (staff.css). */
   a:focus-visible, button:focus-visible, input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .err{ padding:12px 14px; border-radius:var(--k-radius); border:1px solid var(--k-critical); background:var(--k-surface); color:var(--k-critical); font-size:14px; margin:-4px 0 12px; }
   .loading-skel{ padding:4px 0 24px; }
   .updated{ font-size:13px; color:var(--river); white-space:nowrap; margin-left:auto; }
-  main{ max-width:1080px; margin:0 auto; padding:18px 16px 64px; }
+  /* Page frame is the kit's .k-page (staff.css), aligned to the app bar. */
   .tabs{ display:flex; gap:4px; padding:4px; background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
   .tabs::-webkit-scrollbar{ display:none; }
   .tab{ flex:1 0 auto; font:600 14px/1 var(--k-font-sans); color:var(--k-muted); background:transparent; border:0; border-radius:var(--k-radius); padding:0 14px; min-height:var(--k-tap); cursor:pointer; white-space:nowrap; }
@@ -73,8 +72,7 @@
   .range-pop::before{ content:""; position:absolute; top:-6px; left:var(--caret, 24px); width:10px; height:10px; background:var(--k-raised); border-left:1px solid var(--k-border); border-top:1px solid var(--k-border); transform:rotate(45deg); }
   .range-pop label{ display:flex; flex-direction:column; gap:6px; margin:0; min-width:0; font-size:13px; color:var(--k-ink); font-weight:600; }
   .range-pop input{ width:100%; min-width:0; margin:0; padding:8px 6px; font-size:16px; color-scheme:dark; }
-  .range-pop .btn{ grid-column:1 / -1; width:100%; background:var(--k-raised); border:1px solid var(--k-border); color:var(--k-ink); min-height:var(--k-tap); }
-  .range-pop .btn:hover:not(:disabled){ background:var(--k-raised-hover); }
+  .range-pop .k-btn{ grid-column:1 / -1; }
   .range-text{ font-size:14px; color:var(--river); }
   .howcount{ margin:8px 0 22px; }
   .howcount .note{ margin:0; }
@@ -139,8 +137,6 @@
   .wtext{ font-size:13.5px; color:var(--ink-soft); line-height:1.45; margin-top:2px; overflow-wrap:anywhere; }
   .wfail{ color:var(--sun); font-weight:700; }
   .wact{ display:flex; gap:4px; }
-  .wlink{ background:none; border:0; padding:8px 6px; min-height:36px; font:inherit; font-size:13px; font-weight:600; color:var(--river); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
-  .wlink:hover{ color:var(--ink); }
   .muted{ color:var(--ink-soft); }
   @media (max-width:760px){ .grid2.even{ grid-template-columns:1fr; } .wrow{ grid-template-columns:1fr auto; } .wch{ grid-column:1 / -1; justify-self:start; } }
   .loading{ color:var(--k-muted); padding:60px 0; text-align:center; }
@@ -186,10 +182,6 @@
   #panel-phone h2{ font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
   #panel-phone label{ display:block; font-size:13px; font-weight:600; line-height:1.3; color:var(--k-ink); margin-bottom:6px; }
   #panel-phone input{ width:100%; min-height:var(--k-tap); padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input); background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; margin-bottom:14px; }
-  #panel-phone .btn{ border-radius:var(--k-radius); border:1px solid transparent; padding:0 16px; min-height:var(--k-tap); font:600 15px/1 var(--k-font-sans); cursor:pointer; background:var(--k-primary); color:var(--k-primary-ink); width:100%; transition:background-color var(--k-fast) var(--k-ease); }
-  .btn:hover:not(:disabled){ background:var(--k-primary-hover); }
-  #panel-phone .btn-ghost{ background:var(--k-raised); border:1px solid var(--k-border); color:var(--k-ink); width:auto; min-height:36px; padding:0 12px; font-size:14px; }
-  #panel-phone .btn-ghost:hover:not(:disabled){ background:var(--k-raised-hover); }
   #panel-phone a:focus-visible, #panel-phone button:focus-visible, #panel-phone input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
   #panel-phone .err{ padding:12px 14px; border-radius:var(--k-radius); border:1px solid var(--k-critical); background:var(--k-surface); color:var(--k-critical); font-size:14px; margin:-4px 0 12px; }
   #panel-phone main{ max-width:1080px; margin:0 auto; padding:22px 16px 64px; }
@@ -255,8 +247,6 @@
   #panel-phone .pill.text{ background:var(--k-raised); color:var(--k-display); }
   #panel-phone .pill.voicemail{ background:var(--k-raised); color:var(--k-warning); }
   #panel-phone .pill.failed{ background:var(--k-raised); color:var(--k-critical); }
-  #panel-phone .link-btn{ background:none; border:0; padding:6px 4px; min-height:32px; font:inherit; font-size:13px; font-weight:600; color:var(--river); text-decoration:underline; text-underline-offset:3px; cursor:pointer; }
-  #panel-phone .link-btn:hover{ color:var(--ink); }
   #panel-phone td.act{ text-align:right; white-space:nowrap; }
   #panel-phone tr.gone td:not(.act){ color:var(--k-muted); text-decoration:line-through; text-decoration-color:var(--k-muted); }
   #panel-phone .sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
@@ -299,15 +289,15 @@
     <input id="pw" type="password" autocomplete="current-password" aria-describedby="pw-hint gate-err">
     <p class="field-hint" id="pw-hint">Ask your manager for the staff password</p>
     <p class="err" id="gate-err" role="alert" hidden>That password is not right. Ask your manager.</p>
-    <button class="btn" type="submit">Enter</button>
+    <button class="k-btn k-btn-primary k-btn-lg k-btn-block" type="submit">Enter</button>
   </form>
 </div>
 
 <div id="app" hidden>
 <div data-k-appbar data-app="Analytics" data-home="/analytics"></div>
-<main>
-  <h1 class="k-sr-only">Analytics</h1>
+<main class="k-page">
   <p data-k-subtitle></p>
+  <h1 class="k-sr-only">Analytics</h1>
   <div class="tabs" role="tablist" aria-label="Channel">
     <button class="tab" role="tab" data-t="overview">Overview</button>
     <button class="tab" role="tab" data-t="phone">Phone</button>
@@ -329,7 +319,7 @@
     <form class="range-pop" id="range-custom" hidden>
       <label>From <input type="date" id="rc-from" required></label>
       <label>To <input type="date" id="rc-to" required></label>
-      <button class="btn btn-ghost" type="submit">Apply</button>
+      <button class="k-btn k-btn-secondary k-btn-block" type="submit">Apply</button>
     </form>
   </div>
   <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true"><span class="k-sr-only">Loading analytics…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
@@ -635,7 +625,7 @@
       .sort(function(x, y){ return x.at - y.at; });
     var list = '<div class="card" style="margin-bottom:12px"><h2>Waiting for a Reply · ' + items.length + '</h2>' + (items.length ? '<div class="wl">' + items.map(function(it){
       return '<div class="wrow"><span class="wch" style="background:' + CH[it.ch].color + '">' + CH[it.ch].label + '</span><div class="wbody"><div class="wtop"><b>' + esc(it.who) + '</b><span class="wage"><time datetime="' + new Date(it.at).toISOString() + '" data-k-tip="' + esc(new Date(it.at).toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + '">' + ago(it.at) + ' ago</time></span></div><div class="wtext">' + esc(it.text) + (it.failed ? ' <span class="wfail">Reply Failed</span>' : "") + '</div></div>' +
-        '<div class="wact"><a class="wlink" href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '>Open<span class="k-sr-only"> ' + esc(it.who) + '\'s thread</span></a>' + (it.key ? '<button class="wlink" data-dismiss="' + esc(it.key) + '">Dismiss</button>' : "") + '</div></div>'; }).join("") + '</div>' : '<p class="note">Nobody is waiting on us. 🎉'.replace(" 🎉", "") + '</p>') + '</div>';
+        '<div class="wact"><a class="k-btn k-btn-sm k-btn-ghost" href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '>Open<span class="k-sr-only"> ' + esc(it.who) + '\'s thread</span></a>' + (it.key ? '<button class="k-btn k-btn-sm k-btn-ghost" data-dismiss="' + esc(it.key) + '">Dismiss</button>' : "") + '</div></div>'; }).join("") + '</div>' : '<p class="note">Nobody is waiting on us. 🎉'.replace(" 🎉", "") + '</p>') + '</div>';
     // 2. Replied within an hour, same definition per channel (first reply ≤ 1h after the message).
     var rs = p && p.replySpeed, phT = rs ? (rs.under15m + rs.under1h + rs.under6h + rs.later) : 0;
     var speed = [ rs && { ch: "phone", v: phT ? Math.round(100 * (rs.under15m + rs.under1h) / phT) : null, n: (rs.under15m + rs.under1h) + " of " + phT },
@@ -864,8 +854,8 @@
     var tr = b.closest("tr"), key = b.getAttribute("data-dismiss") || b.getAttribute("data-undo"), undo = b.hasAttribute("data-undo");
     b.disabled = true;
     dismiss(key, undo).then(function(){
-      if (undo){ tr.classList.remove("gone"); tr.querySelector(".act").innerHTML = "<button class='link-btn' data-dismiss='" + esc(key) + "'>Dismiss</button>"; }
-      else { tr.classList.add("gone"); tr.querySelector(".act").innerHTML = "<span class='muted'>Dismissed</span> <button class='link-btn' data-undo='" + esc(key) + "'>Undo</button>"; }
+      if (undo){ tr.classList.remove("gone"); tr.querySelector(".act").innerHTML = "<button class='k-btn k-btn-sm k-btn-ghost' data-dismiss='" + esc(key) + "'>Dismiss</button>"; }
+      else { tr.classList.add("gone"); tr.querySelector(".act").innerHTML = "<span class='muted'>Dismissed</span> <button class='k-btn k-btn-sm k-btn-ghost' data-undo='" + esc(key) + "'>Undo</button>"; }
       var n = $("open").querySelectorAll("tr[data-key]:not(.gone)").length; $("k-open").textContent = n;
     }).catch(function(){ b.disabled = false; b.textContent = "Try Again"; });
   });
@@ -980,7 +970,7 @@
     $("speed-head").innerHTML = stot ? "<b>" + Math.round(100 * fast / stot) + "%</b> got a reply within an hour (" + fast + " of " + stot + ")." : "No missed callers to reply to in this range.";
     $("speed").innerHTML = stot ? rows2.map(function(x){ return "<div class='hrow'><span>" + x[0] + "</span><span class='track'><span class='fill' style='width:" + (100 * (x[1] || 0) / smax) + "%'></span></span><span class='n'>" + (x[1] || 0) + "</span></div>"; }).join("") : "";
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " data-k-tip='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' data-k-tip='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
+      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " data-k-tip='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' data-k-tip='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='k-btn k-btn-sm k-btn-ghost' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
     }).join("") : "<tr><td colspan='5' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }
