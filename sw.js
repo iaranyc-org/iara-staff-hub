@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v42';   // v42: Watch List round-4 photos for the thinnest profiles
+const VERSION = 'iara-lineup-v43';   // v43: kit files network-first (stale kit CSS/JS broke the new nav); skip /private-dining
 const CORE = [
   './',
   './iara_hub.html',
@@ -67,11 +67,17 @@ self.addEventListener('fetch', (e) => {
   // iara Inbox (/inbox) is its own live app proxied here: never touch it. Cache-first froze its data
   // (a 10-hour-old "connection broken" banner, 2026-10-12) and would pin old builds after deploys.
   if (url.pathname === '/inbox' || url.pathname.startsWith('/inbox/')) return;
+  // Private Dining is also its own live app proxied here: same rule as Inbox.
+  if (url.pathname === '/private-dining' || url.pathname.startsWith('/private-dining/')) return;
 
   // Good Vibes content changes all day: never serve it from cache.
   if (url.pathname === '/vibes.json') return;
 
   const isDoc = req.mode === 'navigate' || /\.html$/.test(url.pathname);
+  // The shared staff kit (/kit/*: CSS, nav and palette scripts) changes with every UI release and
+  // must always match the page it ships with. Cache-first served yesterday's kit under today's page
+  // and broke the nav (2026-10-13). So: network first, cache only as the offline fallback.
+  const isKit = url.origin === location.origin && url.pathname.startsWith('/kit/');
 
   // Root now covers three pages (the hub, Lineup at /lineup, Ops at /ops), so
   // each is cached and matched by its own request rather than one hardcoded
@@ -79,7 +85,7 @@ self.addEventListener('fetch', (e) => {
   // route once it was cached. Falls back to Lineup specifically (not the hub)
   // because that is the one staff actually need with no signal in the
   // basement; the hub is just a launcher.
-  if (isDoc) {
+  if (isDoc || isKit) {
     e.respondWith(
       fetch(req)
         .then((res) => {
@@ -88,8 +94,8 @@ self.addEventListener('fetch', (e) => {
           return res;
         })
         .catch(() => caches.match(req)
-          .then((r) => r || caches.match('./iara_staff_hub.html'))
-          .then((r) => r || caches.match('./')))
+          .then((r) => r || (isKit ? null : caches.match('./iara_staff_hub.html')))
+          .then((r) => r || (isKit ? r : caches.match('./'))))
     );
     return;
   }
