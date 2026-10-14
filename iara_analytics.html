@@ -24,7 +24,7 @@
 <script src="/kit/tip.js" defer></script>
 <script src="/kit/confirm.js" defer></script>
 <style>
-  #panel-phone #ph-err.k-alert{ border-color:var(--k-critical); color:var(--k-critical); border-radius:var(--k-radius); }
+  #panel-phone #ph-err.k-alert{ border-color:var(--k-critical); color:var(--k-critical); border-radius:var(--k-radius); background:var(--k-surface); box-shadow:none; padding:12px 14px; font-size:14px; }
   /* Same tokens and components as Phone Analytics (iara_phone.html), so the embedded Phone tab is seamless. */
   :root{
     /* Legacy names mapped onto the iara staff kit (kit/tokens.css). Channel colours below are chart data colours. */
@@ -54,17 +54,26 @@
   .loading-skel{ padding:4px 0 24px; }
   .updated{ font-size:13px; color:var(--river); white-space:nowrap; margin-left:auto; }
   /* Page frame is the kit's .k-page (staff.css), aligned to the app bar. */
-  .tabs{ display:flex; gap:4px; padding:4px; background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); overflow-x:auto; scrollbar-width:none; margin-bottom:14px; }
-  .tabs::-webkit-scrollbar{ display:none; }
-  .tab{ flex:1 0 auto; font:600 14px/1 var(--k-font-sans); color:var(--k-muted); background:transparent; border:0; border-radius:var(--k-radius); padding:0 14px; min-height:var(--k-tap); cursor:pointer; white-space:nowrap; }
-  .tab:hover{ color:var(--k-ink); }
-  .tab[aria-selected="true"]{ background:var(--k-primary); color:var(--k-primary-ink); }
+  /* Tabs and range chips are the kit's .k-tabs/.k-tab and .k-chip (staff.css). */
+  .k-tabs{ display:flex; width:max-content; margin-bottom:14px; scrollbar-width:none; }
+  .k-tabs::-webkit-scrollbar{ display:none; }
   .range-bar{ display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-bottom:18px; }
-  .seg{ display:flex; gap:4px; padding:4px; background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); overflow-x:auto; scrollbar-width:none; max-width:100%; }
-  .seg::-webkit-scrollbar{ display:none; }
-  .chip{ flex:none; font:500 14px/1 var(--k-font-sans); color:var(--k-ink); background:transparent; border:0; border-radius:var(--k-radius-pill); padding:0 14px; min-height:var(--k-tap); font-variant-numeric:tabular-nums; cursor:pointer; white-space:nowrap; }
-  .chip:hover{ background:var(--k-raised); }
-  .chip[aria-pressed="true"]{ background:var(--k-ink); color:var(--k-page); }
+  /* Chips wrap instead of scrolling, so Since Opening and Custom never hide off-screen on a phone. */
+  .seg{ display:flex; flex-wrap:wrap; gap:4px; max-width:100%; }
+  .k-chip{ white-space:nowrap; }
+  .k-chip:hover{ background:var(--k-raised); }
+  .k-chip[aria-pressed="true"]:hover{ background:var(--k-ink); }
+  .an-err{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px 12px; margin:-4px 0 12px; }
+  .an-err[hidden]{ display:none; }
+  .an-err p{ margin:0; }
+  .an-offline{ margin:0 0 12px; padding:10px 14px; border-radius:var(--k-radius); border:1px solid var(--k-border); background:var(--k-surface); font-size:14px; }
+  .wnames{ list-style:none; margin:8px 0 0; padding:0; display:grid; gap:2px; font-size:13.5px; }
+  .wnames a{ display:flex; gap:6px; align-items:baseline; min-height:28px; color:var(--k-ink); text-decoration:none; }
+  .wnames .wn-ch{ color:var(--k-muted); font-size:12px; white-space:nowrap; }
+  .wnames .wn-who{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; text-decoration:underline; text-underline-offset:2px; }
+  .whint{ margin-top:6px; font-size:12px; color:var(--k-muted); }
+  .whint [data-k-tip]{ text-decoration:underline dotted; text-underline-offset:2px; cursor:help; }
+  .kpi .n a{ white-space:nowrap; }
   /* Custom dates: a popover hanging from the Custom button, shared by every tab. */
   .range-bar{ position:relative; }
   .range-pop{ position:absolute; left:0; z-index:30; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px 12px; align-items:end;
@@ -143,9 +152,13 @@
   .loading{ color:var(--k-muted); padding:60px 0; text-align:center; }
   /* Phones: tabs and range chips scroll sideways; fade the right edge so it reads as "more this way". */
   @media (max-width:560px){
-    .tabs, .seg{ -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
-    .tabs.at-end, .seg.at-end{ -webkit-mask-image:none; mask-image:none; }
-    .tab{ padding:0 12px; }
+    .k-tabs{ width:auto; -webkit-mask-image:linear-gradient(90deg,#000 82%,transparent); mask-image:linear-gradient(90deg,#000 82%,transparent); }
+    .k-tabs.at-end{ -webkit-mask-image:none; mask-image:none; }
+    .k-tab{ padding:0 10px; flex:none; }
+  }
+  /* All five tabs fit without scrolling down to 360 wide. */
+  @media (max-width:420px){ .k-tabs{ gap:2px; } .k-tab{ padding:0 8px; } }
+  @media (max-width:374px){ .k-tab{ padding:0 6px; font-size:13.5px; }
   }
   @media (max-width:760px){
     .kpis{ grid-template-columns:1fr 1fr; }
@@ -303,21 +316,21 @@
 <main class="k-page">
   <p data-k-subtitle></p>
   <h1 class="k-sr-only">Analytics</h1>
-  <div class="tabs" role="tablist" aria-label="Channel">
-    <button class="tab" role="tab" data-t="overview">Overview</button>
-    <button class="tab" role="tab" data-t="phone">Phone</button>
-    <button class="tab" role="tab" data-t="email">Email</button>
-    <button class="tab" role="tab" data-t="instagram">Instagram</button>
-    <button class="tab" role="tab" data-t="reviews">Reviews</button>
+  <div class="k-tabs" role="tablist" aria-label="Channel">
+    <button class="k-tab" role="tab" data-t="overview">Overview</button>
+    <button class="k-tab" role="tab" data-t="phone">Phone</button>
+    <button class="k-tab" role="tab" data-t="email">Email</button>
+    <button class="k-tab" role="tab" data-t="instagram">Instagram</button>
+    <button class="k-tab" role="tab" data-t="reviews">Reviews</button>
   </div>
   <div class="range-bar" id="range-bar">
     <div class="seg" role="group" aria-label="Date range">
-      <button class="chip" data-r="today">Today</button>
-      <button class="chip" data-r="yesterday">Yesterday</button>
-      <button class="chip" data-r="7d">7 Days</button>
-      <button class="chip" data-r="30d">30 Days</button>
-      <button class="chip" data-r="open">Since Opening</button>
-      <button class="chip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="range-custom">Custom <span aria-hidden="true">▾</span></button>
+      <button class="k-chip" data-r="today">Today</button>
+      <button class="k-chip" data-r="yesterday">Yesterday</button>
+      <button class="k-chip" data-r="7d">7 Days</button>
+      <button class="k-chip" data-r="30d">30 Days</button>
+      <button class="k-chip" data-r="open">Since Opening</button>
+      <button class="k-chip" data-r="custom" aria-haspopup="dialog" aria-expanded="false" aria-controls="range-custom">Custom <span aria-hidden="true">▾</span></button>
     </div>
     <span class="range-text" id="range-text"></span>
     <span class="updated" id="updated"></span>
@@ -328,7 +341,8 @@
     </form>
   </div>
   <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true"><span class="k-sr-only">Loading analytics…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
-  <p class="err" id="err" hidden></p>
+  <p class="an-offline" id="offline" role="status" hidden>You&rsquo;re offline. These numbers are from the last load and refresh when you&rsquo;re back.</p>
+  <div class="k-alert an-err" id="err" role="alert" hidden><p id="err-msg"></p><button class="k-btn k-btn-sm k-btn-secondary" type="button" id="err-retry">Try Again</button></div>
   <section id="panel-overview" role="tabpanel"></section>
   <section id="panel-phone" role="tabpanel" hidden>
 <!-- Phone Analytics (was iara_phone.html). Owned by the phone-stats work; ids are ph-*, styles scoped to #panel-phone. -->
@@ -445,14 +459,15 @@
     if (r === "yesterday") return { key: r, from: shift(t, -1), to: shift(t, -1) };
     if (r === "30d") return { key: r, from: shift(t, -29), to: t };
     if (r === "open") return { key: r, from: OPENED_DAY, to: t };
-    return { key: "7d", from: shift(t, -6), to: t };
+    if (r === "7d") return { key: r, from: shift(t, -6), to: t };
+    return { key: "today", from: t, to: t };   // default: Jay's question is "how are we doing today"
   }
   var nice = function(ds){ return new Date(ds + "T12:00:00Z").toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" }); };
   var hashGet = function(k){ return (new RegExp("[#&]" + k + "=([^&]+)").exec(location.hash) || [])[1]; };
   var TABS = ["overview", "phone", "email", "instagram", "reviews"];
   // Unknown or stale tab names (typo'd shared links) fall back to Overview instead of a blank page.
   var tabOf = function(t){ return TABS.indexOf(t) >= 0 ? t : "overview"; };
-  var range = resolve(hashGet("r") || "7d"), tab = tabOf(hashGet("t"));
+  var range = resolve(hashGet("r") || "today"), tab = tabOf(hashGet("t"));
   var rangeTag = function(){ return range.key === "custom" ? range.from + ".." + range.to : range.key; };
   function syncHash(){ try { history.replaceState(null, "", "#t=" + tab + "&r=" + rangeTag()); } catch(e){} }
   // A shared link keeps what the page actually shows: clamped custom dates and fixed tab names go back into the URL.
@@ -468,18 +483,20 @@
     if (tab !== lastTab){ lastTab = tab; window.dispatchEvent(new CustomEvent("analytics:tab", { detail: { tab: tab } })); }
   }
   function paint(){
-    document.querySelectorAll(".chip").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
-    document.querySelectorAll(".tab").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.t === tab)); });
+    document.querySelectorAll(".k-chip[data-r]").forEach(function(b){ b.setAttribute("aria-pressed", String(b.dataset.r === range.key)); });
+    document.querySelectorAll(".k-tab[data-t]").forEach(function(b){ b.setAttribute("aria-selected", String(b.dataset.t === tab)); });
     TABS.forEach(function(t){ $("panel-" + t).hidden = t !== tab; });
+    // The Phone tab has its own loader and error box; don't stack the page's box on top of it.
+    $("err").style.display = tab === "phone" ? "none" : "";
     var sameMonth = range.from.slice(0, 7) === range.to.slice(0, 7);
     $("range-text").textContent = range.from === range.to ? nice(range.from) : nice(range.from) + " to " + (sameMonth ? Number(range.to.slice(8)) : nice(range.to));
     announce();
   }
   // Keep the picked tab/chip in view and drop the fade once a scroller reaches its end.
-  document.querySelectorAll(".tabs,.seg").forEach(function(el){ var upd = function(){ el.classList.toggle("at-end", el.scrollLeft + el.clientWidth >= el.scrollWidth - 2); };
+  document.querySelectorAll(".k-tabs").forEach(function(el){ var upd = function(){ el.classList.toggle("at-end", el.scrollLeft + el.clientWidth >= el.scrollWidth - 2); };
     el.addEventListener("scroll", upd, { passive: true }); window.addEventListener("resize", upd); setTimeout(upd, 0); });
-  window.addEventListener("analytics:tab", function(){ var b = document.querySelector('.tab[aria-selected="true"]'); if (b && b.scrollIntoView) b.scrollIntoView({ block: "nearest", inline: "nearest" }); });
-  document.querySelectorAll(".chip").forEach(function(b){ b.addEventListener("click", function(){
+  window.addEventListener("analytics:tab", function(){ var b = document.querySelector('.k-tab[aria-selected="true"]'); if (b && b.scrollIntoView) b.scrollIntoView({ block: "nearest", inline: "nearest" }); });
+  document.querySelectorAll(".k-chip[data-r]").forEach(function(b){ b.addEventListener("click", function(){
     if (b.dataset.r === "custom"){ openCustom(b); return; }
     closeCustom(); range = resolve(b.dataset.r); syncHash(); paint(); load(); }); });
   // Custom dates popover: anchored under the Custom button; closes on Apply, Escape or a click outside.
@@ -496,13 +513,13 @@
     f.style.left = left + "px"; f.style.top = (cr.bottom - br.top + 8) + "px"; f.style.setProperty("--caret", caret + "px");
     btn.setAttribute("aria-expanded", "true"); $("rc-from").focus({ preventScroll: true });
   }
-  function closeCustom(){ $("range-custom").hidden = true; var c = document.querySelector('.chip[data-r="custom"]'); if (c) c.setAttribute("aria-expanded", "false"); }
+  function closeCustom(){ $("range-custom").hidden = true; var c = document.querySelector('.k-chip[data-r="custom"]'); if (c) c.setAttribute("aria-expanded", "false"); }
   $("range-custom").addEventListener("submit", function(ev){ ev.preventDefault();
     if (!$("rc-from").value || !$("rc-to").value) return;
     closeCustom(); range = resolve($("rc-from").value + ".." + $("rc-to").value); syncHash(); paint(); load(); });
-  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("range-custom").hidden){ closeCustom(); document.querySelector('.chip[data-r="custom"]').focus(); } });
-  document.addEventListener("click", function(e){ if (!$("range-custom").hidden && !e.target.closest("#range-custom") && !e.target.closest('.chip[data-r="custom"]')) closeCustom(); });
-  document.querySelectorAll(".tab").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
+  document.addEventListener("keydown", function(e){ if (e.key === "Escape" && !$("range-custom").hidden){ closeCustom(); document.querySelector('.k-chip[data-r="custom"]').focus(); } });
+  document.addEventListener("click", function(e){ if (!$("range-custom").hidden && !e.target.closest("#range-custom") && !e.target.closest('.k-chip[data-r="custom"]')) closeCustom(); });
+  document.querySelectorAll(".k-tab[data-t]").forEach(function(b){ b.addEventListener("click", function(){ tab = b.dataset.t; syncHash(); paint(); }); });
   // Links like /analytics#t=email&r=30d work even when the page is already open.
   window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = tabOf(t); var nr = resolve(r || rangeTag()), changed = (nr.from + nr.to + nr.key) !== (range.from + range.to + range.key); range = nr; syncHash(); paint(); if (changed) load(); });
 
@@ -513,6 +530,17 @@
   $("gate-form").addEventListener("submit", function(ev){ ev.preventDefault(); $("gate-err").hidden = true;
     firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(e){ $("gate-err").textContent = e && e.code === "auth/network-request-failed" ? "Couldn't reach sign-in. Check your connection and try again." : "That password is not right. Ask your manager."; $("gate-err").hidden = false; }); });
 
+  // One error box for the page (kit .k-alert) with Try Again; offline gets its own wording and a banner.
+  function showErr(msg){
+    $("err-msg").textContent = navigator.onLine === false ? "You're offline, so the numbers couldn't load. They'll load when you're back online." : msg;
+    $("err").hidden = false; syncOnline();
+  }
+  $("err-retry").addEventListener("click", function(){ $("err").hidden = true; load(); });
+  // The banner is for "you're looking at the last load"; when nothing loaded, the error box already says offline.
+  function syncOnline(){ $("offline").hidden = navigator.onLine !== false || !$("err").hidden; }
+  window.addEventListener("offline", syncOnline);
+  window.addEventListener("online", function(){ syncOnline(); if (!$("err").hidden && firebase.auth().currentUser) { $("err").hidden = true; load(); } });
+  syncOnline();
   var seq = 0;
   function load(){
     var mine = ++seq; $("loading").hidden = false; $("err").hidden = true;
@@ -525,7 +553,7 @@
       if (mine !== seq) return;
       $("loading").hidden = true; render(res[0], res[1]);
       $("updated").textContent = "Updated " + new Date(res[0].generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
-    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; $("err").hidden = false; $("err").textContent = "Couldn't load analytics. Check your connection and try again in a minute."; });
+    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; showErr("Couldn't load analytics. The server didn't answer. Try again in a minute."); });
   }
 
   // ---- Building blocks ----
@@ -688,6 +716,16 @@
     return ctCard + '<div class="grid2 even">' + speedCard + paceCard + '</div><div class="grid2 even">' + hoursCard + asksCard + '</div>';
   }
 
+  // Who is waiting (Jay: "who's still waiting?"): oldest first, up to 5, each linking to where it gets answered.
+  function waitingNames(a, p){
+    var items = (a.waiting || []).map(function(w){ return { ch: w.channel, who: w.name, at: w.at, href: "/inbox" }; })
+      .concat(((p && p.open) || []).map(function(o){ return { ch: "phone", who: "…" + o.last4, at: o.at, href: "#t=phone" }; }))
+      .sort(function(x, y){ return x.at - y.at; });
+    var more = items.length - 5;
+    return '<ul class="wnames">' + items.slice(0, 5).map(function(it){
+      return '<li><a href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '><span class="wn-who">' + esc(it.who) + '</span><span class="wn-ch">' + CH[it.ch].label + " · " + ago(it.at) + '</span></a></li>'; }).join("") +
+      '</ul><a href="/inbox" target="_blank" rel="noopener" style="color:var(--river);display:inline-block;margin-top:6px">' + (more > 0 ? "+" + more + " more in " : "Open ") + 'iara Inbox</a>';
+  }
   function render(a, p){
     var e = a.email, dm = a.instagram.dms, cm = a.instagram.comments, rv = a.reviews.resy;
     // Phone: same definition as the Phone tab (handled / (total - autoOnly)); email/IG replies to a phone guest already count there.
@@ -711,9 +749,10 @@
     var nowCount = (a.waiting || []).length + ((p && p.open) || []).length;
     $("panel-overview").innerHTML =
       '<div class="kpis">' + kpi(tot.in, "Guest Touchpoints", "Calls, texts, emails, DMs, comments and ratings", dlt(tot.in, prevTot)) +
-        kpi(pct(tot.replied, tot.needed), "Replied To", "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply") +
+        kpi(tot.needed ? pct(tot.replied, tot.needed) : "-", "Replied To", tot.needed ? "<b>" + tot.replied + "</b> of " + tot.needed + " that needed a reply" : "Nothing needed a reply") +
         // Same count as the Needs a Reply Now list: "now" means now, whatever range is picked.
-        kpi(nowCount, "Waiting", nowCount ? 'Across every channel · <a href="/inbox" style="color:var(--river)">Open iara Inbox →</a>' : "All caught up") +
+        kpi(nowCount, "Waiting", (nowCount ? waitingNames(a, p) : "All caught up") +
+          '<div class="whint"><span tabindex="0" data-k-tip="Counts people waiting on a first reply: emails, DMs and comments still open in iara Inbox, plus callers and texters on the Phone tab we haven\'t called or texted back. Inbox&rsquo;s To Approve counts drafted cards instead, including texts, story replies and vendor mail, so the two numbers can differ.">How this differs from Inbox</span></div>') +
         kpi(rv.avg == null ? "-" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
       // Volume first (where guests came from), then how fast we replied, then outcomes.
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
@@ -785,7 +824,7 @@
         render(j);
         if (j.refreshing && followUps < 3){ followUps++; setTimeout(function(){ load(false, true); }, 8000); }
       })
-      .catch(function(e){ if (!quiet || !shown){ $("err").textContent = "Couldn't load phone data. Refresh the page to try again."; $("err").hidden = false; } })
+      .catch(function(e){ if (!quiet || !shown){ var m = navigator.onLine === false ? "You're offline, so phone data couldn't load. It loads when you're back online." : "Couldn't load phone data. The server didn't answer. Try again in a minute."; $("err").innerHTML = '<p style="margin:0">' + m + '</p><button class="k-btn k-btn-sm k-btn-secondary" type="button">Try Again</button>'; $("err").classList.add("an-err"); $("err").setAttribute("role", "alert"); $("err").querySelector("button").onclick = function(){ load(false, false); }; $("err").hidden = false; } })
       .finally(function(){ $("loading").hidden = true; });
   }
 
@@ -991,11 +1030,11 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
-  {label:'Open Overview', keywords:'analytics tab summary all channels', run:function(){ var b=document.querySelector('.tab[data-t="overview"]'); if(b) b.click(); }},
-  {label:'Open Phone', keywords:'analytics tab calls texts quo', run:function(){ var b=document.querySelector('.tab[data-t="phone"]'); if(b) b.click(); }},
-  {label:'Open Email', keywords:'analytics tab gmail contact', run:function(){ var b=document.querySelector('.tab[data-t="email"]'); if(b) b.click(); }},
-  {label:'Open Instagram', keywords:'analytics tab ig dms', run:function(){ var b=document.querySelector('.tab[data-t="instagram"]'); if(b) b.click(); }},
-  {label:'Open Reviews', keywords:'analytics tab google stars', run:function(){ var b=document.querySelector('.tab[data-t="reviews"]'); if(b) b.click(); }}
+  {label:'Open Overview', keywords:'analytics tab summary all channels', run:function(){ var b=document.querySelector('.k-tab[data-t="overview"]'); if(b) b.click(); }},
+  {label:'Open Phone', keywords:'analytics tab calls texts quo', run:function(){ var b=document.querySelector('.k-tab[data-t="phone"]'); if(b) b.click(); }},
+  {label:'Open Email', keywords:'analytics tab gmail contact', run:function(){ var b=document.querySelector('.k-tab[data-t="email"]'); if(b) b.click(); }},
+  {label:'Open Instagram', keywords:'analytics tab ig dms', run:function(){ var b=document.querySelector('.k-tab[data-t="instagram"]'); if(b) b.click(); }},
+  {label:'Open Reviews', keywords:'analytics tab google stars', run:function(){ var b=document.querySelector('.k-tab[data-t="reviews"]'); if(b) b.click(); }}
 ]); });
 </script>
 <script>
