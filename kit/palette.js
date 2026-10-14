@@ -73,7 +73,7 @@
       '<div class="k-palette-scrim" data-close></div>' +
       '<div class="k-palette-dialog" role="dialog" aria-modal="true" aria-label="Search Staff Apps">' +
       '<div class="k-palette-head">' +
-      '<input class="k-palette-input" type="text" role="combobox" aria-expanded="true" aria-controls="k-palette-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Search Apps and Actions" aria-label="Search Apps and Actions">' +
+      '<input class="k-palette-input" type="text" role="combobox" aria-expanded="true" aria-controls="k-palette-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Search apps and actions" aria-label="Search apps and actions">' +
       '<button type="button" class="k-palette-esc" data-close aria-label="Close">Esc</button></div>' +
       '<ul class="k-palette-list" id="k-palette-list" role="listbox" aria-label="Results"></ul></div>';
     document.body.appendChild(root);

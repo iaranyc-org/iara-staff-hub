@@ -70,7 +70,7 @@
   // Account menu repaints on its own, so a late sign-in never interrupts the name roll.
   function paintAccount(el) {
     var box = el.querySelector("[data-k-acct]"); if (!box) return;
-    box.innerHTML = account ? menu("k-acct-menu", "k-appbar-btn", '<span class="k-avatar">' + esc((account.email || "?").charAt(0)) + "</span>", "Account",
+    box.innerHTML = account ? menu("k-acct-menu", "k-appbar-btn", '<span class="k-avatar">' + esc((account.email || "?").charAt(0)) + "</span>", account.email ? "Account, " + esc(account.email) : "Account",
       '<div class="k-menu-label">' + esc(account.email || "Signed in") + '</div><div class="k-menu-sep" role="separator"></div>' +
       (account.signOut ? '<button type="button" class="k-menu-item" role="menuitem" data-k-signout>' + ICON.out + "<span>Sign Out</span></button>" : "")) : "";
     var so = box.querySelector("[data-k-signout]");
