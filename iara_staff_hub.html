@@ -1214,7 +1214,7 @@
       <p data-k-subtitle></p>
       <div class="shiftcard">
         <p class="sc-date mono" id="home-date"></p>
-        <h1 class="sc-name">Evening, <span id="home-name">there</span>.</h1>
+        <h1 class="sc-name" id="home-greet">Good evening.</h1>
         <p class="sc-sub">Your first week: Manual, Menu, Study, Final Exam.</p>
         <div class="sc-rule"></div>
         <p class="sc-blank" id="sc-blank" hidden>No tests run yet. Take the Final Exam when you're ready.</p>
@@ -2397,7 +2397,8 @@ function enterShell(){
   syncNavAccount();
   document.getElementById("sb-name").textContent = profile.name;
   document.getElementById("sb-role").textContent = profile.role;
-  document.getElementById("home-name").textContent = profile.name.split(" ")[0];
+  var hFirst = (profile.name || "").trim().split(" ")[0];
+  document.getElementById("home-greet").textContent = hFirst ? "Evening, " + hFirst + "." : "Good evening.";
   var dEl = document.getElementById("home-date");
   if (dEl) dEl.textContent = new Date().toLocaleDateString(undefined,
     { weekday:"short", month:"short", day:"numeric" });

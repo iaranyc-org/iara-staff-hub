@@ -20,6 +20,8 @@
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/palette.js" defer></script>
 <script src="/kit/nav.js" defer></script>
+<script src="/kit/tip.js" defer></script>
+<script src="/kit/confirm.js" defer></script>
 <style>
   #panel-phone #ph-err.k-alert{ border-color:var(--k-critical); color:var(--k-critical); border-radius:var(--k-radius); }
   /* Same tokens and components as Phone Analytics (iara_phone.html), so the embedded Phone tab is seamless. */
@@ -344,7 +346,7 @@
     <div class="kpis">
       <div class="card kpi"><div class="v" id="ph-k-calls"></div><div class="l">Calls + Texts In</div><div class="n" id="ph-k-calls-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-k-ans"></div><div class="l">Call Answer Rate</div><div class="n">Business hours only, Tue to Sat, 5 to 11 PM</div><div class="n" id="ph-k-ans-n"></div></div>
-      <div class="card kpi"><div class="v" id="ph-k-handled"></div><div class="l">Guests Handled</div><div class="n" id="ph-k-handled-n"></div></div>
+      <div class="card kpi"><div class="v" id="ph-k-handled"></div><div class="l">Guests Answered</div><div class="n" id="ph-k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-k-open"></div><div class="l">Waiting for a Reply</div><div class="n" id="ph-k-open-n"></div></div>
     </div>
     <h2 style="margin:22px 0 12px">How We Covered the Line</h2>
@@ -384,7 +386,7 @@
     <div class="card" style="margin-bottom:12px">
       <h2 id="ph-trend-h">Trend</h2>
       <p class="trend-head" id="ph-trend-head"></p>
-      <div class="legend"><span><i style="background:var(--c-answered)"></i>Call Answer Rate (Business Hours)</span><span><i style="background:var(--c-voicemail)"></i>Guests Handled (Calls + Texts)</span></div>
+      <div class="legend"><span><i style="background:var(--c-answered)"></i>Call Answer Rate (Business Hours)</span><span><i style="background:var(--c-voicemail)"></i>Guests Answered (Calls + Texts)</span></div>
       <div class="chart"><div class="yaxis" id="ph-trend-y" aria-hidden="true"></div><div class="bars trend" id="ph-trend" role="img"></div><div></div><div class="xl" id="ph-trend-x"></div></div>
     </div>
     <div class="grid2">
@@ -571,7 +573,7 @@
     var bars = '<div class="bars tr">' + pts.map(function(p){
       var vals = series.map(function(s){ return s.val(p); });
       var tip = esc(p.label + (p.partial ? " (so far)" : "") + ": " + series.map(function(s, i){ return s.name + " " + (vals[i] == null ? "-" : s.fmt(vals[i])); }).join(", "));
-      return '<div class="bar' + (p.partial ? " partial" : "") + '" title="' + tip + '">' + (vals.every(function(v){ return v == null; }) ? '<span class="none" aria-label="No data">-</span>' :
+      return '<div class="bar' + (p.partial ? " partial" : "") + '" data-k-tip="' + tip + '">' + (vals.every(function(v){ return v == null; }) ? '<span class="none" aria-label="No data">-</span>' :
         series.map(function(s, i){ var v = vals[i]; return '<span style="height:' + (v == null ? 0 : Math.max(100 * v / max, 1)) + '%;background:' + s.color + '">' + (v != null && !p.partial ? "<em>" + s.fmt(v) + "</em>" : "") + '</span>'; }).join("")) + '</div>'; }).join("") + '</div>';
     var xl = '<div class="xl">' + pts.map(function(p){ return '<div>' + esc((wk ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : "")) + '</div>'; }).join("") + '</div>';
     return '<div class="card" style="margin-bottom:12px"><h2>' + title + (wk ? " · Week over Week" : " · Day over Day") + '</h2><p style="margin:0 0 10px">' + head + '</p>' +
@@ -591,7 +593,7 @@
     var max = 1; days.forEach(function(d, i){ series.forEach(function(s){ max = Math.max(max, s.vals[i]); }); }); max = niceMax(max);
     // Phones fit about 4 date labels without them touching; wider screens fit 10.
     var step = Math.ceil(days.length / (window.innerWidth <= 420 ? 4 : 10));
-    var bars = '<div class="bars">' + days.map(function(d, i){ return '<div class="bar' + (series.length > 1 ? " grp" : "") + '" title="' + md(d) + ": " + series.map(function(s){ return s.name + " " + s.vals[i]; }).join(", ") + '">' +
+    var bars = '<div class="bars">' + days.map(function(d, i){ return '<div class="bar' + (series.length > 1 ? " grp" : "") + '" data-k-tip="' + md(d) + ": " + series.map(function(s){ return s.name + " " + s.vals[i]; }).join(", ") + '">' +
       series.map(function(s){ var h = 100 * s.vals[i] / max; return h ? '<span style="height:' + h + '%;background:' + s.color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
     var xl = '<div class="xl">' + days.map(function(d, i){ return '<div>' + (i % step === 0 ? md(d) : "") + '</div>'; }).join("") + '</div>';
     return legend(series) + withAxis(max, bars, xl);
@@ -599,7 +601,7 @@
 
   function hourBars(byHour){
     var max = niceMax(Math.max.apply(null, byHour.concat([1]))), lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
-    var bars = '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" title="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--river)"></span></div>'; }).join("") + '</div>';
+    var bars = '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" data-k-tip="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--river)"></span></div>'; }).join("") + '</div>';
     return withAxis(max, bars, '<div class="xl">' + byHour.map(function(n, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>');
   }
 
@@ -632,7 +634,7 @@
       .concat(((p && p.open) || []).map(function(o){ return { ch: "phone", who: "…" + o.last4 + (o.landline ? " (landline)" : ""), at: o.at, text: o.type === "voicemail" ? "Voicemail" + (o.count > 1 ? " · " + o.count + " tries" : "") : (o.preview || "Text"), href: "#t=phone", key: o.key, failed: o.replyFailed }; }))
       .sort(function(x, y){ return x.at - y.at; });
     var list = '<div class="card" style="margin-bottom:12px"><h2>Waiting for a Reply · ' + items.length + '</h2>' + (items.length ? '<div class="wl">' + items.map(function(it){
-      return '<div class="wrow"><span class="wch" style="background:' + CH[it.ch].color + '">' + CH[it.ch].label + '</span><div class="wbody"><div class="wtop"><b>' + esc(it.who) + '</b><span class="wage"><time datetime="' + new Date(it.at).toISOString() + '" title="' + esc(new Date(it.at).toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + '">' + ago(it.at) + ' ago</time></span></div><div class="wtext">' + esc(it.text) + (it.failed ? ' <span class="wfail">Reply Failed</span>' : "") + '</div></div>' +
+      return '<div class="wrow"><span class="wch" style="background:' + CH[it.ch].color + '">' + CH[it.ch].label + '</span><div class="wbody"><div class="wtop"><b>' + esc(it.who) + '</b><span class="wage"><time datetime="' + new Date(it.at).toISOString() + '" data-k-tip="' + esc(new Date(it.at).toLocaleString("en-US", { timeZone: "America/New_York", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" })) + '">' + ago(it.at) + ' ago</time></span></div><div class="wtext">' + esc(it.text) + (it.failed ? ' <span class="wfail">Reply Failed</span>' : "") + '</div></div>' +
         '<div class="wact"><a class="wlink" href="' + it.href + '"' + (it.href === "/inbox" ? ' target="_blank" rel="noopener"' : "") + '>Open<span class="k-sr-only"> ' + esc(it.who) + '\'s thread</span></a>' + (it.key ? '<button class="wlink" data-dismiss="' + esc(it.key) + '">Dismiss</button>' : "") + '</div></div>'; }).join("") + '</div>' : '<p class="note">Nobody is waiting on us. 🎉'.replace(" 🎉", "") + '</p>') + '</div>';
     // 2. Replied within an hour, same definition per channel (first reply ≤ 1h after the message).
     var rs = p && p.replySpeed, phT = rs ? (rs.under15m + rs.under1h + rs.under6h + rs.later) : 0;
@@ -652,7 +654,7 @@
     var hmax = Math.max.apply(null, hrs.map(function(x){ return x.phone + x.email + x.dm + x.comment; }).concat([1]));
     var lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
     hmax = niceMax(hmax);
-    var hbars = '<div class="bars">' + hrs.map(function(x, h){ return '<div class="bar" title="' + lab(h) + ": " + (x.phone + x.email + x.dm + x.comment) + '">' + ["phone", "email", "dm", "comment"].map(function(k){ return x[k] ? '<span style="height:' + (100 * x[k] / hmax) + '%;background:' + CH[k].color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
+    var hbars = '<div class="bars">' + hrs.map(function(x, h){ return '<div class="bar" data-k-tip="' + lab(h) + ": " + (x.phone + x.email + x.dm + x.comment) + '">' + ["phone", "email", "dm", "comment"].map(function(k){ return x[k] ? '<span style="height:' + (100 * x[k] / hmax) + '%;background:' + CH[k].color + '"></span>' : ""; }).join("") + '</div>'; }).join("") + '</div>';
     var hoursCard = '<div class="card"><h2>Busiest Hours</h2>' + legend(["phone", "email", "dm", "comment"].map(function(k){ return { name: k === "dm" ? "Instagram DM" : CH[k].label, color: CH[k].color }; })) +
       withAxis(hmax, hbars, '<div class="xl">' + hrs.map(function(x, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>') + '<p class="note">Phone counts incoming calls; email and Instagram count messages. Eastern time.</p></div>';
     // 4. Top asks across channels (guests only; vendors, jobs, press left out).
@@ -720,7 +722,7 @@
         kpi(rv.avg == null ? "-" : rv.avg.toFixed(2) + " ★", "Resy Rating", rv.count + " new rating" + (rv.count === 1 ? "" : "s"), pv0 && dlt(rv.avg, pv0.resy.avg, "stars")) + '</div>' +
       // Volume first (where guests came from), then how fast we replied, then outcomes.
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
-        rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" title="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
+        rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" data-k-tip="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
       '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
         rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "-" : r.needed) + '</td><td class="num">' + (isR ? "-" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "-" : hrs(r.median)) + '</td><td class="num">' + (isR ? "-" : r.waiting) + '</td></tr>'; }).join("") +
@@ -809,9 +811,9 @@
   var when = function(t){ return new Date(t).toLocaleString("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }); };
   var esc = function(s){ return String(s).replace(/[&<>"']/g, function(c){ return { "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]; }); };
 
+  // Kit tooltip (kit/tip.js): hover, keyboard focus and tap; first line is the bar's label.
   function tipOn(el, html){
-    el.addEventListener("mousemove", function(e){ var t = $("tip"); t.innerHTML = html; t.hidden = false; t.style.left = (e.clientX + 12) + "px"; t.style.top = (e.clientY - 40) + "px"; });
-    el.addEventListener("mouseleave", function(){ $("tip").hidden = true; });
+    el.setAttribute("data-k-tip", html.replace(/<br\s*\/?>/g, "\n").replace(/<[^>]+>/g, "").replace(/&amp;/g, "&"));
   }
 
   // Trend: answer rate during service and handled rate per open day (short ranges)
@@ -841,7 +843,7 @@
         if (x[0] != null && !p.partial){ var em = document.createElement("em"); em.textContent = x[0] + "%"; sp.appendChild(em); }
         b.appendChild(sp);
       });
-      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " business-hours calls<br>Handled " + p.handled + " of " + p.needed + " guests");
+      tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " business-hours calls<br>Answered " + p.handled + " of " + p.needed + " guests");
       bars.appendChild(b);
       var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
     });
@@ -969,7 +971,7 @@
       $("r-note").textContent = "No-shows, returning guests and other channels are on the Overview. Booked = a ResyOS reservation under the same phone number, made after their first call or text (booking time estimated from Resy's reservation number, ±a few hours) and dated within 45 days. Guests who already had a booking when they reached out don't count. Covers include seated walk-ins. Cancellations aren't in the ResyOS report. Book copied " + when(Z.updatedAt) + ".";
     }
     // What guests ask about + how fast we reply.
-    var TOPIC = { reservation: "Booking a Table", fully_booked: "Booking a Full Night", running_late: "Running Late", hours: "Hours", menu_dietary: "Menu and Dietary", large_party: "Groups", catering: "Catering", complaint: "Complaint", other: "Something Else" };
+    var TOPIC = { reservation: "Booking a Table", fully_booked: "Booking a Full Night", running_late: "Running Late", hours: "Hours", menu_dietary: "Menu and Dietary", large_party: "Private Dining", catering: "Catering", complaint: "Complaint", other: "Something Else" };
     var tp = d.topics || [], tmax = tp.reduce(function(m, x){ return Math.max(m, x.n); }, 1);
     $("topics").innerHTML = tp.length ? tp.map(function(x){ return "<div class='hrow'><span>" + esc(TOPIC[x.c] || x.c) + "</span><span class='track'><span class='fill' style='width:" + (100 * x.n / tmax) + "%'></span></span><span class='n'>" + x.n + "</span></div>"; }).join("") : "<p class='muted'>No texts or voicemails in this range.</p>";
     var sp = d.replySpeed || {}, rows2 = [["Under 15 min", sp.under15m], ["15 to 60 min", sp.under1h], ["1 to 6 hours", sp.under6h], ["Later", sp.later]];
@@ -978,7 +980,7 @@
     $("speed-head").innerHTML = stot ? "<b>" + Math.round(100 * fast / stot) + "%</b> got a reply within an hour (" + fast + " of " + stot + ")." : "No missed callers to reply to in this range.";
     $("speed").innerHTML = stot ? rows2.map(function(x){ return "<div class='hrow'><span>" + x[0] + "</span><span class='track'><span class='fill' style='width:" + (100 * (x[1] || 0) / smax) + "%'></span></span><span class='n'>" + (x[1] || 0) + "</span></div>"; }).join("") : "";
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " title='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' title='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
+      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " data-k-tip='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' data-k-tip='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='link-btn' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
     }).join("") : "<tr><td colspan='5' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }

@@ -192,3 +192,24 @@
 /* App subtitle: one plain line under the bar saying what the app does (text lives in nav.js / staff-bar.tsx). */
 .k-app-sub { margin: 0 0 16px; color: var(--k-muted); font: 400 15px/1.4 var(--k-font-sans); text-wrap: pretty; }
 .k-app-sub-row { max-width: var(--k-content-max); margin: 16px auto 4px; padding: 0 16px; box-sizing: border-box; }
+
+/* Tooltip (tip.js): supplementary text on hover, focus and tap. WCAG 1.4.13. */
+.k-tip { position: fixed; z-index: 3000; max-width: min(260px, calc(100vw - 16px)); box-sizing: border-box; padding: 8px 10px; border-radius: var(--k-radius-lg); background: var(--k-raised); color: var(--k-ink); border: 1px solid var(--k-border); box-shadow: 0 8px 24px rgb(0 0 0 / .4); font: 400 13px/1.4 var(--k-font-sans); white-space: pre-line; overflow-wrap: anywhere; font-variant-numeric: tabular-nums; text-align: left; animation: k-tip-in var(--k-fast) var(--k-ease); }
+.k-tip[hidden] { display: none; }
+.k-tip[data-side="bottom"] { animation-name: k-tip-in-b; }
+@keyframes k-tip-in { from { transform: translateY(3px); } }
+@keyframes k-tip-in-b { from { transform: translateY(-3px); } }
+[data-k-tip], [data-k-tip-for] { cursor: help; }
+:where([data-k-tip], [data-k-tip-for]):focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+
+/* Confirmation dialog (confirm.js): destructive or costly actions only. */
+.k-confirm { position: fixed; inset: 0; z-index: 2500; display: flex; align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; font-family: var(--k-font-sans); }
+.k-confirm-scrim { position: absolute; inset: 0; background: rgb(0 0 0 / .55); }
+.k-confirm-dialog { position: relative; width: 100%; max-width: 420px; box-sizing: border-box; padding: 20px; background: var(--k-raised); color: var(--k-ink); border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); box-shadow: 0 16px 48px rgb(0 0 0 / .45); animation: k-palette-in var(--k-base) var(--k-ease); }
+.k-confirm-title { margin: 0 0 8px; font: 600 18px/1.3 var(--k-font-sans); color: var(--k-ink); text-wrap: balance; overflow-wrap: anywhere; }
+.k-confirm-body { margin: 0; color: var(--k-muted); font: 400 15px/1.45 var(--k-font-sans); text-wrap: pretty; }
+.k-confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.k-confirm-actions .k-btn-danger:hover { background: var(--k-raised-hover); }
+@media (max-width: 479px) { .k-confirm-actions { flex-direction: column-reverse; } .k-confirm-actions .k-btn { width: 100%; } }
+.k-confirm-open, .k-confirm-open body { overflow: hidden; }
+@media (prefers-reduced-motion: reduce) { .k-tip, .k-confirm-dialog { animation: none; } }
