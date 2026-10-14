@@ -23,6 +23,7 @@
 <script src="/kit/nav.js" defer blocking="render"></script>
 <script src="/kit/tip.js" defer></script>
 <script src="/kit/confirm.js" defer></script>
+<script src="/kit/tabs.js" defer></script>
 <style>
   #panel-phone #ph-err.k-alert{ border-color:var(--k-critical); color:var(--k-critical); border-radius:var(--k-radius); background:var(--k-surface); box-shadow:none; padding:12px 14px; font-size:14px; }
   /* Same tokens and components as Phone Analytics (iara_phone.html), so the embedded Phone tab is seamless. */
@@ -40,12 +41,13 @@
   [hidden]{ display:none !important; }
   [data-k-appbar]{ position:sticky; top:0; z-index:900; }
   .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
-  .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:20px; box-shadow:var(--shadow); }
+  .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:20px; }
   .gate{ width:100%; max-width:380px; }
   .gate-mark{ display:flex; align-items:center; gap:12px; margin-bottom:24px; }
   .gate-mark img{ width:var(--k-lockup-mark); height:auto; flex:none; }
   .gate-mark span{ font-family:'Fraunces',Georgia,serif; font-style:italic; font-size:var(--k-lockup-word); color:var(--k-display); }
-  h2{ font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
+  /* Card titles use the kit card style (.k-h-card); section headings carry class="k-h-section". */
+  h2{ font:var(--k-text-card-w) var(--k-text-card)/var(--k-text-card-lh) var(--k-font-sans); color:var(--k-ink); margin:0 0 14px; }
   label{ display:block; font-size:13px; font-weight:600; line-height:1.3; color:var(--k-ink); margin-bottom:6px; }
   input{ width:100%; min-height:var(--k-tap); padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input); background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; margin-bottom:14px; }
   /* Buttons are the kit's .k-btn (staff.css). */
@@ -183,13 +185,13 @@
   }
   #panel-phone [hidden]{ display:none !important; }
   #panel-phone .center{ min-height:100dvh; display:flex; align-items:center; justify-content:center; padding:24px 16px; }
-  #panel-phone .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:20px; box-shadow:var(--shadow); }
+  #panel-phone .card{ background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:20px; }
   #panel-phone .gate-mark{ display:flex; align-items:center; gap:12px; margin-bottom:24px; }
   #panel-phone .gate-mark img{ width:var(--k-lockup-mark); height:auto; flex:none; }
   #panel-phone .gate-mark span{ font-family:'Fraunces',Georgia,serif; font-weight:400; font-style:italic; font-size:var(--k-lockup-word); color:var(--k-display); }
   #panel-phone .gate{ width:100%; max-width:380px; }
   #panel-phone h1{ font-family:var(--k-font-display); font-weight:400; color:var(--forest); font-size:30px; margin:0; letter-spacing:-.01em; }
-  #panel-phone h2{ font-size:13.5px; font-weight:700; text-transform:uppercase; letter-spacing:.06em; color:var(--river); margin:0 0 14px; }
+  #panel-phone h2:not(.k-h-section){ font:var(--k-text-card-w) var(--k-text-card)/var(--k-text-card-lh) var(--k-font-sans); color:var(--k-ink); margin:0 0 14px; }
   #panel-phone label{ display:block; font-size:13px; font-weight:600; line-height:1.3; color:var(--k-ink); margin-bottom:6px; }
   #panel-phone input{ width:100%; min-height:var(--k-tap); padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input); background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; margin-bottom:14px; }
   #panel-phone a:focus-visible, #panel-phone button:focus-visible, #panel-phone input:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
@@ -354,7 +356,7 @@
       <div class="card kpi"><div class="v" id="ph-k-handled"></div><div class="l">Guests Answered</div><div class="n" id="ph-k-handled-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-k-open"></div><div class="l">Waiting for a Reply</div><div class="n" id="ph-k-open-n"></div></div>
     </div>
-    <h2 style="margin:22px 0 12px">How We Covered the Line</h2>
+    <h2 class="k-h-section" style="margin:22px 0 12px">How We Covered the Line</h2>
     <div class="people">
       <div class="card person"><div class="who"><span class="name">Calls</span></div>
         <div class="stat-row"><div><div class="v" id="ph-r-ans"></div><div class="l">Calls Answered</div></div><div><div class="v" id="ph-r-out"></div><div class="l">Calls Made</div></div><div><div class="v" id="ph-r-min"></div><div class="l">On the Phone</div></div></div></div>
@@ -362,7 +364,7 @@
         <div class="stat-row"><div><div class="v" id="ph-j-typed"></div><div class="l">Texts Written</div></div><div><div class="v" id="ph-j-threads"></div><div class="l">Guests Texted Back</div></div><div><div class="v" id="ph-a-texts"></div><div class="l">Auto-Texts Sent</div></div></div></div>
     </div>
     <div id="ph-resy-sec" hidden>
-    <h2 style="margin:22px 0 12px">From Call to Table</h2>
+    <h2 class="k-h-section" style="margin:22px 0 12px">From Call to Table</h2>
     <div class="kpis" style="margin-bottom:12px; grid-template-columns:1fr 1fr;">
       <div class="card kpi"><div class="v" id="ph-r-booked"></div><div class="l">Booked After Calling or Texting</div><div class="n" id="ph-r-booked-n"></div></div>
       <div class="card kpi"><div class="v" id="ph-r-auto"></div><div class="l">Auto-Text Only, Then Booked</div><div class="n" id="ph-r-auto-n"></div></div>
@@ -696,7 +698,7 @@
       var pd = {}; ((p && p.days) || []).forEach(function(x){ pd[x.label] = (x.answered || 0) + (x.voicemail || 0) + (x.missed || 0) + (x.textsIn || 0); });
       var msgs = {}; [a.email, a.instagram.dms, a.instagram.comments].forEach(function(c){ c.byDay.forEach(function(d){ msgs[d.date] = (msgs[d.date] || 0) + d.in; }); });
       var nights = Object.keys(T.coversByDay).filter(function(k){ return k >= a.from && k <= a.to; }).sort().reverse();
-      ctCard = '<h2 style="margin:22px 0 12px">From Contact to Table</h2><div class="kpis">' +
+      ctCard = '<h2 class="k-h-section" style="margin:22px 0 12px">From Contact to Table</h2><div class="kpis">' +
         kpi(share(tb, tg), "Booked After Reaching Us", "<b>" + tb + "</b> of " + tg + " people, all channels") +
         kpi(rt.done ? pct(rt.returning, rt.done) : "-", "Returning Guests", rt.returning + " of " + rt.done + " seated reservations") + '</div>' +
         '<div class="grid2 even"><div class="card"><h2>Booked, by Channel</h2>' + chs.map(function(x){ var v = x.g ? 100 * x.b / x.g : 0;
@@ -756,8 +758,8 @@
 
     var pv = a.prev;
     $("panel-email").innerHTML = channelKpis(e, "Emails", pv && pv.email, live.email) + rateTrend(a.trend, "Email", "email", "var(--c-email)", "emails") + channelDetail(e, "var(--c-email)");
-    $("panel-instagram").innerHTML = '<h2 style="margin-top:4px">Direct Messages</h2>' + channelKpis(dm, "DMs", pv && pv.dms, live.dm) + rateTrend(a.trend, "DMs", "dms", "var(--c-dm)", "DMs") + channelDetail(dm, "var(--c-dm)") +
-      '<h2 style="margin-top:22px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments", pv && pv.comments, live.comment) + channelDetail(cm, "var(--c-comment)") +
+    $("panel-instagram").innerHTML = '<h2 class="k-h-section" style="margin:4px 0 12px">Direct Messages</h2>' + channelKpis(dm, "DMs", pv && pv.dms, live.dm) + rateTrend(a.trend, "DMs", "dms", "var(--c-dm)", "DMs") + channelDetail(dm, "var(--c-dm)") +
+      '<h2 class="k-h-section" style="margin:22px 0 12px">Comments on Our Posts</h2>' + channelKpis(cm, "Comments", pv && pv.comments, live.comment) + channelDetail(cm, "var(--c-comment)") +
       '<p class="note">Comments only count when they needed us (questions, booking asks, complaints). Compliments are closed with no reply.</p>' +
       (range.from < "2026-10-06" ? '<p class="note"><b>Incomplete before Oct 6:</b> Instagram DMs answered in the Instagram app before the iara Mac started scanning (opening weekend) were never recorded, so counts before Oct 6 are low, not zero. Full history comes once Meta approves the Instagram API.</p>' : "");
 
