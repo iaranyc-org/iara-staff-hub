@@ -140,23 +140,10 @@
   .field input:focus, .field select:focus, .field textarea:focus{
     outline:2px solid var(--k-ring); outline-offset:1px; border-color:var(--k-ring);
   }
-  .btn{
-    display:inline-flex; align-items:center; justify-content:center; gap:8px;
-    min-height:var(--k-tap); border-radius:var(--k-radius); border:1px solid transparent; padding:0 16px;
-    font-weight:600; font-size:15px; line-height:1; cursor:pointer; transition:background-color var(--k-fast) var(--k-ease), transform var(--k-fast) var(--k-ease);
-  }
-  .btn:active{ transform:translateY(1px); }
-  .btn-primary{ background:var(--forest); color:var(--forest-ink); width:100%; }
-  .btn-primary:hover:not(:disabled){ background:var(--k-primary-hover); }
-  .btn:disabled{ cursor:not-allowed; background:var(--k-raised); color:var(--k-muted); border-color:transparent; }
-  .btn-ghost{ background:var(--k-raised); border-color:var(--k-border); color:var(--k-ink); }
-  .btn-ghost:hover:not(:disabled){ background:var(--k-raised-hover); }
-  /* Primary buttons use the real logo orange, not the gold accent - gold
-     stays for progress/status highlights (see iara-contrast-rules: forest-ink
-     on forest measures 5.07, clears AA even at this button's 14.5px bold). */
-  .btn-sun{ background:var(--forest); color:var(--forest-ink); }
-  .btn-sun:hover:not(:disabled){ background:var(--k-primary-hover); }
-  .btn-small{ min-height:36px; padding:0 12px; font-size:14px; }
+  /* Buttons are the kit's .k-btn system (kit/staff.css). Only layout lives here. */
+  .gate-card .k-btn, .pin-gate .k-btn{ width:100%; }
+  /* Below 1024 every button is a full 44px thumb target, small ones included. */
+  @media (max-width:1023px){ .k-btn-sm{ min-height:var(--k-tap); } }
   .gate-note{ margin-top:18px; font-size:12.5px; color:var(--ink-soft); line-height:1.5; }
 
   /* ===================== Shell ===================== */
@@ -171,6 +158,15 @@
   /* The kit app bar (kit/nav.js) sits above the sidebar + content layout. */
   :root{ --appbar-h:calc(var(--k-appbar-h) + max(0px, env(safe-area-inset-top, 0px) - 8px)); }
   #lineup-appbar{ position:sticky; top:0; z-index:900; }
+  /* Bar and page share one left edge (Jay, 2026-10-13: "the top nav and the
+     margin needs to be matched"). The kit bar centres a 1200px row; Lineup's
+     shell is a 1560px row with the sidebar flush left. So in Lineup only, the
+     bar takes the shell's width and a 16px gutter at every size, and the mark
+     drops its 4px focus padding: the logo's left edge = the sidebar's inner
+     edge on desktop and the content's 16px gutter on phones. Scoped to solo
+     mode in this file; the kit itself is unchanged. */
+  :root[data-k-nav="solo"] #lineup-appbar .k-appbar-inner{ max-width:1560px; padding-left:16px; padding-right:16px; }
+  :root[data-k-nav="solo"] #lineup-appbar .k-appbar-mark{ margin-left:-4px; }
   #shell{ display:none; min-height:calc(100vh - var(--appbar-h)); min-height:calc(100dvh - var(--appbar-h)); }
   #shell.active{ display:flex; max-width:1560px; margin:0 auto; }
   .sidebar{
@@ -187,11 +183,11 @@
   .nav-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .nav-btn .ico{ width:18px; text-align:center; flex:none; }
   .sb-spacer{ flex:1; }
-  .sb-user{ padding:12px 10px; border-top:1px solid rgba(255,255,255,.15); margin-top:8px; }
+  .sb-user{ padding:12px 12px; border-top:1px solid rgba(255,255,255,.15); margin-top:8px; }
   .sb-user .name{ font-weight:700; font-size:14px; }
   .sb-user .role{ font-size:12px; color:var(--sidebar-muted);  letter-spacing:.01em; }
-  .sb-user button{ margin-top:6px; background:none; border:none; color:var(--sidebar-muted); font-size:12.5px;
-    text-decoration:underline; cursor:pointer; padding:6px 0; display:block; }
+  .sb-user #sb-switch{ margin:8px 0 0 -12px; color:var(--sidebar-muted); }
+  .sb-user #sb-switch:hover{ color:var(--sidebar-ink); }
 
   .content{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:center; }
 
@@ -469,7 +465,7 @@
   .sidebar .nav-btn.active::before{ height:16px; }
   .sidebar .nav-btn:hover{ background:none; color:var(--sidebar-ink); }
   .sb-admin{ margin-top:10px; font-size:11.5px !important; 
-    letter-spacing:.01em; color:var(--sidebar-muted) !important; padding-left:0 !important; }
+    letter-spacing:.01em; color:var(--sidebar-muted) !important; padding-left:0 !important; margin-left:0; }
   .sb-admin::before{ display:none; }
 
   .fb-tab{ min-height:36px; padding:0 14px; border:0; border-radius:var(--k-radius); background:none;
@@ -544,7 +540,6 @@
   .stamp-cat{ font-size:12px;  letter-spacing:.01em; margin-top:3px; color:var(--k-muted); }
   .result-note{ margin:26px auto 0; max-width:38ch; font-size:14.5px; line-height:1.6; color:var(--ink-soft); }
   .result-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
-  .result-actions .btn{ width:auto; }
 
   /* Study cards turn over rather than swap. */
   .studycard{ perspective:1200px; }
@@ -625,7 +620,7 @@
   .fw-lede{ margin:0 0 14px; font-size:13.5px; color:var(--ink-soft); line-height:1.5; }
   .fw-count{ font-size:15px; font-weight:700; margin-bottom:10px; }
   .fw-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:18px; }
-  .fw-card .btn{ margin-top:16px; }
+  .fw-card .k-btn{ margin-top:16px; }
   .lineup-card{ padding:22px 24px; margin:0 0 30px; max-width:var(--measure); }
   .drill-head{ font-size:19px; margin:0 0 12px; }
   .fw-done{ margin:0 0 26px; font-size:13.5px; color:var(--ink-soft); }
@@ -662,9 +657,6 @@
   .form-err{ margin:12px 0 0; font-size:13.5px; color:var(--clay); font-weight:600; }
   .modal-actions{ display:flex; align-items:center; gap:10px; margin-top:22px; flex-wrap:wrap; }
   .modal-actions .spacer{ flex:1; }
-  .modal-actions .btn{ width:auto; }
-  .btn-danger{ background:var(--k-raised); color:var(--k-critical); border-color:var(--k-critical); }
-  .btn-danger:hover:not(:disabled){ background:var(--k-raised-hover); }
   .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:200;
     background:var(--k-raised); color:var(--k-ink); border:1px solid var(--k-border); border-radius:var(--k-radius-lg);
     padding:12px 16px; display:flex; align-items:center; gap:16px; font-size:14px; font-weight:500; line-height:1.3;
@@ -678,8 +670,6 @@
   @media (max-width:860px){
     .bottom-nav .nav-btn{ min-height:52px; padding:0 4px; justify-content:center; font-size:12.5px; }
     .fb-tab{ min-height:var(--k-tap); display:inline-flex; align-items:center; }
-    .btn-small{ min-height:44px; padding:0 16px; font-size:14px; }
-    .btn{ min-height:44px; }
     .say-btn{ height:44px; padding:0 15px; font-size:13.5px; }
     .say{ gap:8px; }
     .cl-item input{ width:22px; height:22px; }
@@ -731,7 +721,7 @@
   .study-back p{ margin:0 0 10px; font-size:16.5px; line-height:1.65; color:var(--ink-mid); }
   .study-extra{ font-size:13px; color:var(--ink-soft); }
   .study-grade{ display:flex; gap:12px; margin-top:26px; }
-  .study-grade .btn{ flex:1; }
+  .study-grade .k-btn{ flex:1; }
   .pips{ display:inline-flex; gap:3px; margin-left:8px; vertical-align:middle; }
   .pips i{ width:7px; height:7px; border-radius:50%; border:1px solid var(--ink-soft); display:inline-block; }
   .pips i.on{ background:var(--sun); border-color:var(--sun); }
@@ -934,11 +924,10 @@
   .more-head h2{ margin:0; font-size:20px; }
   .more-close{ min-width:44px; min-height:44px; border:0; background:none; color:var(--ink-soft); font-size:26px; cursor:pointer; }
   .more-list{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  #more-sheet .nav-btn, .more-fbk{ display:flex; align-items:center; min-height:52px; padding:0 14px; border-radius:10px;
+  #more-sheet .nav-btn{ display:flex; align-items:center; min-height:52px; padding:0 14px; border-radius:10px;
     border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:15px; font-weight:700;
     text-align:left; cursor:pointer; }
   #more-sheet .nav-btn.active{ border-color:var(--sun); color:var(--sun); }
-  .more-fbk{ grid-column:1 / -1; justify-content:center; background:var(--sun); border-color:var(--sun); color:var(--sun-ink); }
   /* Menu: Stories lens */
   .ms-jump{ display:flex; flex-wrap:wrap; gap:8px; margin:0 0 22px; }
   .ms-jump a{ font-size:13px; font-weight:700; padding:8px 12px; border:1.5px solid var(--line); border-radius:999px;
@@ -959,7 +948,7 @@
   @media (max-width:860px){ .ms-jump{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; } .ms-jump::-webkit-scrollbar{ display:none; }
     .ms-jump a{ flex:none; min-height:40px; display:inline-flex; align-items:center; } }
   /* Good Vibes */
-  .sidebar .sb-vibes{ display:block; margin:4px 10px 12px; width:calc(100% - 20px); padding:11px 12px; border-radius:10px; text-align:left;
+  .sidebar .sb-vibes{ display:block; margin:4px 0 12px; width:100%; padding:11px 12px; border-radius:10px; text-align:left;
     background:linear-gradient(135deg,#e0633f 0%,#fbbf56 100%); color:#2a1206; border:none; }
   .sidebar .sb-vibes b{ display:block; font-size:14px; color:var(--k-primary-ink); }
   .sidebar .sb-vibes span{ font-size:11.5px; color:var(--k-primary-ink); }
@@ -1022,6 +1011,13 @@
   @media (max-width:860px){ .vb-wall{ columns:1; } .vb-hero{ padding:20px 18px 34px; } }
   @media (prefers-reduced-motion:reduce){ .vb-dot{ animation:none; } .vb-polaroid, .vb-polaroid:nth-child(even){ transform:none; } }
   /* Feedback */
+  .fbk-fab{ position:fixed; z-index:30; right:calc(16px + env(safe-area-inset-right, 0px)); bottom:calc(16px + env(safe-area-inset-bottom, 0px));
+    box-shadow:0 6px 20px rgb(0 0 0 / .4); }
+  .fbk-fab svg{ width:18px; height:18px; flex:none; }
+  .fbk-fab:focus-visible{ outline:2px solid var(--k-ring); outline-offset:3px; }
+  /* Phones: sit above the tab bar (52px buttons + 4px padding + safe area). */
+  @media (max-width:860px){ .fbk-fab{ right:12px; bottom:calc(56px + 12px + env(safe-area-inset-bottom, 0px)); } }
+  @media print{ .fbk-fab{ display:none; } }
   #fbk-dialog{ border:1px solid var(--line); border-radius:14px; padding:0; width:min(92vw,460px); background:var(--paper-raised); color:var(--ink); }
   #fbk-dialog::backdrop{ background:rgba(0,0,0,.55); }
   #fbk-form{ padding:22px; }
@@ -1139,6 +1135,78 @@
     border-radius:2px; padding:0 1px; }
   /* Kit: tabular figures on every numeric display. */
   .num, .mono, td, th, .stat, .qprog, .stamp-score, .sc-stats, .vb-stat, .cl-count{ font-variant-numeric:tabular-nums; }
+  /* Focus scrolling (Next Question gets focus) keeps targets clear of the
+     floating Send Feedback button and, on phones, the tab bar. */
+  html{ scroll-padding-bottom:80px; }
+  @media (max-width:860px){ html{ scroll-padding-bottom:130px; } }
+  /* ===== Study + Final Exam cards (QA pass 2026-10-13) =====
+     One card frame for flashcards, allergen checks, Watch List drills and exam
+     questions: same padding, same header row, actions pinned to the bottom so
+     buttons do not jump from card to card, kit buttons throughout. */
+  .studycard, .qcard{ padding:28px 32px 16px; max-width:var(--measure); }
+  .studycard{ min-height:460px; display:flex; flex-direction:column; }
+  .studycard .qprog, .qcard .qprog{ display:flex; align-items:center; gap:6px 12px; flex-wrap:wrap; min-height:24px; }
+  .qprog-n{ font-size:14px; white-space:nowrap; }
+  .qprog-m{ font-size:13px; color:var(--k-muted); min-width:0; }
+  .qprog-r{ margin-left:auto; display:inline-flex; align-items:center; gap:8px; white-space:nowrap; }
+  .qprog-r .pips{ margin:0; }
+  .pip-lvl, .pip-note{ margin:0; font-size:12px; color:var(--k-muted); }
+  .pip-note{ padding:1px 6px; border:1px solid var(--k-border); border-radius:var(--k-radius-sm); }
+  .studycard .qbar, .qcard .qbar{ margin:12px 0 0; }
+  .studycard .study-front{ margin:28px 0 0; font-size:clamp(28px,3.4vw,40px); overflow-wrap:break-word; hyphens:none; }
+  .studycard .pron-line{ margin:6px 0 0; font-size:15px; line-height:1.4; color:var(--k-muted); }
+  .studycard .say-row{ margin-top:14px; }
+  .studycard .study-hint{ margin:20px 0 24px; }
+  .studycard .study-back{ margin:20px 0 24px; padding-top:20px; }
+  .studycard .study-back p:last-child{ margin-bottom:0; }
+  .studycard .study-extra{ font-size:14px; line-height:1.55; }
+  /* Actions sit on the card's floor whatever the text above them. */
+  .studycard > #study-reveal, .studycard > #allerg-check, .studycard > #allerg-next,
+  .studycard > #wl-show, .studycard > #wl-next, .studycard > .study-grade{ margin-top:auto; }
+  .studycard .study-grade{ display:flex; gap:12px; }
+  .studycard .allergen-picker{ margin:16px 0 24px; }
+  .studycard .allerg-result{ margin:20px 0 24px; }
+  .allerg-verdict, .wl-verdict{ margin:0 0 6px; font-family:var(--k-font-sans); font-weight:700; font-size:16px; color:var(--k-display); }
+  .studycard .wl-choices{ margin:0 0 24px; }
+  .studycard .wl-verdict{ margin:0 0 4px; }
+  .studycard .wl-reveal{ margin:0 0 24px; }
+  .card-quit{ align-self:center; margin-top:8px; color:var(--k-muted); }
+  .card-quit:hover:not(:disabled){ color:var(--k-ink); }
+  .qcard .card-quit{ display:flex; margin:8px auto 0; }
+  .card-quit:focus-visible, .studycard .k-btn:focus-visible, .qcard .k-btn:focus-visible, .result-actions .k-btn:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
+
+  /* Choice style: exam options and Watch List picks are one component. */
+  .opt, .wl-choice{ display:flex; align-items:center; gap:12px; width:100%; min-height:52px; margin:0 0 10px;
+    padding:12px 14px; border-radius:var(--k-radius); border:1.5px solid var(--k-border); background:var(--k-page);
+    color:var(--k-ink); font:600 15px/1.4 var(--k-font-sans); text-align:left; cursor:pointer; }
+  .wl-choices{ gap:0; }
+  .opt-t{ flex:1; min-width:0; overflow-wrap:break-word; }
+  .opt:not([disabled]):hover, .wl-choice:hover:not(:disabled){ border-color:var(--k-sun); }
+  .opt:focus-visible, .wl-choice:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
+  .opt[disabled], .wl-choice:disabled{ cursor:default; color:var(--k-muted); }
+  .opt.correct, .opt.correct[disabled], .wl-choice.is-right{ color:var(--k-ink); border:2px solid var(--k-sun); background:color-mix(in srgb, var(--k-sun) 16%, var(--k-page)); }
+  .opt.wrong, .wl-choice.is-wrong{ color:var(--k-muted); border:1.5px dashed var(--k-muted); background:var(--k-raised); }
+  .opt.correct::after, .opt.wrong::after, .wl-choice.is-right::after, .wl-choice.is-wrong::after{ float:none; margin-left:auto; padding-left:8px; flex:none; font-size:12.5px; font-weight:700; white-space:nowrap; }
+  .wl-choice.is-right::after{ content:"\2713  Correct"; color:var(--k-sun); }
+  .wl-choice.is-wrong::after{ content:"\2715  Your Answer"; color:var(--k-muted); }
+  .qtext{ margin:24px 0 18px; font-size:19px; line-height:1.4; }
+  .q-feedback{ margin:6px 0 0; border-radius:var(--k-radius); }
+  .q-feedback .btn-next{ margin-left:auto; }
+  .result-actions{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:24px; }
+
+  @media (max-width:860px){
+    .studycard, .qcard{ padding:20px 18px 12px; }
+    .studycard{ min-height:440px; }
+    .studycard .study-front{ margin-top:22px; }
+    .qtext{ font-size:18px; margin-top:20px; }
+    .q-feedback .q-msg{ flex-basis:100%; }
+    .q-feedback .btn-next{ width:100%; margin-left:0; }
+    .result-actions .k-btn{ flex:1 1 180px; }
+  }
+  @media (max-width:420px){
+    /* Two lines beat a squeezed row: label and level move under the count. */
+    .qprog-r{ margin-left:0; flex-basis:100%; }
+  }
 </style>
 
 <div id="gate" hidden>
@@ -1177,7 +1245,7 @@
         <p class="field-help" id="in-pw-hint">Ask your manager for the staff password</p>
       </div>
       <p class="form-err" id="gate-err" hidden></p>
-      <button type="submit" class="btn btn-primary">Start</button>
+      <button type="submit" class="k-btn k-btn-primary">Start</button>
     </form>
     <p class="gate-note">Your name is how your tests get saved, so use the one your manager knows you by. The password is the same for the whole team.</p>
   </div>
@@ -1201,8 +1269,7 @@
     <div class="sb-user">
       <div class="name" id="sb-name"></div>
       <div class="role" id="sb-role"></div>
-      <button id="sb-switch">Switch User</button>
-      <button type="button" data-feedback>Send Feedback</button>
+      <button id="sb-switch" type="button" class="k-btn k-btn-ghost k-btn-sm">Switch User</button>
       <button class="nav-btn sb-admin" data-view="progress">Admin</button>
     </div>
   </aside>
@@ -1365,7 +1432,7 @@
         </div>
         <div class="fb-toolbar" id="fb-toolbar">
           <div class="fb-tabs" id="fb-tabs"></div>
-          <button class="btn btn-ghost btn-small" id="fb-admin-btn">Edit Menu</button>
+          <button class="k-btn k-btn-secondary k-btn-sm" id="fb-admin-btn">Edit Menu</button>
         </div>
         <div class="dish-grid" id="fb-grid"></div>
       </div>
@@ -1429,6 +1496,9 @@
       <button class="nav-btn more-btn" type="button" aria-haspopup="dialog" aria-controls="more-sheet">More</button>
     </div>
   </nav>
+  <!-- The one Send Feedback control: pinned to the bottom of the window
+       (bottom-right on desktop, above the tab bar on phones). -->
+  <button type="button" class="k-btn k-btn-primary fbk-fab" data-feedback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Send Feedback</span></button>
   <dialog id="more-sheet" aria-labelledby="more-title">
     <div class="more-inner">
       <div class="more-head"><h2 id="more-title">More</h2><button type="button" class="more-close" aria-label="Close">&times;</button></div>
@@ -1439,7 +1509,6 @@
         <button class="nav-btn" data-view="team">Team</button>
         <button class="nav-btn" data-view="vibes">Good Vibes</button>
         <button class="nav-btn" data-view="progress">Admin</button>
-        <button type="button" class="more-fbk" data-feedback>Send Feedback</button>
       </div>
     </div>
   </dialog>
@@ -1461,8 +1530,8 @@
     <input type="text" name="website" id="fbk-hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="fbk-hp">
     <p class="fbk-status" id="fbk-status" role="status"></p>
     <div class="fbk-actions">
-      <button type="button" class="btn btn-ghost" id="fbk-cancel">Cancel</button>
-      <button type="submit" class="btn btn-sun" id="fbk-send">Send</button>
+      <button type="button" class="k-btn k-btn-secondary" id="fbk-cancel">Cancel</button>
+      <button type="submit" class="k-btn k-btn-primary" id="fbk-send">Send</button>
     </div>
   </form>
 </dialog>
@@ -3015,10 +3084,10 @@ function openDishForm(existing){
         '<span>Mark as an example, not a confirmed menu item</span></label>' +
       '<p class="form-err" id="f-err" hidden></p>' +
       '<div class="modal-actions">' +
-        (isEdit ? '<button class="btn btn-ghost btn-danger" id="f-delete">Delete</button>' : '') +
+        (isEdit ? '<button class="k-btn k-btn-danger" id="f-delete">Delete</button>' : '') +
         '<span class="spacer"></span>' +
-        '<button class="btn btn-ghost" id="f-cancel">Cancel</button>' +
-        '<button class="btn btn-sun" id="f-save">Save</button>' +
+        '<button class="k-btn k-btn-secondary" id="f-cancel">Cancel</button>' +
+        '<button class="k-btn k-btn-primary" id="f-save">Save</button>' +
       '</div></div>';
   document.body.appendChild(wrap);
 
@@ -3089,8 +3158,8 @@ function confirmDialog(opts, onYes){
       '<h3 id="cd-title">'+esc(opts.title)+'</h3>' +
       '<p class="field-help" style="margin:0 0 4px;">'+esc(opts.body)+'</p>' +
       '<div class="modal-actions"><span class="spacer"></span>' +
-        '<button class="btn btn-ghost" id="cd-no">'+esc(opts.cancel || "Cancel")+'</button>' +
-        '<button class="btn btn-sun" id="cd-yes">'+esc(opts.confirm || "Continue")+'</button></div></div>';
+        '<button class="k-btn k-btn-secondary" id="cd-no">'+esc(opts.cancel || "Cancel")+'</button>' +
+        '<button class="k-btn k-btn-primary" id="cd-yes">'+esc(opts.confirm || "Continue")+'</button></div></div>';
   document.body.appendChild(wrap);
   function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
   function onKey(ev){
@@ -3207,8 +3276,8 @@ function openManagerGate(onOk){
         'Editing the menu changes it for everyone, and team progress is everyone\'s record.</p>' +
       '<p class="form-err" id="mg-err" hidden></p>' +
       '<div class="modal-actions"><span class="spacer"></span>' +
-        '<button class="btn btn-ghost" id="mg-cancel">Cancel</button>' +
-        '<button class="btn btn-sun" id="mg-go">Sign In with Google</button></div></div>';
+        '<button class="k-btn k-btn-secondary" id="mg-cancel">Cancel</button>' +
+        '<button class="k-btn k-btn-primary" id="mg-go">Sign In with Google</button></div></div>';
   document.body.appendChild(wrap);
   var goBtn = wrap.querySelector("#mg-go");
   var errEl = wrap.querySelector("#mg-err");
@@ -3611,7 +3680,7 @@ function renderStudyPicker(){
       '<p class="fw-lede">' + (ready
         ? '4 cards, whichever you are weakest on. 2 minutes before the door opens.'
         : 'Nothing waiting. Everything is either solid or already counted for this shift.') + '</p>' +
-      (ready ? '<button class="btn btn-sun" id="lineup-go">Run the Lineup</button>' : '') +
+      (ready ? '<button class="k-btn k-btn-primary" id="lineup-go">Run the Lineup</button>' : '') +
     '</div>';
   html += '<h2 class="drill-head">Every Deck</h2><div class="deck-grid">';
   studyDecks().forEach(function(d){
@@ -3692,35 +3761,20 @@ function renderStudyCard(){
   if (c.kind === "allergen") return renderAllergenCard();
   var mAll = loadMastery();
   var m = masteryOf(mAll, c.id);
-  var pips = "";
-  // The third pip is the "Known" line, so the shape of the row shows where a
-  // card sits without anyone having to read a number.
-  for (var i = 0; i < MASTERY_MAX; i++) {
-    pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
-  }
-  var creditedNote = creditedThisShift(mAll, c.id) ? ' <span class="pip-note">counted today</span>' : '';
-  var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
-  var html = '<div class="card studycard">' +
-    '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
-      '<span class="qprog-m">'+esc(d.label)+'</span>' +
-      ' <span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span>'+creditedNote+'</div>' +
-    '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
-    '<h3 class="study-front">'+esc(c.front)+'</h3>' +
-    (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
-    (speak ? '<div class="say-row">'+speak+'</div>' : '');
+  var html = '<div class="card studycard">' + studyCardHeader(d, c, m, mAll);
   if (!d.revealed) {
     html += '<p class="study-hint">'+(c.kind === "dish"
       ? "Say it out loud, then recall what is in it and its allergens."
       : "Recall what this is and where it shows up on the menu.")+'</p>' +
-      '<button class="btn btn-sun" id="study-reveal">Show Answer</button>';
+      '<button class="k-btn k-btn-primary" id="study-reveal">Show Answer</button>';
   } else {
     html += '<div class="study-back"><p>'+esc(c.back)+'</p>' +
       (c.extra ? '<p class="study-extra">'+esc(c.extra)+'</p>' : '') + '</div>' +
       '<div class="study-grade">' +
-        '<button class="btn btn-ghost" id="study-again">Missed It</button>' +
-        '<button class="btn btn-sun" id="study-got">Got It</button></div>';
+        '<button class="k-btn k-btn-secondary" id="study-again">Missed It</button>' +
+        '<button class="k-btn k-btn-primary" id="study-got">Got It</button></div>';
   }
-  html += '<button class="linkish" id="study-quit">Back to Study</button></div>';
+  html += '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="study-quit">Back to Study</button></div>';
   area.innerHTML = html;
 
   var rev = document.getElementById("study-reveal");
@@ -3743,11 +3797,11 @@ function studyCardHeader(d, c, m, mAll){
   for (var i = 0; i < MASTERY_MAX; i++) {
     pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
   }
-  var creditedNote = creditedThisShift(mAll, c.id) ? ' <span class="pip-note">counted today</span>' : '';
+  var creditedNote = creditedThisShift(mAll, c.id) ? '<span class="pip-note">Counted Today</span>' : '';
   var speak = (c.speakId && c.speak) ? ' ' + sayControl(c.front, c.speakId, c.speak) : '';
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
       '<span class="qprog-m">'+esc(d.label)+'</span>' +
-      ' <span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span>'+creditedNote+'</div>' +
+      '<span class="qprog-r"><span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span>'+creditedNote+'</span></div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
     '<h3 class="study-front">'+esc(c.front)+'</h3>' +
     (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
@@ -3771,7 +3825,7 @@ function renderAllergenCard(){
       '<div class="allergen-picker">' + (palette.length ? palette.map(function(a){
         return '<button type="button" class="allerg-chip'+(allergenPick[a] ? ' is-on' : '')+'" data-a="'+esc(a)+'">'+esc(a)+'</button>';
       }).join('') : '<p class="placeholder-note">No allergens are on file for the menu yet.</p>') + '</div>' +
-      '<button class="btn btn-sun" id="allerg-check" style="margin-top:16px;">Check</button>';
+      '<button class="k-btn k-btn-primary" id="allerg-check">Check</button>';
   } else {
     var picked = Object.keys(allergenPick).filter(function(a){ return allergenPick[a]; }).sort(function(a,b){ return a.localeCompare(b); });
     var correctSet = c.correct;
@@ -3782,9 +3836,9 @@ function renderAllergenCard(){
         '<p class="allerg-line">You said: '+esc(pickedTxt)+'</p>' +
         (allergenResult.correct ? '' : '<p class="allerg-line">Actually: '+esc(correctTxt)+'</p>') +
       '</div>' +
-      '<button class="btn btn-sun" id="allerg-next">Continue</button>';
+      '<button class="k-btn k-btn-primary" id="allerg-next">Continue</button>';
   }
-  html += '<button class="linkish" id="study-quit">Back to Study</button></div>';
+  html += '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="study-quit">Back to Study</button></div>';
   area.innerHTML = html;
 
   if (!allergenResult) {
@@ -3838,15 +3892,15 @@ function renderStudyDone(){
     ? Math.round((d.right / (d.right + d.wrong)) * 100)
     : deckMastery(buildDeck(d.key));
   var actions = isLineup
-    ? '<button class="btn btn-sun" id="study-decks">Back to Study</button>'
-    : '<button class="btn btn-sun" id="study-redo">Study Again</button>' +
-      '<button class="btn btn-ghost" id="study-decks">Pick Another Deck</button>';
+    ? '<button class="k-btn k-btn-primary" id="study-decks">Back to Study</button>'
+    : '<button class="k-btn k-btn-primary" id="study-redo">Study Again</button>' +
+      '<button class="k-btn k-btn-secondary" id="study-decks">Pick Another Deck</button>';
   studyArea().innerHTML =
     '<div class="card result-wrap">' +
       '<div class="eyebrow">'+esc(d.label)+'</div>' +
       '<div class="result-num mono">'+pct+'%</div>' +
       '<p class="result-note">'+(isLineup ? "" : "Mastered: ")+d.right+' right first try, '+d.wrong+' to revisit.</p>' +
-      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' + actions + '</div></div>';
+      '<div class="result-actions">' + actions + '</div></div>';
   var redo = document.getElementById("study-redo");
   if (redo) redo.addEventListener("click", function(){ startStudy(d.key); });
   document.getElementById("study-decks").addEventListener("click", function(){
@@ -7222,7 +7276,7 @@ function wlHeader(d, c){
   var m = masteryOf(loadMastery(), c.id), pips = "";
   for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
-    '<span class="qprog-m">'+esc(d.label)+'</span> <span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span></div>' +
+    '<span class="qprog-m">'+esc(d.label)+'</span><span class="qprog-r"><span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span></span></div>' +
     '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>';
 }
 
@@ -7252,20 +7306,20 @@ function renderWatchCard(){
     if (WL.picked) {
       html += '<p class="wl-verdict">'+(WL.picked === p.slug ? "Correct." : "Not quite.")+'</p>' +
         '<p class="wl-reveal"><strong>'+esc(p.name)+'</strong>, '+esc(p.role)+', '+esc(p.outlet)+'.</p>' +
-        '<button class="btn btn-sun" id="wl-next" style="margin-top:14px;">Continue</button>';
+        '<button class="k-btn k-btn-primary" id="wl-next">Continue</button>';
     }
   } else {
     html += '<h3 class="study-front">'+esc(p.name)+'</h3>';
     if (!d.revealed) {
-      html += '<p class="study-hint">Where do they write, and what do they cover?</p><button class="btn btn-sun" id="wl-show">Show Answer</button>';
+      html += '<p class="study-hint">Where do they write, and what do they cover?</p><button class="k-btn k-btn-primary" id="wl-show">Show Answer</button>';
     } else {
       html += '<div class="study-back"><p><strong>'+esc(p.outlet)+'</strong>. '+esc(p.role)+'.</p>' +
         (p.beat ? '<p class="study-extra">'+esc(p.beat)+'</p>' : '') + '</div>' +
-        '<div class="study-grade"><button class="btn btn-ghost" id="wl-miss">Missed It</button>' +
-        '<button class="btn btn-sun" id="wl-got">Got It</button></div>';
+        '<div class="study-grade"><button class="k-btn k-btn-secondary" id="wl-miss">Missed It</button>' +
+        '<button class="k-btn k-btn-primary" id="wl-got">Got It</button></div>';
     }
   }
-  html += '<button class="linkish" id="wl-quit">Back to Drill</button></div>';
+  html += '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="wl-quit">Back to Drill</button></div>';
   area.innerHTML = html;
 
   area.querySelectorAll("[data-pick]").forEach(function(b){
@@ -7297,9 +7351,9 @@ function renderWatchDone(){
   wlArea().innerHTML = '<div class="card result-wrap"><div class="eyebrow">'+esc(d.label)+'</div>' +
     '<div class="result-num mono">'+pct+'%</div>' +
     '<p class="result-note">Mastered: '+d.right+' right first try, '+d.wrong+' to revisit.</p>' +
-    '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">' +
-    '<button class="btn btn-sun" id="wl-redo">Drill Again</button>' +
-    '<button class="btn btn-ghost" id="wl-decks">Pick Another Drill</button></div></div>';
+    '<div class="result-actions">' +
+    '<button class="k-btn k-btn-primary" id="wl-redo">Drill Again</button>' +
+    '<button class="k-btn k-btn-secondary" id="wl-decks">Pick Another Drill</button></div></div>';
   document.getElementById("wl-redo").addEventListener("click", function(){ startWatchDrill(d.key); });
   document.getElementById("wl-decks").addEventListener("click", exitWatchDrill);
 }
@@ -7567,7 +7621,7 @@ async function renderHomeFirstWeek(){
       '<p class="fw-lede">Finish this before anything else. Nothing here is timed.</p>' +
       '<div class="fw-count"><span class="mono">'+p.done+'</span> of <span class="mono">'+p.total+'</span> done</div>' +
       '<div class="qbar"><span style="width:'+p.pct+'%"></span></div>' +
-      '<button class="btn btn-sun fw-open" data-view="checklist">Open the Checklist</button>' +
+      '<button class="k-btn k-btn-primary fw-open" data-view="checklist">Open the Checklist</button>' +
       '</div>';
   }
   slot.querySelectorAll("[data-view]").forEach(function(b){
@@ -7931,6 +7985,9 @@ async function renderQuizPicker(){
   });
 }
 
+// A few questions carry "&amp;" in their text (written for innerHTML). esc()
+// would show that literally ("Johnson &amp; Wales"), so decode it first.
+function qtxt(v){ return esc(String(v == null ? "" : v).replace(/&amp;/g, "&")); }
 function startQuiz(key){
   var pool = QUIZ_META[key].pool();
   if (!pool.length) { toast("There are no questions in that category yet."); return; }
@@ -7954,13 +8011,13 @@ function renderQuizQuestion(){
       '<span class="qprog-m">'+esc(QUIZ_META[aq.key].name)+'</span>' +
       '<span class="qprog-s">'+aq.score+' right</span></div>' +
     '<div class="qbar"><span style="width:'+pctDone+'%"></span></div>' +
-    '<p class="qtext">'+esc(q.q)+'</p>' +
+    '<p class="qtext">'+qtxt(q.q)+'</p>' +
     q.opts.map(function(o, i){
-      return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span>'+esc(o.text)+'</button>';
+      return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span><span class="opt-t">'+qtxt(o.text)+'</span></button>';
     }).join("") +
     '<div id="q-feedback" class="q-feedback" hidden></div>' +
     // Study lets you back out mid-deck; a test should not trap you either.
-    '<button class="linkish" id="quiz-quit">Back to Final Exam</button>' +
+    '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="quiz-quit">Back to Final Exam</button>' +
     '</div>';
   area.innerHTML = html;
   area.querySelectorAll(".opt").forEach(function(btn){
@@ -7991,8 +8048,8 @@ function answerQuiz(i){
   fb.className = "q-feedback " + (correct ? "is-right" : "is-wrong");
   fb.innerHTML = '<p class="q-msg">' + (correct
       ? '<strong>Correct.</strong>'
-      : '<strong>Not quite.</strong> The answer is <em>'+esc(q.opts[correctIdx].text)+'</em>.') + '</p>' +
-    '<button class="btn btn-sun btn-next" id="q-next">' +
+      : '<strong>Not quite.</strong> The answer is <em>'+qtxt(q.opts[correctIdx].text)+'</em>.') + '</p>' +
+    '<button class="k-btn k-btn-primary btn-next" id="q-next">' +
       (aq.idx + 1 >= aq.questions.length ? 'See Your Score' : 'Next Question') + '</button>';
   fb.hidden = false;
   var nextBtn = document.getElementById("q-next");
@@ -8005,6 +8062,30 @@ function nextQuizQuestion(){
   activeQuiz.idx++;
   renderQuizQuestion();
 }
+
+// Study and drill keyboard: Space/Enter shows the answer, checks, or continues;
+// Right arrow = Got It, Left arrow = Missed It. Never while typing or when a
+// focused button would take the key itself.
+document.addEventListener("keydown", function(e){
+  if (e.metaKey || e.ctrlKey || e.altKey || e.defaultPrevented) return;
+  var t = e.target;
+  if (t && t.closest && t.closest("input, textarea, select, [contenteditable], dialog")) return;
+  var v = document.querySelector(".view.active");
+  if (!v || (v.id !== "view-study" && v.id !== "view-watch")) return;
+  var card = v.querySelector(".studycard");
+  if (!card) return;
+  var ids = null;
+  if (e.key === " " || e.key === "Enter") {
+    if (t && t.closest && t.closest("button, a")) return;
+    ids = ["study-reveal", "allerg-check", "allerg-next", "wl-show", "wl-next"];
+  } else if (e.key === "ArrowRight") ids = ["study-got", "wl-got"];
+  else if (e.key === "ArrowLeft") ids = ["study-again", "wl-miss"];
+  if (!ids) return;
+  for (var i = 0; i < ids.length; i++) {
+    var b = card.querySelector("#" + ids[i]);
+    if (b) { e.preventDefault(); b.click(); return; }
+  }
+});
 
 // keyboard: 1-4 picks an answer, Enter/Space advances once answered
 document.addEventListener("keydown", function(ev){
@@ -8035,9 +8116,9 @@ function renderQuizResult(){
   if (aq.missed.length) {
     review = '<div class="misses"><h3>What to Go Over</h3><ol>' +
       aq.missed.map(function(m){
-        return '<li><p class="miss-q">'+esc(m.q)+'</p>' +
-          '<p class="miss-a"><span>Answer</span> '+esc(m.right)+'</p>' +
-          (m.chose ? '<p class="miss-c"><span>You said</span> '+esc(m.chose)+'</p>' : '') +
+        return '<li><p class="miss-q">'+qtxt(m.q)+'</p>' +
+          '<p class="miss-a"><span>Answer</span> '+qtxt(m.right)+'</p>' +
+          (m.chose ? '<p class="miss-c"><span>You said</span> '+qtxt(m.chose)+'</p>' : '') +
           '</li>';
       }).join("") + '</ol></div>';
   }
@@ -8047,8 +8128,8 @@ function renderQuizResult(){
         '<span class="stamp-cat">'+esc(QUIZ_META[aq.key].name)+'</span></div>' +
       '<p class="result-note">'+esc(note)+'</p>' +
       '<div class="result-actions">' +
-        '<button class="btn btn-sun" id="quiz-again">Run It Again</button>' +
-        '<button class="btn btn-ghost" id="quiz-back">Pick Another Section</button></div>' +
+        '<button class="k-btn k-btn-primary" id="quiz-again">Run It Again</button>' +
+        '<button class="k-btn k-btn-secondary" id="quiz-back">Pick Another Section</button></div>' +
       review + '</div>';
   document.getElementById("quiz-again").addEventListener("click", function(){ startQuiz(aq.key); });
   document.getElementById("quiz-back").addEventListener("click", renderQuizPicker);
@@ -8102,7 +8183,7 @@ async function renderProgress(){
     area.innerHTML = '<div class="card pin-gate">' +
       '<h3 style="margin-top:0;">Manager Access</h3>' +
       '<p class="placeholder-note" style="margin-bottom:14px;">Sign in with your iara Google account to see team-wide progress.</p>' +
-      '<button class="btn btn-primary" id="pg-unlock">Sign In with Google</button></div>';
+      '<button class="k-btn k-btn-primary" id="pg-unlock">Sign In with Google</button></div>';
     var unlock = function(){ openManagerGate(function(){ progressUnlocked = true; renderProgress(); }); };
     document.getElementById("pg-unlock").addEventListener("click", unlock);
     // Signed in already: go straight through. Otherwise the card above is
@@ -8215,7 +8296,7 @@ async function renderProgress(){
     } else {
       html += '<p class="placeholder-note" style="margin-bottom:10px;">Ranked by how often it has been missed. Worth reading out at lineup.</p>' +
         '<ol class="miss-rank">' + misses.map(function(m){
-          return '<li><p class="miss-q">'+esc(m.q)+'</p>' +
+          return '<li><p class="miss-q">'+qtxt(m.q)+'</p>' +
             '<p class="miss-meta"><span class="mono">'+m.n+'</span> '+(m.n===1?'miss':'misses')+
             ' across <span class="mono">'+m.people+'</span> '+(m.people===1?'person':'people')+
             ' \u00b7 '+esc(m.cat || '')+'</p></li>';
