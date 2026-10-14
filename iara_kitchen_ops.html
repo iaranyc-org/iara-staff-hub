@@ -62,12 +62,9 @@
   *{box-sizing:border-box;}
   html{background:var(--page);}
   body{
-    background:
-      linear-gradient(160deg,
-        color-mix(in srgb, var(--k-primary) 11%, var(--page)) 0%,
-        var(--page) 42%,
-        color-mix(in srgb, var(--k-sun) 13%, var(--page)) 100%);
-    background-attachment:fixed;
+    /* Flat page ground like every other manager app: the sticky bar and section tabs paint
+       the same colour, so no stripe shows where they sit (the old gradient made one). */
+    background:var(--page);
     color:var(--ink); font-family:var(--font-sans); padding-inline:0; margin:0;
     -webkit-font-smoothing:antialiased;
   }

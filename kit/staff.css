@@ -261,8 +261,9 @@
 }
 @keyframes k-title-out { to { transform: translateY(-110%); } }
 @keyframes k-title-in { from { transform: translateY(110%); } }
-/* Slot = the longest name ("Private Dining", 6.55em in Fraunces italic) so the divider hugs it and never moves. */
-@media (min-width: 1100px) { .k-appbar-title { width: 6.6em; box-sizing: content-box; } }
+/* Slot = the longest name ("Private Dining", 106px at 18px Fraunces italic) + room for the italic overhang,
+   so the divider hugs it and never moves. Sized off the title font, not the bar's 16px em. */
+@media (min-width: 1100px) { .k-appbar-title { width: calc(var(--k-lockup-word) * 6.5); box-sizing: content-box; } }
 /* The account slot always takes the avatar's width, so Search sits in the same spot in every app,
    with or without a signed-in account (the bar must not shift between apps). */
 .k-acct-slot { display: inline-flex; align-items: center; justify-content: center; min-width: var(--k-tap); }
