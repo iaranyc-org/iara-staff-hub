@@ -29,7 +29,7 @@
     { label: "Settings", href: "/inbox/settings" }
   ];
   var APPS = [
-    { label: "Home", title: "Home", href: "/home", sub: "A summary of everything, coming soon." },
+    { label: "Home", title: "Home", href: "/home", sub: "Today at iara, from this morning's Bom Dia." },
     // Hidden (Jay, 2026-10-14: still being built). /ops keeps working and its bar still renders,
     // but nothing links to it: no tab, no palette entry, no shortcut.
     { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders.", hidden: true },

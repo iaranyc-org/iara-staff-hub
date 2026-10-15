@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/iara_hub.html"
+      "source": "/home",
+      "destination": "https://iara-inbox.vercel.app/inbox/home"
     },
     {
-      "source": "/home",
-      "destination": "/iara_home.html"
+      "source": "/",
+      "destination": "/iara_hub.html"
     },
     {
       "source": "/lineup",

@@ -338,26 +338,8 @@
     mgrBtn.hidden = ok; mgrGo.hidden = !ok;
     if (ok) mgrErr.hidden = true;
   });
-  mgrBtn.addEventListener("click", function(){
-    mgrErr.hidden = true;
-    var provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account", hd: "iara.nyc" });
-    mgrBtn.disabled = true;
-    adminAuth.signInWithPopup(provider).then(function(res){
-      var u = res && res.user;
-      if (u && isManagerEmail(u.email)) { location.href = "/home"; return; }
-      mgrBtn.disabled = false;
-      return adminAuth.signOut().then(function(){
-        showMgrErr("That account isn't on the manager list. Ask Jay to add it.");
-      });
-    }).catch(function(e){
-      mgrBtn.disabled = false;
-      var c = e && e.code;
-      if (c === "auth/popup-closed-by-user" || c === "auth/cancelled-popup-request") return;  // they backed out; nothing went wrong
-      if (c === "auth/popup-blocked") showMgrErr("Your browser blocked the sign-in window. Allow pop-ups for this site and try again.");
-      else if (c === "auth/network-request-failed") showMgrErr("Couldn't reach sign-in. Check your connection and try again.");
-      else showMgrErr("Sign-in didn't finish. Try again.");
-    });
-  });
+  // Home lives in the Inbox app now (live Bom Dia dashboard), which has its own Google sign-in
+  // (@iara.nyc only). Going straight there avoids signing in twice (2026-10-14).
+  mgrBtn.addEventListener("click", function(){ location.href = "/home"; });
 })();
 </script>
