@@ -921,7 +921,8 @@
     .wl-backdrop.is-on{ display:block; position:fixed; inset:0; z-index:39; background:rgba(0,0,0,.45); }
     html.wl-locked, html.wl-locked body{ overflow:hidden; }
   }
-  @keyframes wl-up{ from{ transform:translateY(24px); opacity:.6; } to{ transform:none; opacity:1; } }
+  /* Transform only: a sheet frozen mid-animation (backgrounded tab) must stay fully readable. */
+  @keyframes wl-up{ from{ transform:translateY(24px); } to{ transform:none; } }
   @media (prefers-reduced-motion:reduce){ .wl-panel{ animation:none; } }
   .wl-face{ width:100%; max-width:300px; aspect-ratio:4 / 5; border-radius:8px; overflow:hidden;
     margin:0 auto 14px; background:var(--paper); }
@@ -940,10 +941,22 @@
   .wl-reveal{ margin-top:14px; font-size:15px; line-height:1.55; color:var(--ink-mid); }
   .wl-empty{ color:var(--ink-soft); font-size:15px; }
   @media (max-width:860px){
-    .wl-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .wl-grid{ gap:12px; }
     .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
     .wl-filters::-webkit-scrollbar{ display:none; }
   }
+  /* Phones: two columns. Wider (tablet, phone landscape) keeps auto-fill so cards stay card-sized. */
+  @media (max-width:599px){ .wl-grid{ grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; } }
+  /* 16px search at every width: iPad (1024+) zooms on focus too. */
+  .view .manual-search input{ font-size:16px; }
+  .wl-fine a{ display:inline-block; min-width:44px; }
+  /* Touch screens in the desktop layout (861-1023px tablets) get the same 44px targets as phones. */
+  @media (pointer:coarse){
+    .sidebar .nav-btn, .fb-tab{ min-height:44px; }
+    .ff-copy{ width:44px; height:44px; }
+    .bio-more, .jump-link, .cl-help a{ display:inline-flex; align-items:center; min-height:44px; }
+  }
+  .cl-help a{ min-width:44px; }
   /* Mobile QA pass: 16px inputs stop iOS zoom-on-focus; 44px thumb targets. */
   @media (max-width:860px){
     .view .manual-search input{ font-size:16px; }
@@ -1050,6 +1063,9 @@
   .fbk-fab{ position:fixed; z-index:30; width:198px; left:max(16px, calc((100vw - 1560px) / 2 + 16px));
     bottom:calc(16px + env(safe-area-inset-bottom, 0px)); }
   .sidebar{ padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px)); }
+  /* Short windows: let the sidebar scroll so its last items clear the fixed Feedback button. */
+  .sidebar{ overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; }
+  .sidebar > *{ flex-shrink:0; }
   .fbk-fab svg{ width:18px; height:18px; flex:none; }
   .fbk-fab:focus-visible{ outline:2px solid var(--k-ring); outline-offset:3px; }
   /* Phones: in the flow after the view, left-aligned to the 16px gutter; the
@@ -2818,7 +2834,11 @@ function showView(name, opts){
   if (name === "quiz" && !activeQuiz) renderQuizPicker();
   if (name === "study" && !studyDeck) renderStudyPicker();
   if (name !== "watch" && WL) { WL.open = null; document.documentElement.classList.remove("wl-locked"); }
-  if (name === "watch") renderWatch();
+  if (name === "watch") {
+    if (opts.section) { WL.tab = "roster"; WL.open = null; WL.pushed = false; }
+    else if (WL.open) { WL.open = null; WL.pushed = false; }
+    renderWatch();
+  }
   if (name === "vibes") openVibes();
   if (name === "checklist") renderChecklist();
   if (name === "home") renderHomeFirstWeek();
@@ -2831,7 +2851,8 @@ function showView(name, opts){
     // a click adds a history entry.
     history[opts.fromHash ? "replaceState" : "pushState"](null, "", want + location.search);
   }
-  if (opts.section && name === "manual") openManualSection(opts.section);
+  if (opts.section && name === "watch") { window.scrollTo(0,0); openWatchProfile(opts.section, null, true); }
+  else if (opts.section && name === "manual") openManualSection(opts.section);
   else window.scrollTo(0,0);
   // Tell screen readers the page changed: move focus to the view's heading
   // on a click (not on first load or back/forward, where focus stays put).
@@ -2856,6 +2877,13 @@ function openManualSection(id){
 
 function routeFromHash(){
   var r = parseRoute();
+  // Back/forward between a Watch List profile and the list: open or close
+  // the profile in place, keeping the scroll position and filters.
+  if (r.view === "watch" && WL.tab === "roster" && document.getElementById("view-watch").classList.contains("active") && document.getElementById("wl-panel")) {
+    if (r.section) { if (WL.open !== r.section) openWatchProfile(r.section, null, true); }
+    else if (WL.open) { WL.pushed = false; closeWatchProfile(true); }
+    return;
+  }
   showView(r.view, { fromHash: true, section: r.section });
 }
 window.addEventListener("popstate", routeFromHash);
@@ -8065,7 +8093,16 @@ function renderWatchList(){
     .sort(function(a, b){ return (wlRank(a.p) - wlRank(b.p)) || (a.i - b.i); })
     .map(function(x){ return x.p; });
   var host = document.getElementById("wl-list");
-  if (!rows.length) { host.innerHTML = '<p class="wl-empty">Nobody matches that. Try a shorter word.</p>'; return; }
+  if (!rows.length) {
+    var inGroup = WL.outlet !== "All";
+    host.innerHTML = '<div class="k-empty" role="status"><h3>Nobody Matches</h3>' +
+      '<p>' + (inGroup ? 'Only ' + esc(WL.outlet) + ' is showing. Try All, or a shorter word.' : 'Try a shorter word, like a last name or outlet.') + '</p>' +
+      (WL.q ? '<button type="button" class="k-btn k-btn-secondary" data-clear-search="wl-q">Clear Search</button> ' : '') +
+      (inGroup ? '<button type="button" class="k-btn k-btn-secondary" id="wl-show-all">Show All Outlets</button>' : '') + '</div>';
+    var all = document.getElementById("wl-show-all");
+    if (all) all.addEventListener("click", function(){ WL.outlet = "All"; renderWatchRoster(); });
+    return;
+  }
   host.innerHTML = '<ul class="wl-grid">' + rows.map(function(p){
     var pics = wlPhotos(p), i = WL.cardPic[p.slug] || 0;
     if (i >= pics.length) i = 0;
@@ -8128,7 +8165,19 @@ function wlFlipCard(slug, dir){
 var wlReturnFocus = null;
 function wlIsSheet(){ return window.matchMedia("(max-width:1179px)").matches; }
 
-function openWatchProfile(slug, fromBtn){
+function wlFind(slug){ return WATCH.filter(function(x){ return x.slug === slug; })[0] || null; }
+// The profile has its own URL (/lineup/watch/<slug>), so the phone back
+// gesture closes the sheet instead of leaving the Watch List, and a profile
+// can be shared as a link. WL.pushed: we added the history entry ourselves.
+function openWatchProfile(slug, fromBtn, fromRoute){
+  if (!wlFind(slug)) { if (fromRoute) history.replaceState(null, "", pathFor("watch") + location.search); return; }
+  if (!fromRoute) {
+    var want = pathFor("watch", slug);
+    if (location.pathname !== want) {
+      if (WL.open && WL.pushed) history.replaceState(null, "", want + location.search);
+      else { history.pushState(null, "", want + location.search); WL.pushed = true; }
+    }
+  }
   if (WL.open !== slug) WL.pic = WL.cardPic[slug] || 0;
   WL.open = slug;
   wlReturnFocus = fromBtn || null;
@@ -8141,7 +8190,13 @@ function openWatchProfile(slug, fromBtn){
   if (close && wlIsSheet()) close.focus({ preventScroll:true });
 }
 
-function closeWatchProfile(){
+function closeWatchProfile(fromRoute){
+  var wasPushed = WL.pushed;
+  WL.pushed = false;
+  if (fromRoute !== true && WL.open) {
+    if (wasPushed) setTimeout(function(){ history.back(); }, 0);
+    else history.replaceState(null, "", pathFor("watch") + location.search);
+  }
   WL.open = null;
   document.querySelectorAll(".wl-card.is-selected").forEach(function(li){ li.classList.remove("is-selected"); });
   renderWatchPanel();
@@ -8236,6 +8291,17 @@ function renderWatchPanel(keepScroll){
   document.getElementById("wl-close").addEventListener("click", closeWatchProfile);
 }
 
+document.addEventListener("keydown", function(e){
+  if (e.key !== "Tab" || !WL.open || !wlIsSheet()) return;
+  var panel = document.getElementById("wl-panel");
+  if (!panel || !document.getElementById("view-watch").classList.contains("active")) return;
+  var f = [].filter.call(panel.querySelectorAll("a[href],button:not([disabled])"), function(el){ return el.offsetParent !== null; });
+  if (!f.length) return;
+  var first = f[0], last = f[f.length - 1];
+  if (!panel.contains(document.activeElement)) { e.preventDefault(); first.focus(); }
+  else if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+});
 document.addEventListener("keydown", function(e){
   if (e.key === "Escape" && WL.open && document.getElementById("view-watch").classList.contains("active")) closeWatchProfile();
 });
@@ -8374,7 +8440,7 @@ function renderWatchDone(){
 }
 
 document.getElementById("wl-tab-roster").addEventListener("click", function(){ WL.tab = "roster"; WL.deck = null; renderWatch(); });
-document.getElementById("wl-tab-study").addEventListener("click", function(){ WL.tab = "study"; WL.open = null; document.documentElement.classList.remove("wl-locked"); renderWatch(); });
+document.getElementById("wl-tab-study").addEventListener("click", function(){ if (WL.open) history.replaceState(null, "", pathFor("watch") + location.search); WL.tab = "study"; WL.open = null; WL.pushed = false; document.documentElement.classList.remove("wl-locked"); renderWatch(); });
 
 
 /* ============================================================
