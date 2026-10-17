@@ -1887,7 +1887,7 @@ var MENU_STORY = [
   "en": "Cocktails",
   "dishes": [
    {
-    "name": "Classic Caipirinha",
+    "name": "Caipirinha",
     "story": "Brazil's national cocktail: cachaça, lime, and sugar. We use Novo Fogo Bar Strength, whose higher proof carries the character of the sugarcane and where it's grown. A caipirinha gets its bright, candy-like fruitiness from the oil in the lime peel, so instead of muddling lime and sugar in the glass, we make an oleo saccharum by macerating lime peels in sugar until the oil becomes a syrup. We shake the syrup hard with cachaça, fresh lime wedges, and a little extra lime juice to replace the acid the peels lose. The shake expresses the oil in the wedges and leaves the drink cold and frothy. Balancing the sugar and lime oil in advance keeps every caipirinha consistent."
    },
    {
@@ -1945,7 +1945,7 @@ var MENU_STORY = [
    },
    {
     "name": "Day Wines Vin de Days L’Orange",
-    "story": "Brianne Day makes natural wine in Oregon’s Willamette Valley with native yeast and very little sulfur. L’Orange blends Riesling, Müller-Thurgau, and Gewürztraminer from organic and biodynamic vineyards, fermented on the skins, which gives these aromatic grapes texture and a gentle grip, with orange blossom, apricot, and candied peel.",
+    "story": "Brianne Day makes natural wine in Oregon’s Willamette Valley with native yeast and very little sulfur. L’Orange blends Riesling, Pinot Gris, and Gewürztraminer from organic and biodynamic vineyards, fermented on the skins, which gives these aromatic grapes texture and a gentle grip, with orange blossom, apricot, and candied peel.",
     "group": "Orange"
    },
    {
@@ -2029,25 +2029,27 @@ var FNB_DEFAULTS = [
   { id:"d20", category:"Desserts", name:"Sorvete", pronunciation:"sohr-VEH-chee", speak:"Sorvete", price:"$12", desc:"Cupuaçu ice cream with tapioca, puxuri, and sweet farofa.", allergens:["Dairy"], example:false },
   { id:"d21", category:"Desserts", name:"Brigadeiro", pronunciation:"bree-gah-DAY-roh", speak:"Brigadeiro", price:"$5/2pc", desc:"Brazilian chocolate fudge bon-bon. Dairy-free sub available (açaí pâte de fruit or toasted cassava).", allergens:["Dairy"], example:false },
   /* --- Cocktails --- */
-  { id:"d22", category:"Cocktails", name:"Classic Caipirinha", price:"$18", pronunciation:"kai-pee-REEN-yah", speak:"Caipirinha", desc:"Novo Fogo bar-strength cachaça, oleo saccharum, lime juice, lime wedges.", allergens:[], example:false },
+  { id:"d22", category:"Cocktails", name:"Caipirinha", price:"$18", pronunciation:"kai-pee-REEN-yah", speak:"Caipirinha", desc:"Novo Fogo bar-strength cachaça, lime oleo.", allergens:[], example:false },
   { id:"d23", category:"Cocktails", name:"Batida de Coco", price:"$18", pronunciation:"bah-CHEE-dah jee KOH-koo", speak:"Batida de Coco", desc:"Seleta Gold cachaça, cream of coconut, sweetened condensed milk, lime juice, coconut-puxuri rim.", allergens:["Coconut","Dairy"], example:false },
+  { id:"d42", category:"Cocktails", name:"T\u00f4nica Amaz\u00f4nica", price:"$19", pronunciation:"TOH-nee-kah ah-mah-ZOH-nee-kah", speak:"T\u00f4nica Amaz\u00f4nica", desc:"Am\u00e1zzoni gin, Amazonian botanicals.", allergens:[], example:false },
   { id:"d24", category:"Cocktails", name:"iara", price:"$20", pronunciation:"ee-AH-rah", speak:"iara", desc:"Pox, cupuaçu, Brazilian vanilla honey, jiquitaia tincture, Amazon spice rim. Milk-punched with coconut milk and strained clear. The restaurant's namesake cocktail.", allergens:["Coconut"], example:false },
   { id:"d25", category:"Cocktails", name:"Tucupi Martini", price:"$20", pronunciation:"too-koo-PEE", speak:"Tucupi", desc:"Amázzoni gin infused with tucupi spice, Tokki soju, preserved lemon brine, lemon twist.", allergens:[], example:false },
   { id:"d26", category:"Cocktails", name:"Romeo and Juliet Martini", price:"$20", desc:"Mezcal, Queijo Minas-washed vermouth, guava eau de vie, blanc vermouth, Lillet, saline.", allergens:["Dairy"], example:false },
-  { id:"d27", category:"Wine & Beer", group:"Sparkling", name:"Cave Geisse Brut Nature", price:"$20 / $100", desc:"Brazil, 2023. Chardonnay and Pinot Noir, traditional method, no added sugar.", allergens:["Sulfites"], example:false },
-  { id:"d28", category:"Wine & Beer", group:"Sparkling", name:"Luis Pato Vinha Formal Espumante", price:"$25 / $125", desc:"Portugal, 2019. Bical, Cerceal, and Sercial from Bairrada.", allergens:["Sulfites"], example:false },
-  { id:"d29", category:"Wine & Beer", group:"White", name:"Garzón Albariño Reserva", price:"$17 / $85", desc:"Uruguay, 2025.", allergens:["Sulfites"], example:false },
-  { id:"d30", category:"Wine & Beer", group:"White", name:"Alberto Orte Vara y Pulgar Blanco", price:"$19 / $95", desc:"Spain, 2024. Palomino Fino from Jerez.", allergens:["Sulfites"], example:false },
-  { id:"d31", category:"Wine & Beer", group:"White", name:"El Enemigo Semillón", price:"$20 / $100", desc:"Argentina, 2024.", allergens:["Sulfites"], example:false },
-  { id:"d32", category:"Wine & Beer", group:"White", name:"Brij Chardonnay", price:"$22 / $110", desc:"California, 2025.", allergens:["Sulfites"], example:false },
-  { id:"d33", category:"Wine & Beer", group:"Rosé & Orange", name:"De Fermo Concrete Rosato", price:"$18 / $90", desc:"Abruzzo, Italy, 2024. Montepulciano.", allergens:["Sulfites"], example:false },
-  { id:"d34", category:"Wine & Beer", group:"Rosé & Orange", name:"Day Wines Vin de Days L’Orange", price:"$18 / $90", desc:"Willamette Valley, Oregon, 2025. Riesling, Müller-Thurgau, Gewürztraminer.", allergens:["Sulfites"], example:false },
-  { id:"d35", category:"Wine & Beer", group:"Red", name:"Martha Stoumen Post Flirtation Red", price:"$18 / $90", desc:"California, 2025. Zinfandel and Carignan. Served chilled.", allergens:["Sulfites"], example:false },
-  { id:"d36", category:"Wine & Beer", group:"Red", name:"David Moreau Bourgogne Rouge Sous Montot", price:"$24 / $120", desc:"France, 2023. Pinot Noir.", allergens:["Sulfites"], example:false },
-  { id:"d37", category:"Wine & Beer", group:"Red", name:"Susana Esteban Aventura Tinto", price:"$20 / $100", desc:"Portugal, 2019. Mainly Aragonez and Touriga Nacional.", allergens:["Sulfites"], example:false },
-  { id:"d38", category:"Wine & Beer", group:"Red", name:"Zuccardi Polígonos Altamira Malbec", price:"$22 / $110", desc:"Argentina, 2023.", allergens:["Sulfites"], example:false },
-  { id:"d39", category:"Wine & Beer", group:"Beer", name:"Super Bock Mini", price:"$8", desc:"Portugal. Lager, 20 cl bottle.", allergens:["Gluten"], example:false },
-  { id:"d40", category:"Wine & Beer", group:"Beer", name:"Grimm Weisse", price:"$12", desc:"Brooklyn. Hefeweizen.", allergens:["Gluten"], example:false },
+  { id:"d27", category:"Wine & Beer", group:"Sparkling", name:"Cave Geisse Brut Nature", price:"$20", desc:"Pinto Bandeira, Serra Gaúcha, Brazil, 2023. Chardonnay and Pinot Noir.", allergens:["Sulfites"], example:false },
+  { id:"d28", category:"Wine & Beer", group:"Sparkling", name:"Luís Pato Vinha Formal Espumante", price:"$25", desc:"Bairrada, Portugal, 2019. Bical, Cerceal, and Sercial.", allergens:["Sulfites"], example:false },
+  { id:"d29", category:"Wine & Beer", group:"White", name:"Garzón Reserva", price:"$17", desc:"Maldonado, Uruguay, 2025. Albariño.", allergens:["Sulfites"], example:false },
+  { id:"d30", category:"Wine & Beer", group:"White", name:"Alberto Orte Vara y Pulgar Blanco", price:"$19", desc:"Cádiz, Andalucía, Spain, 2024. Palomino Fino.", allergens:["Sulfites"], example:false },
+  { id:"d31", category:"Wine & Beer", group:"White", name:"El Enemigo", price:"$20", desc:"Mendoza, Argentina, 2024. Semillón.", allergens:["Sulfites"], example:false },
+  { id:"d32", category:"Wine & Beer", group:"White", name:"Brij Chardonnay", price:"$22", desc:"San Luis Obispo Coast, California, 2025. Chardonnay.", allergens:["Sulfites"], example:false },
+  { id:"d33", category:"Wine & Beer", group:"Rosé & Orange", name:"De Fermo Concrete Rosato", price:"$18", desc:"Abruzzo, Italy, 2024. Montepulciano.", allergens:["Sulfites"], example:false },
+  { id:"d34", category:"Wine & Beer", group:"Rosé & Orange", name:"Day Wines Vin de Days L’Orange", price:"$18", desc:"Willamette Valley, Oregon, 2025. Riesling, Pinot Gris, Gewürztraminer.", allergens:["Sulfites"], example:false },
+  { id:"d35", category:"Wine & Beer", group:"Red", name:"Martha Stoumen Post Flirtation Red", price:"$18", desc:"Mendocino & Contra Costa, California, 2025. Zinfandel and Carignan. Served chilled.", allergens:["Sulfites"], example:false },
+  { id:"d36", category:"Wine & Beer", group:"Red", name:"David Moreau Bourgogne Rouge Sous Montot", price:"$24", desc:"Burgundy, France, 2023. Pinot Noir.", allergens:["Sulfites"], example:false },
+  { id:"d37", category:"Wine & Beer", group:"Red", name:"Susana Esteban Aventura Tinto", price:"$18", desc:"Alentejo, Portugal, 2024. Aragonez and Touriga Nacional.", allergens:["Sulfites"], example:false },
+  { id:"d38", category:"Wine & Beer", group:"Red", name:"Zuccardi Polígonos Altamira Malbec", price:"$22", desc:"Paraje Altamira, Valle de Uco, Argentina, 2023. Malbec.", allergens:["Sulfites"], example:false },
+  { id:"d39", category:"Wine & Beer", group:"Beer", name:"Super Bock Mini", price:"$6", desc:"Portugal. Lager, 6.8 oz bottle.", allergens:["Gluten"], example:false },
+  { id:"d43", category:"Wine & Beer", group:"Beer", name:"Brahma Duplo Malte", price:"$8", desc:"Brazil. Pure malt lager.", allergens:["Gluten"], example:false },
+  { id:"d40", category:"Wine & Beer", group:"Beer", name:"Grimm Weisse", price:"$12", desc:"Brooklyn. Wheat ale.", allergens:["Gluten"], example:false },
   { id:"d41", category:"Wine & Beer", group:"Beer", name:"Xingu Black", price:"$10", desc:"Brazil. Black lager.", allergens:["Gluten"], example:false },
   /* --- Wine & Beer (list still being finalized) --- */
 ];
@@ -2152,21 +2154,21 @@ var QUIZ_FOOD_EXTRA = [
 ];
 
 var QUIZ_BEVERAGE_MORE = [
-  { q:"Which cocktail contains Chartreuse?", a:["Classic Caipirinha","iara","Tucupi Martini","Romeo and Juliet Martini"], c:1 },
-  { q:"Which cocktail uses Cocchi, an aperitif wine?", a:["Batida de Coco","Tucupi Martini","Classic Caipirinha","Romeo and Juliet Martini"], c:1 },
+  { q:"Which cocktail contains Chartreuse?", a:["Caipirinha","iara","Tucupi Martini","Romeo and Juliet Martini"], c:1 },
+  { q:"Which cocktail uses Cocchi, an aperitif wine?", a:["Batida de Coco","Tucupi Martini","Caipirinha","Romeo and Juliet Martini"], c:1 },
   { q:"Which cocktail includes Lillet?", a:["Romeo and Juliet Martini","iara","Batida de Coco","Tucupi Martini"], c:0 },
-  { q:"Which cocktail contains rice soju?", a:["iara","Tucupi Martini","Batida de Coco","Classic Caipirinha"], c:1 },
+  { q:"Which cocktail contains rice soju?", a:["iara","Tucupi Martini","Batida de Coco","Caipirinha"], c:1 },
   { q:"What adds a briny, savory note to a couple of iara's martinis?", a:["Preserved lemon brine and saline","Soy sauce","Fish sauce","Worcestershire sauce"], c:0 },
-  { q:"Which cocktail is the simplest, built from just cachaça, sweetener, and lime?", a:["Classic Caipirinha","iara","Tucupi Martini","Romeo and Juliet Martini"], c:0 },
+  { q:"Which cocktail is the simplest, built from just cachaça, sweetener, and lime?", a:["Caipirinha","iara","Tucupi Martini","Romeo and Juliet Martini"], c:0 },
   { q:"What category do iara's non-cocktail alcoholic beverages fall under?", a:["Mocktails","Wine &amp; Beer","Digestifs","Aperitifs"], c:1 },
-  { q:"Which of these cocktails contains no coconut?", a:["Batida de Coco","iara","Classic Caipirinha","Both Batida de Coco and iara"], c:2 },
+  { q:"Which of these cocktails contains no coconut?", a:["Batida de Coco","iara","Caipirinha","Both Batida de Coco and iara"], c:2 },
   { q:"What spirit family does Cocchi belong to?", a:["Aperitif wine","Whiskey","Gin","Tequila"], c:0 },
   { q:"Mezcal and Pox are both examples of what?", a:["Agave spirits","Grape brandies","Sugarcane spirits","Grain whiskies"], c:0 },
   { q:"What is a \"washed\" vermouth, as used in the Romeo and Juliet Martini?", a:["A vermouth fat-washed/infused with cheese","A vermouth diluted with water","A non-alcoholic vermouth","A carbonated vermouth"], c:0 },
   { q:"What does preserved lemon brine add to a cocktail?", a:["Sweetness","Salty, tangy brininess","Bitterness","Smokiness"], c:1 },
   { q:"What is an \"eau de vie,\" as in the guava eau de vie in the Romeo and Juliet Martini?", a:["A clear fruit brandy","A type of wine","A liqueur syrup","A bitters blend"], c:0 },
   { q:"Why should you always double-check a drink's allergens before serving it?", a:["It's not necessary","To protect guests with food allergies","Only bartenders need to know this","It only matters for wine"], c:1 },
-  { q:"What is oleo saccharum, used in the Classic Caipirinha?", a:["An oil-based citrus sugar made from lime peels","A type of simple syrup","A citrus liqueur","A bitters blend"], c:0 },
+  { q:"What is oleo saccharum, used in the Caipirinha?", a:["An oil-based citrus sugar made from lime peels","A type of simple syrup","A citrus liqueur","A bitters blend"], c:0 },
   { q:"What spirit category is Novo Fogo?", a:["Cachaça","Gin","Mezcal","Vodka"], c:0 },
   { q:"Which cachaça brand is used in the Batida de Coco?", a:["Novo Fogo","Seleta Gold","Amazzoni","Salers"], c:1 },
   { q:"What Amazonian ingredient is used as a rim on the Batida de Coco?", a:["Cumaru","Puxuri","Jambu","Jiquitaia pepper"], c:1 },
@@ -7956,8 +7958,8 @@ function capPool(arr, max){
 }
 
 var QUIZ_BEVERAGE = [
-  { q:"What cachaça is the Classic Caipirinha built on?", a:["Seleta Gold","Novo Fogo bar-strength cachaça","Amazzoni Gin","Pox"], c:1 },
-  { q:"What is used to sweeten the Classic Caipirinha instead of plain sugar?", a:["Simple syrup","Oleo saccharum","Honey","Agave nectar"], c:1 },
+  { q:"What cachaça is the Caipirinha built on?", a:["Seleta Gold","Novo Fogo bar-strength cachaça","Amazzoni Gin","Pox"], c:1 },
+  { q:"What is used to sweeten the Caipirinha instead of plain sugar?", a:["Simple syrup","Oleo saccharum","Honey","Agave nectar"], c:1 },
   { q:"What cachaça is used in the Batida de Coco?", a:["Novo Fogo","Seleta Gold","Salers","Cocchi"], c:1 },
   { q:"What gives the Batida de Coco its rich, creamy sweetness?", a:["Egg white and soda","Cream of coconut and sweetened condensed milk","Simple syrup and cream","Honey and oat milk"], c:1 },
   { q:"What is the garnish/rim on the Batida de Coco?", a:["A salt rim","A coconut-puxuri rim","A sugar rim","A chili-salt rim"], c:1 },
@@ -7974,7 +7976,7 @@ var QUIZ_BEVERAGE = [
   { q:"Which classic pairing does the \"Romeo and Juliet Martini\" riff on?", a:["Wine and cheese","Guava and cheese (\"Romeu e Julieta\")","Chocolate and chili","Citrus and salt"], c:1 },
   { q:"How does iara's menu suggest guests taste cachaça on its own?", a:["Only blended into a smoothie","Neat, on ice, or mixed into a caipirinha","Only as a shot with salt and lime","Warmed, like a digestif"], c:1 },
   { q:"How is cachaça made, per iara's menu?", a:["Distilled from fermented grain mash","By juicing sugarcane, then fermenting and distilling it","Brewed and filtered like beer","Fermented from grapes, like brandy"], c:1 },
-  { q:"Which 2 listed cocktails should you steer a coconut-allergic guest away from?", a:["Classic Caipirinha and Tucupi Martini","Batida de Coco and iara","Tucupi Martini and Romeo and Juliet Martini","iara and Classic Caipirinha"], c:1 },
+  { q:"Which 2 listed cocktails should you steer a coconut-allergic guest away from?", a:["Caipirinha and Tucupi Martini","Batida de Coco and iara","Tucupi Martini and Romeo and Juliet Martini","iara and Caipirinha"], c:1 },
   { q:"Before recommending a cocktail to a guest who has stated an allergy, you should:", a:["Guess based on the name","Check the drink's listed allergens, and ask a manager if unsure","Recommend the most popular drink anyway","Tell them all cocktails are allergen-free"], c:1 },
 ];
 
