@@ -952,9 +952,11 @@
   .wl-fine a{ display:inline-block; min-width:44px; }
   /* Touch screens in the desktop layout (861-1023px tablets) get the same 44px targets as phones. */
   @media (pointer:coarse){
-    .sidebar .nav-btn, .fb-tab{ min-height:44px; }
-    .ff-copy{ width:44px; height:44px; }
-    .bio-more, .jump-link, .cl-help a{ display:inline-flex; align-items:center; min-height:44px; }
+    .sidebar .nav-btn, .view .fb-tab{ min-height:44px; }
+    html .ff-copy{ width:44px; height:44px; }
+    html .k-btn, html .k-chip{ min-height:44px; }
+    .bio-more, .jump-link, .cl-help a, .wl-fine a, .wl-reviews a{ display:inline-flex; align-items:center; min-height:44px; }
+    .view .say-btn, .view .dish-story-btn{ min-height:44px; }
   }
   .cl-help a{ min-width:44px; }
   /* Mobile QA pass: 16px inputs stop iOS zoom-on-focus; 44px thumb targets. */
