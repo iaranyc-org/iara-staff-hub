@@ -1,0 +1,38 @@
+[
+  {
+    "slug": "ryan-sutton",
+    "accepted": false,
+    "file": null,
+    "source_page_url": "https://tastecooking.com/this-is-taste-479-the-future-of-restaurant-criticism-is-in-your-inbox-with-ryan-sutton/",
+    "image_url": "https://tastecooking.com/wp-content/uploads/2024/10/RYANSUTTON_2_ARTICLE-2000x1123.jpg",
+    "evidence": "alt=\"RYANSUTTON_2_ARTICLE\"",
+    "notes": "Rejected: the Taste/Talkhouse ep 479 image is an illustration (pizza slice for a head). Also checked KUNC/NPR 2020 (no photo), Heritage Radio, WNYC, Daily Meal, Mediaite, Village Voice, Taste ep 193 (og is caviar). No captioned real photo found; he appears to keep his face out of press."
+  },
+  {
+    "slug": "robert-sietsema",
+    "accepted": false,
+    "file": null,
+    "source_page_url": "https://evgrieve.com/2023/08/these-are-longtime-food-writer-robert.html",
+    "image_url": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEj20jnfdJwhwhhxWiIZidHw0-16Rn09nneoSo4ddXLjLhJZuWVwORIKn0WRwEYk7Isn2fXRV_Kqd_ZAxQ6T-6Vu8SH1b2IM0ECiiEDeo0hyf93Q27iNAZFHyfttfbLVez8J5IggNzY504S6gieCT8nkINxHWwbgph0-zc3VZuRis8WBq-MHIVlxJWxhy0I/s1200/viruswalk_6-12-23_r_w_034.jpg",
+    "evidence": "EV Grieve post about Sietsema, 'Photos and reporting by Stacie Joy'",
+    "notes": "Rejected: real photo but he wears a devil half-mask over eyes/nose. Hell Gate 2025 profile photo (caption 'Robert Sietsema in action.') has a camera covering his face. Talkhouse ep 51 art is a ferret illustration. Possible fallback if staff only need build/hair/mouth: the EV Grieve photo shows lower face, hair, glasses."
+  },
+  {
+    "slug": "morgan-carter",
+    "accepted": true,
+    "file": "img/watch_staging/morgan-carter.jpg",
+    "source_page_url": "https://www.timeout.com/newyork/news/let-me-tell-youim-time-out-new-yorks-new-food-and-drink-editor-071024",
+    "image_url": "https://media.timeout.com/images/106156279/1024/576/image.jpg",
+    "evidence": "Hero img alt: \"Writer Morgan Carter taking a picture of pierogies\"; caption \"Photograph: courtesy of Morgan Carter for Time Out New York\"",
+    "notes": "Three-quarter profile, face visible. Second photo same article (alt 'Picture of Morgan Carter holding a paper cone filled with cheese...', image 106156272) shows frontal eyes but mouth hidden; consistent with same person."
+  },
+  {
+    "slug": "steve-cuozzo",
+    "accepted": true,
+    "file": "img/watch_staging/steve-cuozzo.jpg",
+    "source_page_url": "https://nypost.com/author/steve-cuozzo/",
+    "image_url": "https://nypost.com/wp-content/uploads/sites/2/2026/09/newspress-collage-ln7z0lx38-1789416380273.jpg",
+    "evidence": "alt: \"An image collage containing 2 images, Image 1 shows Steve Cuozzo at RYE by Martin Auer in Nolita holding a loaf of bread, mouth open in surprise\"",
+    "notes": "Sept 2026 NY Post photo, cropped from collage. Expression is mock-surprised (mouth open) but face is clear and frontal."
+  }
+]

@@ -1,0 +1,221 @@
+[
+  {
+    "slug": "melissa-mccart",
+    "name": "Melissa McCart",
+    "outlet": "Eater",
+    "role": "Lead editor, Northeast region (Eater NY)",
+    "beat": "NYC restaurant news and dining reports",
+    "note": "She runs Eater NY coverage and still files her own dining reports, including one dated Sept 23, 2026.",
+    "sources": [
+      "https://ny.eater.com/authors/melissa-mccart",
+      "https://ny.eater.com/dining-report/413962/the-pocket-jazz-club-times-square-dinner-review"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/melissa-mccart.jpg",
+    "photo_source_page": "https://ny.eater.com/authors/melissa-mccart",
+    "photo_evidence": "og:image on her own Eater author page, file melissa-headshot.jpg (uploaded 2025/06).",
+    "group": "Food Media"
+  },
+  {
+    "slug": "alan-sytsma",
+    "name": "Alan Sytsma",
+    "outlet": "New York Magazine / Grub Street",
+    "role": "Food Editor, New York Magazine",
+    "beat": "Oversees Grub Street and the magazine's best-new-restaurants coverage",
+    "note": "He edits all of New York magazine's food coverage, including its annual best-new-restaurants list (discussed on TASTE, Dec 19, 2025).",
+    "sources": [
+      "https://www.grubstreet.com/article/anne-burrell-food-tv-legacy.html",
+      "https://tastecooking.com/this-is-taste-704-the-year-in-nyc-restaurants-with-alan-sytsma-of-new-york-magazine-mahira-rivers-of-the-new-york-times/"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/alan-sytsma.jpg",
+    "photo_source_page": "https://heritageradionetwork.org/podcast/alan-sytsma-editor-of-grub-street",
+    "photo_evidence": "og:image filename Alan-Sytsma.jpeg on a Heritage Radio page solely about him; matches the Grub Street byline illustration. Photo is from an older (pre-2025) episode, so he may look slightly different now.",
+    "group": "New York Mag"
+  },
+  {
+    "slug": "chris-crowley",
+    "name": "Chris Crowley",
+    "outlet": "New York Magazine / Grub Street",
+    "role": "Senior Writer, Grub Street",
+    "beat": "NYC restaurant reporting, openings, industry stories",
+    "note": "He is New York magazine's senior food writer and covers new NYC openings (Beard Awards piece June 17, 2025; TASTE interview Nov 30, 2025).",
+    "sources": [
+      "https://www.grubstreet.com/article/2025-james-beard-awards.html",
+      "https://tastecooking.com/?p=131556"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/chris-crowley.jpg",
+    "photo_source_page": "https://staycurrant.com/explore/chris-crowley",
+    "photo_evidence": "Filename Chris-Crowley-photo-credit_-Christian-Rodriguez.jpg on a profile page about him; beard and face match his Grub Street byline illustration. Photo dates from 2020.",
+    "group": "New York Mag"
+  },
+  {
+    "slug": "tammie-teclemariam",
+    "name": "Tammie Teclemariam",
+    "outlet": "New York Magazine",
+    "role": "Underground Gourmet columnist",
+    "beat": "Affordable and neighborhood restaurant reviews",
+    "note": "She writes New York magazine's Underground Gourmet review column (byline Oct 28, 2025), the slot most likely to cover an upscale-casual LES opening.",
+    "sources": [
+      "https://www.grubstreet.com/article/askili-orchard-georgian-underground-gourmet-nyc.html",
+      "https://tastecooking.com/?p=130115"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/tammie-teclemariam.jpg",
+    "photo_source_page": "https://www.cjr.org/the_profile/tammie-teclemariam-new-york-conde-nast.php",
+    "photo_evidence": "og:image TammieTeclemariam-scaled.jpeg on a CJR profile solely about her; matches her Grub Street byline illustration and her Wikipedia photo. Photo dates from 2022.",
+    "group": "New York Mag"
+  },
+  {
+    "slug": "bryan-kim",
+    "name": "Bryan Kim",
+    "outlet": "The Infatuation",
+    "role": "Editorial Lead, NYC",
+    "beat": "Restaurant reviews and NYC guides",
+    "note": "He leads The Infatuation's NYC editorial team and reviews restaurants himself (Cafe Charmant review, Sept 8, 2026).",
+    "sources": [
+      "https://www.theinfatuation.com/contributor/bryan-kim",
+      "https://www.theinfatuation.com/new-york/reviews/cafe-charmant"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/bryan-kim.jpg",
+    "photo_source_page": "https://www.theinfatuation.com/contributor/bryan-kim",
+    "photo_evidence": "Author headshot on his own Infatuation contributor page.",
+    "group": "Food Media"
+  },
+  {
+    "slug": "molly-fitzpatrick",
+    "name": "Molly Fitzpatrick",
+    "outlet": "The Infatuation",
+    "role": "Senior Staff Writer, NYC",
+    "beat": "Restaurant reviews",
+    "note": "She is a senior NYC reviewer for The Infatuation (review published Oct 1, 2026).",
+    "sources": [
+      "https://www.theinfatuation.com/contributor/molly-fitzpatrick",
+      "https://www.theinfatuation.com/new-york/reviews/something-smells-fishy"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/molly-fitzpatrick.jpg",
+    "photo_source_page": "https://www.theinfatuation.com/contributor/molly-fitzpatrick",
+    "photo_evidence": "Author headshot on her own Infatuation contributor page.",
+    "group": "Food Media"
+  },
+  {
+    "slug": "will-hartman",
+    "name": "Will Hartman",
+    "outlet": "The Infatuation",
+    "role": "Staff Writer, NYC",
+    "beat": "Restaurant reviews",
+    "note": "He reviews NYC restaurants for The Infatuation (Table Mercato review, Oct 1, 2026).",
+    "sources": [
+      "https://www.theinfatuation.com/contributor/will-hartman",
+      "https://www.theinfatuation.com/new-york/reviews/table-mercato"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/will-hartman.jpg",
+    "photo_source_page": "https://www.theinfatuation.com/contributor/will-hartman",
+    "photo_evidence": "Author photo on his own Infatuation contributor page. The source image is small and full-body, so the face crop is low-res (180px).",
+    "group": "Food Media"
+  },
+  {
+    "slug": "willa-moore",
+    "name": "Willa Moore",
+    "outlet": "The Infatuation",
+    "role": "Staff Writer, NYC",
+    "beat": "Restaurant reviews",
+    "note": "She reviews NYC restaurants for The Infatuation (Faux review, Sept 3, 2026).",
+    "sources": [
+      "https://www.theinfatuation.com/contributor/willa-moore",
+      "https://www.theinfatuation.com/new-york/reviews/faux"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/willa-moore.jpg",
+    "photo_source_page": "https://www.theinfatuation.com/contributor/willa-moore",
+    "photo_evidence": "Filename WillaMoore_Headshot_KatePrevite on her own Infatuation contributor page.",
+    "group": "Food Media"
+  },
+  {
+    "slug": "ellie-plass",
+    "name": "Ellie Plass",
+    "outlet": "Resy Editorial",
+    "role": "Freelance New York contributor",
+    "beat": "Resy features on NYC openings",
+    "note": "She wrote Resy's feature on iara itself (Sept 25, 2026), so she may come in to follow up.",
+    "sources": [
+      "https://blog.resy.com/2026/09/iara-nyc/",
+      "https://blog.resy.com/author/ellie-plass/"
+    ],
+    "confidence": "high",
+    "photo_file": "img/watch_staging/ellie-plass.jpg",
+    "photo_source_page": "https://blog.resy.com/author/ellie-plass/",
+    "photo_evidence": "Filename Ellie-Plass-2 on her own Resy author page. Photo dates from 2021.",
+    "group": "Food Media"
+  },
+  {
+    "slug": "kate-krader",
+    "name": "Kate Krader",
+    "outlet": "Bloomberg Pursuits",
+    "role": "Food Editor",
+    "beat": "High-end restaurants and global dining",
+    "note": "She is Bloomberg's food editor and writes its global restaurant coverage (Pursuits newsletter, Feb 22, 2025).",
+    "sources": [
+      "https://www.bloomberg.com/news/newsletters/2025-02-22/the-best-food-city-in-the-world-according-to-a-food-editor",
+      "https://talkingbiznews.com/media-news/bloombergs-krader-moving-to-london-to-cover-food/"
+    ],
+    "confidence": "medium",
+    "photo_file": "img/watch_staging/kate-krader.jpg",
+    "photo_source_page": "https://talkingbiznews.com/media-news/bloombergs-krader-moving-to-london-to-cover-food/",
+    "photo_evidence": "Filename Kate-Krader.jpg on an article about her; matches a separate IACP photo (Kate-Krader-e1581389522891.jpg). Photo is older, likely pre-2022. A 2022 report says she moved to London, so she may be in NYC less often.",
+    "group": "Other Press"
+  },
+  {
+    "slug": "mahira-rivers",
+    "name": "Mahira Rivers",
+    "outlet": "The New York Times (freelance) / Sweet City",
+    "role": "Freelance restaurant critic; former Michelin inspector",
+    "beat": "Restaurant reviews, NYC desserts (Sweet City newsletter)",
+    "note": "She is a former anonymous Michelin inspector who now reviews NYC restaurants for the NYT (TASTE, Dec 19, 2025), so she is trained to dine without being noticed.",
+    "sources": [
+      "https://tastecooking.com/this-is-taste-704-the-year-in-nyc-restaurants-with-alan-sytsma-of-new-york-magazine-mahira-rivers-of-the-new-york-times/",
+      "https://talkhouse.com/624-food-writers-talking-about-food-writing-with-mahira-rivers"
+    ],
+    "confidence": "medium",
+    "photo_file": null,
+    "photo_source_page": null,
+    "photo_evidence": "No real photo found; podcast pages only show illustrations.",
+    "group": "NYT"
+  },
+  {
+    "excluded": [
+      {
+        "name": "Mike Chau (@foodbabyny)",
+        "reason": "Only an undated search snippet claims 364K followers in Feb 2026; no 2025-2026 dated source could be confirmed."
+      },
+      {
+        "name": "Emma Orlow",
+        "reason": "Eater author page now calls her a former Eater editor; no current role confirmed."
+      },
+      {
+        "name": "Luke Fortney",
+        "reason": "Eater author page says he formerly worked there; no current role confirmed."
+      },
+      {
+        "name": "Scott Lynch (Gothamist)",
+        "reason": "The most recent byline found was from 2022; no 2025-2026 activity confirmed."
+      },
+      {
+        "name": "Hannah Albertine (Infatuation)",
+        "reason": "Contributor page says Senior Editor with no NYC reviews confirmed for 2025-2026; skipped."
+      },
+      {
+        "name": "Michelin North America / World's 50 Best / La Liste public faces",
+        "reason": "Not researched in depth because of the time budget; Gwendal Poullennec is already listed."
+      },
+      {
+        "name": "Time Out NY critics",
+        "reason": "Morgan Carter is already listed; no other current Time Out NY critic confirmed."
+      }
+    ]
+  }
+]

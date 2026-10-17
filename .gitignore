@@ -2,3 +2,17 @@
 .env
 .env.local
 node_modules/
+
+# Watch List photo staging: inputs for tools/build_watch.py, kept on this Mac only.
+# The build copies the chosen photos into img/watch/, which is what gets served.
+img/watch_staging/
+img/watch_more/
+img/watch_more2/
+img/watch_more3/
+img/watch_more4/
+img/watch_lookbook/
+
+# Local QA rig (Playwright scripts, browser profile, screenshots) and scratch notes
+qa/
+scratch_*.html
+zz_*

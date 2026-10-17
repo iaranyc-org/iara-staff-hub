@@ -1,0 +1,47 @@
+[
+  {
+    "slug": "pete-wells",
+    "accepted": true,
+    "file": "/Users/jay/Claude/iara-staff-hub/img/watch_staging/pete-wells.jpg",
+    "source_page_url": "https://www.youtube.com/watch?v=JI6toIqu5pI",
+    "image_url": "https://i.ytimg.com/vi/JI6toIqu5pI/maxresdefault.jpg",
+    "evidence": "YouTube video titled 'Pete Wells' (channel Feed Me, oEmbed title 'Pete Wells'); one person on camera, front-facing; same face as CBS Sunday Morning 'nyt-food-critic-pete-wells' still (glasses, grey curly hair)",
+    "notes": "Thumbnail of the Expense Account / Emily Sundberg podcast video, cropped to remove the logo. Replaced the CBS side-profile still."
+  },
+  {
+    "slug": "adam-platt",
+    "accepted": true,
+    "file": "/Users/jay/Claude/iara-staff-hub/img/watch_staging/adam-platt.jpg",
+    "source_page_url": "https://journalism.nyu.edu/about-us/profile/adam-platt/",
+    "image_url": "https://journalism.nyu.edu/wp-content/uploads/2020/07/photo-adam-platt.jpg",
+    "evidence": "alt=\"Adam Platt\", filename photo-adam-platt.jpg on NYU Journalism faculty profile",
+    "notes": "Studio headshot, 2020 upload. Corroborating: Miami Book Fair Platt_Adam-cr-deborah-feingold-1.jpg."
+  },
+  {
+    "slug": "hannah-goldfield",
+    "accepted": true,
+    "file": "/Users/jay/Claude/iara-staff-hub/img/watch_staging/hannah-goldfield.jpg",
+    "source_page_url": "https://wesleyanargus.com/?p=197839",
+    "image_url": "https://50-116-52-166.ip.linodeusercontent.com/wp-content/uploads/2023/12/Screenshot-2023-12-04-at-10.30.25-PM.jpg",
+    "evidence": "alt=\"c/o Hannah Goldfield\"; event poster reads 'HANNAH GOLDFIELD ... Food critic for The New Yorker' with single portrait",
+    "notes": "Cropped from Nov 2023 Wesleyan event poster; brick-colored poster edge remains in corners. Rejected Jewish Insider 2020 photo (masked, far away)."
+  },
+  {
+    "slug": "tom-sietsema",
+    "accepted": true,
+    "file": "/Users/jay/Claude/iara-staff-hub/img/watch_staging/tom-sietsema.jpg",
+    "source_page_url": "https://washingtonian.com/2025/10/14/tom-sietsema-on-disguises-memorable-reviews-and-whats-next/",
+    "image_url": "https://washingtonian.com/wp-content/uploads/2025/10/TomSietsema_DebLindsey_Oct2025_018-1024x683.jpg",
+    "evidence": "filename/title 'TomSietsema_DebLindsey_Oct2025_018' as og:image of Washingtonian interview about his face reveal on retirement",
+    "notes": "Oct 2025 portrait by Deb Lindsey, taken after he unmasked. Most recent and best quality."
+  },
+  {
+    "slug": "arthur-schwartz",
+    "accepted": false,
+    "file": null,
+    "source_page_url": "https://arthur-schwartz-the-food-maven.castos.com",
+    "image_url": "https://episodes.castos.com/ON-DEMAND-LISTENING/images/arthur-schwartz-the-food-maven-podcast.jpg",
+    "evidence": "Filename 'arthur-schwartz-the-food-maven-podcast.jpg'; official cover art of his own podcast, one central person",
+    "notes": "Rejected: podcast cover face could not be confirmed. Couldn't find a second photo with his name in the caption. Tried Wikipedia, eGullet, Heritage Radio, thefoodmaven.com, Publishers Weekly/book pages, and his YouTube uploads (all Robin Hood Radio cards)."
+  }
+]

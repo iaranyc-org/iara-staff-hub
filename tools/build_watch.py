@@ -246,3 +246,19 @@ print(Counter(p.get('status') for p in out))
 print('photo counts:', Counter(len(p.get('photos', [])) for p in out))
 print('no photo:', [p['name'] for p in out if not p['photo']])
 print('no status:', [p['name'] for p in out if not p.get('status')])
+
+# Bom Dia's Watch List Alert reads a copy of this list (names + Hall PR booking
+# aliases) from the iara Inbox worker, so refresh it on every build; otherwise a
+# critic added here would never be flagged in the morning email.
+import re
+ALIAS_RE = re.compile(r'(?i:under the name|alias(?: name)?(?: is|:)?|books? (?:as|under)|reservations? (?:are made )?(?:as|under))\s+["“]?([A-Z][a-z]+ [A-Z][a-zA-Z\'-]+)')
+wl = []
+for p in out:
+    txt = ' '.join(str(p.get(k) or '') for k in ('hallIntel', 'howTheyDine', 'recognizeBy', 'note'))
+    wl.append({'name': p['name'], 'outlet': p.get('outlet', ''), 'role': p.get('shortRole') or p.get('role', ''),
+               'match': [x.strip() for x in p['name'].split('&')],
+               'aliases': sorted(set(m.group(1) for m in ALIAS_RE.finditer(txt)))})
+wl_path = os.path.expanduser('~/Claude/iara-inbox/ig-worker/watchlist.json')
+if os.path.isdir(os.path.dirname(wl_path)):
+    json.dump(wl, open(wl_path, 'w'), ensure_ascii=False, indent=1)
+    print('bom dia watchlist:', len(wl), 'people,', sum(1 for w in wl if w['aliases']), 'with aliases ->', wl_path)
