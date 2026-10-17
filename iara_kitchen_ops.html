@@ -33,6 +33,7 @@
 <script src="/kit/dialog.js" defer></script>
 <script src="/kit/toast.js" defer></script>
 <script src="/kit/tabs.js" defer></script>
+<script src="/kit/loading.js" defer></script>
 <style>
   /* iara signage palette (the same tokens iara_staff_hub.html and
      iara_hub.html use), pinned dark on every device - iara.nyc has no
@@ -1207,7 +1208,8 @@ function render(){
   document.title = (activeTab ? activeTab.label + ' · ' : '') + 'iara Kitchen Ops';
   var main = $('#main');
   if(!isReady()){
-    main.innerHTML = '<div class="k-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading kitchen data…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div></div>';
+    // Full-page first load: the bold kitchen loader. Kept in place across re-renders so it doesn't restart.
+    if(!main.querySelector('[data-k-bigload]')) main.innerHTML = '<div role="status" aria-busy="true"><span class="k-sr-only">Loading kitchen data…</span><div data-k-bigload></div></div>';
     return;
   }
   var html = '';
