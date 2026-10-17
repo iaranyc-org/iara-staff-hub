@@ -238,10 +238,10 @@
      (205 Allen) is used deliberately, not the legal deed address (201 Allen -
      see feedback_iara_205_allen note); this card is for staff wayfinding,
      not paperwork. */
-  .fastfacts{ padding:0 0 14px; }
+  .fastfacts{ padding:0 0 14px; max-width:var(--measure); }
   .ff-card{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
-    padding:14px 16px;
+    padding:22px 24px;
   }
   .ff-title{
     font-size:13px; font-weight:600; color:var(--ink-soft); margin:0 0 10px;
@@ -349,7 +349,7 @@
     padding:16px 18px; background:none; border:none; cursor:pointer; text-align:left;
   }
   .acc-head h2, .acc-head h3{ margin:0; font-size:20px; }
-  .acc-head .chev{ transition:transform .15s ease; color:var(--ink-soft); flex:none; }
+  .acc-head .chev{ transition:transform .15s ease; color:var(--ink-soft); flex:none; font-size:28px; line-height:1; }
   .accordion.open .acc-head .chev{ transform:rotate(180deg); }
   .acc-body{ display:none; padding:0 18px 22px; }
   .accordion.open .acc-body{ display:block; animation:accIn .22s cubic-bezier(.16,1,.3,1); }
@@ -666,12 +666,12 @@
   .miss-rank li:last-child{ border-bottom:none; }
   .miss-rank .miss-q{ margin:0; font-size:15px; line-height:1.5; }
   .miss-rank .miss-meta{ margin:4px 0 0; font-size:13px; color:var(--ink-soft); }
-  .fw-card{ padding:22px 24px; margin:0 0 30px; max-width:var(--measure); }
+  .fw-card{ padding:22px 24px; margin:0 0 24px; max-width:var(--measure); }
   .fw-card{ position:relative; }
   .fw-top{ padding-right:96px; }
   .fw-head{ font-family:var(--font-display); font-size:20px; color:var(--display); margin-bottom:4px; }
   .fw-dismiss{ position:absolute; top:14px; right:12px; color:var(--ink-soft); }
-  @media (max-width:1023px){ .fw-dismiss{ top:8px; right:8px; } }
+  @media (max-width:1023px){ .fw-dismiss{ top:14px; right:8px; } }
   .fw-dismiss:hover{ color:var(--ink); }
   .home-fw-restore{ margin:22px 0 0; font-size:14px; }
   .fw-lede{ margin:0 0 14px; font-size:14px; color:var(--ink-soft); line-height:1.5; }
@@ -741,8 +741,11 @@
     .dish-line{ flex-wrap:wrap; }
     .dish-line .leader{ display:none; }
     .dish-line h2, .dish-line h3, .dish-line h4{ flex:1 1 auto; }
+    .dish-line .price{ margin-left:auto; }
+    .fb-tabs{ max-width:var(--measure); }
   }
   .fb-toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:10px; }
+  .fb-toolbar .fb-tabs{ margin-bottom:0; }
   /* Same kit segmented tabs as .fb-tabs: one tab style across the app. */
   .fb-lens{ display:inline-flex; gap:4px; padding:4px; margin-bottom:18px; max-width:100%;
     border-radius:var(--k-radius-lg); background:var(--k-surface); border:1px solid var(--k-border); }
@@ -858,7 +861,7 @@
   }
 
   /* Watch List */
-  .wl-filters{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 16px; }
+  .wl-filters{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 24px; }
   .wl-filters .k-chip{ white-space:nowrap; flex:none; }
   .k-chip:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .wl-grid{ list-style:none; margin:0; padding:0; display:grid;
@@ -978,7 +981,9 @@
   .misses li::after{ content:""; display:block; clear:both; }
   @media (max-width:860px){
     .wl-grid{ gap:12px; }
-    .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+    .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-right:40px;
+      -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);
+      mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent); }
     .wl-filters::-webkit-scrollbar{ display:none; }
   }
   /* Phones: two columns. Wider (tablet, phone landscape) keeps auto-fill so cards stay card-sized. */
@@ -1182,7 +1187,7 @@
 
   /* The home screen is the docket you are handed at the start of a shift. */
   .shiftcard{ background:var(--paper-raised); border:1px solid var(--rule); border-radius:var(--k-radius-lg);
-    padding:26px 28px 22px; margin-bottom:26px; position:relative; max-width:var(--measure); }
+    padding:26px 28px 22px; margin-bottom:24px; position:relative; max-width:var(--measure); }
   .sc-date{
     margin:0; font-variant-numeric:tabular-nums; font-size:13px; font-weight:700;
     letter-spacing:.08em; text-transform:uppercase; color:var(--sun);
@@ -1712,7 +1717,7 @@
 <dialog id="fbk-dialog" class="k-dialog" aria-labelledby="fbk-title">
   <form id="fbk-form" method="dialog" novalidate>
     <h2 class="k-dialog-title" id="fbk-title">Send Feedback</h2>
-    <p class="fbk-sub">Goes straight to Jay. Bugs, ideas, or a shoutout all welcome.</p>
+    <p class="fbk-sub">Goes straight to Jay. Bugs, ideas, or a shoutout: all welcome.</p>
     <div class="fbk-kinds" role="radiogroup" aria-label="Type">
       <label><input type="radio" name="kind" value="Bug" checked><span>Bug</span></label>
       <label><input type="radio" name="kind" value="Idea"><span>Idea</span></label>
@@ -3337,7 +3342,7 @@ var fbAdminUnlocked = false;
 // append a new one (an addition), and a tombstone in menu_deleted_defaults
 // hides a default that was deleted without ever being edited first.
 async function loadFbItems(){
-  if (!db) { fbItems = FNB_DEFAULTS.slice(); return; }
+  if (!db) { fbItems = FNB_DEFAULTS.map(titleAllergens); return; }
   var byId = {};
   FNB_DEFAULTS.forEach(function(d){ byId[d.id] = d; });
   // Each read stands on its own. menu_deleted_defaults needs its own
@@ -3355,7 +3360,14 @@ async function loadFbItems(){
     var snap = await db.collection("menu_items").get();
     snap.docs.forEach(function(d){ var v = d.data(); v.id = d.id; byId[d.id] = v; });
   } catch(e) { /* offline or genuinely no access - defaults still render */ }
-  fbItems = Object.keys(byId).map(function(id){ return byId[id]; });
+  fbItems = Object.keys(byId).map(function(id){ return byId[id]; }).map(titleAllergens);
+}
+// Allergen labels display in Title Case ("Tree Nut", "Tonka Bean"); Jay 2026-10-17, casing only.
+function titleAllergens(it){
+  if (!it || !Array.isArray(it.allergens)) return it;
+  var c = Object.assign({}, it);
+  c.allergens = it.allergens.map(function(a){ return String(a).replace(/(^|[\s-])([a-z])/g, function(m, p1, ch){ return p1 + ch.toUpperCase(); }); });
+  return c;
 }
 
 function renderFbTabs(){
@@ -9325,7 +9337,7 @@ function buildFbQuestions(categories){
     }
     // Allergen question (only if it has at least one allergen)
     if (it.allergens.length) {
-      var wrongPools = ["Dairy","Egg","Fish","Shellfish","Gluten","Tree nut","Soy","Sesame","Sulfites","Coconut"].filter(function(a){ return it.allergens.indexOf(a) === -1; });
+      var wrongPools = ["Dairy","Egg","Fish","Shellfish","Gluten","Tree Nut","Soy","Sesame","Sulfites","Coconut"].filter(function(a){ return it.allergens.indexOf(a) === -1; });
       var wrong = shuffle(wrongPools).slice(0,3);
       pool.push({
         q: "Which of these allergens is present in \""+it.name+"\"?",
