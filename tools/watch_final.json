@@ -66,7 +66,11 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Co Chief Critic, the NYC based critic. Filipino, raised in Hawaii. Reservations are made under the name Justine Darley. Twitter and Instagram: @ligayamishan."
+  "hallIntel": "Co Chief Critic, the NYC based critic. Filipino, raised in Hawaii. Reservations are made under the name Justine Darley. Twitter and Instagram: @ligayamishan.",
+  "tier": "need",
+  "aliases": [
+   "Justine Darley"
+  ]
  },
  {
   "slug": "tejal-rao",
@@ -135,7 +139,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Co Chief Critic. Based in LA, reviews restaurants throughout the US. Instagram: @tejalxrao."
+  "hallIntel": "Co Chief Critic. Based in LA, reviews restaurants throughout the US. Instagram: @tejalxrao.",
+  "tier": "need"
  },
  {
   "slug": "matthew-schneier",
@@ -204,7 +209,11 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Features writer and newly appointed critic at New York Magazine. Alias name: George Civeris. Instagram: @matthewschneier."
+  "hallIntel": "Features writer and newly appointed critic at New York Magazine. Alias name: George Civeris. Instagram: @matthewschneier.",
+  "tier": "need",
+  "aliases": [
+   "George Civeris"
+  ]
  },
  {
   "slug": "helen-rosner",
@@ -261,7 +270,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Critic, The New Yorker. Instagram: @helenr."
+  "hallIntel": "Critic, The New Yorker. Instagram: @helenr.",
+  "tier": "need"
  },
  {
   "slug": "hannah-goldfield",
@@ -379,7 +389,8 @@
    }
   ],
   "photos": [],
-  "hidden": false
+  "hidden": false,
+  "tier": "need"
  },
  {
   "slug": "elazar-sontag",
@@ -736,7 +747,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Contributing restaurant critic. Former Chief NYC Restaurant Critic at Eater; editor and founder of the Lo Times newsletter. Doesn't like loud noise, cash only, or splitting checks as requested. Believes in good bar food, drinks Manhattans, and likes the bar tab transferred. Service notes: answer the phone, crumb the table, say thanks when he is leaving. Has a bad back. Has a blog that chronicles prices at different restaurants. Instagram: @thebaddeal."
+  "hallIntel": "Contributing restaurant critic. Former Chief NYC Restaurant Critic at Eater; editor and founder of the Lo Times newsletter. Doesn't like loud noise, cash only, or splitting checks as requested. Believes in good bar food, drinks Manhattans, and likes the bar tab transferred. Service notes: answer the phone, crumb the table, say thanks when he is leaving. Has a bad back. Has a blog that chronicles prices at different restaurants. Instagram: @thebaddeal.",
+  "tier": "need"
  },
  {
   "slug": "robert-sietsema",
@@ -804,7 +816,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Writer. Former Senior Critic at Eater, currently writes for his own Substack. Twitter: @robertsietsema. Instagram: @rsietsema."
+  "hallIntel": "Writer. Former Senior Critic at Eater, currently writes for his own Substack. Twitter: @robertsietsema. Instagram: @rsietsema.",
+  "tier": "need"
  },
  {
   "slug": "stephanie-wu",
@@ -1009,7 +1022,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Food and Drink Editor, Time Out New York. Twitter: @mo_car. Instagram: @MReneeCarter."
+  "hallIntel": "Food and Drink Editor, Time Out New York. Twitter: @mo_car. Instagram: @MReneeCarter.",
+  "tier": "need"
  },
  {
   "slug": "steve-cuozzo",
@@ -1078,7 +1092,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Joined the New York Post in 1972; one of their longtime columnists. Proud Brooklyn native, lives on the Upper East Side. Has a hard edge, tends to comment on value and shuns overly hip places. Doesn't like ramps. Twitter and Instagram: @stevecuozzo."
+  "hallIntel": "Joined the New York Post in 1972; one of their longtime columnists. Proud Brooklyn native, lives on the Upper East Side. Has a hard edge, tends to comment on value and shuns overly hip places. Doesn't like ramps. Twitter and Instagram: @stevecuozzo.",
+  "tier": "need"
  },
  {
   "slug": "tom-sietsema",
@@ -1821,7 +1836,10 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Food Editor; often dines out with Adam Platt. Alias name: George Civeris. Twitter: @asytsma. Instagram: @alansytsma."
+  "hallIntel": "Food Editor; often dines out with Adam Platt. Alias name: George Civeris. Twitter: @asytsma. Instagram: @alansytsma.",
+  "aliases": [
+   "George Civeris"
+  ]
  },
  {
   "slug": "chris-crowley",
@@ -1907,7 +1925,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Writes the Underground Gourmet column and newsletter for NY Mag. Twitter @tammieetc, Instagram @tammieeverytime."
+  "hallIntel": "Writes the Underground Gourmet column and newsletter for NY Mag. Twitter @tammieetc, Instagram @tammieeverytime.",
+  "tier": "need"
  },
  {
   "slug": "bryan-kim",
@@ -1950,7 +1969,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer; primarily does reviews. Instagram: @bryansdoingfine."
+  "hallIntel": "Staff Writer; primarily does reviews. Instagram: @bryansdoingfine.",
+  "tier": "need"
  },
  {
   "slug": "molly-fitzpatrick",
@@ -1993,7 +2013,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Senior Staff Writer, does reviews. Instagram: @mollyofitz."
+  "hallIntel": "Senior Staff Writer, does reviews. Instagram: @mollyofitz.",
+  "tier": "need"
  },
  {
   "slug": "will-hartman",
@@ -2024,7 +2045,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, does reviews. Instagram: @willhvrt."
+  "hallIntel": "Staff Writer, does reviews. Instagram: @willhvrt.",
+  "tier": "need"
  },
  {
   "slug": "willa-moore",
@@ -2067,7 +2089,11 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, does reviews. Known alias: Monique Colt. Instagram: @willa_grace."
+  "hallIntel": "Staff Writer, does reviews. Known alias: Monique Colt. Instagram: @willa_grace.",
+  "tier": "need",
+  "aliases": [
+   "Monique Colt"
+  ]
  },
  {
   "slug": "ellie-plass",
@@ -2188,7 +2214,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Contributing restaurant critic. Instagram: @mahirarivers."
+  "hallIntel": "Contributing restaurant critic. Instagram: @mahirarivers.",
+  "tier": "need"
  },
  {
   "slug": "melissa-clark",
@@ -2348,7 +2375,8 @@
   ],
   "status": "Food Writer",
   "shortRole": "NYT Where To Eat Writer",
-  "hidden": false
+  "hidden": false,
+  "tier": "need"
  },
  {
   "slug": "bettina-makalintal",
@@ -2506,7 +2534,8 @@
   ],
   "status": "Editor",
   "shortRole": "Eater NY Editor",
-  "hidden": false
+  "hidden": false,
+  "tier": "need"
  },
  {
   "slug": "kate-kassin",
@@ -2868,7 +2897,8 @@
   ],
   "status": "Reviews Restaurants",
   "shortRole": "Infatuation Writer",
-  "hidden": false
+  "hidden": false,
+  "tier": "need"
  },
  {
   "slug": "britt-lam",
@@ -3008,7 +3038,8 @@
   ],
   "status": "Reviews Restaurants",
   "shortRole": "Tables for Two Writer",
-  "hidden": false
+  "hidden": false,
+  "tier": "need"
  },
  {
   "slug": "jeanette-settembre",

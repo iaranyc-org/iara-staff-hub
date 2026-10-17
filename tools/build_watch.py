@@ -243,6 +243,37 @@ for s_, o in ROLE_UPDATES.items():
 for s_, p in roster.items():
     p['hidden'] = s_ in HIDE
 
+# Need to Know tier (2026-10-17, Jay approved the rule). Rule: the person currently
+# publishes reviews, ratings or rankings of NYC restaurants that send diners somewhere,
+# judged from the role/status already in their profile. Editors who do not review,
+# general food writers, creators, out-of-town critics and former critics stay in
+# "Also Worth Knowing". Pete Wells (former critic, reporter now) and Hannah Goldfield
+# (former Tables for Two critic, now staff writer) are out for that reason. The
+# Michelin inspectors are in as a group; they are anonymous, so never in face drills.
+NEED_TO_KNOW = {
+    'ligaya-mishan', 'tejal-rao', 'mahira-rivers', 'ryan-sutton',   # NYT critics
+    'luke-fortney',                                                 # NYT Where To Eat rankings
+    'matthew-schneier', 'tammie-teclemariam',                       # New York Mag critic, Underground Gourmet
+    'helen-rosner', 'shauna-lyon',                                  # New Yorker Tables for Two
+    'nadia-chaudhury',                                              # Eater NY editor (maps, heatmaps)
+    'bryan-kim', 'molly-fitzpatrick', 'will-hartman', 'willa-moore', 'kenny-yang',  # Infatuation NYC reviewers
+    'morgan-carter',                                                # Time Out NY food editor (best-of lists)
+    'robert-sietsema', 'steve-cuozzo',                              # Independent and NY Post critics
+    'michelin-inspectors',
+}
+ALIAS_RE_T = __import__('re').compile(r'(?i:under the name|alias(?: name)?(?: is|:)?|books? (?:as|under)|reservations? (?:are made )?(?:as|under))\s+["“]?([A-Z][a-z]+ [A-Z][a-zA-Z\'-]+)')
+for s_, p in roster.items():
+    if s_ in NEED_TO_KNOW:
+        p['tier'] = 'need'
+    else:
+        p.pop('tier', None)
+    txt = ' '.join(str(p.get(k) or '') for k in ('hallIntel', 'howTheyDine', 'recognizeBy', 'note'))
+    al = sorted(set(m.group(1) for m in ALIAS_RE_T.finditer(txt)))
+    if al:
+        p['aliases'] = al
+    else:
+        p.pop('aliases', None)
+
 out = list(roster.values())
 json.dump(out, open(T('watch_final.json'), 'w'), indent=1, ensure_ascii=False)
 out = [p for p in out if not p.get('hidden')]
@@ -314,6 +345,17 @@ def clean(p):
     return p
 
 out = [clean(p) for p in out]
+
+# Photos with the person's name printed on them (caption, slide title) give the answer
+# away, so face drills and exam questions skip them. They still show on the profile.
+# Found on visual review, 2026-10-17. Tejal Rao's tejal-rao-2 shows "Mishan &", which
+# would mislead too.
+NO_QUIZ_PHOTO = {'img/watch/ligaya-mishan-2.jpg', 'img/watch/tejal-rao-2.jpg', 'img/watch/tejal-rao-4.jpg',
+                 'img/watch/pete-wells-3.jpg', 'img/watch/keith-lee-2.jpg', 'img/watch/nikita-richardson-r3-1.jpg'}
+for p in out:
+    for ph in p.get('photos') or []:
+        if ph.get('src') in NO_QUIZ_PHOTO:
+            ph['noQuiz'] = True
 
 page = os.path.join(ROOT, 'iara_staff_hub.html')
 s = open(page, encoding='utf-8').read()

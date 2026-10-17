@@ -903,7 +903,7 @@
   .wl-prev{ left:6px; } .wl-next{ right:6px; }
   .wl-card:hover .wl-flip, .wl-flip:focus-visible{ opacity:1; }
   .wl-flip:focus-visible{ outline:2px solid var(--sun); outline-offset:1px; }
-  @media (hover:none){ .wl-flip{ opacity:1; width:26px; height:34px; font-size:20px; } .wl-prev{ left:4px; } .wl-next{ right:4px; } }
+  @media (hover:none){ .wl-flip{ opacity:1; width:32px; height:44px; font-size:20px; } .wl-prev{ left:4px; } .wl-next{ right:4px; } }
   .wl-dots{ position:absolute; z-index:2; left:50%; transform:translateX(-50%); bottom:7px; padding:4px 7px; border-radius:999px; background:rgba(0,0,0,.45); display:flex; justify-content:center; gap:5px; pointer-events:none; }
   .wl-dots i{ width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.55); box-shadow:0 0 0 1px rgba(0,0,0,.25); }
   .wl-dots i.on{ background:var(--k-ink); width:14px; border-radius:3px; }
@@ -940,6 +940,20 @@
   .wl-choice:disabled{ cursor:default; }
   .wl-reveal{ margin-top:14px; font-size:15px; line-height:1.55; color:var(--ink-mid); }
   .wl-empty{ color:var(--ink-soft); font-size:15px; }
+  /* Need to Know tier: its own section first, and a sun rule on the photo. */
+  .wl-sec + .wl-sec{ margin-top:36px; }
+  .wl-sec-head{ max-width:var(--measure-wide); margin:0 0 14px; }
+  .wl-sec-h{ font-family:var(--font-display); font-size:24px; line-height:1.2; color:var(--display); margin:0; text-wrap:balance; }
+  .wl-sec-n{ font-family:var(--k-font-sans); font-size:14px; font-weight:600; color:var(--ink-soft); margin-left:4px; }
+  .wl-sec-p{ margin:4px 0 0; font-size:15px; line-height:1.5; color:var(--ink-mid); text-wrap:pretty; }
+  .wl-card.is-ntk .wl-photo{ box-shadow:inset 0 -3px 0 var(--sun); }
+  .wl-card.is-ntk .wl-photo img{ height:calc(100% - 3px); }
+  .wl-drill-note{ max-width:var(--measure); margin:16px 0 0; font-size:15px; line-height:1.55; color:var(--ink-mid); }
+  .study-back .face-name{ font-family:var(--font-display); font-size:26px; line-height:1.2; color:var(--display); margin:0 0 4px; }
+  .studycard .wl-face, .qcard .wl-face{ max-width:260px; margin:4px auto 18px; }
+  .wl-choice .optkey{ flex:none; }
+  .miss-img{ float:left; width:56px; height:70px; object-fit:cover; object-position:50% 18%; border-radius:5px; margin:2px 12px 4px 0; }
+  .misses li::after{ content:""; display:block; clear:both; }
   @media (max-width:860px){
     .wl-grid{ gap:12px; }
     .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
@@ -3927,6 +3941,12 @@ function buildDeck(key){
         correct: (it.allergens || []).slice().sort(function(a,b){ return a.localeCompare(b); })
       });
     });
+  } else if (key === "faces") {
+    // Need to Know critics with a usable photo. Same ids as the Watch List
+    // face drill, so progress in either place counts once.
+    wlFaceable(wlNeed()).forEach(function(p){
+      cards.push({ id: "wl:" + p.slug + ":face", kind: "face", p: p, front: "Who is this?" });
+    });
   } else if (key === "ingredients") {
     INGREDIENTS.forEach(function(ing){
       var used = dishesForIngredient(ing).map(function(d){ return d.name; });
@@ -3966,7 +3986,8 @@ var DECK_BLURBS = {
   Cocktails: "The 6 house cocktails.",
   "Wine & Beer": "12 wines by the glass, 4 beers.",
   ingredients: "The Amazonian words behind the menu.",
-  allergens: "Name every allergen, graded."
+  allergens: "Name every allergen, graded.",
+  faces: "The Need to Know critics. See the face, say the name."
 };
 function studyDecks(){
   var decks = [{ key:"all", label:"Whole Menu" }];
@@ -3978,6 +3999,7 @@ function studyDecks(){
   // the same as a server who can actually name the allergens. This deck
   // asks instead, and grades the answer against the real list.
   decks.push({ key:"allergens", label:"Allergens" });
+  decks.push({ key:"faces", label:"Critic Faces" });
   return decks;
 }
 function allergenPalette(){
@@ -4077,7 +4099,24 @@ function renderStudyCard(){
   var mAll = loadMastery();
   var m = masteryOf(mAll, c.id);
   var html = '<div class="card studycard">' + studyCardHeader(d, c, m, mAll);
-  if (!d.revealed) {
+  if (c.kind === "face") {
+    // New photo each time the card comes up, including a missed card's repeat.
+    if (c._at !== d.idx) { c.img = wlNextPhoto(c.p); c._at = d.idx; }
+    html += wlFaceImg(c.p, c.img, "study-face");
+  }
+  if (c.kind === "face" && !d.revealed) {
+    html += '<p class="study-hint">Say their name out loud, then flip.</p>' +
+      '<button class="k-btn k-btn-primary" id="study-reveal">Show Answer</button>';
+  } else if (c.kind === "face") {
+    var fp = c.p, al = wlAliasLine(fp);
+    html += '<div class="study-back"><p class="face-name">'+esc(fp.name)+'</p>' +
+      '<p>'+esc(fp.shortRole || fp.role)+' \u00b7 '+esc(fp.outlet)+'</p>' +
+      (al ? '<p class="study-extra">'+esc(al)+'</p>' : '') +
+      (fp.recognizeBy ? '<p class="study-extra"><strong>Recognize by:</strong> '+esc(fp.recognizeBy)+'</p>' : '') + '</div>' +
+      '<div class="study-grade">' +
+        '<button class="k-btn k-btn-secondary" id="study-again">Missed It</button>' +
+        '<button class="k-btn k-btn-primary" id="study-got">Got It</button></div>';
+  } else if (!d.revealed) {
     html += '<p class="study-hint">'+(c.kind === "dish"
       ? "Say it out loud, then recall what is in it and its allergens."
       : "Recall what this is and where it shows up on the menu.")+'</p>' +
@@ -4191,11 +4230,15 @@ function renderAllergenCard(){
 function gradeStudy(got){
   var d = studyDeck;
   var c = d.cards[d.idx];
-  if (!got) { d.missedIds = d.missedIds || {}; d.missedIds[c.id] = c; }
+  d.missedIds = d.missedIds || {};
+  // Only a card's first showing counts toward "right first try"; a repeat of a
+  // miss is practice, and it does not come back a third time.
+  var first = !d.missedIds[c.id];
+  if (!got) d.missedIds[c.id] = c;
   bumpMastery(c.id, got);
   // A missed card still comes back this session for the practice, but it can
   // no longer bank credit today, so the repeat is revision, not progress.
-  if (got) d.right++; else { d.wrong++; d.cards.push(c); }
+  if (first) { if (got) d.right++; else { d.wrong++; d.cards.push(c); } }
   d.idx++; d.revealed = false;
   renderStudyCard();
 }
@@ -4300,7 +4343,8 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/ligaya-mishan-2.jpg",
-    "credit": "youtube.com"
+    "credit": "youtube.com",
+    "noQuiz": true
    },
    {
     "src": "/img/watch/ligaya-mishan-3.jpg",
@@ -4313,6 +4357,10 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Co Chief Critic, the NYC based critic. Filipino, raised in Hawaii. Reservations are made under the name Justine Darley.",
+  "tier": "need",
+  "aliases": [
+   "Justine Darley"
+  ],
   "links": [
    {
     "type": "instagram",
@@ -4383,7 +4431,8 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/tejal-rao-2.jpg",
-    "credit": "youtube.com"
+    "credit": "youtube.com",
+    "noQuiz": true
    },
    {
     "src": "/img/watch/tejal-rao-3.jpg",
@@ -4391,11 +4440,13 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/tejal-rao-4.jpg",
-    "credit": "youtube.com"
+    "credit": "youtube.com",
+    "noQuiz": true
    }
   ],
   "hidden": false,
   "hallIntel": "Co Chief Critic. Based in LA, reviews restaurants throughout the US.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -4475,6 +4526,10 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Features writer and newly appointed critic at New York Magazine. Alias name: George Civeris.",
+  "tier": "need",
+  "aliases": [
+   "George Civeris"
+  ],
   "links": [
    {
     "type": "instagram",
@@ -4542,6 +4597,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Critic, The New Yorker.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -4642,6 +4698,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "photos": [],
   "hidden": false,
+  "tier": "need",
   "links": []
  },
  {
@@ -4690,7 +4747,8 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/pete-wells-3.jpg",
-    "credit": "youtube.com"
+    "credit": "youtube.com",
+    "noQuiz": true
    },
    {
     "src": "/img/watch/pete-wells-r2-4.jpg",
@@ -4900,6 +4958,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Contributing restaurant critic. Former Chief NYC Restaurant Critic at Eater; editor and founder of the Lo Times newsletter. Doesn't like loud noise, cash only, or splitting checks as requested. Believes in good bar food, drinks Manhattans, and likes the bar tab transferred. Service notes: answer the phone, crumb the table, say thanks when he is leaving. Has a bad back. Has a blog that chronicles prices at different restaurants.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -4982,6 +5041,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Writer. Former Senior Critic at Eater, currently writes for his own Substack.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -5149,6 +5209,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Food and Drink Editor, Time Out New York.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -5232,6 +5293,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Joined the New York Post in 1972; one of their longtime columnists. Proud Brooklyn native, lives on the Upper East Side. Has a hard edge, tends to comment on value and shuns overly hip places. Doesn't like ramps.",
+  "tier": "need",
   "links": [
    {
     "type": "x",
@@ -5328,7 +5390,8 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/keith-lee-2.jpg",
-    "credit": "youtube.com"
+    "credit": "youtube.com",
+    "noQuiz": true
    },
    {
     "src": "/img/watch/keith-lee-3.jpg",
@@ -5760,6 +5823,9 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Food Editor; often dines out with Adam Platt. Alias name: George Civeris.",
+  "aliases": [
+   "George Civeris"
+  ],
   "links": [
    {
     "type": "instagram",
@@ -5870,6 +5936,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Writes the Underground Gourmet column and newsletter for NY Mag.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -5927,6 +5994,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Staff Writer; primarily does reviews.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -5980,6 +6048,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Senior Staff Writer, does reviews.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -6021,6 +6090,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Staff Writer, does reviews.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -6074,6 +6144,10 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Staff Writer, does reviews. Known alias: Monique Colt.",
+  "tier": "need",
+  "aliases": [
+   "Monique Colt"
+  ],
   "links": [
    {
     "type": "instagram",
@@ -6221,6 +6295,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Contributing restaurant critic.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -6315,7 +6390,8 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/nikita-richardson-r3-1.jpg",
-    "credit": "youtube.com"
+    "credit": "youtube.com",
+    "noQuiz": true
    },
    {
     "src": "/img/watch/nikita-richardson-r3-2.jpg",
@@ -6427,6 +6503,7 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Food Writer",
   "shortRole": "NYT Where To Eat Writer",
   "hidden": false,
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -6621,6 +6698,7 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Editor",
   "shortRole": "Eater NY Editor",
   "hidden": false,
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -7063,6 +7141,7 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "shortRole": "Infatuation Writer",
   "hidden": false,
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -7239,6 +7318,7 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Reviews Restaurants",
   "shortRole": "Tables for Two Writer",
   "hidden": false,
+  "tier": "need",
   "links": [
    {
     "type": "authorPage",
@@ -8039,7 +8119,6 @@ function wlPhotos(p){
   if (p.photo && !list.some(function(x){ return x.src === p.photo; })) list.unshift({ src:p.photo, credit:(p.photoCredit && p.photoCredit.text) || "" });
   return list;
 }
-function wlWithPhoto(){ return WATCH.filter(function(p){ return !!p.photo; }); }
 
 function renderWatch(){
   var rosterTab = document.getElementById("wl-tab-roster"), studyTab = document.getElementById("wl-tab-study");
@@ -8062,7 +8141,7 @@ function renderWatchRoster(){
   var html = '<div class="manual-search"><label class="sr-only" for="wl-q">Search the Watch List</label>' +
     '<input id="wl-q" type="search" autocomplete="off" placeholder="Search by name, outlet, or beat" value="'+esc(WL.q)+'"></div>' +
     '<div class="wl-filters k-scroll-row" role="group" aria-label="Filter by outlet group">' +
-    ["All"].concat(outlets).map(function(o){
+    ["All","Need to Know"].concat(outlets).map(function(o){
       return '<button type="button" class="k-chip" aria-pressed="'+(WL.outlet === o)+'" data-outlet="'+esc(o)+'">'+esc(o)+'</button>';
     }).join('') + '</div><div class="wl-layout"><div id="wl-list"></div>' +
     '<aside id="wl-panel" class="wl-panel is-empty"></aside></div><div id="wl-backdrop" class="wl-backdrop"></div>';
@@ -8086,7 +8165,8 @@ function wlRow(label, val){ return val ? '<div class="wl-row"><dt>'+esc(label)+'
 function renderWatchList(){
   var q = WL.q.trim().toLowerCase();
   var rows = WATCH.filter(function(p){
-    if (WL.outlet !== "All" && p.group !== WL.outlet) return false;
+    if (WL.outlet === "Need to Know") { if (p.tier !== "need") return false; }
+    else if (WL.outlet !== "All" && p.group !== WL.outlet) return false;
     if (!q) return true;
     return (p.name + " " + p.outlet + " " + p.role + " " + (p.shortRole || "") + " " + (p.beat || "") + " " + (p.hallIntel || "")).toLowerCase().indexOf(q) !== -1;
   });
@@ -8105,7 +8185,7 @@ function renderWatchList(){
     if (all) all.addEventListener("click", function(){ WL.outlet = "All"; renderWatchRoster(); });
     return;
   }
-  host.innerHTML = '<ul class="wl-grid">' + rows.map(function(p){
+  function cardHtml(p){
     var pics = wlPhotos(p), i = WL.cardPic[p.slug] || 0;
     if (i >= pics.length) i = 0;
     var photo = pics.length
@@ -8117,13 +8197,23 @@ function renderWatchList(){
         '<span class="wl-dots" aria-hidden="true">' + pics.map(function(_, k){ return '<i class="'+(k === i ? 'on' : '')+'"></i>'; }).join('') + '</span>'
       : '';
     var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
-    return '<li class="wl-card'+(WL.open === p.slug ? ' is-selected' : '')+'" data-card="'+esc(p.slug)+'">' +
+    return '<li class="wl-card'+(p.tier === "need" ? ' is-ntk' : '')+(WL.open === p.slug ? ' is-selected' : '')+'" data-card="'+esc(p.slug)+'">' +
       '<div class="wl-photo" data-open="'+esc(p.slug)+'">'+photo+flip+'</div>' +
       '<button class="wl-hit" data-slug="'+esc(p.slug)+'" aria-controls="wl-panel">' +
         '<span class="wl-meta">'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
         '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
         '<span class="wl-outlet">'+esc(p.outlet)+'</span></span></button></li>';
-  }).join('') + '</ul>';
+  }
+  // Need to Know first, under its own header; everyone else after.
+  var need = rows.filter(function(p){ return p.tier === "need"; });
+  var rest = rows.filter(function(p){ return p.tier !== "need"; });
+  function section(id, title, blurb, list){
+    return '<section class="wl-sec" aria-labelledby="'+id+'"><div class="wl-sec-head"><h2 class="wl-sec-h" id="'+id+'">'+title +
+      ' <span class="wl-sec-n mono">'+list.length+'</span></h2><p class="wl-sec-p">'+blurb+'</p></div>' +
+      '<ul class="wl-grid">' + list.map(cardHtml).join('') + '</ul></section>';
+  }
+  host.innerHTML = (need.length ? section("wl-sec-need", "Need to Know", "They review restaurants. Know their faces.", need) : '') +
+    (rest.length ? section("wl-sec-rest", "Also Worth Knowing", "Editors, writers, creators and former critics. Good to recognize.", rest) : '');
   host.querySelectorAll(".wl-hit").forEach(function(b){
     b.addEventListener("click", function(){ openWatchProfile(b.getAttribute("data-slug"), b); });
   });
@@ -8309,15 +8399,73 @@ document.addEventListener("keydown", function(e){
 });
 window.addEventListener("resize", function(){ if (document.getElementById("wl-panel")) renderWatchPanel(true); });
 
-/* --- Drill --- */
+/* --- Face helpers (shared by the drill, Study's Critic Faces deck and the exam) --- */
+// Photos with the person's name printed on them are flagged noQuiz by the build.
+function wlQuizPhotos(p){ return wlPhotos(p).filter(function(x){ return !x.noQuiz; }); }
+function wlNeed(){ return WATCH.filter(function(p){ return p.tier === "need"; }); }
+// Anonymous people (the Michelin inspectors) never appear in a face question.
+function wlFaceable(list){ return list.filter(function(p){ return !p.anonymous && wlQuizPhotos(p).length; }); }
+// Each person's photos rotate from a random start, so it is never always the profile photo.
+var WL_ROT = {};
+function wlNextPhoto(p){
+  var ph = wlQuizPhotos(p);
+  if (!ph.length) return "";
+  if (WL_ROT[p.slug] == null) WL_ROT[p.slug] = Math.floor(Math.random() * ph.length);
+  var src = ph[WL_ROT[p.slug] % ph.length].src;
+  WL_ROT[p.slug]++;
+  return src;
+}
+function wlFaceImg(p, src, cls){
+  var alts = wlQuizPhotos(p).map(function(x){ return x.src; }).filter(function(x){ return x !== src; }).join("|");
+  return '<div class="wl-face'+(cls ? ' '+cls : '')+'"><img src="'+esc(src)+'" alt="Photo of a person on the Watch List" width="320" height="400" data-wl-alt="'+esc(alts)+'"></div>';
+}
+// A broken photo falls back to the next photo of the same person, then to a note.
+document.addEventListener("error", function(e){
+  var img = e.target;
+  if (!img || img.tagName !== "IMG" || !img.hasAttribute("data-wl-alt")) return;
+  var alts = img.getAttribute("data-wl-alt").split("|").filter(Boolean);
+  if (alts.length) { img.setAttribute("data-wl-alt", alts.slice(1).join("|")); img.src = alts[0]; return; }
+  var s = document.createElement("span"); s.className = "wl-nophoto"; s.textContent = "Photo did not load.";
+  img.replaceWith(s);
+}, true);
+// The outlet people know them by, short enough to be an answer choice.
+function wlBrand(p){
+  if (p.group === "NYT") return "The New York Times";
+  if (p.group === "New York Mag") return "New York Magazine";
+  if (p.group === "New Yorker") return "The New Yorker";
+  if (/Substack/.test(p.outlet || "")) return "His own Substack newsletter";
+  return p.outlet;
+}
+// Plausible wrong answers: same outlet first (hardest), then the same tier, then anyone.
+function wlFaceChoices(p){
+  var pool = wlFaceable(WATCH).filter(function(x){ return x.slug !== p.slug; });
+  var b = wlBrand(p);
+  var same = shuffle(pool.filter(function(x){ return wlBrand(x) === b; })).slice(0, 2);
+  var tier = shuffle(pool.filter(function(x){ return wlBrand(x) !== b && x.tier === p.tier; }));
+  var rest = shuffle(pool.filter(function(x){ return wlBrand(x) !== b && x.tier !== p.tier; }));
+  return shuffle([p].concat(same, tier, rest).slice(0, 4));
+}
+// "Books as" line from Hall PR intel, naming anyone else who uses the same alias.
+function wlAliasLine(p){
+  return (p.aliases || []).map(function(a){
+    var others = WATCH.filter(function(x){ return x.slug !== p.slug && (x.aliases || []).indexOf(a) !== -1; });
+    return "Books as " + a + (others.length ? " (" + others.map(function(o){ return o.name; }).join(", ") + " uses it too)" : "") + ".";
+  }).join(" ");
+}
+
+/* --- Drill: the quick, on-page multiple choice. Face progress uses the same
+   "wl:<slug>:face" ids as Study's Critic Faces deck, so both count once. --- */
 function wlDecks(){
   return [
-    { key:"faces",   label:"Name the Face",  cards: wlWithPhoto().length },
-    { key:"outlets", label:"Name to Outlet", cards: WATCH.length }
+    { key:"need",    label:"Need to Know Faces", cards: wlFaceable(wlNeed()).length },
+    { key:"faces",   label:"Every Face",         cards: wlFaceable(WATCH).length },
+    { key:"outlets", label:"Name to Outlet",     cards: WATCH.length }
   ];
 }
 function wlBuild(key){
-  if (key === "faces") return wlWithPhoto().map(function(p){ return { id:"wl:"+p.slug+":face", kind:"face", p:p }; });
+  if (key === "need" || key === "faces") {
+    return wlFaceable(key === "need" ? wlNeed() : WATCH).map(function(p){ return { id:"wl:"+p.slug+":face", kind:"face", p:p }; });
+  }
   return WATCH.map(function(p){ return { id:"wl:"+p.slug+":outlet", kind:"outlet", p:p }; });
 }
 function wlDeckPct(key){
@@ -8338,18 +8486,20 @@ function renderWatchPicker(){
       kBar(pct, "", "deck-bar", true) +
       (pct ? '<span class="deck-pct mono">'+pct+'% mastered</span>' : '') + '</button>';
   });
-  html += '</div>';
+  html += '</div><p class="wl-drill-note">A quick multiple choice round. Face progress is shared with the Critic Faces deck in Study, ' +
+    'which flips through the Need to Know cards one at a time. <button type="button" class="jump-link" id="wl-to-study">Practice in Study</button></p>';
   area.innerHTML = html;
   area.querySelectorAll("[data-wl-deck]").forEach(function(b){
     b.addEventListener("click", function(){ startWatchDrill(b.getAttribute("data-wl-deck")); });
   });
+  document.getElementById("wl-to-study").addEventListener("click", function(){ showView("study"); startStudy("faces"); });
 }
 
-function startWatchDrill(key){
-  var cards = shuffle(wlBuild(key));
+function startWatchDrill(key, cards, label){
+  cards = cards || shuffle(wlBuild(key));
   if (!cards.length) return;
-  var label = wlDecks().filter(function(d){ return d.key === key; })[0].label;
-  WL.deck = { key:key, label:label, cards:cards, idx:0, revealed:false, right:0, wrong:0 };
+  label = label || wlDecks().filter(function(d){ return d.key === key; })[0].label;
+  WL.deck = { key:key, label:label, cards:cards, idx:0, revealed:false, right:0, wrong:0, missed:{} };
   WL.picked = null;
   renderWatchCard();
 }
@@ -8359,8 +8509,16 @@ function wlHeader(d, c){
   var m = masteryOf(loadMastery(), c.id), pips = "";
   for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
-    '<span class="qprog-m">'+esc(d.label)+'</span><span class="qprog-r"><span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span></span></div>' +
+    '<span class="qprog-m">'+esc(d.label)+(c.retry ? ' · Again' : '')+'</span><span class="qprog-r"><span class="qprog-s mono">'+d.right+' right</span><span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span></span></div>' +
     kBar(Math.round((d.idx/d.cards.length)*100), "Deck progress", "qbar");
+}
+
+// A miss comes back once at the end of the round, with a different photo. Only
+// the first try counts toward "right first try".
+function wlScore(d, c, ok){
+  bumpMastery(c.id, ok);
+  if (!c.retry) { if (ok) d.right++; else d.wrong++; }
+  if (!ok) { d.missed[c.id] = { id:c.id, kind:c.kind, p:c.p }; if (!c.retry) d.cards.push({ id:c.id, kind:c.kind, p:c.p, retry:true }); }
 }
 
 function renderWatchCard(){
@@ -8370,27 +8528,21 @@ function renderWatchCard(){
   var html = '<div class="card studycard">' + wlHeader(d, c);
 
   if (c.kind === "face") {
-    if (!c.img) { var pics = wlPhotos(p); c.img = pics[Math.floor(Math.random() * pics.length)].src; }
-    if (!c.choices) {
-      var pool = shuffle(wlWithPhoto().filter(function(x){ return x.slug !== p.slug; }));
-      var same = pool.filter(function(x){ return x.outlet === p.outlet; });
-      var others = pool.filter(function(x){ return x.outlet !== p.outlet; });
-      c.choices = shuffle([p].concat(same.slice(0,1), others).slice(0,4));
-      if (c.choices.indexOf(p) === -1) c.choices[0] = p;
-      c.choices = shuffle(c.choices);
-    }
-    html += '<p class="study-hint">Who is this?</p>' +
-      '<div class="wl-face"><img src="'+esc(c.img)+'" alt="Photo of a food critic to identify" width="320" height="400"></div>' +
-      '<div class="wl-choices">' + c.choices.map(function(x){
+    if (!c.img) c.img = wlNextPhoto(p);
+    if (!c.choices) c.choices = wlFaceChoices(p);
+    html += '<p class="study-hint">Who is this?</p>' + wlFaceImg(p, c.img) +
+      '<div class="wl-choices">' + c.choices.map(function(x, k){
         var cls = "wl-choice";
         if (WL.picked) { if (x.slug === p.slug) cls += " is-right"; else if (x.slug === WL.picked) cls += " is-wrong"; }
-        return '<button class="'+cls+'" data-pick="'+esc(x.slug)+'"'+(WL.picked ? ' disabled' : '')+'>'+esc(x.name)+'</button>';
+        return '<button class="'+cls+'" data-pick="'+esc(x.slug)+'"'+(WL.picked ? ' disabled' : '')+'><span class="optkey">'+(k+1)+'</span><span class="opt-t">'+esc(x.name)+'</span></button>';
       }).join('') + '</div>';
     if (WL.picked) {
-      html += '<p class="wl-verdict">'+(WL.picked === p.slug ? "Correct." : "Not quite.")+'</p>' +
-        '<p class="wl-reveal"><strong>'+esc(p.name)+'</strong>, '+esc(p.role)+', '+esc(p.outlet)+'.</p>' +
-        '<button class="k-btn k-btn-primary" id="wl-next">Continue</button>';
+      var al = wlAliasLine(p);
+      html += '<p class="wl-verdict" role="status">'+(WL.picked === p.slug ? "Correct." : "Not quite.")+'</p>' +
+        '<p class="wl-reveal"><strong>'+esc(p.name)+'</strong>, '+esc(p.shortRole || p.role)+', '+esc(p.outlet)+'.'+(al ? ' '+esc(al) : '')+'</p>' +
+        '<button class="k-btn k-btn-primary" id="wl-next">'+(d.idx + 1 >= d.cards.length ? 'See Your Score' : 'Continue')+'</button>';
     }
+    html += '<p class="kbd-hint">Press 1 to 4 to answer, Enter to continue.</p>';
   } else {
     html += '<h3 class="study-front">'+esc(p.name)+'</h3>';
     if (!d.revealed) {
@@ -8401,17 +8553,19 @@ function renderWatchCard(){
         '<div class="study-grade"><button class="k-btn k-btn-secondary" id="wl-miss">Missed It</button>' +
         '<button class="k-btn k-btn-primary" id="wl-got">Got It</button></div>';
     }
+    html += '<p class="kbd-hint">Space to flip, → Got It, ← Missed It.</p>';
   }
   html += '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="wl-quit">Back to Drill</button></div>';
   area.innerHTML = html;
 
   area.querySelectorAll("[data-pick]").forEach(function(b){
     b.addEventListener("click", function(){
+      if (WL.picked) return;
       WL.picked = b.getAttribute("data-pick");
-      var ok = WL.picked === p.slug;
-      bumpMastery(c.id, ok);
-      if (ok) d.right++; else { d.wrong++; d.cards.push({ id:c.id, kind:c.kind, p:p }); }
+      wlScore(d, c, WL.picked === p.slug);
       renderWatchCard();
+      var nb = document.getElementById("wl-next");
+      if (nb) nb.focus({ preventScroll:true });
     });
   });
   var next = document.getElementById("wl-next");
@@ -8421,22 +8575,28 @@ function renderWatchCard(){
   [["wl-got", true], ["wl-miss", false]].forEach(function(pair){
     var b = document.getElementById(pair[0]);
     if (b) b.addEventListener("click", function(){
-      bumpMastery(c.id, pair[1]);
-      if (pair[1]) d.right++; else { d.wrong++; d.cards.push({ id:c.id, kind:c.kind, p:p }); }
+      wlScore(d, c, pair[1]);
       d.idx++; d.revealed = false; renderWatchCard();
     });
   });
   document.getElementById("wl-quit").addEventListener("click", exitWatchDrill);
+  // Keep the next step in reach on a phone once a pick reveals the answer.
+  if (WL.picked && next) { var r = next.getBoundingClientRect(); if (r.bottom > window.innerHeight - 96) window.scrollBy(0, r.bottom - (window.innerHeight - 96)); }
 }
 
 function renderWatchDone(){
   var d = WL.deck, pct = wlDeckPct(d.key);
+  var missed = Object.keys(d.missed).map(function(k){ return d.missed[k]; });
+  var firstTries = d.right + d.wrong;
   wlArea().innerHTML = '<div class="card result-wrap"><div class="eyebrow">'+esc(d.label)+'</div>' +
-    '<div class="result-num mono">'+pct+'%</div>' +
-    '<p class="result-note">Mastered: '+d.right+' right first try, '+d.wrong+' to revisit.</p>' +
+    '<div class="result-num mono">'+d.right+'/'+firstTries+'</div>' +
+    '<p class="result-note">Right first try. Deck mastery is now '+pct+'%.</p>' +
     '<div class="result-actions">' +
-    '<button class="k-btn k-btn-primary" id="wl-redo">Drill Again</button>' +
+    (missed.length ? '<button class="k-btn k-btn-primary" id="wl-missed">Drill the '+missed.length+' Missed</button>' : '') +
+    '<button class="k-btn '+(missed.length ? 'k-btn-secondary' : 'k-btn-primary')+'" id="wl-redo">Drill Again</button>' +
     '<button class="k-btn k-btn-secondary" id="wl-decks">Pick Another Drill</button></div></div>';
+  var wm = document.getElementById("wl-missed");
+  if (wm) wm.addEventListener("click", function(){ startWatchDrill(d.key, shuffle(missed), d.label.replace(/ · Missed$/, "") + " · Missed"); });
   document.getElementById("wl-redo").addEventListener("click", function(){ startWatchDrill(d.key); });
   document.getElementById("wl-decks").addEventListener("click", exitWatchDrill);
 }
@@ -9027,10 +9187,45 @@ function buildFbQuestions(categories){
 
 var QUIZ_POOL_CAP = 40;
 
+// "Who's at the Table": Need to Know critics only. Faces (photo, 4 names),
+// Hall PR booking aliases, and outlets. Built fresh each run so the photos rotate.
+function buildFaceQuestions(){
+  var need = wlNeed().filter(function(p){ return !p.anonymous; });
+  var out = [];
+  wlFaceable(need).forEach(function(p){
+    var ch = wlFaceChoices(p);
+    out.push({ q:"Who is this?", img: wlNextPhoto(p), a: ch.map(function(x){ return x.name; }), c: ch.indexOf(p),
+      w: p.name + ", " + (p.shortRole || p.role) + ", " + p.outlet + "." + (p.recognizeBy ? " " + p.recognizeBy : "") });
+  });
+  // Alias questions. Anyone else who shares the alias is left out of the
+  // choices, so there is exactly one right answer, and the explanation names them.
+  need.forEach(function(p){
+    (p.aliases || []).forEach(function(a){
+      var sharers = WATCH.filter(function(x){ return (x.aliases || []).indexOf(a) !== -1; });
+      var wrong = shuffle(need.filter(function(x){ return sharers.indexOf(x) === -1; })).slice(0, 3);
+      var others = sharers.filter(function(x){ return x !== p; });
+      out.push({ q:"Per Hall PR, which of these critics books tables as \u201c" + a + "\u201d?",
+        a: [p.name].concat(wrong.map(function(x){ return x.name; })), c: 0,
+        w: p.name + " (" + wlBrand(p) + ") books as " + a + "." + (others.length ? " " + others.map(function(o){ return o.name + " (" + (o.shortRole || o.outlet) + ")"; }).join(", ") + " uses the same name, so a booking under it could be either." : "") });
+    });
+  });
+  // Outlet questions, with the face shown so name and face stick together.
+  var brands = [];
+  need.forEach(function(p){ var b = wlBrand(p); if (brands.indexOf(b) === -1) brands.push(b); });
+  need.forEach(function(p){
+    var b = wlBrand(p);
+    var wrong = shuffle(brands.filter(function(x){ return x !== b; })).slice(0, 3);
+    out.push({ q:"Which outlet is " + p.name + " with?", img: wlQuizPhotos(p).length ? wlNextPhoto(p) : "",
+      a: [b].concat(wrong), c: 0, w: p.name + ": " + (p.role || p.shortRole) + ", " + p.outlet + "." });
+  });
+  return out;
+}
+
 var QUIZ_META = {
   general:  { name:"Service", desc:"Service standards, team, and private dining.", pool: function(){ return QUIZ_MANUAL.concat(QUIZ_GENERAL).concat(QUIZ_GENERAL_EXTRA).concat(QUIZ_GENERAL_MORE).concat(QUIZ_SERVICE_PDR); } },
   food:     { name:"Food", desc:"Dishes, the Menu Story, ingredients, and allergens.", pool: function(){ return buildFbQuestions(FOOD_CATEGORIES).concat(QUIZ_GLOSSARY).concat(QUIZ_FOOD_EXTRA).concat(QUIZ_FOOD_STORY); } },
-  beverage: { name:"Beverage", desc:"Cocktails, wine, beer, and their stories.", pool: function(){ return buildFbQuestions(BEVERAGE_CATEGORIES).concat(QUIZ_BEVERAGE).concat(QUIZ_BEVERAGE_MORE).concat(QUIZ_BEV_STORY); } }
+  beverage: { name:"Beverage", desc:"Cocktails, wine, beer, and their stories.", pool: function(){ return buildFbQuestions(BEVERAGE_CATEGORIES).concat(QUIZ_BEVERAGE).concat(QUIZ_BEVERAGE_MORE).concat(QUIZ_BEV_STORY); } },
+  faces:    { name:"Who's at the Table", desc:"Need to Know critics: faces, booking aliases, and outlets.", pool: buildFaceQuestions }
 };
 
 var activeQuiz = null; // {key, questions, idx, score}
@@ -9094,7 +9289,7 @@ function startQuiz(key){
   var n = Math.min(20, pool.length);
   var chosen = shuffle(pool).slice(0, n).map(function(q){
     var order = shuffle(q.a.map(function(text, i){ return {text:text, correct:i===q.c}; }));
-    return { q: q.q, opts: order, w: q.w || "" };
+    return { q: q.q, opts: order, w: q.w || "", img: q.img || "" };
   });
   activeQuiz = { key:key, questions: chosen, idx: 0, score: 0, answered: false, missed: [] };
   renderQuizQuestion();
@@ -9103,7 +9298,7 @@ function startQuiz(key){
 // attempt, so it never inflates a score on the manager dashboard.
 function startMissedReview(key, missedQs){
   var chosen = shuffle(missedQs.slice()).map(function(q){
-    return { q: q.q, opts: shuffle(q.opts.map(function(o){ return { text:o.text, correct:o.correct }; })), w: q.w || "" };
+    return { q: q.q, opts: shuffle(q.opts.map(function(o){ return { text:o.text, correct:o.correct }; })), w: q.w || "", img: q.img || "" };
   });
   activeQuiz = { key:key, questions: chosen, idx: 0, score: 0, answered: false, missed: [], review: true };
   renderQuizQuestion();
@@ -9121,6 +9316,7 @@ function renderQuizQuestion(){
       '<span class="qprog-s" id="quiz-score">'+(aq.idx ? aq.score+' of '+aq.idx+' right' : '')+'</span></div>' +
     kBar(pctDone, "Exam progress", "qbar") +
     '<p class="qtext">'+qtxt(q.q)+'</p>' +
+    (q.img ? '<div class="wl-face q-face"><img src="'+esc(q.img)+'" alt="Photo of a person on the Watch List" width="320" height="400"></div>' : '') +
     q.opts.map(function(o, i){
       return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span><span class="opt-t">'+qtxt(o.text)+'</span></button>';
     }).join("") +
@@ -9148,7 +9344,7 @@ function answerQuiz(i){
   var correctIdx = q.opts.findIndex(function(o){ return o.correct; });
   var correct = i === correctIdx;
   if (correct) aq.score++;
-  else aq.missed.push({ q: q.q, right: q.opts[correctIdx].text, chose: q.opts[i] ? q.opts[i].text : "", opts: q.opts, w: q.w || "" });
+  else aq.missed.push({ q: q.q, right: q.opts[correctIdx].text, chose: q.opts[i] ? q.opts[i].text : "", opts: q.opts, w: q.w || "", img: q.img || "" });
   document.querySelectorAll(".opt").forEach(function(btn, idx){
     btn.setAttribute("disabled","disabled");
     if (idx === correctIdx) btn.classList.add("correct");
@@ -9196,6 +9392,12 @@ document.addEventListener("keydown", function(e){
     ids = ["study-reveal", "allerg-check", "allerg-next", "wl-show", "wl-next"];
   } else if (e.key === "ArrowRight") ids = ["study-got", "wl-got"];
   else if (e.key === "ArrowLeft") ids = ["study-again", "wl-miss"];
+  else if (/^[1-4]$/.test(e.key)) {
+    var picks = card.querySelectorAll("[data-pick]:not([disabled])");
+    var pb = picks[+e.key - 1];
+    if (pb) { e.preventDefault(); pb.click(); }
+    return;
+  }
   if (!ids) return;
   for (var i = 0; i < ids.length; i++) {
     var b = card.querySelector("#" + ids[i]);
@@ -9232,7 +9434,7 @@ function renderQuizResult(){
   if (aq.missed.length) {
     review = '<div class="misses"><h3>What to Go Over</h3><ol>' +
       aq.missed.map(function(m){
-        return '<li><p class="miss-q">'+qtxt(m.q)+'</p>' +
+        return '<li>'+(m.img ? '<img class="miss-img" src="'+esc(m.img)+'" alt="" width="56" height="70">' : '')+'<p class="miss-q">'+qtxt(m.q)+'</p>' +
           '<p class="miss-a"><span>Answer</span> '+qtxt(m.right)+'</p>' +
           (m.chose ? '<p class="miss-c"><span>You said</span> '+qtxt(m.chose)+'</p>' : '') +
           (m.w ? '<p class="miss-w">'+qtxt(m.w)+'</p>' : '') +
