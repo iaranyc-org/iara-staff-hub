@@ -56,6 +56,9 @@
 <script src="/kit/palette.js" defer></script>
 <script src="/kit/nav.js" defer></script>
 <script src="/kit/tabs.js" defer></script>
+<script src="/kit/dialog.js" defer></script>
+<script src="/kit/toast.js" defer></script>
+<script src="/kit/confirm.js" defer></script>
 <style>
   /* ===================== Design tokens =====================
      Legacy names mapped onto the iara staff kit (kit/tokens.css).
@@ -348,7 +351,6 @@
 
   /* team bios */
   .bio{ display:grid; grid-template-columns:64px 1fr; gap:16px; padding:20px; margin-bottom:14px; }
-  .avatar{ width:64px; height:64px; border-radius:50%; background:var(--forest); color:var(--forest-ink); display:flex; align-items:center; justify-content:center; font-family:var(--font-display); font-weight:700; font-size:24px; }
   .bio h2, .bio h3{ margin:0 0 2px; font-size:18px; }
   .bio .title{ color:var(--river); font-weight:700; font-size:13px;  letter-spacing:.01em; margin-bottom:8px; }
   .bio p{ margin:0; font-size:16px; line-height:1.7; color:var(--ink-mid); }
@@ -463,7 +465,6 @@
   @keyframes viewIn{ from{ transform:translateY(6px); } to{ transform:translateY(0); } }
   @media (prefers-reduced-motion:reduce){
     .view.active{ animation:none; }
-    .qbar span, .deck-bar span{ transition:none; }
   }
 
   /* A printed menu, not a card grid. One column reads like the real thing and
@@ -500,7 +501,7 @@
     margin:0; background:none; border:none; border-radius:0; border-bottom:1px solid var(--rule); box-shadow:none; }
   .bio::before{ display:none; }
   .bio:last-child{ border-bottom:none; }
-  .avatar{ width:52px; height:52px; border-radius:3px; background:none;
+  .k-avatar.bio-av{ width:52px; height:52px; border-radius:3px; background:none;
     border:1px solid var(--rule-strong); color:var(--display);
     font-family:var(--font-display); font-weight:400; font-size:18px; letter-spacing:.02em; }
   .bio h2, .bio h3{ margin:0; font-size:20px; font-weight:400; }
@@ -518,7 +519,7 @@
   .deck-meta{ grid-column:1; font-size:12px; }
   .deck-pct{ grid-column:2; grid-row:1; font-size:12px; color:var(--display);
     font-variant-numeric:tabular-nums; }
-  .deck-bar{ grid-column:1 / -1; margin-top:7px; height:2px; }
+  .deck-bar{ grid-column:1 / -1; margin-top:7px; }
   /* Deck picker as a tile grid (2026-10-16): left-aligned, 2-up on wide screens. */
   #study-area .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; max-width:var(--measure); border-top:none; }
   #study-area .deck{ text-align:left; border:1px solid var(--k-border); border-radius:12px; background:var(--k-surface); padding:14px 16px 12px; min-height:44px; cursor:pointer; color:var(--k-ink); }
@@ -675,25 +676,18 @@
     padding:1px 6px; vertical-align:middle; text-decoration:none; }
   .cl-help{ margin:6px 0 0 28px; font-size:14px; color:var(--ink-soft); line-height:1.55; }
   .cl-help a{ color:var(--sun); }
-  .modal-back{ position:fixed; inset:0; background:rgba(0,0,0,.55); display:flex; align-items:center;
-    justify-content:center; padding:20px; z-index:100; overflow-y:auto; }
-  .modal{ width:100%; max-width:520px; padding:26px; margin:auto; }
-  .modal h3{ margin:0 0 20px; font-size:20px; }
   .field.two{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
   .field-help{ margin:6px 0 0; font-size:12px; color:var(--ink-soft); }
   .req{ color:var(--clay); }
   .check{ display:flex; align-items:center; gap:9px; font-size:14px; cursor:pointer; margin-bottom:4px; }
   .check input{ width:16px; height:16px; accent-color:var(--sun); cursor:pointer; flex:none; }
   .form-err{ margin:12px 0 0; font-size:14px; color:var(--clay); font-weight:600; }
-  .modal-actions{ display:flex; align-items:center; gap:10px; margin-top:22px; flex-wrap:wrap; }
-  .modal-actions .spacer{ flex:1; }
-  .toast{ position:fixed; left:50%; transform:translateX(-50%); bottom:26px; z-index:200;
-    background:var(--k-raised); color:var(--k-ink); border:1px solid var(--k-border); border-radius:var(--k-radius-lg);
-    padding:12px 16px; display:flex; align-items:center; gap:16px; font-size:14px; font-weight:500; line-height:1.3;
-    box-shadow:0 8px 24px rgb(0 0 0 / .35); max-width:calc(100vw - 32px); }
-  .toast-act{ background:none; border:none; color:var(--k-sun); font:inherit; font-weight:700;
-    cursor:pointer; padding:0; min-height:36px; flex:none; }
-  @media (max-width:860px){ .toast{ bottom:132px; } .field.two{ grid-template-columns:1fr; } }
+  .k-dialog-actions .spacer{ flex:1; }
+  /* Kit dialogs hold the dish form: its fields stack with the kit gap. */
+  dialog.lu-form{ display:none; } dialog.lu-form[open]{ display:grid; gap:16px; }
+  dialog.lu-form .k-dialog-title, dialog.lu-form .k-dialog-actions{ margin:0; }
+  /* Phones: kit toasts sit above the bottom nav. */
+  @media (max-width:860px){ .k-toaster{ bottom:calc(env(safe-area-inset-bottom, 0px) + 84px); } .field.two{ grid-template-columns:1fr; } }
   /* Touch sizing. This is used on a phone, one-handed, mid-service, sometimes
      with wet hands. 44px is the size a thumb actually hits; the desktop sizes
      were 30 to 41 and fine for a mouse but not for that. */
@@ -798,8 +792,8 @@
   table.progress th.sortable{ cursor:pointer; user-select:none; white-space:nowrap; }
   table.progress th.sortable:hover{ color:var(--ink); }
   .sort-arrow{ color:var(--sun); font-size:11px; }
-  .qbar{ height:4px; border-radius:3px; background:var(--line); overflow:hidden; margin:0 0 18px; }
-  .qbar span{ display:block; height:100%; background:var(--sun); border-radius:3px; transition:width .25s cubic-bezier(.16,1,.3,1); }
+  /* Progress bars are kit .k-progress-track + .k-progress-bar (role=progressbar); only spacing lives here. */
+  .qbar{ margin:0 0 18px; }
   .opt{ display:flex; align-items:center; gap:10px; }
   .optkey{ flex:none; width:22px; height:22px; border-radius:4px; border:1px solid var(--line); display:inline-flex;
     align-items:center; justify-content:center; font-family:'IBM Plex Mono',monospace; font-size:12px; color:var(--ink-soft); }
@@ -947,14 +941,10 @@
   @media (hover:none){ .wl-flip{ height:44px; width:44px; } }
   @media (max-width:360px){ .bottom-nav .nav-btn{ font-size:12px; } }
   /* More sheet: the views that do not fit the five-tab bar. */
-  #more-sheet{ border:0; padding:0; margin:auto 0 0; width:100%; max-width:100%; max-height:85vh;
-    border-radius:16px 16px 0 0; background:var(--paper-raised); color:var(--ink);
-    border-top:1px solid var(--line); }
-  #more-sheet::backdrop{ background:rgba(0,0,0,.55); }
-  .more-inner{ padding:14px 16px calc(16px + env(safe-area-inset-bottom, 0px)); }
-  .more-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
-  .more-head h2{ margin:0; font-size:20px; }
-  .more-close{ min-width:44px; min-height:44px; border:0; background:none; color:var(--ink-soft); font-size:24px; cursor:pointer; }
+  /* More sheet = kit .k-sheet (dialog.js): bottom on phones. */
+  #more-sheet .k-sheet-head{ display:flex; align-items:center; justify-content:space-between; padding-right:12px; }
+  #more-sheet .k-sheet-head h2{ margin:0; font-size:20px; }
+  #more-sheet .k-sheet-body{ padding-bottom:calc(16px + env(safe-area-inset-bottom, 0px)); }
   .more-list{ display:grid; grid-template-columns:1fr 1fr; gap:8px; }
   #more-sheet .nav-btn{ display:flex; align-items:center; min-height:52px; padding:0 14px; border-radius:10px;
     border:1.5px solid var(--line); background:var(--paper); color:var(--ink); font:inherit; font-size:15px; font-weight:700;
@@ -1057,8 +1047,8 @@
     .view{ padding-bottom:32px !important; }
   }
   @media print{ .fbk-fab{ display:none; } }
-  #fbk-dialog{ border:1px solid var(--line); border-radius:14px; padding:0; width:min(92vw,460px); background:var(--paper-raised); color:var(--ink); }
-  #fbk-dialog::backdrop{ background:rgba(0,0,0,.55); }
+  /* Feedback = kit .k-dialog (dialog.js); on phones it becomes a bottom sheet that rides the keyboard. */
+  #fbk-dialog{ padding:0; }
   #fbk-form{ padding:22px; }
   #fbk-title{ margin:0 0 4px; font-size:24px; }
   .fbk-sub{ margin:0 0 14px; font-size:14px; color:var(--ink-soft); }
@@ -1080,8 +1070,8 @@
   /* Phones: a bottom sheet that sits on top of the keyboard (visualViewport
      sets --fbk-kb and --fbk-vh), scrolls inside, and keeps Send pinned. */
   @media (max-width:860px){
-    #fbk-dialog{ margin:0; inset:auto 0 var(--fbk-kb, 0px) 0; width:100%; max-width:none;
-      max-height:calc(var(--fbk-vh, 100dvh) - 16px); overflow:auto; border-radius:14px 14px 0 0; border-bottom:0; }
+    #fbk-dialog{ position:fixed; margin:0; inset:auto 0 var(--fbk-kb, 0px) 0; width:100%; max-width:none;
+      max-height:calc(var(--fbk-vh, 100dvh) - 16px); overflow:auto; border-radius:var(--k-radius-lg) var(--k-radius-lg) 0 0; border-width:1px 0 0; }
     #fbk-form{ padding-bottom:0; }
     .fbk-actions{ position:sticky; bottom:0; margin:8px -22px 0; padding:12px 22px calc(12px + env(safe-area-inset-bottom, 0px));
       background:var(--paper-raised); border-top:1px solid var(--line); }
@@ -1279,7 +1269,7 @@
       </div>
       <div class="field">
         <label for="in-role">Your Role</label>
-        <select id="in-role" required>
+        <select class="k-select" id="in-role" required>
           <option value="" disabled selected>Choose a role</option>
           <option>Host</option>
           <option>Server</option>
@@ -1562,24 +1552,22 @@
       <button class="nav-btn more-btn" type="button" aria-haspopup="dialog" aria-controls="more-sheet">More</button>
     </div>
   </nav>
-  <dialog id="more-sheet" aria-labelledby="more-title">
-    <div class="more-inner">
-      <div class="more-head"><h2 id="more-title">More</h2><button type="button" class="more-close" aria-label="Close">&times;</button></div>
-      <div class="more-list">
+  <dialog id="more-sheet" class="k-sheet" aria-labelledby="more-title">
+      <div class="k-sheet-head"><h2 id="more-title">More</h2><button type="button" class="k-btn k-btn-ghost k-btn-icon more-close" aria-label="Close" data-k-dialog-close><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
+      <div class="k-sheet-body more-list">
         <button class="nav-btn" data-view="cleaning">Cleaning</button>
         <button class="nav-btn" data-view="watch">Watch List</button>
         <button class="nav-btn" data-view="team">Team</button>
         <button class="nav-btn" data-view="vibes">Good Vibes</button>
         <button class="nav-btn" data-view="progress">Admin</button>
       </div>
-    </div>
   </dialog>
 </div>
 
 
-<dialog id="fbk-dialog" aria-labelledby="fbk-title">
+<dialog id="fbk-dialog" class="k-dialog" aria-labelledby="fbk-title">
   <form id="fbk-form" method="dialog" novalidate>
-    <h2 id="fbk-title">Send Feedback</h2>
+    <h2 class="k-dialog-title" id="fbk-title">Send Feedback</h2>
     <p class="fbk-sub">Goes straight to Jay. Bugs, ideas, or a shoutout all welcome.</p>
     <div class="fbk-kinds" role="radiogroup" aria-label="Type">
       <label><input type="radio" name="kind" value="Bug" checked><span>Bug</span></label>
@@ -2858,9 +2846,8 @@ document.querySelectorAll(".nav-btn[data-view], .jump, .jump-link").forEach(func
 (function(){
   var sheet = document.getElementById("more-sheet"), btn = document.querySelector(".bottom-nav .more-btn");
   if (!sheet || !btn) return;
-  btn.addEventListener("click", function(){ if (sheet.showModal) sheet.showModal(); else sheet.setAttribute("open",""); });
-  sheet.querySelector(".more-close").addEventListener("click", function(){ sheet.close(); });
-  sheet.addEventListener("click", function(e){ if (e.target === sheet || e.target.closest("[data-feedback]")) sheet.close(); });
+  btn.addEventListener("click", function(){ if (window.iaraDialog) window.iaraDialog.open(sheet, { opener: btn }); else sheet.showModal(); });
+  sheet.addEventListener("click", function(e){ if (e.target.closest("[data-feedback]")) sheet.close(); });
 })();
 
 /* ============================================================
@@ -3073,8 +3060,8 @@ function renderTeam(){
   wrap.innerHTML = TEAM.map(function(p){
     return '<div class="card bio">' +
       (p.photo
-        ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy">'
-        : '<div class="avatar">'+esc(p.initials)+'</div>') +
+        ? '<img class="k-avatar bio-av avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.name)+'" loading="lazy">'
+        : '<div class="k-avatar bio-av">'+esc(p.initials)+'</div>') +
       '<div><h2>'+esc(p.name)+'</h2><div class="title">'+esc(p.title)+'</div>' +
       '<div class="bio-body"><p>'+p.bio+'</p>' +
       '<button class="bio-more" aria-expanded="false">Read More<span class="sr-only"> about '+esc(p.name)+'</span></button></div>' +
@@ -3104,8 +3091,8 @@ function renderLore(){
   wrap.innerHTML = LORE.map(function(p){
     return '<div class="card bio">' +
       (p.photo
-        ? '<img class="avatar avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.title)+'" loading="lazy">'
-        : '<div class="avatar">'+esc((p.title||"").slice(0,2).toUpperCase())+'</div>') +
+        ? '<img class="k-avatar bio-av avatar-photo" src="'+esc(p.photo)+'" alt="'+esc(p.title)+'" loading="lazy">'
+        : '<div class="k-avatar bio-av">'+esc((p.title||"").slice(0,2).toUpperCase())+'</div>') +
       '<div><h2>'+esc(p.title)+'</h2>' +
       (p.subtitle ? '<div class="title">'+esc(p.subtitle)+'</div>' : '') +
       '<div class="bio-body"><p>'+p.story+'</p>' +
@@ -3342,50 +3329,49 @@ function renderFbGrid(){
    review what you typed, and iOS Safari can suppress a chained prompt outright.
    It also never asked for price or pronunciation, so a manager entering the
    real menu could not use the app's own pronunciation feature. */
+/* Kit dialog (dialog.js): native <dialog>, focus trapped, Escape and scrim close,
+   focus returns to the opener. Removed from the page once closed. */
+function kModal(html, labelId, cls){
+  var d = document.createElement("dialog");
+  d.className = "k-dialog" + (cls ? " " + cls : "");
+  d.setAttribute("aria-labelledby", labelId);
+  d.innerHTML = html;
+  document.body.appendChild(d);
+  d.addEventListener("close", function(){ setTimeout(function(){ d.remove(); }, 0); });
+  window.iaraDialog.open(d);
+  return d;
+}
+
 function openDishForm(existing){
   var isEdit = !!existing;
   var e = existing || {};
-  var wrap = document.createElement("div");
-  wrap.className = "modal-back";
-  wrap.innerHTML =
-    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="dlg-title">' +
-      '<h3 id="dlg-title">'+(isEdit ? "Edit Item" : "Add Item to " + esc(fbActiveCat))+'</h3>' +
-      '<div class="field"><label for="f-name">Name <span class="req">*</span></label>' +
-        '<input id="f-name" type="text" value="'+esc(e.name||"")+'" placeholder="Pão de Queijo"></div>' +
-      '<div class="field two"><div><label for="f-price">Price</label>' +
-        '<input id="f-price" type="text" value="'+esc(e.price||"")+'" placeholder="$12"></div>' +
-        '<div><label for="f-pron">Pronunciation</label>' +
-        '<input id="f-pron" type="text" value="'+esc(e.pronunciation||"")+'" placeholder="pown deh KAY-zhoo"></div></div>' +
-      '<div class="field"><label for="f-desc">Description</label>' +
-        '<textarea id="f-desc" rows="3" aria-describedby="f-desc-help">'+esc(e.desc||"")+'</textarea>' +
-        '<p class="field-help" id="f-desc-help">One sentence a server can say to a guest</p></div>' +
-      '<div class="field"><label for="f-allerg">Allergens</label>' +
-        '<input id="f-allerg" type="text" value="'+esc((e.allergens||[]).join(", "))+'" placeholder="Dairy, Gluten">' +
-        '<p class="field-help">Separate with commas. Leave blank if there are none.</p></div>' +
-      '<label class="check"><input type="checkbox" id="f-example"'+(e.example ? " checked" : "")+'>' +
-        '<span>Mark as an example, not a confirmed menu item</span></label>' +
-      '<p class="form-err" id="f-err" hidden></p>' +
-      '<div class="modal-actions">' +
-        (isEdit ? '<button class="k-btn k-btn-danger" id="f-delete">Delete</button>' : '') +
+  var wrap = kModal(
+      '<h2 class="k-dialog-title" id="dlg-title">'+(isEdit ? "Edit Item" : "Add Item to " + esc(fbActiveCat))+'</h2>' +
+      '<div class="k-field"><label class="k-label" for="f-name">Name<span class="req" aria-hidden="true"> *</span></label>' +
+        '<input class="k-input" id="f-name" type="text" required value="'+esc(e.name||"")+'" placeholder="Pão de Queijo" autofocus></div>' +
+      '<div class="field two" style="margin:0"><div class="k-field"><label class="k-label" for="f-price">Price</label>' +
+        '<input class="k-input" id="f-price" type="text" value="'+esc(e.price||"")+'" placeholder="$12"></div>' +
+        '<div class="k-field"><label class="k-label" for="f-pron">Pronunciation</label>' +
+        '<input class="k-input" id="f-pron" type="text" value="'+esc(e.pronunciation||"")+'" placeholder="pown deh KAY-zhoo"></div></div>' +
+      '<div class="k-field"><label class="k-label" for="f-desc">Description</label>' +
+        '<textarea class="k-textarea" id="f-desc" rows="3" aria-describedby="f-desc-help">'+esc(e.desc||"")+'</textarea>' +
+        '<p class="k-hint" id="f-desc-help">One sentence a server can say to a guest</p></div>' +
+      '<div class="k-field"><label class="k-label" for="f-allerg">Allergens</label>' +
+        '<input class="k-input" id="f-allerg" type="text" aria-describedby="f-allerg-help" value="'+esc((e.allergens||[]).join(", "))+'" placeholder="Dairy, Gluten">' +
+        '<p class="k-hint" id="f-allerg-help">Separate with commas. Leave blank if there are none.</p></div>' +
+      '<div class="k-check-row"><input type="checkbox" class="k-check" id="f-example"'+(e.example ? " checked" : "")+'>' +
+        '<label for="f-example">Mark as an example, not a confirmed menu item</label></div>' +
+      '<p class="k-error" id="f-err" role="alert" hidden></p>' +
+      '<div class="k-dialog-actions">' +
+        (isEdit ? '<button type="button" class="k-btn k-btn-danger" id="f-delete">Delete</button>' : '') +
         '<span class="spacer"></span>' +
-        '<button class="k-btn k-btn-secondary" id="f-cancel">Cancel</button>' +
-        '<button class="k-btn k-btn-primary" id="f-save">Save</button>' +
-      '</div></div>';
-  document.body.appendChild(wrap);
+        '<button type="button" class="k-btn k-btn-secondary" id="f-cancel">Cancel</button>' +
+        '<button type="button" class="k-btn k-btn-primary" id="f-save">Save</button>' +
+      '</div>', "dlg-title", "lu-form");
 
   var nameEl = wrap.querySelector("#f-name");
-  nameEl.focus();
 
-  function close(){
-    document.removeEventListener("keydown", onKey);
-    wrap.remove();
-  }
-  function onKey(ev){
-    if (ev.key === "Escape") { ev.preventDefault(); close(); }
-    if (ev.key === "Tab") trapFocus(wrap, ev);
-  }
-  document.addEventListener("keydown", onKey);
-  wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
+  function close(){ if (wrap.open) wrap.close(); }
   wrap.querySelector("#f-cancel").addEventListener("click", close);
 
   wrap.querySelector("#f-save").addEventListener("click", function(){
@@ -3393,7 +3379,7 @@ function openDishForm(existing){
     var err = wrap.querySelector("#f-err");
     if (!name) {
       err.textContent = "Give the item a name before saving.";
-      err.hidden = false; nameEl.focus(); return;
+      err.hidden = false; nameEl.setAttribute("aria-invalid", "true"); nameEl.focus(); return;
     }
     var pron = wrap.querySelector("#f-pron").value.trim();
     // Keep every field the item already had (audio ids, speak text, category),
@@ -3419,6 +3405,13 @@ function openDishForm(existing){
 }
 
 // Keeps keyboard focus inside the dialog, per the accessibility floor.
+// Kit progress bar. Inside a button (deck tiles) it is decorative: the % is already in the button text.
+function kBar(pct, label, cls, decorative){
+  var v = Math.max(0, Math.min(100, Math.round(pct || 0)));
+  var a = decorative ? ' aria-hidden="true"' : ' role="progressbar" aria-label="'+esc(label)+'" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+v+'"';
+  return '<div class="k-progress-track '+cls+'"'+a+'><div class="k-progress-bar" style="--k-p:'+(v/100)+'"></div></div>';
+}
+
 function trapFocus(root, ev){
   var f = root.querySelectorAll('button, input, textarea, select, [href]');
   if (!f.length) return;
@@ -3433,26 +3426,11 @@ function trapFocus(root, ev){
 /* Last native dialog. confirm() cannot be styled, cannot say what is actually
    lost, and on a phone reads as a browser warning rather than part of the app. */
 function confirmDialog(opts, onYes){
-  var wrap = document.createElement("div");
-  wrap.className = "modal-back";
-  wrap.innerHTML =
-    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="cd-title" style="max-width:400px;">' +
-      '<h3 id="cd-title">'+esc(opts.title)+'</h3>' +
-      '<p class="field-help" style="margin:0 0 4px;">'+esc(opts.body)+'</p>' +
-      '<div class="modal-actions"><span class="spacer"></span>' +
-        '<button class="k-btn k-btn-secondary" id="cd-no">'+esc(opts.cancel || "Cancel")+'</button>' +
-        '<button class="k-btn k-btn-primary" id="cd-yes">'+esc(opts.confirm || "Continue")+'</button></div></div>';
-  document.body.appendChild(wrap);
-  function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
-  function onKey(ev){
-    if (ev.key === "Escape") { ev.preventDefault(); close(); }
-    else if (ev.key === "Tab") trapFocus(wrap, ev);
-  }
-  document.addEventListener("keydown", onKey);
-  wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
-  wrap.querySelector("#cd-no").addEventListener("click", close);
-  wrap.querySelector("#cd-yes").addEventListener("click", function(){ close(); onYes(); });
-  wrap.querySelector("#cd-yes").focus();
+  window.iaraConfirm({
+    title: opts.title, body: opts.body,
+    confirmLabel: opts.confirm || "Continue", cancelLabel: opts.cancel || "Cancel",
+    destructive: /^Delete/.test(opts.confirm || "")
+  }).then(function(ok){ if (ok) onYes(); });
 }
 
 var pendingDelete = null;
@@ -3486,22 +3464,13 @@ async function deleteDish(item){
   });
 }
 
-// Small toast, so the app stops using alert() for things the user cannot act on.
-var toastTimer = null;
+// Kit toast (toast.js), so the app never uses alert() for things the user cannot act on.
+// "Undo" gets the kit's 5s undo window; "Could not..." messages are error toasts.
 function toast(msg, actionLabel, onAction){
-  var old = document.getElementById("toast"); if (old) old.remove();
-  clearTimeout(toastTimer);
-  var t = document.createElement("div");
-  t.id = "toast"; t.className = "toast"; t.setAttribute("role", "status");
-  t.innerHTML = '<span>'+esc(msg)+'</span>' +
-    (actionLabel ? '<button class="toast-act">'+esc(actionLabel)+'</button>' : '');
-  document.body.appendChild(t);
-  if (actionLabel && onAction) {
-    t.querySelector(".toast-act").addEventListener("click", function(){
-      t.remove(); onAction();
-    });
-  }
-  toastTimer = setTimeout(function(){ t.remove(); }, actionLabel ? 5000 : 3200);
+  if (!window.iaraToast) return;
+  if (actionLabel === "Undo" && onAction) return window.iaraToast(msg, { undo: onAction });
+  if (actionLabel && onAction) return window.iaraToast(msg, { action: { label: actionLabel, onClick: onAction } });
+  window.iaraToast(msg, { kind: /^Could(n't| not)/.test(msg) ? "error" : "info" });
 }
 
 var ptVoice = null;
@@ -3549,22 +3518,17 @@ function openManagerGate(onOk){
   // one manager session, so unlocking either unlocks both for the rest of
   // the visit.
   if (isManagerSignedIn()) { onOk(adminAuth.currentUser); return; }
-  var wrap = document.createElement("div");
-  wrap.className = "modal-back";
-  wrap.innerHTML =
-    '<div class="modal card" role="dialog" aria-modal="true" aria-labelledby="mg-title" style="max-width:400px;">' +
-      '<h3 id="mg-title">Manager Access</h3>' +
-      '<p class="field-help" style="margin:0 0 16px;">Sign in with your iara Google account. ' +
+  var wrap = kModal(
+      '<h2 class="k-dialog-title" id="mg-title">Manager Access</h2>' +
+      '<p class="k-dialog-body">Sign in with your iara Google account. ' +
         'Editing the menu changes it for everyone, and team progress is everyone\'s record.</p>' +
-      '<p class="form-err" id="mg-err" hidden></p>' +
-      '<div class="modal-actions"><span class="spacer"></span>' +
-        '<button class="k-btn k-btn-secondary" id="mg-cancel">Cancel</button>' +
-        '<button class="k-btn k-btn-primary" id="mg-go">Sign In with Google</button></div></div>';
-  document.body.appendChild(wrap);
+      '<p class="k-error" id="mg-err" role="alert" hidden style="margin-top:12px"></p>' +
+      '<div class="k-dialog-actions">' +
+        '<button type="button" class="k-btn k-btn-secondary" id="mg-cancel">Cancel</button>' +
+        '<button type="button" class="k-btn k-btn-primary" id="mg-go" autofocus>Sign In with Google</button></div>', "mg-title", "k-dialog-sm");
   var goBtn = wrap.querySelector("#mg-go");
   var errEl = wrap.querySelector("#mg-err");
-  goBtn.focus();
-  function close(){ document.removeEventListener("keydown", onKey); wrap.remove(); }
+  function close(){ if (wrap.open) wrap.close(); }
   function fail(msg){ errEl.textContent = msg; errEl.hidden = false; goBtn.disabled = false; goBtn.textContent = "Sign In with Google"; }
   async function submit(){
     errEl.hidden = true;
@@ -3583,13 +3547,8 @@ function openManagerGate(onOk){
       }
     }
   }
-  function onKey(ev){
-    if (ev.key === "Escape") { ev.preventDefault(); close(); }
-    else if (ev.key === "Enter") { ev.preventDefault(); submit(); }
-    else if (ev.key === "Tab") trapFocus(wrap, ev);
-  }
-  document.addEventListener("keydown", onKey);
-  wrap.addEventListener("mousedown", function(ev){ if (ev.target === wrap) close(); });
+  // Enter anywhere in the dialog signs in (Escape, scrim and focus trap come from dialog.js).
+  wrap.addEventListener("keydown", function(ev){ if (ev.key === "Enter") { ev.preventDefault(); submit(); } });
   wrap.querySelector("#mg-cancel").addEventListener("click", close);
   goBtn.addEventListener("click", submit);
 }
@@ -3985,7 +3944,7 @@ function renderStudyPicker(){
     html += '<button class="deck" data-deck="'+esc(d.key)+'">' +
       '<span class="deck-name">'+esc(d.label)+'</span>' +
       '<span class="deck-meta">'+cards.length+(cards.length===1?' card':' cards')+(DECK_BLURBS[d.key] ? ' \u00b7 '+esc(DECK_BLURBS[d.key]) : '')+'</span>' +
-      '<span class="deck-bar"><span style="width:'+pct+'%"></span></span>' +
+      kBar(pct, "", "deck-bar", true) +
       '<span class="deck-pct mono">'+(pct ? pct+'% mastered' : 'New')+'</span>' + '</button>';
   });
   html += '</div>';
@@ -4100,7 +4059,7 @@ function studyCardHeader(d, c, m, mAll){
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
       '<span class="qprog-m">'+esc(d.label)+'</span>' +
       '<span class="qprog-r"><span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span>'+creditedNote+'</span></div>' +
-    '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>' +
+    kBar(Math.round((d.idx/d.cards.length)*100), "Deck progress", "qbar") +
     '<h3 class="study-front">'+esc(c.front)+'</h3>' +
     (c.pron ? '<div class="pron-line"><span class="pron">('+esc(c.pron)+')</span></div>' : '') +
     (speak ? '<div class="say-row">'+speak+'</div>' : '');
@@ -7558,7 +7517,7 @@ function renderWatchPicker(){
     html += '<button class="deck" data-wl-deck="'+d.key+'"'+(d.cards ? '' : ' disabled')+'>' +
       '<span class="deck-name">'+esc(d.label)+'</span>' +
       '<span class="deck-meta">'+d.cards+(d.cards === 1 ? ' card' : ' cards')+'</span>' +
-      '<span class="deck-bar"><span style="width:'+pct+'%"></span></span>' +
+      kBar(pct, "", "deck-bar", true) +
       (pct ? '<span class="deck-pct mono">'+pct+'% mastered</span>' : '') + '</button>';
   });
   html += '</div>';
@@ -7583,7 +7542,7 @@ function wlHeader(d, c){
   for (var i = 0; i < MASTERY_MAX; i++) pips += '<i class="'+(i < m ? "on" : "")+(i === MASTERY_KNOWN - 1 ? " mark" : "")+'"></i>';
   return '<div class="qprog"><span class="qprog-n">'+(d.idx+1)+' of '+d.cards.length+'</span>' +
     '<span class="qprog-m">'+esc(d.label)+'</span><span class="qprog-r"><span class="pips" aria-hidden="true">'+pips+'</span><span class="pip-lvl">'+esc(masteryLabel(m))+'</span></span></div>' +
-    '<div class="qbar"><span style="width:'+Math.round((d.idx/d.cards.length)*100)+'%"></span></div>';
+    kBar(Math.round((d.idx/d.cards.length)*100), "Deck progress", "qbar");
 }
 
 function renderWatchCard(){
@@ -7821,14 +7780,13 @@ document.addEventListener("visibilitychange", function(){ if (!document.hidden) 
     status.textContent = ""; send.disabled = false;
     fit();
     document.documentElement.classList.add("fbk-open");
-    if (dlg.showModal) dlg.showModal(); else dlg.setAttribute("open", "");
+    if (window.iaraDialog) window.iaraDialog.open(dlg); else dlg.showModal();
     setTimeout(function(){ msg.focus(); }, 50);
   }
-  function close(){ if (dlg.close) dlg.close(); else dlg.removeAttribute("open"); }
+  function close(){ dlg.close(); }
   dlg.addEventListener("close", function(){ document.documentElement.classList.remove("fbk-open"); });
   document.addEventListener("click", function(e){ var b = e.target.closest("[data-feedback]"); if (b) { e.preventDefault(); open(); } });
   document.getElementById("fbk-cancel").addEventListener("click", close);
-  dlg.addEventListener("click", function(e){ if (e.target === dlg) close(); });
   document.getElementById("fbk-form").addEventListener("submit", function(e){
     e.preventDefault();
     var text = msg.value.trim();
@@ -7938,7 +7896,7 @@ async function renderHomeFirstWeek(){
       '<div class="fw-head">First Week</div>' +
       '<p class="fw-lede">Finish this before anything else. Nothing here is timed.</p>' +
       '<div class="fw-count"><span class="mono">'+p.done+'</span> of <span class="mono">'+p.total+'</span> done</div>' +
-      '<div class="qbar"><span style="width:'+p.pct+'%"></span></div>' +
+      kBar(p.pct, "First week progress", "qbar") +
       '<button class="k-btn k-btn-primary fw-open" data-view="checklist">Open the Checklist</button>' +
       '</div>';
   }
@@ -7975,7 +7933,7 @@ async function renderChecklist(){
 
   var html = '<div class="card cl-summary">' +
       '<div class="cl-count"><span class="mono">'+done+'</span> of <span class="mono">'+total+'</span> done</div>' +
-      '<div class="qbar"><span style="width:'+pct+'%"></span></div>' +
+      kBar(pct, "Checklist progress", "qbar") +
       (done === total
         ? '<p class="cl-note">That is everything. Nice work.</p>'
         : '<p class="cl-note">Tick things off as you go. Nothing here is timed.</p>') +
@@ -8343,7 +8301,7 @@ function renderQuizQuestion(){
     '<div class="qprog"><span class="qprog-n">'+(aq.idx+1)+' of '+aq.questions.length+'</span>' +
       '<span class="qprog-m">'+esc(QUIZ_META[aq.key].name)+(aq.review ? ' \u00b7 Missed Review' : '')+'</span>' +
       '<span class="qprog-s" id="quiz-score">'+(aq.idx ? aq.score+' of '+aq.idx+' right' : '')+'</span></div>' +
-    '<div class="qbar"><span style="width:'+pctDone+'%"></span></div>' +
+    kBar(pctDone, "Exam progress", "qbar") +
     '<p class="qtext">'+qtxt(q.q)+'</p>' +
     q.opts.map(function(o, i){
       return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span><span class="opt-t">'+qtxt(o.text)+'</span></button>';

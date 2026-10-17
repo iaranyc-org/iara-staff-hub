@@ -31,7 +31,9 @@
     /* Legacy names mapped onto the iara staff kit (kit/tokens.css). Channel colours below are chart data colours. */
     --ink:var(--k-ink); --ink-soft:var(--k-muted); --ink-mid:var(--k-muted); --paper:var(--k-page); --paper-raised:var(--k-surface); --line:var(--k-border);
     --forest:var(--k-primary); --forest-ink:var(--k-primary-ink); --sun:var(--k-sun); --river:var(--k-display); --display:var(--k-display);
-    --c-phone:var(--k-display); --c-email:var(--k-sun); --c-dm:var(--k-primary); --c-comment:#c98a6a; --c-review:#a7c4a0;
+    /* Chart series = kit tokens --k-chart-1..5 (3.45:1+ on every ground). One colour per meaning, every chart. */
+    --c-phone:var(--k-chart-2); --c-email:var(--k-chart-3); --c-dm:var(--k-chart-1); --c-comment:var(--k-chart-4); --c-review:var(--k-chart-5);
+    --c-replied:var(--k-chart-5); --c-total:var(--k-chart-2);
     --shadow: 0 1px 2px rgba(0,0,0,.4), 0 12px 28px -14px rgba(0,0,0,.6);
     color-scheme: dark;
   }
@@ -126,7 +128,7 @@
   @media (max-width:420px){ .xl{ font-size:11px; } .updated{ font-size:12px; } }
   .hbar{ display:grid; grid-template-columns:96px 1fr 36px; align-items:center; gap:10px; font-size:14px; margin-bottom:8px; }
   .hbar .track{ height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
-  .hbar .fill{ height:100%; background:var(--river); border-radius:5px; }
+  .hbar .fill{ height:100%; background:var(--c-total); border-radius:5px; }
   .hbar .n{ text-align:right; font-variant-numeric:tabular-nums; color:var(--river); }
   .quote{ border-left:3px solid var(--forest); padding:2px 0 2px 12px; margin:0 0 14px; font-size:14.5px; line-height:1.5; }
   .quote small{ display:block; margin-top:4px; color:var(--river); font-size:13px; }
@@ -169,11 +171,10 @@
   #panel-phone .asks{ grid-template-columns:1fr 1fr; }
   #panel-phone .hrow{ display:grid; grid-template-columns:minmax(0,11em) 1fr 2.5em; align-items:center; gap:10px; font-size:14px; margin-bottom:9px; }
   #panel-phone .hrow .track{ display:block; height:10px; background:var(--paper); border-radius:5px; overflow:hidden; }
-  #panel-phone .hrow .fill{ display:block; height:100%; border-radius:5px; background:var(--river); }
+  #panel-phone .hrow .fill{ display:block; height:100%; border-radius:5px; background:var(--c-total); }
   #panel-phone .hrow .n{ text-align:right; font-variant-numeric:tabular-nums; color:var(--river); }
-  #panel-phone .pill.landline{ background:var(--k-raised); color:var(--k-warning); }
   @media (max-width:760px){ #panel-phone .asks{ grid-template-columns:1fr; } }
-  #panel-phone{ --c-answered:var(--k-display); --c-voicemail:var(--k-sun); --c-missed:var(--k-primary); }
+  #panel-phone{ --c-answered:var(--k-chart-5); --c-voicemail:var(--k-chart-3); --c-missed:var(--k-chart-1); }
   /* Small phones: each waiting row stacks into a compact card instead of a 5-column table. */
   @media (max-width:520px){
     #panel-phone table:has(#ph-open) thead{ display:none; }
@@ -255,10 +256,7 @@
   #panel-phone th{ text-align:left; font-size:13px; color:var(--river); font-weight:700; padding:8px 8px; border-bottom:1px solid var(--line); }
   #panel-phone td{ padding:10px 8px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); vertical-align:top; }
   #panel-phone td.num{ font-variant-numeric:tabular-nums; white-space:nowrap; }
-  #panel-phone .pill{ font:600 12px/1.4 var(--k-font-sans); border-radius:var(--k-radius-sm); padding:2px 8px; white-space:nowrap; background:var(--k-raised); color:var(--k-ink); font-variant-numeric:tabular-nums; }
-  #panel-phone .pill.text{ background:var(--k-raised); color:var(--k-display); }
-  #panel-phone .pill.voicemail{ background:var(--k-raised); color:var(--k-warning); }
-  #panel-phone .pill.failed{ background:var(--k-raised); color:var(--k-critical); }
+  #panel-phone .k-badge{ white-space:nowrap; }
   #panel-phone td.act{ text-align:right; white-space:nowrap; }
   #panel-phone tr.gone td:not(.act){ color:var(--k-muted); text-decoration:line-through; text-decoration-color:var(--k-muted); }
   #panel-phone .sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
@@ -630,7 +628,7 @@
 
   function hourBars(byHour){
     var max = niceMax(Math.max.apply(null, byHour.concat([1]))), lab = function(h){ return h === 0 ? "12a" : h < 12 ? h + "a" : h === 12 ? "12p" : (h - 12) + "p"; };
-    var bars = '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" data-k-tip="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--river)"></span></div>'; }).join("") + '</div>';
+    var bars = '<div class="bars">' + byHour.map(function(n, h){ return '<div class="bar" data-k-tip="' + lab(h) + ": " + n + '"><span style="height:' + (100 * n / max) + '%;background:var(--c-total)"></span></div>'; }).join("") + '</div>';
     return withAxis(max, bars, '<div class="xl">' + byHour.map(function(n, h){ return '<div>' + (h % 3 === 0 ? lab(h) : "") + '</div>'; }).join("") + '</div>');
   }
 
@@ -648,7 +646,7 @@
   }
   function channelDetail(c, color){
     var days = c.byDay.map(function(d){ return d.date; });
-    return '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(days, [{ name: "In", color: color, vals: c.byDay.map(function(d){ return d.in; }) }, { name: "Replied", color: "var(--river)", vals: c.byDay.map(function(d){ return d.replied; }) }]) + '</div>' +
+    return '<div class="grid2"><div class="card"><h2>By Day</h2>' + dayBars(days, [{ name: "In", color: color, vals: c.byDay.map(function(d){ return d.in; }) }, { name: "Replied", color: "var(--c-replied)", vals: c.byDay.map(function(d){ return d.replied; }) }]) + '</div>' +
       '<div class="card"><h2>What Guests Ask About</h2>' + topics(c.topics) + (c.notGuests ? '<p class="note">Not counted: ' + c.notGuests + ' from vendors, partners, job seekers and press.</p>' : "") + '</div></div>' +
       '<div class="card" style="margin-bottom:12px"><h2>When Messages Arrive</h2>' + hourBars(c.byHour) + '</div>';
   }
@@ -1010,7 +1008,7 @@
     $("speed-head").innerHTML = stot ? "<b>" + Math.round(100 * fast / stot) + "%</b> got a reply within an hour (" + fast + " of " + stot + ")." : "No missed callers to reply to in this range.";
     $("speed").innerHTML = stot ? rows2.map(function(x){ return "<div class='hrow'><span>" + x[0] + "</span><span class='track'><span class='fill' style='width:" + (100 * (x[1] || 0) / smax) + "%'></span></span><span class='n'>" + (x[1] || 0) + "</span></div>"; }).join("") : "";
     $("open").innerHTML = d.open.length ? d.open.map(function(o){
-      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='pill " + o.type + "'" + (o.count > 1 ? " data-k-tip='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='pill landline' data-k-tip='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='pill failed'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='k-btn k-btn-sm k-btn-ghost' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
+      return "<tr data-key='" + esc(o.key) + "'><td class='num'>··· " + o.last4 + "</td><td><span class='k-badge " + (o.type === "text" ? "k-badge-display" : "k-badge-warning") + "'" + (o.count > 1 ? " data-k-tip='" + o.count + " calls and texts since our last reply'" : "") + ">" + (o.type === "text" ? "Text" : "Voicemail") + (o.count > 1 ? " ×" + o.count : "") + "</span>" + (o.landline ? " <span class='k-badge k-badge-warning' data-k-tip='Every text to this number failed: call them back'>Landline: Call Back</span>" : o.replyFailed ? " <span class='k-badge k-badge-critical'>Reply Failed</span>" : "") + "</td><td class='num'>" + when(o.at) + "</td><td class='prev'>" + esc(o.preview) + "</td><td class='act'><button class='k-btn k-btn-sm k-btn-ghost' data-dismiss='" + esc(o.key) + "' aria-label='Dismiss ··· " + o.last4 + "'>Dismiss</button></td></tr>";
     }).join("") : "<tr><td colspan='5' class='muted'>Nobody's waiting. Unanswered voicemails and texts will show up here.</td></tr>";
     $("body").hidden = false;
   }

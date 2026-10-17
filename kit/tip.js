@@ -18,6 +18,8 @@
    - triggers that can't take focus (chart bars, table rows) get tabindex=0;
      ones with no accessible name get role="img" + aria-label = the tip text
    - never put essential info only in a tooltip (UX-WRITING §9)
+   - placement: CSS anchor positioning where supported, else Floating UI
+     (/kit/vendor/floating-ui.min.js, fetched on first use), else a built-in clamp
    ========================================================================== */
 (function () {
   if (window.iaraTip) return;
@@ -85,8 +87,41 @@
     } else box.textContent = textOf(t);
   }
 
+  // Positioning, best first: CSS anchor positioning (no JS math, follows scroll), then Floating UI
+  // (vendor/floating-ui.min.js, loaded on demand from this folder), then the built-in clamp below.
+  // window.IARA_TIP_POS = "anchor" | "floating" | "manual" forces one (QA).
+  var here = (document.currentScript && document.currentScript.src) || "/kit/tip.js", fui = null;
+  function mode() {
+    if (window.IARA_TIP_POS) return window.IARA_TIP_POS;
+    return window.CSS && CSS.supports && CSS.supports("position-area: top") && CSS.supports("position-try-fallbacks: flip-block") ? "anchor" : "floating";
+  }
+  function loadFloating() {
+    if (window.FloatingUIDOM || fui) return;
+    fui = document.createElement("script"); fui.src = here.replace(/tip\.js(\?.*)?$/, "vendor/floating-ui.min.js");
+    fui.onload = function () { if (cur) place(cur); }; document.head.appendChild(fui);
+  }
+  var anchored = null;
   function place(t) {
-    var box = el(), r = t.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
+    var box = el(), m = mode();
+    if (anchored && anchored !== t) anchored.style.removeProperty("anchor-name");
+    if (m === "anchor") {
+      t.style.setProperty("anchor-name", "--k-tip"); anchored = t;
+      box.style.left = box.style.top = ""; box.setAttribute("data-anchored", "");
+      var rr = box.getBoundingClientRect(), tr = t.getBoundingClientRect();
+      box.setAttribute("data-side", rr.top >= tr.bottom - 1 ? "bottom" : "top");
+      return;
+    }
+    box.removeAttribute("data-anchored");
+    if (m === "floating") {
+      loadFloating();
+      var F = window.FloatingUIDOM;
+      if (F) {
+        F.computePosition(t, box, { placement: "top", strategy: "fixed", middleware: [F.offset(GAP), F.flip({ padding: EDGE }), F.shift({ padding: EDGE })] })
+          .then(function (p) { box.style.left = Math.round(p.x) + "px"; box.style.top = Math.round(p.y) + "px"; box.setAttribute("data-side", p.placement.indexOf("bottom") === 0 ? "bottom" : "top"); });
+        return;
+      }
+    }
+    var r = t.getBoundingClientRect(), vw = document.documentElement.clientWidth, vh = window.innerHeight;
     box.style.left = "0px"; box.style.top = "0px";
     var w = box.offsetWidth, h = box.offsetHeight;
     var top = r.top - h - GAP, below = top < EDGE;
@@ -110,6 +145,7 @@
   }
   function close() {
     clearTimeout(openTimer); clearTimeout(closeTimer);
+    if (anchored) { anchored.style.removeProperty("anchor-name"); anchored = null; }
     if (tip) tip.hidden = true;
     if (cur && cur.hasAttribute("data-k-tip-prev")) {
       var p = cur.getAttribute("data-k-tip-prev"); cur.removeAttribute("data-k-tip-prev");
