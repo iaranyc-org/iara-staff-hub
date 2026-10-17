@@ -434,3 +434,16 @@ dialog.k-sheet[open] { display: flex; animation: k-sheet-up 250ms var(--k-ease);
 
 /* Tooltip placement by CSS anchor positioning where supported (tip.js sets data-anchored). */
 .k-tip[data-anchored] { position: fixed; position-anchor: --k-tip; inset: auto; margin: 0; position-area: top; margin-bottom: 8px; position-try-fallbacks: flip-block; position-try-order: most-height; justify-self: anchor-center; }
+
+/* Right-edge fade on rows that scroll sideways (Jay, 2026-10-17): shows only while more sits off to the right,
+   gone at the end and on rows that fit. Scroll-driven; browsers without it get the plain row. Add .k-scroll-row
+   to any other sideways row (chips, filters). */
+@property --k-fade { syntax: "<length>"; inherits: false; initial-value: 0px; }
+@keyframes k-fade-edge { from { --k-fade: 32px; } to { --k-fade: 0px; } }
+@supports (animation-timeline: scroll()) {
+  .k-tabs, .k-scroll-row, .k-apptabs {
+    animation: k-fade-edge linear both; animation-timeline: scroll(self inline);
+    -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - var(--k-fade)), transparent);
+    mask-image: linear-gradient(90deg, #000 calc(100% - var(--k-fade)), transparent);
+  }
+}

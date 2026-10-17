@@ -7305,7 +7305,7 @@ function renderWatchRoster(){
   var outlets = wlOutlets();
   var html = '<div class="manual-search"><label class="sr-only" for="wl-q">Search the Watch List</label>' +
     '<input id="wl-q" type="search" autocomplete="off" placeholder="Search by name, outlet, or beat" value="'+esc(WL.q)+'"></div>' +
-    '<div class="wl-filters" role="group" aria-label="Filter by outlet group">' +
+    '<div class="wl-filters k-scroll-row" role="group" aria-label="Filter by outlet group">' +
     ["All"].concat(outlets).map(function(o){
       return '<button type="button" class="k-chip" aria-pressed="'+(WL.outlet === o)+'" data-outlet="'+esc(o)+'">'+esc(o)+'</button>';
     }).join('') + '</div><div class="wl-layout"><div id="wl-list"></div>' +
