@@ -347,7 +347,8 @@
       <button class="k-btn k-btn-secondary k-btn-block" type="submit">Apply</button>
     </form>
   </div>
-  <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true"><span class="k-sr-only">Loading analytics…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
+  <div id="an-boot" role="status" aria-busy="true"><span class="k-sr-only">Loading analytics…</span><div data-k-bigload></div></div>
+  <div class="k-skel loading-skel" id="loading" role="status" aria-busy="true" hidden><span class="k-sr-only">Loading analytics…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-card"></div></div>
   <p class="an-offline" id="offline" role="status" hidden>You&rsquo;re offline. These numbers are from the last load and refresh when you&rsquo;re back.</p>
   <div class="k-alert an-err" id="err" role="alert" hidden><p id="err-msg"></p><button class="k-btn k-btn-sm k-btn-secondary" type="button" id="err-retry">Try Again</button></div>
   <section id="panel-overview" role="tabpanel"></section>
@@ -548,9 +549,10 @@
   window.addEventListener("offline", syncOnline);
   window.addEventListener("online", function(){ syncOnline(); if (!$("err").hidden && firebase.auth().currentUser) { $("err").hidden = true; load(); } });
   syncOnline();
-  var seq = 0;
+  var seq = 0, booted = false;
   function load(){
-    var mine = ++seq; $("loading").hidden = false; $("err").hidden = true;
+    // First load: the bold full-page loader (#an-boot). Range changes after that: the quiet skeleton.
+    var mine = ++seq; $(booted ? "loading" : "an-boot").hidden = false; $("err").hidden = true;
     firebase.auth().currentUser.getIdToken().then(function(tok){
       var get = function(path){ return fetch(API + path + "?from=" + range.from + "&to=" + range.to, { headers: { Authorization: "Bearer " + tok }, cache: "no-store" })
         .then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); }); };
@@ -558,9 +560,9 @@
       return Promise.all([get("/analytics"), get("/phone-stats").catch(function(){ return null; })]);
     }).then(function(res){
       if (mine !== seq) return;
-      $("loading").hidden = true; render(res[0], res[1]);
+      $("loading").hidden = true; $("an-boot").hidden = true; booted = true; render(res[0], res[1]);
       $("updated").textContent = "Updated " + new Date(res[0].generatedAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York" });
-    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; showErr("Couldn't load analytics. The server didn't answer. Try again in a minute."); });
+    }).catch(function(e){ if (mine !== seq) return; $("loading").hidden = true; $("an-boot").hidden = true; booted = true; showErr("Couldn't load analytics. The server didn't answer. Try again in a minute."); });
   }
 
   // ---- Building blocks ----

@@ -1208,7 +1208,8 @@ function render(){
   document.title = (activeTab ? activeTab.label + ' · ' : '') + 'iara Kitchen Ops';
   var main = $('#main');
   if(!isReady()){
-    main.innerHTML = '<div class="k-skel" role="status" aria-busy="true"><span class="k-sr-only">Loading kitchen data…</span><div class="k-skel-kpis"><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div><div class="k-skeleton k-skel-tile"></div></div><div class="k-skeleton k-skel-card"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div><div class="k-skeleton k-skel-row"></div></div>';
+    // Full-page first load: the bold kitchen loader. Kept in place across re-renders so it doesn't restart.
+    if(!main.querySelector('[data-k-bigload]')) main.innerHTML = '<div role="status" aria-busy="true"><span class="k-sr-only">Loading kitchen data…</span><div data-k-bigload></div></div>';
     return;
   }
   var html = '';

@@ -47,10 +47,21 @@
     background:#391d1f; color:#c9bfae; font:400 15px/1.4 system-ui,-apple-system,sans-serif; z-index:100; }
   #boot-loader img{ width:120px; height:auto; }
   html:not(.booting) #boot-loader{ display:none; }
-  #boot-loader .k-cook{ display:flex; align-items:center; gap:8px; min-height:20px; margin:0; font-size:13px; line-height:20px; color:#c9bfae; }
-  #boot-loader .k-cook-icon{ color:#f4a88b; }
+  /* Bold kitchen loader (kit/loading.js) styled inline too: staff.css may not have arrived yet. Mirrors .k-bigload in staff.css. */
+  #boot-loader .k-bigload{ display:grid; justify-items:center; gap:16px; padding:8px 0 0; animation:boot-show 0s linear 200ms both; }
+  #boot-loader .k-bigload-badge{ display:grid; place-items:center; width:76px; height:76px; border-radius:50%; background:#4a2528; color:#e0633f; }
+  #boot-loader .k-bigload-badge > *, #boot-loader .k-bigload-line > *{ grid-area:1/1; }
+  #boot-loader .k-bigload-line{ display:grid; justify-items:center; min-height:1.25em; margin:0; font:400 23px/1.25 forevs, Fraunces, Georgia, serif; color:#faf6f0; }
+  #boot-loader .k-bigload-pop{ animation:boot-pop 220ms ease-out both; }
+  #boot-loader .k-bigload-bar{ position:relative; width:120px; height:4px; border-radius:999px; background:#55292f; overflow:hidden; }
+  #boot-loader .k-bigload-bar::before{ content:""; position:absolute; inset:0 auto 0 0; width:40%; border-radius:inherit; background:#e0633f; animation:boot-sweep 1.2s ease-in-out infinite; }
+  @keyframes boot-show{ from{ visibility:hidden; } to{ visibility:visible; } }
+  @keyframes boot-pop{ from{ transform:scale(.9); } to{ transform:scale(1); } }
+  @keyframes boot-sweep{ from{ transform:translateX(-100%); } to{ transform:translateX(250%); } }
+  @media (prefers-reduced-motion: reduce){ #boot-loader .k-bigload-pop{ animation:none; } #boot-loader .k-bigload-bar::before{ animation:none; transform:translateX(75%); } }
+  #boot-loader .k-sr-only{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap; }
 </style>
-<div id="boot-loader" role="status" data-k-cook><img src="/img/lineup-logo.png" width="320" height="96" alt="iara"><span>Loading Lineup…</span></div>
+<div id="boot-loader" role="status"><img src="/img/lineup-logo.png" width="320" height="96" alt="iara"><span class="k-sr-only">Loading Lineup…</span><div data-k-bigload></div></div>
 <script src="/kit/loading.js"></script>
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap">

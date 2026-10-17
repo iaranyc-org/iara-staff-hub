@@ -193,7 +193,21 @@
 .k-cook-cycle { display: grid; }
 .k-cook-cycle > span { grid-area: 1 / 1; visibility: hidden; animation: k-cook-slot 20.8s linear infinite; animation-delay: calc(var(--i) * 1.6s + 200ms); }
 @keyframes k-cook-slot { 0%, 7.68% { visibility: visible; } 7.69%, 100% { visibility: hidden; } }
-@media (prefers-reduced-motion: reduce) { .k-skeleton, .k-skel-card, [class*="k-skel"], .k-cook-icon { animation: none; } .k-cook-cycle > span { animation: none; } .k-cook-cycle > span:first-child { visibility: visible; } .k-btn, .k-chip, .k-tab { transition: none; } .k-btn:active, .k-chip:active { transform: none; } }
+/* Bold full-page loader (PageLoading, [data-k-bigload]): centered badge + display-serif line + sweep bar.
+   Shows at 200ms (visibility, never opacity). Icon and line pop in together (transform only). */
+.k-bigload { display: grid; justify-items: center; align-content: center; gap: 16px; min-height: min(60vh, 560px); padding: 32px 16px; box-sizing: border-box; text-align: center; animation: k-cook-show 0s linear 200ms both; }
+.k-bigload-badge { display: grid; place-items: center; width: 76px; height: 76px; border-radius: 50%; background: var(--k-surface); color: var(--k-primary); }
+.k-bigload-badge > * { grid-area: 1 / 1; }
+.k-bigload-line { display: grid; justify-items: center; min-height: 1.25em; margin: 0; font: 400 23px/1.25 var(--k-font-display); color: var(--k-ink); text-wrap: balance; }
+.k-bigload-line > * { grid-area: 1 / 1; }
+.k-bigload-pop { animation: k-pop 220ms var(--k-ease, ease-out) both; }
+@keyframes k-pop { from { transform: scale(.9); } to { transform: scale(1); } }
+.k-bigload-slot { visibility: hidden; animation: k-bigslot 20.8s linear infinite; animation-delay: calc(var(--i) * 1.6s + 200ms); }
+@keyframes k-bigslot { 0% { visibility: visible; transform: scale(.9); } 1.06% { transform: scale(1); } 7.68% { visibility: visible; } 7.69%, 100% { visibility: hidden; } }
+.k-bigload-bar { position: relative; width: 120px; height: 4px; border-radius: 999px; background: var(--k-raised); overflow: hidden; }
+.k-bigload-bar::before { content: ""; position: absolute; inset: 0 auto 0 0; width: 40%; border-radius: inherit; background: var(--k-primary); animation: k-sweep 1.2s ease-in-out infinite; }
+@keyframes k-sweep { from { transform: translateX(-100%); } to { transform: translateX(250%); } }
+@media (prefers-reduced-motion: reduce) { .k-skeleton, .k-skel-card, [class*="k-skel"], .k-cook-icon { animation: none; } .k-cook-cycle > span { animation: none; } .k-cook-cycle > span:first-child { visibility: visible; } .k-bigload-pop, .k-bigload-slot { animation: none; } .k-bigload-slot:first-child { visibility: visible; } .k-bigload-bar::before { animation: none; transform: translateX(75%); } .k-btn, .k-chip, .k-tab { transition: none; } .k-btn:active, .k-chip:active { transform: none; } }
 
 /* Sign-in gate */
 .k-gate { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }
