@@ -864,6 +864,15 @@
   .wl-reviews li{ margin:2px 0; }
   .wl-fine{ font-size:12px; line-height:1.5; color:var(--ink-soft); margin:10px 0 0; }
   .wl-panel a{ color:var(--display); }
+  .wl-links{ display:flex; flex-wrap:wrap; gap:8px; padding:4px 18px 10px; margin:0; list-style:none; }
+  .wl-link{ display:inline-flex; align-items:center; gap:7px; min-height:44px; padding:0 13px; border-radius:8px;
+    border:1px solid var(--line); background:var(--paper); color:var(--ink) !important; font-size:14px; font-weight:600;
+    text-decoration:none; line-height:1; transition:border-color .12s, background .12s; }
+  .wl-link svg{ width:17px; height:17px; flex:none; }
+  .wl-link:hover{ border-color:var(--display); }
+  .wl-link:active{ transform:scale(.97); }
+  .wl-link:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .wl-panel .wl-role{ font-weight:600; }
   .wl-reviews a{ font-weight:700; text-underline-offset:2px; }
   /* Profile opens beside the grid on wide screens, as a sheet on narrow ones,
      so the grid itself never reflows. */
@@ -4273,7 +4282,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Co Chief Critic, the NYC based critic. Filipino, raised in Hawaii. Reservations are made under the name Justine Darley. Twitter and Instagram: @ligayamishan."
+  "hallIntel": "Co Chief Critic, the NYC based critic. Filipino, raised in Hawaii. Reservations are made under the name Justine Darley.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/ligayamishan/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/ligayamishan"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/ligaya-mishan"
+   }
+  ]
  },
  {
   "slug": "tejal-rao",
@@ -4342,12 +4365,22 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Co Chief Critic. Based in LA, reviews restaurants throughout the US. Instagram: @tejalxrao."
+  "hallIntel": "Co Chief Critic. Based in LA, reviews restaurants throughout the US.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/tejalxrao/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/tejal-rao"
+   }
+  ]
  },
  {
   "slug": "matthew-schneier",
   "name": "Matthew Schneier",
-  "outlet": "New York magazine / Grub Street",
+  "outlet": "New York Magazine / Grub Street",
   "role": "Chief restaurant critic (took over from Adam Platt, Aug 2023)",
   "beat": "NYC restaurant reviews",
   "note": "Former fashion/culture writer (The Cut, NYT) turned critic; reviews run on Grub Street.",
@@ -4411,7 +4444,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Features writer and newly appointed critic at New York Magazine. Alias name: George Civeris. Instagram: @matthewschneier."
+  "hallIntel": "Features writer and newly appointed critic at New York Magazine. Alias name: George Civeris.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/matthewschneier/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.grubstreet.com/author/matthew-schneier/"
+   }
+  ]
  },
  {
   "slug": "helen-rosner",
@@ -4468,7 +4511,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Critic, The New Yorker. Instagram: @helenr."
+  "hallIntel": "Critic, The New Yorker.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/helenr/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.newyorker.com/contributors/helen-rosner"
+   }
+  ]
  },
  {
   "slug": "hannah-goldfield",
@@ -4515,7 +4568,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, The New Yorker. Instagram: @hannahgoldfield."
+  "hallIntel": "Staff Writer, The New Yorker.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/hannahgoldfield/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.newyorker.com/contributors/hannah-goldfield"
+   }
+  ]
  },
  {
   "slug": "michelin-inspectors",
@@ -4533,7 +4596,7 @@ var WATCH = /*WATCH_DATA*/[
   "group": "Michelin & Beard",
   "shortRole": "Michelin Guide Inspectors",
   "status": "Inspector",
-  "ratingSystem": "Stars (1 to 3) and Bib Gourmand. Stars need inspector agreement.",
+  "ratingSystem": "Stars need inspector agreement.",
   "howTheyDine": "Anonymous, assumed names, no notes at the table, pay in full. Often solo; in pairs at couples places. May reveal themselves only after paying.",
   "caresAbout": "Ingredient quality, technique, harmony of flavors, the chef's personality, consistency across visits.",
   "recognizeBy": "No reliable tells. A solo diner who orders widely and pays, then asks to talk, may be one.",
@@ -4548,7 +4611,8 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "photos": [],
-  "hidden": false
+  "hidden": false,
+  "links": []
  },
  {
   "slug": "pete-wells",
@@ -4604,14 +4668,27 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Former NYT Restaurant Critic. Twitter and Instagram: @pete_wells."
+  "hallIntel": "Former NYT Restaurant Critic.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/pete_wells/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/pete_wells"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/pete-wells"
+   }
+  ]
  },
  {
   "slug": "florence-fabricant",
   "name": "Florence Fabricant",
   "outlet": "The New York Times",
   "role": "Food and wine writer; Off the Menu column on new openings",
-  "beat": "New restaurant openings and food news",
   "note": "Her Off the Menu column is where NYC openings get announced.",
   "sources": [
    "https://www.nytimes.com/by/florence-fabricant"
@@ -4625,7 +4702,7 @@ var WATCH = /*WATCH_DATA*/[
   "shortRole": "NYT Off the Menu",
   "status": "Food Writer",
   "whyItMatters": "Off the Menu is where NYT readers learn about openings.",
-  "ratingSystem": "No ratings. Writes the weekly Off the Menu (openings) and Front Burner columns.",
+  "ratingSystem": "No ratings.",
   "caresAbout": "Restaurant news and new openings.",
   "relevanceToIara": "High for PR. A listing there announces a new restaurant.",
   "photos": [
@@ -4651,7 +4728,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Food and Wine Writer for The New York Times. Writes the weekly Front Burner and Off the Menu columns. Author of 12 cookbooks. Twitter: @flofab."
+  "hallIntel": "Food and Wine Writer for The New York Times. Writes the weekly Front Burner and Off the Menu columns. Author of 12 cookbooks.",
+  "links": [
+   {
+    "type": "x",
+    "url": "https://x.com/FloFab"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/florence-fabricant"
+   }
+  ]
  },
  {
   "slug": "priya-krishna",
@@ -4673,7 +4760,7 @@ var WATCH = /*WATCH_DATA*/[
   "status": "Food Writer",
   "whyItMatters": "Big NYT and video audience.",
   "ratingSystem": "Gave NYT stars as interim co-critic from Aug 2024 into 2025. Now a reporter and video host.",
-  "howTheyDine": "Wore wigs and costumes as a critic. Brings comedians as companions. Takes leftovers home.",
+  "howTheyDine": "Wore wigs and costumes as a critic. Brings comedians as companions.",
   "caresAbout": "South Asian and immigrant food; no waste.",
   "recognizeBy": "May wear a wig. Takes leftovers home.",
   "relevanceToIara": "Medium. Covers food culture stories, not starred reviews now.",
@@ -4700,7 +4787,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Food Reporter at The New York Times. Twitter and Instagram: @priyakrishna."
+  "hallIntel": "Food Reporter at The New York Times.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/priyakrishna/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/priyakrishna"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/priya-krishna"
+   }
+  ]
  },
  {
   "slug": "ryan-sutton",
@@ -4708,7 +4809,6 @@ var WATCH = /*WATCH_DATA*/[
   "outlet": "The New York Times / The Lo Times",
   "role": "NYT contributing critic (since Nov 2025); runs The Lo Times",
   "beat": "Independent NYC restaurant reviews",
-  "note": "NYT contributing critic since Nov 2025; also runs The Lo Times newsletter.",
   "sources": [
    "https://tastecooking.com/this-is-taste-479-the-future-of-restaurant-criticism-is-in-your-inbox-with-ryan-sutton/"
   ],
@@ -4722,10 +4822,10 @@ var WATCH = /*WATCH_DATA*/[
   "shortRole": "Lo Times / NYT Critic",
   "status": "Reviews Restaurants",
   "caresAbout": "Prices and value. Steak, sandwiches, tacos. Whether the food justifies the spend.",
-  "whyItMatters": "Now gives NYT stars. Former Eater NY chief critic.",
+  "whyItMatters": "Now gives NYT stars.",
   "relevanceToIara": "High. Covers new NYC spots and Latin American grills; picanha fits his beat.",
   "ratingSystem": "NYT contributing critic since Nov 2025: short starred reviews in the Where to Eat newsletter. No formal scale on The Lo Times.",
-  "howTheyDine": "Showed his face in Nov 2025. Still books under pseudonyms and pays with Apple Pay so his name never shows.",
+  "howTheyDine": "Still books under pseudonyms and pays with Apple Pay so his name never shows.",
   "recentReviews": [
    {
     "restaurant": "Chateau Royale (NYT)",
@@ -4769,7 +4869,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Contributing restaurant critic. Former Chief NYC Restaurant Critic at Eater; editor and founder of the Lo Times newsletter. Doesn't like loud noise, cash only, or splitting checks as requested. Believes in good bar food, drinks Manhattans, and likes the bar tab transferred. Service notes: answer the phone, crumb the table, say thanks when he is leaving. Has a bad back. Has a blog that chronicles prices at different restaurants. Instagram: @thebaddeal."
+  "hallIntel": "Contributing restaurant critic. Former Chief NYC Restaurant Critic at Eater; editor and founder of the Lo Times newsletter. Doesn't like loud noise, cash only, or splitting checks as requested. Believes in good bar food, drinks Manhattans, and likes the bar tab transferred. Service notes: answer the phone, crumb the table, say thanks when he is leaving. Has a bad back. Has a blog that chronicles prices at different restaurants.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/thebaddeal/"
+   },
+   {
+    "type": "substack",
+    "url": "https://www.thelotimes.com/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/ryan-sutton"
+   }
+  ]
  },
  {
   "slug": "robert-sietsema",
@@ -4837,7 +4951,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Writer. Former Senior Critic at Eater, currently writes for his own Substack. Twitter: @robertsietsema. Instagram: @rsietsema."
+  "hallIntel": "Writer. Former Senior Critic at Eater, currently writes for his own Substack.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/rsietsema/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/robertsietsema"
+   },
+   {
+    "type": "substack",
+    "url": "https://robertsietsema.substack.com/"
+   }
+  ]
  },
  {
   "slug": "stephanie-wu",
@@ -4880,12 +5008,26 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Editor-in-Chief at Eater, co-founder of Mochi Magazine. Twitter and Instagram: @bystephwu."
+  "hallIntel": "Editor-in-Chief at Eater, co-founder of Mochi Magazine.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/bystephwu/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/bystephwu"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.eater.com/authors/stephanie-wu"
+   }
+  ]
  },
  {
   "slug": "jamila-robinson",
   "name": "Jamila Robinson",
-  "outlet": "Bon Appetit / Epicurious",
+  "outlet": "Bon Appétit / Epicurious",
   "role": "Editor-in-chief (since Sept 2023)",
   "beat": "Leads both titles; Bon Appetit publishes the Best New Restaurants list",
   "note": "Former Philadelphia Inquirer food editor and ex-JBF journalism chair.",
@@ -4898,7 +5040,7 @@ var WATCH = /*WATCH_DATA*/[
    "text": "Bon Appetit contributor page"
   },
   "group": "Food Media",
-  "shortRole": "Bon Appetit Editor",
+  "shortRole": "Bon Appétit Editor",
   "status": "Editor",
   "photos": [
    {
@@ -4923,7 +5065,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Editor-in-Chief, Bon Appetit. Instagram: @jamilarobinson."
+  "hallIntel": "Editor-in-Chief, Bon Appetit.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/jamilarobinson/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.bonappetit.com/contributor/jamila-robinson"
+   }
+  ]
  },
  {
   "slug": "morgan-carter",
@@ -4966,7 +5118,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Food and Drink Editor, Time Out New York. Twitter: @mo_car. Instagram: @MReneeCarter."
+  "hallIntel": "Food and Drink Editor, Time Out New York.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/mo_car/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/MReneeCarter"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.timeout.com/profile/morgan-carter"
+   }
+  ]
  },
  {
   "slug": "steve-cuozzo",
@@ -5035,12 +5201,22 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Joined the New York Post in 1972; one of their longtime columnists. Proud Brooklyn native, lives on the Upper East Side. Has a hard edge, tends to comment on value and shuns overly hip places. Doesn't like ramps. Twitter and Instagram: @stevecuozzo."
+  "hallIntel": "Joined the New York Post in 1972; one of their longtime columnists. Proud Brooklyn native, lives on the Upper East Side. Has a hard edge, tends to comment on value and shuns overly hip places. Doesn't like ramps.",
+  "links": [
+   {
+    "type": "x",
+    "url": "https://x.com/stevecuozzo"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://nypost.com/author/steve-cuozzo/"
+   }
+  ]
  },
  {
   "slug": "adam-platt",
   "name": "Adam Platt",
-  "outlet": "New York magazine (retired critic)",
+  "outlet": "New York Magazine (retired critic)",
   "role": "Former chief restaurant critic (22 years, to 2023); NYU journalism faculty",
   "beat": "Historic NYC criticism",
   "note": "Reviewed NYC for New York magazine for 22 years before Matthew Schneier took over; not currently reviewing.",
@@ -5079,7 +5255,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Writer. Former New York Magazine restaurant critic and a contributor to Grub Street. Twitter: @plattypants."
+  "hallIntel": "Writer. Former New York Magazine restaurant critic and a contributor to Grub Street.",
+  "links": [
+   {
+    "type": "x",
+    "url": "https://x.com/plattypants"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.grubstreet.com/author/adam-platt/"
+   }
+  ]
  },
  {
   "slug": "keith-lee",
@@ -5127,7 +5313,17 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "youtube.com"
    }
   ],
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/keith_lee125/"
+   },
+   {
+    "type": "tiktok",
+    "url": "https://www.tiktok.com/@keith_lee125"
+   }
+  ]
  },
  {
   "slug": "sonal-shah",
@@ -5170,7 +5366,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, does reviews. Instagram: @toutress."
+  "hallIntel": "Staff Writer, does reviews.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/toutress/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.theinfatuation.com/contributor/sonal-shah"
+   }
+  ]
  },
  {
   "slug": "paolo-lucchesi",
@@ -5208,14 +5414,23 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "sfgate.com"
    }
   ],
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/paololucchesi/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://blog.resy.com/author/paolo/"
+   }
+  ]
  },
  {
   "slug": "jay-cheshes",
   "name": "Jay Cheshes",
   "outlet": "The Wall Street Journal / WSJ Magazine (contributor); Smithsonian",
   "role": "Contributing food and travel writer",
-  "beat": "Food, travel, culture",
   "note": "Former Gourmet New York critic and Time Out NY reviewer who still writes food features for the WSJ and, in 2026, Smithsonian.",
   "group": "Other Press",
   "sources": [
@@ -5251,7 +5466,25 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Writer covering food, travel, art and culture. Regular contributor to The Wall Street Journal. Twitter and Instagram: @jaycheshes."
+  "hallIntel": "Writer covering food, travel, art and culture. Regular contributor to The Wall Street Journal.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/jaycheshes/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/jaycheshes"
+   },
+   {
+    "type": "website",
+    "url": "https://www.cheshes.com/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.smithsonianmag.com/author/jay-cheshes/"
+   }
+  ]
  },
  {
   "slug": "julia-moskin",
@@ -5286,7 +5519,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Editor at the Food section; tends to write exposés on chefs and restaurateurs behaving badly. Twitter and Instagram: @juliamoskin."
+  "hallIntel": "Editor at the Food section; tends to write exposés on chefs and restaurateurs behaving badly.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/juliamoskin/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/juliamoskin"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/julia-moskin"
+   }
+  ]
  },
  {
   "slug": "jeremy-jacobowitz",
@@ -5328,7 +5575,17 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "youtube.com"
    }
   ],
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/jeremyjacobowitz/"
+   },
+   {
+    "type": "substack",
+    "url": "https://jeremyjacobowitz.substack.com/"
+   }
+  ]
  },
  {
   "slug": "brian-lindo",
@@ -5370,7 +5627,17 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "youtube.com"
    }
   ],
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/briancantstopeating/"
+   },
+   {
+    "type": "tiktok",
+    "url": "https://www.tiktok.com/@briancantstopeating"
+   }
+  ]
  },
  {
   "slug": "melissa-mccart",
@@ -5409,7 +5676,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Editor at Eater Northeast Region. Instagram: @melissamccart."
+  "hallIntel": "Editor at Eater Northeast Region.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/melissamccart/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.eater.com/authors/melissa-mccart"
+   }
+  ]
  },
  {
   "slug": "alan-sytsma",
@@ -5452,7 +5729,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Food Editor; often dines out with Adam Platt. Alias name: George Civeris. Twitter: @asytsma. Instagram: @alansytsma."
+  "hallIntel": "Food Editor; often dines out with Adam Platt. Alias name: George Civeris.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/alansytsma/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/asytsma"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.grubstreet.com/author/alan-sytsma/"
+   }
+  ]
  },
  {
   "slug": "chris-crowley",
@@ -5495,7 +5786,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Founding Journalist, Caper Media. Instagram: @chrisecrowley."
+  "hallIntel": "Founding Journalist, Caper Media.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/chrisecrowley/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://caper.media/chris-crowley"
+   }
+  ]
  },
  {
   "slug": "tammie-teclemariam",
@@ -5538,7 +5839,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Writes the Underground Gourmet column and newsletter for NY Mag. Twitter @tammieetc, Instagram @tammieeverytime."
+  "hallIntel": "Writes the Underground Gourmet column and newsletter for NY Mag.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/tammieeverytime/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/tammieetc"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.grubstreet.com/author/tammie-teclemariam"
+   }
+  ]
  },
  {
   "slug": "bryan-kim",
@@ -5581,7 +5896,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer; primarily does reviews. Instagram: @bryansdoingfine."
+  "hallIntel": "Staff Writer; primarily does reviews.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/bryansdoingfine/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.theinfatuation.com/contributor/bryan-kim"
+   }
+  ]
  },
  {
   "slug": "molly-fitzpatrick",
@@ -5624,7 +5949,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Senior Staff Writer, does reviews. Instagram: @mollyofitz."
+  "hallIntel": "Senior Staff Writer, does reviews.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/mollyofitz/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.theinfatuation.com/contributor/molly-fitzpatrick"
+   }
+  ]
  },
  {
   "slug": "will-hartman",
@@ -5655,7 +5990,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, does reviews. Instagram: @willhvrt."
+  "hallIntel": "Staff Writer, does reviews.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/willhvrt/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.theinfatuation.com/contributor/will-hartman"
+   }
+  ]
  },
  {
   "slug": "willa-moore",
@@ -5698,7 +6043,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, does reviews. Known alias: Monique Colt. Instagram: @willa_grace."
+  "hallIntel": "Staff Writer, does reviews. Known alias: Monique Colt.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/willa_grace/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.theinfatuation.com/contributor/willa-moore"
+   }
+  ]
  },
  {
   "slug": "ellie-plass",
@@ -5732,7 +6087,13 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "verified source"
    }
   ],
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "authorPage",
+    "url": "https://blog.resy.com/author/ellie-plass/"
+   }
+  ]
  },
  {
   "slug": "kate-krader",
@@ -5775,7 +6136,17 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Food Editor for Bloomberg. Currently lives in London but visits NY frequently. Likes bold flavors and spicy food. Twitter and Instagram: @kkrader."
+  "hallIntel": "Food Editor for Bloomberg. Currently lives in London but visits NY frequently. Likes bold flavors and spicy food.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/kkrader/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/kkrader"
+   }
+  ]
  },
  {
   "slug": "mahira-rivers",
@@ -5819,7 +6190,21 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Contributing restaurant critic. Instagram: @mahirarivers."
+  "hallIntel": "Contributing restaurant critic.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/mahirarivers/"
+   },
+   {
+    "type": "substack",
+    "url": "https://sweetcity.substack.com/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/mahira-rivers"
+   }
+  ]
  },
  {
   "slug": "melissa-clark",
@@ -5862,21 +6247,33 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "hidden": false,
-  "hallIntel": "Food Staff Reporter. Focuses on recipe stories; a baker and professional home cook. Will include chefs at times. Twitter: @MelissaClark. Instagram: @clarkbar."
+  "hallIntel": "Food Staff Reporter. Focuses on recipe stories; a baker and professional home cook. Will include chefs at times.",
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/clarkbar/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/MelissaClark"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/melissa-clark"
+   }
+  ]
  },
  {
   "slug": "nikita-richardson",
   "name": "Nikita Richardson",
   "outlet": "The New York Times",
   "role": "Senior staff editor, NYT Cooking and NYT Food",
-  "beat": "",
-  "note": "",
   "group": "NYT",
   "sources": [
    "https://www.instagram.com/nomnomnikita/"
   ],
   "anonymous": false,
-  "hallIntel": "Senior Staff Editor, NYT Cooking and NYT Food at The New York Times. Instagram: @nomnomnikita. Twitter: @nikitarbk.",
+  "hallIntel": "Senior Staff Editor, NYT Cooking and NYT Food at The New York Times.",
   "photo": "/img/watch/nikita-richardson-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -5897,21 +6294,33 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "NYT Food Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/nomnomnikita/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/nikitarbk"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/nikita-richardson"
+   }
+  ]
  },
  {
   "slug": "becky-hughes",
   "name": "Becky Hughes",
   "outlet": "The New York Times",
   "role": "Social media editor; contributes to Where To Eat: New York City",
-  "beat": "",
-  "note": "",
   "group": "NYT",
   "sources": [
    "https://www.instagram.com/beckyblairhughes/"
   ],
   "anonymous": false,
-  "hallIntel": "Social Media Editor for NYT. Contributes to the \"Where To Eat: New York City\" newsletter. Instagram: @beckyblairhughes. Twitter: @becky__hughes.",
+  "hallIntel": "Social Media Editor for NYT. Contributes to the \"Where To Eat: New York City\" newsletter. Twitter: @becky__hughes.",
   "photo": "/img/watch/becky-hughes-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -5936,21 +6345,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "NYT Social Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/beckyblairhughes/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/becky-hughes"
+   }
+  ]
  },
  {
   "slug": "luke-fortney",
   "name": "Luke Fortney",
   "outlet": "The New York Times",
   "role": "Writer, Where To Eat: New York City newsletter",
-  "beat": "",
-  "note": "",
   "group": "NYT",
   "sources": [
    "https://www.instagram.com/luke.fortney/"
   ],
   "anonymous": false,
-  "hallIntel": "Writer/contributor, \"Where To Eat: New York City\" newsletter for NYT. Instagram: @luke.fortney.",
+  "hallIntel": "Writer/contributor, \"Where To Eat: New York City\" newsletter for NYT.",
   "photo": "/img/watch/luke-fortney-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -5979,21 +6396,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "NYT Where To Eat Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/luke.fortney/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.nytimes.com/by/luke-fortney"
+   }
+  ]
  },
  {
   "slug": "bettina-makalintal",
   "name": "Bettina Makalintal",
   "outlet": "Eater",
   "role": "Senior reporter",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/buttina/"
   ],
   "anonymous": false,
-  "hallIntel": "Senior Reporter. Formerly staff writer at Bon Appetit and VICE Munchies. Food and culture writer. Name is pronounced Beh-TINA Mack-uh-lin-TAHL. Twitter: @bettinamak. Instagram: @buttina.",
+  "hallIntel": "Senior Reporter. Formerly staff writer at Bon Appetit and VICE Munchies. Food and culture writer. Name is pronounced Beh-TINA Mack-uh-lin-TAHL.",
   "photo": "/img/watch/bettina-makalintal-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6018,21 +6443,37 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Eater Senior Reporter",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/buttina/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/bettinamak"
+   },
+   {
+    "type": "website",
+    "url": "https://makalintal.com/links"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.eater.com/authors/bettina-makalintal"
+   }
+  ]
  },
  {
   "slug": "tierney-plumb",
   "name": "Tierney Plumb",
   "outlet": "Eater",
   "role": "Editor, Eater Northeast region",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/tiers2you/"
   ],
   "anonymous": false,
-  "hallIntel": "Editor, Eater Northeast Region. Instagram: @tiers2you.",
+  "hallIntel": "Editor, Eater Northeast Region.",
   "photo": "/img/watch/tierney-plumb-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6061,15 +6502,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Eater Northeast Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/tiers2you/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.eater.com/authors/tierney-plumb"
+   }
+  ]
  },
  {
   "slug": "nick-mancall-bitel",
   "name": "Nick Mancall-Bitel",
   "outlet": "Eater",
   "role": "Dining and travel editorial manager",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [],
   "anonymous": false,
@@ -6102,21 +6551,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Eater Dining and Travel",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "authorPage",
+    "url": "https://www.eater.com/authors/nick-mancall-bitel"
+   }
+  ]
  },
  {
   "slug": "nadia-chaudhury",
   "name": "Nadia Chaudhury",
   "outlet": "Eater",
   "role": "Editor, Eater NY and Northeast region",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/nadiachaudhury/"
   ],
   "anonymous": false,
-  "hallIntel": "Editor at Eater NY and Northeast Region. Instagram: @nadiachaudhury.",
+  "hallIntel": "Editor at Eater NY and Northeast Region.",
   "photo": "/img/watch/nadia-chaudhury-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6137,21 +6590,45 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Eater NY Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/nadiachaudhury/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/nadiachaudhury"
+   },
+   {
+    "type": "threads",
+    "url": "https://www.threads.com/@nadiachaudhury"
+   },
+   {
+    "type": "bluesky",
+    "url": "https://bsky.app/profile/nadiachaudhury.bsky.social"
+   },
+   {
+    "type": "linkedin",
+    "url": "https://www.linkedin.com/in/nadia-chaudhury-5a77031a/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.eater.com/authors/nadia-chaudhury"
+   }
+  ]
  },
  {
   "slug": "kate-kassin",
   "name": "Kate Kassin",
-  "outlet": "Bon Appetit",
+  "outlet": "Bon Appétit",
   "role": "Editorial operations manager",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/kateakassin/"
   ],
   "anonymous": false,
-  "hallIntel": "Editorial Operations Manager, Bon Appetit. Instagram: @kateakassin.",
+  "hallIntel": "Editorial Operations Manager, Bon Appetit.",
   "photo": "/img/watch/kate-kassin-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6167,22 +6644,30 @@ var WATCH = /*WATCH_DATA*/[
    }
   ],
   "status": "Editor",
-  "shortRole": "Bon Appetit Editorial Ops",
-  "hidden": false
+  "shortRole": "Bon Appétit Editorial Ops",
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/kateakassin/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.bonappetit.com/contributor/kate-kassin"
+   }
+  ]
  },
  {
   "slug": "justin-chapple",
   "name": "Justin Chapple",
   "outlet": "Food & Wine",
   "role": "Culinary director-at-large",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/justinchapple/"
   ],
   "anonymous": false,
-  "hallIntel": "Culinary Director-at-Large, Food & Wine. Instagram: @justinchapple.",
+  "hallIntel": "Culinary Director-at-Large, Food & Wine.",
   "photo": "/img/watch/justin-chapple-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6207,21 +6692,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Food & Wine Culinary Director",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/justinchapple/"
+   },
+   {
+    "type": "website",
+    "url": "https://justinchapple.com/"
+   }
+  ]
  },
  {
   "slug": "erika-adams",
   "name": "Erika Adams",
   "outlet": "Food & Wine",
   "role": "Restaurant editor",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/erika.lea.adams/"
   ],
   "anonymous": false,
-  "hallIntel": "Restaurant Editor, Food & Wine. Instagram: @erika.lea.adams.",
+  "hallIntel": "Restaurant Editor, Food & Wine.",
   "photo": "/img/watch/erika-adams-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6242,21 +6735,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Food & Wine Restaurant Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/erika.lea.adams/"
+   }
+  ]
  },
  {
   "slug": "prairie-rose",
   "name": "Prairie Rose",
   "outlet": "Food & Wine",
   "role": "Senior drinks editor (LA based)",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/bitbyafox/"
   ],
   "anonymous": false,
-  "hallIntel": "Senior Drinks Editor, Food & Wine. LA based. Instagram: @bitbyafox.",
+  "hallIntel": "Senior Drinks Editor, Food & Wine. LA based.",
   "photo": "/img/watch/prairie-rose-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6281,21 +6778,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Food & Wine Drinks Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/bitbyafox/"
+   }
+  ]
  },
  {
   "slug": "dana-brown",
   "name": "Dana Brown",
   "outlet": "Caper Media",
   "role": "Editor in chief",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/mrdanabrown/"
   ],
   "anonymous": false,
-  "hallIntel": "Editor-in-Chief, Caper Media. Instagram: @mrdanabrown.",
+  "hallIntel": "Editor-in-Chief, Caper Media.",
   "photo": "/img/watch/dana-brown-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6316,21 +6817,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Caper Editor in Chief",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/mrdanabrown/"
+   }
+  ]
  },
  {
   "slug": "emma-orlow",
   "name": "Emma Orlow",
   "outlet": "Caper Media",
   "role": "Founding journalist",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/emorlow/"
   ],
   "anonymous": false,
-  "hallIntel": "Founding Journalist, Caper Media. Instagram: @emorlow.",
+  "hallIntel": "Founding Journalist, Caper Media.",
   "photo": "/img/watch/emma-orlow-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6351,21 +6856,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Caper Journalist",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/emorlow/"
+   }
+  ]
  },
  {
   "slug": "annie-armstrong",
   "name": "Annie Armstrong",
   "outlet": "Caper Media",
   "role": "Founding journalist",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/anniesalright/"
   ],
   "anonymous": false,
-  "hallIntel": "Founding Journalist, Caper Media. Instagram: @anniesalright.",
+  "hallIntel": "Founding Journalist, Caper Media.",
   "photo": "/img/watch/annie-armstrong-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6394,21 +6903,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Caper Journalist",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/anniesalright/"
+   }
+  ]
  },
  {
   "slug": "andrew-steinthal",
   "name": "Andrew Steinthal",
   "outlet": "The Infatuation",
   "role": "Co-founder and CEO",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/schmooey/"
   ],
   "anonymous": false,
-  "hallIntel": "Co-Founder and CEO, The Infatuation. Twitter and Instagram: @schmooey.",
+  "hallIntel": "Co-Founder and CEO, The Infatuation.",
   "photo": "/img/watch/andrew-steinthal-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6429,21 +6942,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Infatuation Co-Founder",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/schmooey/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/schmooey"
+   }
+  ]
  },
  {
   "slug": "chris-stang",
   "name": "Chris Stang",
   "outlet": "The Infatuation",
   "role": "Co-founder",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/houseofstang/"
   ],
   "anonymous": false,
-  "hallIntel": "Co-Founder, The Infatuation. Spent nearly twelve years in marketing at Atlantic Records; now runs The Infatuation full time. Twitter and Instagram: @houseofstang.",
+  "hallIntel": "Co-Founder, The Infatuation. Spent nearly twelve years in marketing at Atlantic Records; now runs The Infatuation full time.",
   "photo": "/img/watch/chris-stang-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6472,21 +6993,33 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Infatuation Co-Founder",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/houseofstang/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/houseofstang"
+   },
+   {
+    "type": "website",
+    "url": "https://gossip.wine"
+   }
+  ]
  },
  {
   "slug": "kenny-yang",
   "name": "Kenny Yang",
   "outlet": "The Infatuation",
   "role": "Staff writer, does reviews",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/kennyyangnyc/"
   ],
   "anonymous": false,
-  "hallIntel": "Staff Writer, does reviews. Instagram: @kennyyangnyc.",
+  "hallIntel": "Staff Writer, does reviews.",
   "photo": "/img/watch/kenny-yang-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6499,21 +7032,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Reviews Restaurants",
   "shortRole": "Infatuation Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/kennyyangnyc/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.theinfatuation.com/contributor/kenny-yang"
+   }
+  ]
  },
  {
   "slug": "britt-lam",
   "name": "Britt Lam",
   "outlet": "The Infatuation",
   "role": "Social media editor",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/snufffyyy/"
   ],
   "anonymous": false,
-  "hallIntel": "Social Media Editor, The Infatuation. Instagram: @snufffyyy.",
+  "hallIntel": "Social Media Editor, The Infatuation.",
   "photo": "/img/watch/britt-lam-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6534,21 +7075,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Infatuation Social Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/snufffyyy/"
+   }
+  ]
  },
  {
   "slug": "will-gleason",
   "name": "Will Gleason",
   "outlet": "Time Out New York",
   "role": "Creative director",
-  "beat": "",
-  "note": "",
   "group": "Food Media",
   "sources": [
    "https://www.instagram.com/willsgleason/"
   ],
   "anonymous": false,
-  "hallIntel": "Creative Director, Time Out New York. Instagram and Twitter: @willsgleason.",
+  "hallIntel": "Creative Director, Time Out New York.",
   "photo": "/img/watch/will-gleason-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6569,21 +7114,33 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Editor",
   "shortRole": "Time Out Creative Director",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/willsgleason/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/willsgleason"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.timeout.com/profile/will-gleason"
+   }
+  ]
  },
  {
   "slug": "jiayang-fan",
   "name": "Jiayang Fan",
   "outlet": "The New Yorker",
   "role": "Staff writer",
-  "beat": "",
-  "note": "",
   "group": "New Yorker",
   "sources": [
    "https://www.instagram.com/jiayangfan/"
   ],
   "anonymous": false,
-  "hallIntel": "Staff Writer, The New Yorker. Twitter and Instagram: @jiayangfan.",
+  "hallIntel": "Staff Writer, The New Yorker.",
   "photo": "/img/watch/jiayang-fan-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6608,15 +7165,27 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "New Yorker Staff Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/jiayangfan/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/JiayangFan"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.newyorker.com/contributors/jiayang-fan"
+   }
+  ]
  },
  {
   "slug": "shauna-lyon",
   "name": "Shauna Lyon",
   "outlet": "The New Yorker",
   "role": "Editor of Goings On About Town; writes Tables for Two",
-  "beat": "",
-  "note": "",
   "group": "New Yorker",
   "sources": [
    "https://www.newyorker.com/contributors/shauna-lyon"
@@ -6639,21 +7208,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Reviews Restaurants",
   "shortRole": "Tables for Two Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "authorPage",
+    "url": "https://www.newyorker.com/contributors/shauna-lyon"
+   }
+  ]
  },
  {
   "slug": "jeanette-settembre",
   "name": "Jeanette Settembre",
   "outlet": "New York Post",
   "role": "Senior features reporter",
-  "beat": "",
-  "note": "",
   "group": "Other Press",
   "sources": [
    "https://www.instagram.com/j_settembre/"
   ],
   "anonymous": false,
-  "hallIntel": "Senior Features Reporter, New York Post. Instagram and Twitter: @j_settembre.",
+  "hallIntel": "Senior Features Reporter, New York Post.",
   "photo": "/img/watch/jeanette-settembre-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6682,21 +7255,37 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "NY Post Features Reporter",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/jeanettesettembre/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/j_settembre"
+   },
+   {
+    "type": "website",
+    "url": "https://www.jeanettesettembre.com/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://nypost.com/author/jeanette-settembre/"
+   }
+  ]
  },
  {
   "slug": "jeff-gordinier",
   "name": "Jeff Gordinier",
   "outlet": "Esquire (former)",
   "role": "Former food and drinks editor",
-  "beat": "",
-  "note": "",
   "group": "Other Press",
   "sources": [
    "https://www.instagram.com/thegordinier/"
   ],
   "anonymous": false,
-  "hallIntel": "Former Food and Drinks Editor at Esquire. Dines out with editor and critic friends (Pete Wells, etc.). Sometimes writes for NYT and Yahoo. Twitter: @JeffGordinier. Instagram: @TheGordinier.",
+  "hallIntel": "Former Food and Drinks Editor at Esquire. Dines out with editor and critic friends (Pete Wells, etc.). Sometimes writes for NYT and Yahoo.",
   "photo": "/img/watch/jeff-gordinier-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6717,21 +7306,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Former Esquire Food Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/thegordinier/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/JeffGordinier"
+   }
+  ]
  },
  {
   "slug": "kathleen-squires",
   "name": "Kathleen Squires",
   "outlet": "The Wall Street Journal",
   "role": "Columnist; food and travel freelance writer",
-  "beat": "",
-  "note": "",
   "group": "Other Press",
   "sources": [
    "https://www.instagram.com/ksquiresnyc/"
   ],
   "anonymous": false,
-  "hallIntel": "WSJ columnist, food and travel freelance writer. Instagram: @KSquiresNYC.",
+  "hallIntel": "WSJ columnist, food and travel freelance writer.",
   "photo": "/img/watch/kathleen-squires-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6752,21 +7349,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "WSJ Columnist",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/ksquiresnyc/"
+   }
+  ]
  },
  {
   "slug": "scott-lynch",
   "name": "Scott Lynch",
   "outlet": "Hell Gate / Brooklyn Magazine",
   "role": "Food writer and freelance photojournalist",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/scoboco/"
   ],
   "anonymous": false,
-  "hallIntel": "Food writer at Hell Gate and Brooklyn Magazine plus freelance photojournalist. Sometimes goes to restaurants on his own, usually bringing his camera equipment. Sometimes dines with @Foodbaby influencer Mike Chau. Twitter and Instagram: @scoboco.",
+  "hallIntel": "Food writer at Hell Gate and Brooklyn Magazine plus freelance photojournalist. Sometimes goes to restaurants on his own, usually bringing his camera equipment. Sometimes dines with @Foodbaby influencer Mike Chau.",
   "photo": "/img/watch/scott-lynch-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6787,21 +7388,33 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Hell Gate Food Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/scoboco/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/Scoboco"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://hellgatenyc.com/author/scott-lynch/"
+   }
+  ]
  },
  {
   "slug": "cathy-erway",
   "name": "Cathy Erway",
   "outlet": "Freelance",
   "role": "Food writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/cathyerway/"
   ],
   "anonymous": false,
-  "hallIntel": "As seen in Medium, The New York Times, HuffPost, The Washington Post, Salon, Serious Eats, Food52, San Francisco Chronicle, Bon Appetit, Epicurious and more. Twitter and Instagram: @cathyerway.",
+  "hallIntel": "As seen in Medium, The New York Times, HuffPost, The Washington Post, Salon, Serious Eats, Food52, San Francisco Chronicle, Bon Appetit, Epicurious and more.",
   "photo": "/img/watch/cathy-erway-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6822,21 +7435,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Food Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/cathyerway/"
+   },
+   {
+    "type": "website",
+    "url": "https://www.cathyerway.com/"
+   }
+  ]
  },
  {
   "slug": "brian-koppelman",
   "name": "Brian Koppelman",
   "outlet": "The Moment with Brian (podcast)",
   "role": "Filmmaker, essayist, podcaster",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/briankoppelman/"
   ],
   "anonymous": false,
-  "hallIntel": "American filmmaker, essayist, podcaster, TV series creator, former music business executive and record producer. Host of The Moment with Brian. Sometimes dines with Pete Wells. Twitter and Instagram: @briankoppelman.",
+  "hallIntel": "American filmmaker, essayist, podcaster, TV series creator, former music business executive and record producer. Host of The Moment with Brian. Sometimes dines with Pete Wells.",
   "photo": "/img/watch/brian-koppelman-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6861,21 +7482,33 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Creator",
   "shortRole": "Filmmaker and Podcaster",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/briankoppelman/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/briankoppelman"
+   },
+   {
+    "type": "bluesky",
+    "url": "https://bsky.app/profile/briankoppelman.bsky.social"
+   }
+  ]
  },
  {
   "slug": "betsy-andrews",
   "name": "Betsy Andrews",
   "outlet": "Freelance",
   "role": "Food and travel writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/betsyandrews/"
   ],
   "anonymous": false,
-  "hallIntel": "Writes for Food & Wine, SevenFifty Daily, Travel + Leisure, Conde Nast Traveler. Often dines with Pete Wells. Instagram: @betsyandrews.",
+  "hallIntel": "Writes for Food & Wine, SevenFifty Daily, Travel + Leisure, Conde Nast Traveler. Often dines with Pete Wells.",
   "photo": "/img/watch/betsy-andrews-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6904,21 +7537,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Food Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/betsyandrews/"
+   }
+  ]
  },
  {
   "slug": "ella-quittner",
   "name": "Ella Quittner",
   "outlet": "Freelance",
   "role": "Food writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/equittner/"
   ],
   "anonymous": false,
-  "hallIntel": "Writes for Grub Street, The New York Times, Food & Wine. Instagram: @equittner.",
+  "hallIntel": "Writes for Grub Street, The New York Times, Food & Wine.",
   "photo": "/img/watch/ella-quittner-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6943,21 +7580,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Food Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/equittner/"
+   }
+  ]
  },
  {
   "slug": "rachel-sugar",
   "name": "Rachel Sugar",
   "outlet": "Freelance",
   "role": "Writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/rtsugar/"
   ],
   "anonymous": false,
-  "hallIntel": "Contributes to Grub Street, T Magazine and NY Magazine. Instagram: @rtsugar.",
+  "hallIntel": "Contributes to Grub Street, T Magazine and NY Magazine.",
   "photo": "/img/watch/rachel-sugar-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -6974,21 +7615,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/rtsugar/"
+   }
+  ]
  },
  {
   "slug": "joshua-david-stein",
   "name": "Joshua David Stein",
   "outlet": "Freelance",
   "role": "Writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/joshuadavidstein/"
   ],
   "anonymous": false,
-  "hallIntel": "Writes for Grub Street, Curbed, Esquire, Avenue, Resy. Instagram: @joshuadavidstein.",
+  "hallIntel": "Writes for Grub Street, Curbed, Esquire, Avenue, Resy.",
   "photo": "/img/watch/joshua-david-stein-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7009,21 +7654,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Food Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/joshuadavidstein/"
+   }
+  ]
  },
  {
   "slug": "khushbu-shah",
   "name": "Khushbu Shah",
   "outlet": "Freelance (formerly Food & Wine)",
   "role": "Former restaurant editor, Food & Wine",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/khushandoj/"
   ],
   "anonymous": false,
-  "hallIntel": "Previous Restaurant Editor for Food & Wine. Doesn't live in NYC but is constantly on the road for her job. Twitter: @KhushAndOJ. Instagram: @khushandoj.",
+  "hallIntel": "Previous Restaurant Editor for Food & Wine. Doesn't live in NYC but is constantly on the road for her job.",
   "photo": "/img/watch/khushbu-shah-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7044,21 +7693,33 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Former F&W Restaurant Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/khushandoj/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/KhushAndOJ"
+   },
+   {
+    "type": "substack",
+    "url": "https://khushbushah.substack.com/"
+   }
+  ]
  },
  {
   "slug": "jason-diamond",
   "name": "Jason Diamond",
   "outlet": "Freelance",
   "role": "Writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/imjasondiamond/"
   ],
   "anonymous": false,
-  "hallIntel": "Writes for Taste, GQ, Grub Street. Instagram: @imjasondiamond.",
+  "hallIntel": "Writes for Taste, GQ, Grub Street.",
   "photo": "/img/watch/jason-diamond-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7083,21 +7744,29 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/imjasondiamond/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.thecut.com/author/jason-diamond/"
+   }
+  ]
  },
  {
   "slug": "robert-simonson",
   "name": "Robert Simonson",
   "outlet": "Freelance",
   "role": "Drinks writer",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/robertosimonson/"
   ],
   "anonymous": false,
-  "hallIntel": "Freelance drinks writer (Grub Street, VinePair, NYT). Instagram: @RobertOSimonson.",
+  "hallIntel": "Freelance drinks writer (Grub Street, VinePair, NYT).",
   "photo": "/img/watch/robert-simonson-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7118,21 +7787,25 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Drinks Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/robertosimonson/"
+   }
+  ]
  },
  {
   "slug": "elyse-inamine",
   "name": "Elyse Inamine",
   "outlet": "Freelance",
-  "role": "Freelancer; former Bon Appetit restaurants editor",
-  "beat": "",
-  "note": "",
+  "role": "Freelancer; former Bon Appétit restaurants editor",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/elyseinamine/"
   ],
   "anonymous": false,
-  "hallIntel": "Freelancer. Former Restaurants Editor at Bon Appetit. Still freelance writing for Food & Wine, NYT and other outlets. Twitter and Instagram: @elyseinamine.",
+  "hallIntel": "Freelancer. Former Restaurants Editor at Bon Appetit. Still freelance writing for Food & Wine, NYT and other outlets.",
   "photo": "/img/watch/elyse-inamine-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7153,15 +7826,27 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Freelance Food Writer",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/elyseinamine/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/elyseinamine"
+   },
+   {
+    "type": "website",
+    "url": "https://elyseinamine.com/"
+   }
+  ]
  },
  {
   "slug": "dana-cowin",
   "name": "Dana Cowin",
   "outlet": "DBC Creative",
   "role": "CEO, DBC Creative; former Food & Wine editor in chief",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://x.com/fwscout"
@@ -7192,21 +7877,20 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Former F&W Editor in Chief",
-  "hidden": false
+  "hidden": false,
+  "links": []
  },
  {
   "slug": "liz-provencher",
   "name": "Liz Provencher",
   "outlet": "Freelance",
   "role": "Writer; former Thrillist editor",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/lizprovencher/"
   ],
   "anonymous": false,
-  "hallIntel": "Writer. Former Thrillist Editor. Instagram: @lizprovencher.",
+  "hallIntel": "Writer. Former Thrillist Editor.",
   "photo": "/img/watch/liz-provencher-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7231,15 +7915,23 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Former Thrillist Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/lizprovencher/"
+   },
+   {
+    "type": "website",
+    "url": "https://www.lizprovencher.com/"
+   }
+  ]
  },
  {
   "slug": "rob-patronite-robin-raisfeld",
   "name": "Rob Patronite & Robin Raisfeld",
   "outlet": "Former New York Magazine",
   "role": "Former Underground Gourmet critics and food editors",
-  "beat": "",
-  "note": "",
   "group": "Former Critics",
   "sources": [
    "https://nymag.com/author/rob-patronite-and-robin-raisfeld/"
@@ -7258,21 +7950,20 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Former Critic",
   "shortRole": "Former Underground Gourmet",
-  "hidden": false
+  "hidden": false,
+  "links": []
  },
  {
   "slug": "shaye-weaver",
   "name": "Shaye Weaver",
   "outlet": "Freelance (formerly Time Out New York)",
   "role": "Freelance; former Time Out New York editor",
-  "beat": "",
-  "note": "",
   "group": "Independent",
   "sources": [
    "https://www.instagram.com/shayeweaver/"
   ],
   "anonymous": false,
-  "hallIntel": "Freelance (former editor of Time Out NY). Instagram and Twitter: @shayeweaver.",
+  "hallIntel": "Freelance (former editor of Time Out NY).",
   "photo": "/img/watch/shaye-weaver-lb.jpg",
   "photoCredit": {
    "text": "Hall PR Look Book"
@@ -7293,7 +7984,21 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "status": "Food Writer",
   "shortRole": "Former Time Out Editor",
-  "hidden": false
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/shayeweaver/"
+   },
+   {
+    "type": "x",
+    "url": "https://x.com/ShayeWeaver"
+   },
+   {
+    "type": "website",
+    "url": "https://www.shayeweaver.com/"
+   }
+  ]
  }
 ]/*END_WATCH_DATA*/;
 var WL = { tab:"roster", outlet:"All", q:"", pic:0, cardPic:{}, open:null, deck:null, picked:null };
@@ -7444,6 +8149,28 @@ function closeWatchProfile(){
   wlReturnFocus = null;
 }
 
+var WL_LINK = {
+  instagram:{ label:"Instagram", svg:'<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>' },
+  x:{ label:"X", svg:'<path d="M4 4l16 16M20 4L4 20"/>' },
+  threads:{ label:"Threads", svg:'<path d="M16.5 11.5c-.4-3-2.3-4.5-4.7-4.5-3 0-5 2.2-5 5.5S8.8 18 12 18c2.6 0 4.5-1.4 4.5-3.6 0-2-1.6-3-3.8-3-1.8 0-3 .9-3 2.1 0 1.1 1 1.8 2.3 1.8 2.3 0 3.4-1.9 3.4-4.8"/><path d="M12 3c5 0 8.5 3.5 8.5 9S17 21 12 21 3.5 17.5 3.5 12"/>' },
+  bluesky:{ label:"Bluesky", svg:'<path d="M12 11C10 7 6.5 4.5 4.5 4.5 3 4.5 3 6 3 7.5c0 2 1 5 4 5.5-3 .5-3.5 3-1.5 4.5 2.5 2 4.5-.5 6.5-4 2 3.5 4 6 6.5 4 2-1.5 1.5-4-1.5-4.5 3-.5 4-3.5 4-5.5 0-1.5 0-3-1.5-3C17.5 4.5 14 7 12 11z"/>' },
+  tiktok:{ label:"TikTok", svg:'<path d="M14 3v11.5a3.5 3.5 0 1 1-3.5-3.5"/><path d="M14 3c.5 2.5 2.5 4.5 5 4.5"/>' },
+  linkedin:{ label:"LinkedIn", svg:'<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10.5V17M8 7.5v.01M12 17v-6.5M12 13.5c0-1.8 1.2-3 2.7-3s2.3 1 2.3 3V17"/>' },
+  substack:{ label:"Substack", svg:'<path d="M5 4h14M5 8h14M5 12h14v8l-7-4-7 4z"/>' },
+  website:{ label:"Website", svg:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z"/>' },
+  authorPage:{ label:"Author Page", svg:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 12h7M9 16h7"/>' }
+};
+function wlLinks(p){
+  var ls = (p.links || []).filter(function(l){ return WL_LINK[l.type] && /^https:\/\//.test(l.url); });
+  if (!ls.length) return '';
+  return '<ul class="wl-links" aria-label="Links for '+esc(p.name)+'">' + ls.map(function(l){
+    var d = WL_LINK[l.type];
+    return '<li><a class="wl-link" href="'+esc(l.url)+'" target="_blank" rel="noopener">' +
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+d.svg+'</svg>' +
+      esc(d.label)+'<span class="sr-only"> (opens in a new tab)</span></a></li>';
+  }).join('') + '</ul>';
+}
+
 function renderWatchPanel(keepScroll){
   var panel = document.getElementById("wl-panel");
   var backdrop = document.getElementById("wl-backdrop");
@@ -7480,20 +8207,22 @@ function renderWatchPanel(keepScroll){
   panel.innerHTML = '<button class="wl-close" id="wl-close" aria-label="Close profile">Close</button>' +
     '<div class="wl-panel-head"><div class="wl-panel-photo">'+photo+'</div>' +
       '<div>'+tag+'<span class="wl-name">'+esc(p.name)+'</span>' +
-      '<span class="wl-role">'+esc(p.shortRole || p.role)+'</span>' +
-      '<span class="wl-outlet">'+esc(p.outlet)+'</span></div></div>' + thumbs +
+      '<span class="wl-role">'+esc(p.role || p.shortRole)+'</span>' +
+      '<span class="wl-outlet">'+esc(p.outlet)+'</span></div></div>' + wlLinks(p) + thumbs +
     '<div class="wl-panel-body"><dl class="wl-rows">' +
-      wlRow("Why It Matters", p.whyItMatters || p.note) +
+      wlRow("Recognize By", p.recognizeBy) +
       wlRow("Hall PR Intel", p.hallIntel) +
       wlRow("How They Dine", p.howTheyDine) +
-      wlRow("Recognize By", p.recognizeBy) +
-      wlRow("Rating System", p.ratingSystem) +
       wlRow("Cares About", p.caresAbout) +
+      wlRow("Why It Matters", p.whyItMatters) +
+      wlRow("Relevance To Us", p.relevanceToIara) +
+      wlRow("Rating System", p.ratingSystem) +
       wlRow("Beat", p.beat) +
+      wlRow("Background", p.note) +
       (reviews.length ? '<div class="wl-row"><dt>Recent Reviews</dt><dd><ul class="wl-reviews"><li>'+reviews.join('</li><li>')+'</li></ul></dd></div>' : '') +
-    '</dl><p class="wl-fine">' + esc(p.role) +
-      (cur && cur.credit ? '. Photo: ' + esc(cur.credit) : '') +
-      ((p.sources && p.sources[0]) ? '. <a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source<span class="sr-only"> for '+esc(p.name)+'</span></a>' : '') +
+    '</dl><p class="wl-fine">' +
+      (cur && cur.credit ? 'Photo: ' + esc(cur.credit) : '') +
+      ((p.sources && p.sources[0]) ? (cur && cur.credit ? '. ' : '') + '<a href="'+esc(p.sources[0])+'" target="_blank" rel="noopener">Source<span class="sr-only"> for '+esc(p.name)+'</span></a>' : '') +
     '</p></div>';
   if (!keepScroll) panel.scrollTop = 0;
   panel.querySelectorAll("[data-pic]").forEach(function(b){

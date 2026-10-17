@@ -232,6 +232,74 @@ for s_, p in roster.items():
 out = list(roster.values())
 json.dump(out, open(T('watch_final.json'), 'w'), indent=1, ensure_ascii=False)
 out = [p for p in out if not p.get('hidden')]
+raw_out = out
+
+# --- Display cleanup (2026-10-17). watch_final.json stays raw; only the embed is cleaned. ---
+# Verified profile links live in watch_links.json (slug -> {instagram, x, ...}, with _source/_verified).
+import copy, re as _re
+LINKS = load('watch_links.json', {})
+LINK_ORDER = ['instagram', 'x', 'threads', 'bluesky', 'tiktok', 'linkedin', 'substack', 'website', 'authorPage']
+OUTLET_FIX = [('New York magazine', 'New York Magazine'), ('Bon Appetit', 'Bon Appétit')]
+STOP = set('a an the and or of to in on at for with his her their its is are was be by as from has have it this that he she they up so no not'.split())
+
+def _sents(t):
+    return [x.strip() for x in _re.split(r'(?<=[.!?])\s+(?=[A-Z"“])', _re.sub(r'\s+', ' ', t or '').strip()) if x.strip()]
+
+def _words(t):
+    return {w for w in _re.findall(r"[a-z0-9']+", t.lower()) if w not in STOP and len(w) > 1}
+
+def _dupe(sent, seen):
+    w = _words(sent)
+    if len(w) < 3:
+        return False
+    for o in seen:
+        if len(w & o) / len(w) >= 0.7:
+            return True
+    return False
+
+HANDLE_SENT = _re.compile(r'^(?:(?:Twitter|Instagram|X|TikTok)(?: and (?:Twitter|Instagram))?:?\s*@[\w.]+[.,]?\s*)+$', _re.I)
+
+def clean(p):
+    p = copy.deepcopy(p)
+    for k in ('outlet', 'role', 'shortRole'):
+        v = _re.sub(r'\s+', ' ', p.get(k) or '').strip()
+        for a, b in OUTLET_FIX:
+            v = v.replace(a, b)
+        p[k] = v
+    links = {k: v for k, v in (LINKS.get(p['slug']) or {}).items() if k in LINK_ORDER and isinstance(v, str) and v.startswith('https://')}
+    p['links'] = [{'type': k, 'url': links[k]} for k in LINK_ORDER if k in links]
+    # Hall PR intel stays verbatim, except handle-only sentences now shown as link buttons.
+    if p.get('hallIntel'):
+        keep = []
+        for s_ in _sents(p['hallIntel']):
+            hs = {h.lower().rstrip('.') for h in _re.findall(r'@([\w.]+)', s_)}
+            linked = {links[k].rstrip('/').rsplit('/', 1)[-1].lstrip('@').lower() for k in ('instagram', 'x', 'tiktok', 'threads') if k in links}
+            if HANDLE_SENT.match(s_) and hs and hs <= linked:
+                continue
+            keep.append(s_)
+        p['hallIntel'] = ' '.join(keep)
+    # One home per fact: walk fields in display priority, drop sentences already said.
+    seen = [_words(x) for x in _sents(p.get('role')) + _sents(p.get('hallIntel'))]
+    for k in ('recognizeBy', 'howTheyDine', 'caresAbout', 'whyItMatters', 'relevanceToIara', 'ratingSystem', 'beat', 'note'):
+        if not p.get(k):
+            continue
+        kept = []
+        for s_ in _sents(p[k]) if k != 'beat' else [_re.sub(r'\s+', ' ', p[k]).strip()]:
+            if _dupe(s_, seen):
+                continue
+            kept.append(s_)
+            seen.append(_words(s_))
+        v = ' '.join(kept).strip()
+        if v:
+            p[k] = v
+        else:
+            p.pop(k, None)
+    for k in list(p):
+        if isinstance(p[k], str) and not p[k].strip() and k not in ('slug', 'name'):
+            p.pop(k)
+    return p
+
+out = [clean(p) for p in out]
 
 page = os.path.join(ROOT, 'iara_staff_hub.html')
 s = open(page, encoding='utf-8').read()
@@ -253,7 +321,7 @@ print('no status:', [p['name'] for p in out if not p.get('status')])
 import re
 ALIAS_RE = re.compile(r'(?i:under the name|alias(?: name)?(?: is|:)?|books? (?:as|under)|reservations? (?:are made )?(?:as|under))\s+["“]?([A-Z][a-z]+ [A-Z][a-zA-Z\'-]+)')
 wl = []
-for p in out:
+for p in raw_out:
     txt = ' '.join(str(p.get(k) or '') for k in ('hallIntel', 'howTheyDine', 'recognizeBy', 'note'))
     wl.append({'name': p['name'], 'outlet': p.get('outlet', ''), 'role': p.get('shortRole') or p.get('role', ''),
                'match': [x.strip() for x in p['name'].split('&')],

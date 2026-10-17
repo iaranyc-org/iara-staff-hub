@@ -1,0 +1,696 @@
+{
+ "adam-platt": {
+  "x": "https://x.com/plattypants",
+  "authorPage": "https://www.grubstreet.com/author/adam-platt/",
+  "_source": {
+   "x": "hallpr lookbook + X profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no Instagram handle listed"
+ },
+ "alan-sytsma": {
+  "instagram": "https://www.instagram.com/alansytsma/",
+  "x": "https://x.com/asytsma",
+  "authorPage": "https://www.grubstreet.com/author/alan-sytsma/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Food Editor, New York Magazine)",
+   "x": "hallpr lookbook + profile check",
+   "authorPage": "grubstreet author archive loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "andrew-steinthal": {
+  "instagram": "https://www.instagram.com/schmooey/",
+  "x": "https://x.com/schmooey",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (co-founder @infatuation)",
+   "x": "hallpr lookbook + profile check (Co-Founder @infatuation)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "annie-armstrong": {
+  "instagram": "https://www.instagram.com/anniesalright/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Annie Armstrong, Journalist in New York)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no Caper author page found"
+ },
+ "becky-hughes": {
+  "instagram": "https://www.instagram.com/beckyblairhughes/",
+  "authorPage": "https://www.nytimes.com/by/becky-hughes",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (name Becky Hughes)",
+   "authorPage": "nytimes byline page checked in Chrome"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "x @becky__hughes: profile loads but shows only 'becky' + emoji bio, no corroborating link"
+ },
+ "betsy-andrews": {
+  "instagram": "https://www.instagram.com/betsyandrews/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (James Beard winning food/travel writer)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "bettina-makalintal": {
+  "instagram": "https://www.instagram.com/buttina/",
+  "x": "https://x.com/bettinamak",
+  "authorPage": "https://www.eater.com/authors/bettina-makalintal",
+  "website": "https://makalintal.com/links",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (i write @eater)",
+   "x": "hallpr lookbook + profile check (writer @eater, protected)",
+   "authorPage": "page check",
+   "website": "linked from her IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "brian-koppelman": {
+  "instagram": "https://www.instagram.com/briankoppelman/",
+  "x": "https://x.com/briankoppelman",
+  "bluesky": "https://bsky.app/profile/briankoppelman.bsky.social",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Billions co-creator)",
+   "x": "hallpr lookbook + profile check (locked; points to Bluesky)",
+   "bluesky": "profile check (Billions, Rounders, The Moment)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "brian-lindo": {
+  "instagram": "https://www.instagram.com/briancantstopeating/",
+  "tiktok": "https://www.tiktok.com/@briancantstopeating",
+  "_source": {
+   "instagram": "profile check (NYC food creator, followed by resy)",
+   "tiktok": "profile check (display name Brian Lindo, same email as IG)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "britt-lam": {
+  "instagram": "https://www.instagram.com/snufffyyy/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Britt Lam, nyc social video)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "bryan-kim": {
+  "instagram": "https://www.instagram.com/bryansdoingfine/",
+  "authorPage": "https://www.theinfatuation.com/contributor/bryan-kim",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "cathy-erway": {
+  "instagram": "https://www.instagram.com/cathyerway/",
+  "website": "https://www.cathyerway.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check + linked from cathyerway.com",
+   "website": "loaded"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "x @cathyerway: account doesn't exist; onepotato.substack not confirmed as hers"
+ },
+ "chris-crowley": {
+  "instagram": "https://www.instagram.com/chrisecrowley/",
+  "authorPage": "https://caper.media/chris-crowley",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (chris@caper.media, formerly @nymag)",
+   "authorPage": "linked from IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "chris-stang": {
+  "instagram": "https://www.instagram.com/houseofstang/",
+  "x": "https://x.com/houseofstang",
+  "website": "https://gossip.wine",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Co-Founder @infatuation)",
+   "x": "hallpr lookbook + profile check (same bio; new, 0 posts)",
+   "website": "linked from IG and X bios"
+  },
+  "_verified": "2026-10-17"
+ },
+ "dana-brown": {
+  "instagram": "https://www.instagram.com/mrdanabrown/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (EIC @caper.media, ex-Vanity Fair)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "ella-quittner": {
+  "instagram": "https://www.instagram.com/equittner/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no author page/substack verified"
+ },
+ "ellie-plass": {
+  "authorPage": "https://blog.resy.com/author/ellie-plass/",
+  "_source": {
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no social handles listed"
+ },
+ "elyse-inamine": {
+  "instagram": "https://www.instagram.com/elyseinamine/",
+  "x": "https://x.com/elyseinamine",
+  "website": "https://elyseinamine.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + profile check (formerly @bonappetit)",
+   "website": "linked from X bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "emma-orlow": {
+  "instagram": "https://www.instagram.com/emorlow/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no author page verified"
+ },
+ "erika-adams": {
+  "instagram": "https://www.instagram.com/erika.lea.adams/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (name Erika Adams, 'eating at your restaurant' bio)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "authorPage: Food & Wine author URL not found"
+ },
+ "florence-fabricant": {
+  "x": "https://x.com/FloFab",
+  "authorPage": "https://www.nytimes.com/by/florence-fabricant",
+  "_source": {
+   "x": "hallpr lookbook + X profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no Instagram handle listed"
+ },
+ "hannah-goldfield": {
+  "instagram": "https://www.instagram.com/hannahgoldfield/",
+  "authorPage": "https://www.newyorker.com/contributors/hannah-goldfield",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (writer on food @newyorkermag)",
+   "authorPage": "linked from her IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "helen-rosner": {
+  "instagram": "https://www.instagram.com/helenr/",
+  "authorPage": "https://www.newyorker.com/contributors/helen-rosner",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (bio: New Yorker staff writer)",
+   "authorPage": "newyorker.com contributor page loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "jamila-robinson": {
+  "instagram": "https://www.instagram.com/jamilarobinson/",
+  "authorPage": "https://www.bonappetit.com/contributor/jamila-robinson",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (bio: Editor in Chief)",
+   "authorPage": "bonappetit contributor page loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "jason-diamond": {
+  "instagram": "https://www.instagram.com/imjasondiamond/",
+  "authorPage": "https://www.thecut.com/author/jason-diamond/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "jay-cheshes": {
+  "instagram": "https://www.instagram.com/jaycheshes/",
+  "x": "https://x.com/jaycheshes",
+  "authorPage": "https://www.smithsonianmag.com/author/jay-cheshes/",
+  "website": "https://www.cheshes.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + X profile check",
+   "authorPage": "author page loaded, title matches",
+   "website": "linked from own IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "jeanette-settembre": {
+  "instagram": "https://www.instagram.com/jeanettesettembre/",
+  "x": "https://x.com/j_settembre",
+  "website": "https://www.jeanettesettembre.com/",
+  "authorPage": "https://nypost.com/author/jeanette-settembre/",
+  "_source": {
+   "instagram": "linked from her own site + profile check (author of Little Red Flags); hallpr handle @j_settembre no longer exists on IG",
+   "x": "hallpr lookbook + profile check (Senior News Features writer) + linked from her site",
+   "website": "loaded, author of Little Red Flags",
+   "authorPage": "nypost author page loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "jeff-gordinier": {
+  "instagram": "https://www.instagram.com/thegordinier/",
+  "x": "https://x.com/JeffGordinier",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (roving eater @esquire)",
+   "x": "hallpr lookbook + profile check (author of Hungry, protected)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "authorPage: Esquire author slug not checked"
+ },
+ "jeremy-jacobowitz": {
+  "instagram": "https://www.instagram.com/jeremyjacobowitz/",
+  "substack": "https://jeremyjacobowitz.substack.com/",
+  "_source": {
+   "instagram": "profile check (Jeremy Jacobowitz Brunchboys, 603K; @brunchboys redirects here)",
+   "substack": "input source"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "tiktok/x not checked (no handles listed)"
+ },
+ "jiayang-fan": {
+  "instagram": "https://www.instagram.com/jiayangfan/",
+  "x": "https://x.com/JiayangFan",
+  "authorPage": "https://www.newyorker.com/contributors/jiayang-fan",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (name, followed by newyorkermag; X bio points to it)",
+   "x": "hallpr lookbook + profile check (Writer @newyorker)",
+   "authorPage": "linked from X bio, page check"
+  },
+  "_verified": "2026-10-17"
+ },
+ "joshua-david-stein": {
+  "instagram": "https://www.instagram.com/joshuadavidstein/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Children's Book Author)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "website not verified"
+ },
+ "julia-moskin": {
+  "instagram": "https://www.instagram.com/juliamoskin/",
+  "x": "https://x.com/juliamoskin",
+  "authorPage": "https://www.nytimes.com/by/julia-moskin",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (NYT Food reporter)",
+   "x": "hallpr lookbook + profile check (NYT Food reporter)",
+   "authorPage": "nytimes byline page checked in Chrome"
+  },
+  "_verified": "2026-10-17"
+ },
+ "justin-chapple": {
+  "instagram": "https://www.instagram.com/justinchapple/",
+  "website": "https://justinchapple.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "website": "linked from own IG bio"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "F&W author page URL not verified"
+ },
+ "kate-kassin": {
+  "instagram": "https://www.instagram.com/kateakassin/",
+  "authorPage": "https://www.bonappetit.com/contributor/kate-kassin",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (editorial ops @bonappetitmag)",
+   "authorPage": "linked from her IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "kate-krader": {
+  "instagram": "https://www.instagram.com/kkrader/",
+  "x": "https://x.com/kkrader",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (name Kate Krader)",
+   "x": "hallpr lookbook + profile check (food editor, bloomberg news)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "authorPage: bloomberg.com blocks with bot check, could not verify URL"
+ },
+ "kathleen-squires": {
+  "instagram": "https://www.instagram.com/ksquiresnyc/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Wirecutter kitchen writer, ex-WSJ columnist)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "note: role now Senior Staff Writer at Wirecutter per her bio; no author page added"
+ },
+ "keith-lee": {
+  "instagram": "https://www.instagram.com/keith_lee125/",
+  "tiktok": "https://www.tiktok.com/@keith_lee125",
+  "_source": {
+   "instagram": "profile check (FamiLee bio, 17M on TikTok)",
+   "tiktok": "profile check (Keith Lee, 17.3M followers, same bio)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "kenny-yang": {
+  "instagram": "https://www.instagram.com/kennyyangnyc/",
+  "authorPage": "https://www.theinfatuation.com/contributor/kenny-yang",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "khushbu-shah": {
+  "instagram": "https://www.instagram.com/khushandoj/",
+  "x": "https://x.com/KhushAndOJ",
+  "substack": "https://khushbushah.substack.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (ex restaurant editor, contributing editor @foodandwine)",
+   "x": "hallpr lookbook + profile check",
+   "substack": "linked from her IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "ligaya-mishan": {
+  "instagram": "https://www.instagram.com/ligayamishan/",
+  "x": "https://x.com/ligayamishan",
+  "authorPage": "https://www.nytimes.com/by/ligaya-mishan",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (restaurant critic @nytimes)",
+   "x": "hallpr lookbook + profile check (writer @nytimes, protected)",
+   "authorPage": "linked from her IG/X bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "liz-provencher": {
+  "instagram": "https://www.instagram.com/lizprovencher/",
+  "website": "https://www.lizprovencher.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "website": "linked from own IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "luke-fortney": {
+  "instagram": "https://www.instagram.com/luke.fortney/",
+  "authorPage": "https://www.nytimes.com/by/luke-fortney",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (writes Where to Eat @nytimes)",
+   "authorPage": "nytimes byline page loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "mahira-rivers": {
+  "instagram": "https://www.instagram.com/mahirarivers/",
+  "authorPage": "https://www.nytimes.com/by/mahira-rivers",
+  "substack": "https://sweetcity.substack.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (ex-Michelin, NYT contributing critic)",
+   "authorPage": "nytimes byline page loaded",
+   "substack": "linked from IG bio (dessert newsletter)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "matthew-schneier": {
+  "instagram": "https://www.instagram.com/matthewschneier/",
+  "authorPage": "https://www.grubstreet.com/author/matthew-schneier/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "melissa-clark": {
+  "instagram": "https://www.instagram.com/clarkbar/",
+  "x": "https://x.com/MelissaClark",
+  "authorPage": "https://www.nytimes.com/by/melissa-clark",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (NYT food columnist)",
+   "x": "hallpr lookbook + profile check (induction cooking column replies)",
+   "authorPage": "input source"
+  },
+  "_verified": "2026-10-17"
+ },
+ "melissa-mccart": {
+  "instagram": "https://www.instagram.com/melissamccart/",
+  "authorPage": "https://www.eater.com/authors/melissa-mccart",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "molly-fitzpatrick": {
+  "instagram": "https://www.instagram.com/mollyofitz/",
+  "authorPage": "https://www.theinfatuation.com/contributor/molly-fitzpatrick",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (bio links @infatuation_nyc)",
+   "authorPage": "infatuation contributor page loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "morgan-carter": {
+  "instagram": "https://www.instagram.com/mo_car/",
+  "x": "https://x.com/MReneeCarter",
+  "authorPage": "https://www.timeout.com/profile/morgan-carter",
+  "_source": {
+   "instagram": "Time Out profile lists @mo_car + IG profile check (Food and Drink Editor @timeoutnewyork)",
+   "x": "Time Out profile lists @mreneecarter + X profile shows Morgan Carter",
+   "authorPage": "timeout.com profile fetched"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "Hall PR had handles swapped (IG @MReneeCarter 404s; @mo_car is her IG)"
+ },
+ "nadia-chaudhury": {
+  "instagram": "https://www.instagram.com/nadiachaudhury/",
+  "x": "https://x.com/nadiachaudhury",
+  "threads": "https://www.threads.com/@nadiachaudhury",
+  "bluesky": "https://bsky.app/profile/nadiachaudhury.bsky.social",
+  "linkedin": "https://www.linkedin.com/in/nadia-chaudhury-5a77031a/",
+  "authorPage": "https://www.eater.com/authors/nadia-chaudhury",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (@eater_ny deputy dining editor)",
+   "x": "linked from Eater author page",
+   "threads": "linked from Eater author page",
+   "bluesky": "linked from Eater author page",
+   "linkedin": "linked from Eater author page",
+   "authorPage": "eater author page loaded"
+  },
+  "_verified": "2026-10-17"
+ },
+ "nick-mancall-bitel": {
+  "authorPage": "https://www.eater.com/authors/nick-mancall-bitel",
+  "_source": {
+   "authorPage": "eater author page loaded with his bylines"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "no handles listed; no socials found quickly"
+ },
+ "nikita-richardson": {
+  "instagram": "https://www.instagram.com/nomnomnikita/",
+  "x": "https://x.com/nikitarbk",
+  "authorPage": "https://www.nytimes.com/by/nikita-richardson",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + X profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "paolo-lucchesi": {
+  "instagram": "https://www.instagram.com/paololucchesi/",
+  "authorPage": "https://blog.resy.com/author/paolo/",
+  "_source": {
+   "instagram": "profile check (bio: Editor-in-Chief @Resy, followed by resy)",
+   "authorPage": "input source, page check"
+  },
+  "_verified": "2026-10-17"
+ },
+ "pete-wells": {
+  "instagram": "https://www.instagram.com/pete_wells/",
+  "x": "https://x.com/pete_wells",
+  "authorPage": "https://www.nytimes.com/by/pete-wells",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + profile check (petewells at nytimes)",
+   "authorPage": "linked from his IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "prairie-rose": {
+  "instagram": "https://www.instagram.com/bitbyafox/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Senior Drinks Editor @foodandwine)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "authorPage: foodandwine.com/author/prairie-rose 404s, real slug not found"
+ },
+ "priya-krishna": {
+  "instagram": "https://www.instagram.com/priyakrishna/",
+  "x": "https://x.com/priyakrishna",
+  "authorPage": "https://www.nytimes.com/by/priya-krishna",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + profile check (bio: food reporter)",
+   "authorPage": "nytimes byline page checked in Chrome"
+  },
+  "_verified": "2026-10-17"
+ },
+ "rachel-sugar": {
+  "instagram": "https://www.instagram.com/rtsugar/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Rachel Sugar, writer)"
+  },
+  "_verified": "2026-10-17"
+ },
+ "robert-sietsema": {
+  "instagram": "https://www.instagram.com/rsietsema/",
+  "x": "https://x.com/robertsietsema",
+  "substack": "https://robertsietsema.substack.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (links his substack)",
+   "x": "hallpr lookbook + profile check (posts substack pieces)",
+   "substack": "linked from his IG and X"
+  },
+  "_verified": "2026-10-17"
+ },
+ "robert-simonson": {
+  "instagram": "https://www.instagram.com/robertosimonson/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Robert Simonson, writer, James Beard-nominated author)"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "robertsimonson.com did not render to verify"
+ },
+ "ryan-sutton": {
+  "instagram": "https://www.instagram.com/thebaddeal/",
+  "authorPage": "https://www.nytimes.com/by/ryan-sutton",
+  "substack": "https://www.thelotimes.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (NYT contributing critic, runs @thelotimes)",
+   "authorPage": "nytimes byline page loaded, his reviews",
+   "substack": "page check: The Lo Times by ryan sutton"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "x: no handle listed"
+ },
+ "scott-lynch": {
+  "instagram": "https://www.instagram.com/scoboco/",
+  "x": "https://x.com/Scoboco",
+  "authorPage": "https://hellgatenyc.com/author/scott-lynch/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + X profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "shauna-lyon": {
+  "authorPage": "https://www.newyorker.com/contributors/shauna-lyon",
+  "_source": {
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "@shaunalyon IG exists but bio is just 'Nope', 126 followers; unverifiable"
+ },
+ "shaye-weaver": {
+  "instagram": "https://www.instagram.com/shayeweaver/",
+  "x": "https://x.com/ShayeWeaver",
+  "website": "https://www.shayeweaver.com/",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Time Out covers highlight)",
+   "x": "hallpr lookbook + profile check",
+   "website": "linked from IG and X bios"
+  },
+  "_verified": "2026-10-17"
+ },
+ "sonal-shah": {
+  "instagram": "https://www.instagram.com/toutress/",
+  "authorPage": "https://www.theinfatuation.com/contributor/sonal-shah",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Editor @infatuation_nyc)",
+   "authorPage": "input source"
+  },
+  "_verified": "2026-10-17"
+ },
+ "stephanie-wu": {
+  "instagram": "https://www.instagram.com/bystephwu/",
+  "x": "https://x.com/bystephwu",
+  "authorPage": "https://www.eater.com/authors/stephanie-wu",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "x": "hallpr lookbook + X profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17"
+ },
+ "steve-cuozzo": {
+  "x": "https://x.com/stevecuozzo",
+  "authorPage": "https://nypost.com/author/steve-cuozzo/",
+  "_source": {
+   "x": "hallpr lookbook + profile check (name, posts his nypost reviews)",
+   "authorPage": "page loads with his name heading"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "instagram @stevecuozzo: no name or bio on profile, can't confirm it is him"
+ },
+ "tammie-teclemariam": {
+  "instagram": "https://www.instagram.com/tammieeverytime/",
+  "x": "https://x.com/tammieetc",
+  "authorPage": "https://www.grubstreet.com/author/tammie-teclemariam",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (@grubstreet @nymag)",
+   "x": "hallpr lookbook + profile check (name matches)",
+   "authorPage": "linked from her IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "tejal-rao": {
+  "instagram": "https://www.instagram.com/tejalxrao/",
+  "authorPage": "https://www.nytimes.com/by/tejal-rao",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (bio: Restaurant critic @nytimes)",
+   "authorPage": "linked from her IG bio"
+  },
+  "_verified": "2026-10-17"
+ },
+ "tierney-plumb": {
+  "instagram": "https://www.instagram.com/tiers2you/",
+  "authorPage": "https://www.eater.com/authors/tierney-plumb",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check",
+   "authorPage": "author page loaded, title matches"
+  },
+  "_verified": "2026-10-17",
+  "_skipped": "IG bio says editor @eater_dc (still Eater; role label may be stale)"
+ },
+ "will-gleason": {
+  "instagram": "https://www.instagram.com/willsgleason/",
+  "x": "https://x.com/willsgleason",
+  "authorPage": "https://www.timeout.com/profile/will-gleason",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Head of Content @timeoutnewyork)",
+   "x": "hallpr lookbook + profile check (Content Director, Time Out)",
+   "authorPage": "timeout.com profile fetched"
+  },
+  "_verified": "2026-10-17"
+ },
+ "will-hartman": {
+  "instagram": "https://www.instagram.com/willhvrt/",
+  "authorPage": "https://www.theinfatuation.com/contributor/will-hartman",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (Staff Writer @infatuation_nyc)",
+   "authorPage": "input source"
+  },
+  "_verified": "2026-10-17"
+ },
+ "willa-moore": {
+  "instagram": "https://www.instagram.com/willa_grace/",
+  "authorPage": "https://www.theinfatuation.com/contributor/willa-moore",
+  "_source": {
+   "instagram": "hallpr lookbook + profile check (staff writer @infatuation_nyc)",
+   "authorPage": "input source, page check"
+  },
+  "_verified": "2026-10-17"
+ }
+}
