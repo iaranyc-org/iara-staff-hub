@@ -1256,6 +1256,10 @@
     <p class="gate-sub">The manual, the menu, and the tests. Everything for your first shift.</p>
     <form id="gate-form">
       <div class="field">
+        <label for="in-email">Your Email</label>
+        <input id="in-email" type="email" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@gmail.com">
+      </div>
+      <div class="field">
         <label for="in-name">Your Name</label>
         <input id="in-name" type="text" required autocomplete="name" placeholder="e.g. Jordan Alves">
       </div>
@@ -1285,7 +1289,7 @@
       <p class="form-err" id="gate-err" hidden></p>
       <button type="submit" class="k-btn k-btn-primary">Start</button>
     </form>
-    <p class="gate-note">Your name is how your tests get saved, so use the one your manager knows you by.</p>
+    <p class="gate-note">Your email is how your progress gets saved. Use the same one on any phone and you pick up where you left off.</p>
   </div>
 </div>
 
@@ -2305,6 +2309,15 @@ function uid(){
 // record. Two real people sharing an exact name and role would collide onto
 // one record, but that is rarer than the duplication this fixes, and no
 // worse than what a random id already failed to prevent.
+// The email is the identity: the same address on any device, or after a
+// reinstall, resolves to the same staff doc, so progress follows the person.
+// Name and role are display only and can change without forking a record.
+function normEmail(e){ return String(e || "").trim().toLowerCase(); }
+function emailId(email){
+  return "e_" + normEmail(email).replace(/[^a-z0-9]/g, function(c){ return "_" + c.charCodeAt(0).toString(16); });
+}
+function validEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(normEmail(e)); }
+
 function stableId(name, role){
   var slug = (String(name || "") + "-" + String(role || ""))
     .toLowerCase()
@@ -2406,7 +2419,8 @@ async function touchStaffDoc(){
     var snap = await ref.get();
     var now = new Date().toISOString();
     if (snap.exists) {
-      await ref.update({ name: profile.name, role: profile.role, lastActive: now });
+      await ref.update({ name: profile.name, role: profile.role, email: profile.email || null, lastActive: now });
+      hydrateProgress(snap.data());
       // Resuming on a new device (or after clearing this one): the stable id
       // means this is genuinely the same person's doc, but their checklist
       // has only ever lived in this browser's localStorage, so a fresh
@@ -2421,9 +2435,112 @@ async function touchStaffDoc(){
         if (document.getElementById("checklist-area")) renderChecklist();
       }
     } else {
-      await ref.set({ name: profile.name, role: profile.role, createdAt: now, lastActive: now });
+      await ref.set({ name: profile.name, role: profile.role, email: profile.email || null, createdAt: now, lastActive: now });
     }
   } catch(e){ /* non-fatal */ }
+}
+
+// Manual read marks and Study mastery used to live only in this browser, so
+// a new phone looked like day one. They now ride along on the staff doc and
+// are merged (never overwritten) both ways: union of read sections, and per
+// card the higher credit count / later review.
+function mergeMastery(a, b){
+  var out = {};
+  [a || {}, b || {}].forEach(function(m){
+    Object.keys(m).forEach(function(k){
+      var e = m[k]; if (typeof e === "number") e = { n: e, last: null };
+      var cur = out[k];
+      if (!cur) { out[k] = e; return; }
+      out[k] = { n: Math.max(cur.n || 0, e.n || 0),
+                 last: (cur.last || "") > (e.last || "") ? cur.last : e.last };
+    });
+  });
+  return out;
+}
+function hydrateProgress(d){
+  if (!d) return;
+  var changed = false;
+  if (Array.isArray(d.readIds)) {
+    var r = loadRead(), before = r.length;
+    d.readIds.forEach(function(id){ if (r.indexOf(id) === -1) r.push(id); });
+    if (r.length !== before) { try { localStorage.setItem(readKey(), JSON.stringify(r)); } catch(e){} changed = true; }
+  }
+  if (d.mastery && typeof d.mastery === "object") {
+    var m = mergeMastery(loadMastery(), d.mastery);
+    if (JSON.stringify(m) !== JSON.stringify(loadMastery())) { try { localStorage.setItem(masteryKey(), JSON.stringify(m)); } catch(e){} changed = true; }
+  }
+  if (d.checklistState && typeof d.checklistState === "object") {
+    var c = loadChecklist(), cb = JSON.stringify(c);
+    Object.keys(d.checklistState).forEach(function(k){ if (d.checklistState[k]) c[k] = d.checklistState[k]; });
+    if (JSON.stringify(c) !== cb) { saveChecklist(c); changed = true; }
+  }
+  if (changed) {
+    try { updateReadCount(); } catch(e){}
+    try { renderHomeFirstWeek(); } catch(e){}
+    try { if (document.getElementById("checklist-area")) renderChecklist(); } catch(e){}
+    try { refreshHomeStats(); } catch(e){}
+  }
+  pushProgress();
+}
+var pushTimer = null;
+function pushProgress(){
+  if (!db || !profile) return;
+  clearTimeout(pushTimer);
+  pushTimer = setTimeout(function(){
+    db.doc("staff/" + profile.id).set({ readIds: loadRead(), mastery: loadMastery() }, { merge: true })
+      .catch(function(){});
+  }, 1500);
+}
+
+// First sign-in with an email: fold in whatever this person built up under
+// the old name+role id (or this device's previous id), so nobody restarts.
+// Quiz attempts are copied, checklist/read/mastery merged, and the old doc is
+// marked mergedInto so Admin shows one row per person. Local progress stored
+// under the old id is carried to the new id too.
+async function adoptLegacy(ids){
+  ids = (ids || []).filter(function(id){ return id && id !== profile.id; });
+  ids.forEach(function(oldId){
+    [["iara_read_", "[]"], ["iara_mastery_", "{}"], ["iara_checklist_", "{}"]].forEach(function(kv){
+      try {
+        var oldRaw = localStorage.getItem(kv[0] + oldId);
+        if (!oldRaw) return;
+        var newKey = kv[0] + profile.id;
+        var cur = JSON.parse(localStorage.getItem(newKey) || kv[1]), old = JSON.parse(oldRaw);
+        var merged = Array.isArray(cur) ? cur.concat(old.filter(function(x){ return cur.indexOf(x) === -1; }))
+                   : kv[0] === "iara_mastery_" ? mergeMastery(cur, old) : Object.assign({}, old, cur);
+        localStorage.setItem(newKey, JSON.stringify(merged));
+      } catch(e){}
+    });
+  });
+  if (!db) return;
+  for (var i = 0; i < ids.length; i++) {
+    try {
+      var oldRef = db.doc("staff/" + ids[i]);
+      var snap = await oldRef.get();
+      if (!snap.exists || snap.data().mergedInto) continue;
+      var od = snap.data();
+      var newRef = db.doc("staff/" + profile.id);
+      var qs = await oldRef.collection("quizzes").get();
+      for (var j = 0; j < qs.docs.length; j++) {
+        await newRef.collection("quizzes").doc(qs.docs[j].id).set(qs.docs[j].data());
+      }
+      var carry = { name: profile.name, role: profile.role, email: profile.email,
+                    createdAt: od.createdAt || new Date().toISOString() };
+      ["checklistDone","checklistTotal","checklistComplete","checklistState","readIds","mastery"].forEach(function(k){
+        if (od[k] !== undefined) carry[k] = od[k];
+      });
+      var ns = await newRef.get();
+      if (ns.exists) {
+        var nd = ns.data();
+        if (nd.checklistState && carry.checklistState) carry.checklistState = Object.assign({}, carry.checklistState, nd.checklistState);
+        if (nd.readIds && carry.readIds) carry.readIds = nd.readIds.concat(carry.readIds.filter(function(x){ return nd.readIds.indexOf(x) === -1; }));
+        if (nd.mastery && carry.mastery) carry.mastery = mergeMastery(nd.mastery, carry.mastery);
+        if (nd.createdAt && nd.createdAt < carry.createdAt) carry.createdAt = nd.createdAt;
+      }
+      await newRef.set(carry, { merge: true });
+      await oldRef.set({ mergedInto: profile.id }, { merge: true });
+    } catch(e){ /* non-fatal: the old record stays as it was */ }
+  }
 }
 
 // Denormalized so Admin can see who has finished First Week without a
@@ -2471,11 +2588,17 @@ async function loadOwnAttempts(){
    ============================================================ */
 document.getElementById("gate-form").addEventListener("submit", async function(ev){
   ev.preventDefault();
+  var email = normEmail(document.getElementById("in-email").value);
   var name = document.getElementById("in-name").value.trim();
   var role = document.getElementById("in-role").value;
   var err  = document.getElementById("gate-err");
   var btn  = ev.target.querySelector('button[type="submit"]');
-  if (!name || !role) return;
+  if (!name || !role || !email) return;
+  if (!validEmail(email)) {
+    err.textContent = "That email doesn't look right. Check it and try again.";
+    err.hidden = false;
+    return;
+  }
 
   // Only ask for the password when there is no session to restore.
   if (db && firebase.auth && !firebase.auth().currentUser) {
@@ -2499,7 +2622,13 @@ document.getElementById("gate-form").addEventListener("submit", async function(e
     }
   }
   err.hidden = true;
-  profile = { id: stableId(name, role), name: name, role: role };
+  var prev = loadProfile();
+  var legacy = [stableId(name, role)];
+  if (prev && prev.id && legacy.indexOf(prev.id) === -1) legacy.push(prev.id);
+  profile = { id: emailId(email), email: email, name: name, role: role };
+  btn.disabled = true; btn.textContent = "Loading your progress\u2026";
+  await adoptLegacy(legacy);
+  btn.disabled = false; btn.textContent = "Start";
   saveProfile(profile);
   enterShell();
 });
@@ -2536,7 +2665,7 @@ function syncNavAccount(){
 function switchUser(){
   confirmDialog({
     title: "Switch User?",
-    body: "This device will forget your name, your checklist and your card mastery. Your test history stays with your manager.",
+    body: "This device will sign you out. Your progress is saved to your email, so signing back in with it brings everything back.",
     confirm: "Switch User"
   }, function(){
     localStorage.removeItem(LS_KEY);
@@ -2706,6 +2835,7 @@ function markRead(id){
   r.push(id);
   try { localStorage.setItem(readKey(), JSON.stringify(r)); } catch(e){}
   updateReadCount();
+  pushProgress();
 }
 function manualReadPct(){
   var total = MANUAL.length;
@@ -3640,6 +3770,7 @@ function loadMastery(){
 }
 function saveMastery(m){
   try { localStorage.setItem(masteryKey(), JSON.stringify(m)); } catch(e){}
+  pushProgress();
 }
 // Knowledge that is never revisited fades, so the number should too. Computed
 // on read rather than written by a timer, so it can never cascade.
@@ -8289,6 +8420,7 @@ async function renderProgress(){
     for (var i = 0; i < staffSnap.docs.length; i++) {
       var d = staffSnap.docs[i];
       var s = d.data();
+      if (s.mergedInto) continue; // folded into the person's email record
       var qSnap = await (adminDb || db).doc("staff/" + d.id).collection("quizzes").get();
       var attempts = qSnap.docs.map(function(qd){ return qd.data(); });
       var byCat = {};
@@ -8529,7 +8661,7 @@ async function boot(data){
 
   var existing = (data && data.profile) ? data.profile : loadProfile();
   var signedIn = !db || !firebase.auth || !!firebase.auth().currentUser;
-  if (existing && existing.id && existing.name && signedIn) {
+  if (existing && existing.id && existing.name && existing.email && signedIn) {
     profile = existing;
     enterShell();
     document.documentElement.classList.remove("booting");
@@ -8542,7 +8674,10 @@ async function boot(data){
     // Known name but no session: prefill and ask only for the password.
     document.getElementById("in-name").value = existing.name;
     if (existing.role) document.getElementById("in-role").value = existing.role;
-    document.getElementById("pw-field").hidden = false;
+    if (existing.email) document.getElementById("in-email").value = existing.email;
+    // Already signed in on this device, just missing an email (signed up
+    // before emails existed): only the email is new, no password needed.
+    document.getElementById("pw-field").hidden = signedIn;
   }
   // Menu items need a session, so load them once one exists.
   if (db && firebase.auth && firebase.auth().currentUser) {
