@@ -58,10 +58,10 @@ def voices_for(index):
     offsets = [0, 3, 7, 1, 5, 9][:VARIANTS]
     return [VOICE_POOL[(index + o) % len(VOICE_POOL)] for o in offsets]
 
-ITEM_RE = re.compile(
-    r'\{\s*id:"(?P<id>[^"]+)",\s*category:"[^"]*",\s*name:"(?P<name>[^"]*)",'
-    r'\s*pronunciation:"[^"]*",\s*speak:"(?P<speak>[^"]*)"'
-)
+# Any data object with an id and a speak field on its first line: menu items
+# (whatever their field order, incl. wines with a group) and the ingredient
+# glossary (ing-*), which used to be skipped and fell back to robot synthesis.
+ITEM_RE = re.compile(r'\{\s*id:"(?P<id>[^"]+)",[^\n]*?speak:"(?P<speak>[^"]*)"')
 
 def items():
     src = HTML.read_text(encoding="utf-8")
