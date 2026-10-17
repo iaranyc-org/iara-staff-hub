@@ -1130,6 +1130,20 @@
       background:var(--paper-raised); border-top:1px solid var(--line); }
     #fbk-msg{ min-height:96px; }
   }
+  /* Admin: logins + duplicates */
+  .adm-logins summary{ cursor:pointer; white-space:nowrap; min-height:32px; list-style:none; }
+  .adm-logins summary::-webkit-details-marker{ display:none; }
+  .adm-logins summary::after{ content:" \25BE"; color:var(--ink-soft); }
+  .adm-logins ul{ list-style:none; margin:6px 0 0; padding:0; font-size:12.5px; }
+  .adm-logins li{ display:flex; justify-content:space-between; gap:12px; padding:3px 0; border-top:1px solid var(--line); white-space:nowrap; }
+  .adm-login-td{ min-width:210px; }
+  .table-wrap.adm-table{ max-width:100%; overflow-x:auto; position:relative; }
+  .adm-logins li{ font-size:12px; }
+  .adm-pc-wide{ grid-column:1 / -1; }
+  .dup-list{ list-style:none; margin:0; padding:0; }
+  .dup-list li{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; }
+  .dup-list li + li{ border-top:1px solid var(--line); }
+  .dup-who{ flex:1 1 320px; line-height:1.5; }
   /* Cleaning */
   .cl-warn{ margin:12px 0 14px; padding:10px 14px; border-radius:8px; border:1.5px solid var(--sun); color:var(--display); font-weight:700; font-size:15px; }
   .cl-where{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:0 0 18px; }
@@ -2597,14 +2611,36 @@ async function restoreSession(){
   return !!u;
 }
 
+// Login tracking for Admin. A sign-in (the gate) always counts; just opening
+// the app counts as a visit only if the last one was over 30 minutes ago, so
+// refreshes and tab switches don't pad the number. The last 20 are kept on
+// the staff doc (no new collection, so the existing security rules cover it).
+var justSignedIn = false;
+function deviceKind(){
+  var w = Math.min(screen.width || innerWidth, screen.height || innerHeight);
+  return w < 600 ? "Phone" : (matchMedia("(pointer: coarse)").matches ? "Tablet" : "Desktop");
+}
+function visitFields(d, now){
+  var last = d.lastLogin ? new Date(d.lastLogin).getTime() : 0;
+  var kind = justSignedIn ? "Sign-in" : "Visit";
+  justSignedIn = false;
+  if (kind === "Visit" && last && Date.now() - last < 30 * 60000) return {};
+  var log = (Array.isArray(d.loginLog) ? d.loginLog : []).concat([{ at: now, kind: kind, device: deviceKind() }]).slice(-20);
+  var out = { visits: (d.visits || 0) + 1, lastLogin: now, loginLog: log };
+  if (!d.firstLogin) out.firstLogin = now;
+  if (kind === "Sign-in") out.signIns = (d.signIns || 0) + 1;
+  return out;
+}
+
 async function touchStaffDoc(){
   if (!db || !profile) return;
   try {
     var ref = db.doc("staff/" + profile.id);
     var snap = await ref.get();
     var now = new Date().toISOString();
+    var visit = visitFields(snap.exists ? snap.data() : {}, now);
     if (snap.exists) {
-      await ref.update({ name: profile.name, role: profile.role, email: profile.email || null, lastActive: now });
+      await ref.update(Object.assign({ name: profile.name, role: profile.role, email: profile.email || null, lastActive: now }, visit));
       hydrateProgress(snap.data());
       // Resuming on a new device (or after clearing this one): the stable id
       // means this is genuinely the same person's doc, but their checklist
@@ -2620,7 +2656,7 @@ async function touchStaffDoc(){
         if (document.getElementById("checklist-area")) renderChecklist();
       }
     } else {
-      await ref.set({ name: profile.name, role: profile.role, email: profile.email || null, createdAt: now, lastActive: now });
+      await ref.set(Object.assign({ name: profile.name, role: profile.role, email: profile.email || null, createdAt: now, lastActive: now }, visit));
     }
   } catch(e){ /* non-fatal */ }
 }
@@ -2816,6 +2852,7 @@ document.getElementById("gate-form").addEventListener("submit", async function(e
   profile = { id: emailId(email), email: email, name: name, role: role };
   btn.disabled = true; btn.textContent = "Loading your progress\u2026";
   await adoptLegacy(legacy);
+  justSignedIn = true;
   btn.disabled = false; btn.textContent = "Start";
   saveProfile(profile);
   rememberMe(document.getElementById("in-remember").checked ? profile : null);
@@ -9646,7 +9683,7 @@ async function renderProgress(){
       });
       var overallAvg = attempts.length ? Math.round(attempts.reduce(function(sum,a){ return sum + (a.score/a.total)*100; },0)/attempts.length) : null;
       attempts.forEach(function(a){
-        (a.missed || []).forEach(function(q){
+        (a.missed || []).map(currentQuestion).forEach(function(q){
           if (!missTally[q]) missTally[q] = { q: q, n: 0, cat: a.category, who: {} };
           missTally[q].n++;
           missTally[q].who[s.name] = true;
@@ -9654,7 +9691,8 @@ async function renderProgress(){
       });
       rows.push({
         id: d.id, quizIds: qSnap.docs.map(function(qd){ return qd.id; }),
-        name: s.name, role: s.role, email: s.email || "", count: attempts.length, avg: overallAvg, byCat: byCat,
+        name: nameCase(s.name), rawName: s.name, role: s.role, email: s.email || "", count: attempts.length, avg: overallAvg, byCat: byCat,
+        visits: s.visits || 0, signIns: s.signIns || 0, lastLogin: s.lastLogin || null, loginLog: Array.isArray(s.loginLog) ? s.loginLog : [],
         last: s.lastActive, created: s.createdAt,
         // Undefined means this person has not opened First Week since the
         // sync shipped; treat that the same as not-yet-started rather than
@@ -9716,6 +9754,18 @@ async function renderProgress(){
         }).join('') + '</ul></div>';
     }
 
+    // ---- possible duplicates: suggested merges, manager confirms each ----
+    var dups = duplicatePairs(rows);
+    if (dups.length) {
+      html += '<h2 class="admin-h2 k-h-section">Possible Duplicates <span class="adm-count mono">'+dups.length+'</span></h2>' +
+        '<p class="placeholder-note adm-note">Looks like the same person under two records. Merging combines their tests and progress into one; nothing is lost.</p>' +
+        '<div class="card adm-card"><ul class="dup-list">' + dups.map(function(p, i){
+          var who = function(r){ return '<span class="nudge-name">'+esc(r.name)+'</span> <span class="nudge-role">'+esc(r.role||"")+(r.email ? ' · '+esc(r.email) : '')+' · '+r.count+' '+(r.count===1?'test':'tests')+'</span>'; };
+          return '<li><div class="dup-who">'+who(p[0])+'<span class="adm-muted"> and </span>'+who(p[1])+'</div>' +
+            '<button type="button" class="k-btn k-btn-secondary k-btn-sm" data-merge="'+i+'">Merge Into '+esc(p[0].name)+'</button></li>';
+        }).join('') + '</ul></div>';
+    }
+
     // ---- full roster ----
     progressRows = rows;
     progressCats = CATS;
@@ -9743,6 +9793,20 @@ async function renderProgress(){
 
     area.innerHTML = html;
     renderProgressTable();
+    area.querySelectorAll("[data-merge]").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var p = dups[+btn.getAttribute("data-merge")];
+        confirmDialog({
+          title: "Merge " + p[1].name + " Into " + p[0].name + "?",
+          body: "Their tests, First Week progress and logins move to " + p[0].name + "'s record, and " + p[1].name + " disappears from Admin.",
+          confirm: "Merge", cancel: "Cancel"
+        }, async function(){
+          btn.disabled = true; btn.textContent = "Merging\u2026";
+          try { await mergeStaffRows(p[0], p[1]); toast("Merged."); } catch(e){ toast("Couldn't merge. Try again."); }
+          renderProgress();
+        });
+      });
+    });
     var out = document.getElementById("mg-out");
     if (out) out.addEventListener("click", async function(){ await signOutManager(); renderProgress(); });
   } catch(e) {
@@ -9754,6 +9818,109 @@ async function renderProgress(){
   }
 }
 
+// Display names the way people expect them ("nicole kolovadis" -> "Nicole Kolovadis").
+// Only words typed all lowercase are touched, so "McCart" or "iara" stay as typed.
+function nameCase(n){
+  return String(n || "").trim().replace(/\s+/g, " ").split(" ").map(function(w){
+    return w && w === w.toLowerCase() && w.toLowerCase() !== "iara" ? w.charAt(0).toUpperCase() + w.slice(1) : w;
+  }).join(" ");
+}
+// Old attempts saved the question text as it read then. When a question is
+// reworded later (Eli's title changed), match it to today's wording so the
+// Most Missed list doesn't show stale facts or split one question in two.
+var CURRENT_Q = null;
+function currentQuestion(q){
+  if (!CURRENT_Q) {
+    CURRENT_Q = [];
+    try { allQuestionTexts().forEach(function(t){ CURRENT_Q.push(t); }); } catch(e){}
+  }
+  if (CURRENT_Q.indexOf(q) !== -1) return q;
+  var grams = function(t){ t = String(t).toLowerCase().replace(/[^a-z0-9 ]/g, ""); var g = {}; for (var i = 0; i < t.length - 2; i++) g[t.substr(i, 3)] = 1; return g; };
+  var a = grams(q), best = null, bestScore = 0, second = 0;
+  CURRENT_Q.forEach(function(t){
+    var b = grams(t), inter = 0, total = 0;
+    Object.keys(a).forEach(function(k){ total++; if (b[k]) inter++; });
+    Object.keys(b).forEach(function(k){ if (!a[k]) total++; });
+    var sc = total ? inter / total : 0;
+    if (sc > bestScore) { second = bestScore; bestScore = sc; best = t; } else if (sc > second) second = sc;
+  });
+  // A clear winner only: close enough, and well ahead of the next candidate.
+  return bestScore >= 0.5 && bestScore - second >= 0.2 ? best : q;
+}
+
+function allQuestionTexts(){
+  var out = [];
+  [QUIZ_BEVERAGE, QUIZ_BEVERAGE_MORE, QUIZ_BEV_STORY, QUIZ_FOOD_EXTRA, QUIZ_FOOD_STORY, QUIZ_GENERAL,
+   QUIZ_GENERAL_EXTRA, QUIZ_GENERAL_MORE, QUIZ_GLOSSARY, QUIZ_MANUAL, QUIZ_SERVICE_PDR].forEach(function(pool){
+    (pool || []).forEach(function(x){ if (x && x.q) out.push(x.q); });
+  });
+  return out;
+}
+
+// Likely duplicates: the same person under two records (typed differently,
+// or an old name-based record next to their new email record). Suggested,
+// never automatic; a manager confirms each merge.
+function personKey(n){ return String(n || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim(); }
+function likelySame(a, b){
+  var ka = personKey(a.rawName || a.name), kb = personKey(b.rawName || b.name);
+  if (!ka || !kb) return false;
+  if (a.email && b.email && a.email !== b.email) return false;
+  var sameRole = !a.role || !b.role || a.role === b.role;
+  if (ka === kb) return true;
+  var ta = ka.split(" "), tb = kb.split(" ");
+  // "Ronald" and "Ronald Rufino": one is just the other's first name, same role
+  if (sameRole && (ta.length === 1 || tb.length === 1) && ta[0] === tb[0]) return true;
+  return false;
+}
+function keeperOf(a, b){
+  var score = function(r){ return (r.email ? 100 : 0) + (personKey(r.name).split(" ").length > 1 ? 10 : 0) + r.count; };
+  return score(a) >= score(b) ? [a, b] : [b, a];
+}
+function duplicatePairs(rows){
+  var pairs = [];
+  for (var i = 0; i < rows.length; i++) for (var j = i + 1; j < rows.length; j++)
+    if (likelySame(rows[i], rows[j])) pairs.push(keeperOf(rows[i], rows[j]));
+  return pairs;
+}
+async function mergeStaffRows(keep, drop){
+  var D = adminDb || db;
+  var kRef = D.doc("staff/" + keep.id), dRef = D.doc("staff/" + drop.id);
+  var ks = (await kRef.get()).data() || {}, ds = (await dRef.get()).data() || {};
+  var qs = await dRef.collection("quizzes").get();
+  for (var i = 0; i < qs.docs.length; i++) await kRef.collection("quizzes").doc(qs.docs[i].id).set(qs.docs[i].data());
+  var upd = {};
+  var minIso = function(x, y){ return !x ? y : !y ? x : (x < y ? x : y); };
+  var maxIso = function(x, y){ return !x ? y : !y ? x : (x > y ? x : y); };
+  upd.createdAt = minIso(ks.createdAt, ds.createdAt) || null;
+  upd.lastActive = maxIso(ks.lastActive, ds.lastActive) || null;
+  upd.firstLogin = minIso(ks.firstLogin, ds.firstLogin) || null;
+  upd.lastLogin = maxIso(ks.lastLogin, ds.lastLogin) || null;
+  upd.visits = (ks.visits || 0) + (ds.visits || 0);
+  upd.signIns = (ks.signIns || 0) + (ds.signIns || 0);
+  upd.loginLog = (ks.loginLog || []).concat(ds.loginLog || []).sort(function(x, y){ return x.at < y.at ? -1 : 1; }).slice(-20);
+  upd.checklistState = Object.assign({}, ds.checklistState || {}, ks.checklistState || {});
+  ["checklistDone"].forEach(function(k){ upd[k] = Math.max(ks[k] || 0, ds[k] || 0); });
+  if (ks.checklistTotal || ds.checklistTotal) upd.checklistTotal = ks.checklistTotal || ds.checklistTotal;
+  upd.checklistComplete = !!(ks.checklistComplete || ds.checklistComplete);
+  var kr = ks.readIds || [], dr = ds.readIds || [];
+  upd.readIds = kr.concat(dr.filter(function(x){ return kr.indexOf(x) === -1; }));
+  upd.mastery = mergeMastery(ks.mastery || {}, ds.mastery || {});
+  if (ds.firstWeekDismissed) upd.firstWeekDismissed = true;
+  if (!ks.email && ds.email) upd.email = ds.email;
+  await kRef.set(upd, { merge: true });
+  await dRef.set({ mergedInto: keep.id }, { merge: true });
+}
+function loginCell(r){
+  if (!r.visits) return '<span class="adm-muted">None yet</span>';
+  var ago = (function(iso){ var m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+    return m < 60 ? m + "m ago" : m < 1440 ? Math.floor(m / 60) + "h ago" : Math.floor(m / 1440) + "d ago"; })(r.lastLogin);
+  var hist = r.loginLog.slice(-8).reverse().map(function(l){
+    return '<li><span>'+esc(new Date(l.at).toLocaleString(undefined, { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }))+'</span>' +
+      '<span class="adm-muted">'+esc(l.kind)+' · '+esc(l.device || "")+'</span></li>'; }).join('');
+  return '<details class="adm-logins"><summary><span class="mono">'+r.visits+'</span> '+(r.visits === 1 ? 'visit' : 'visits')+' · '+ago+'</summary>' +
+    '<ul>'+hist+'</ul></details>';
+}
+
 // One value per sortable column, null-safe so nobody-started/never-tested
 // rows sort consistently to one end instead of scattering wherever a bare
 // null happens to fall in a string/number comparison.
@@ -9763,6 +9930,7 @@ function progressSortValue(r, key){
   if (key === "onboarding") return r.clTotal === null ? -1 : (r.clComplete ? 999 : r.clDone);
   if (key === "overall") return r.avg === null ? -1 : r.avg;
   if (key === "last") return r.lastDays === null ? Infinity : r.lastDays;
+  if (key === "logins") return r.visits || 0;
   var cell = r.byCat && r.byCat[key];
   return (!cell || cell.avg === null) ? -1 : cell.avg;
 }
@@ -9808,7 +9976,7 @@ function renderProgressTable(){
     var aria = sort.key === key ? (sort.dir === "asc" ? "ascending" : "descending") : "none";
     return '<th class="sortable' + (numeric ? " num" : "") + '" aria-sort="'+aria+'"><button type="button" class="th-btn" data-sort="' + esc(key) + '">' + esc(label) + sortArrow(key) + '</button></th>';
   }
-  var keys = [["name","Name"],["role","Role"],["onboarding","First Week"],["overall","Exam Average"],["last","Last Active"]]
+  var keys = [["name","Name"],["role","Role"],["onboarding","First Week"],["overall","Exam Average"],["logins","Logins"],["last","Last Active"]]
     .concat(progressCats.map(function(c){ return [c.key, c.name]; }));
 
   var html = '<div class="adm-sortbar"><label for="adm-sort">Sort By</label>' +
@@ -9818,7 +9986,7 @@ function renderProgressTable(){
   html += '<div class="table-wrap adm-table"><table class="progress"><thead><tr>' +
     th("name", "Name") + th("role", "Role") + th("onboarding", "First Week") + th("overall", "Exam Avg", true) +
     progressCats.map(function(c){ return th(c.key, c.name, true); }).join("") +
-    th("last", "Last Active", true) + '<th><span class="k-sr-only">Actions</span></th>' +
+    th("logins", "Logins") + th("last", "Last Active", true) + '<th><span class="k-sr-only">Actions</span></th>' +
     '</tr></thead><tbody>';
   rows.forEach(function(r){
     var flag = r.clComplete === false && r.hireDays !== null && r.hireDays >= 7;
@@ -9828,6 +9996,7 @@ function renderProgressTable(){
       '<td>'+fwStatus(r)+'</td>' +
       '<td class="num">'+scoreCell(r.avg, r.count)+'</td>' +
       progressCats.map(function(c){ var cell = r.byCat[c.key]; return '<td class="num">'+scoreCell(cell.avg, cell.count)+'</td>'; }).join("") +
+      '<td class="adm-login-td">'+loginCell(r)+'</td>' +
       '<td class="num adm-last" title="'+esc(r.last ? new Date(r.last).toLocaleString() : "")+'">'+relDays(r)+'</td>' +
       '<td class="num"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete<span class="k-sr-only"> '+esc(r.name)+'</span></button></td></tr>';
   });
@@ -9842,6 +10011,7 @@ function renderProgressTable(){
       '<dl class="adm-pc-grid">' +
         '<div><dt>First Week</dt><dd>'+fwStatus(r)+'</dd></div>' +
         '<div><dt>Exam Average</dt><dd>'+scoreCell(r.avg, r.count)+'</dd></div>' +
+        '<div class="adm-pc-wide"><dt>Logins</dt><dd>'+loginCell(r)+'</dd></div>' +
         progressCats.map(function(c){ var cell = r.byCat[c.key]; return '<div><dt>'+esc(c.name)+'</dt><dd>'+scoreCell(cell.avg, cell.count)+'</dd></div>'; }).join("") +
       '</dl>' +
       '<div class="adm-pc-foot"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete Record<span class="k-sr-only"> for '+esc(r.name)+'</span></button></div>' +
