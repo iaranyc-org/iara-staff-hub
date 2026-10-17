@@ -9,6 +9,12 @@
    Trigger markup:    window.iaraPalette.trigger() returns a ready button,
                       or write <button class="k-palette-trigger" data-k-palette>.
 
+   People search (2+ characters): Guests (/inbox/api/people) and Private Dining
+   Parties (/private-dining/api/parties/search). GET, same-origin behind the hub
+   (staff session cookie, @iara.nyc only), fetched once per open, filtered here.
+   A failed source shows one note and never blocks app results; 403 hides Parties.
+   Matching rules are identical to next/command-palette.tsx.
+
    Gates: the palette refuses to open while a sign-in gate is on screen
    (#gate, #authGate, .k-gate or [data-k-gate] that is not hidden), so apps
    need no wiring for it.
@@ -53,13 +59,59 @@
     return best;
   }
   function here(href) { return href === currentHref(); }
-  // Fuzzy-ish: every query word must appear in label+keywords; label-prefix hits rank first.
+  // Apps: substring of label/keywords or the label's initials ("is" = Inbox Settings). No fuzzy: "Susan" must not find Phone.
   function score(label, kw, q) {
     if (!q) return 1;
-    var hay = norm(label + " " + kw), L = norm(label), words = q.split(/\s+/).filter(Boolean);
-    for (var i = 0; i < words.length; i++) if (hay.indexOf(words[i]) < 0) return 0;
-    return L.indexOf(q) === 0 ? 3 : L.indexOf(q) > -1 ? 2 : 1;
+    var L = norm(label), hay = norm(label + " " + kw), ini = L.split(/\s+/).map(function (w) { return w[0]; }).join("");
+    if (L.indexOf(q) === 0) return 4;
+    if (L.indexOf(q) > -1) return 3;
+    if (q.length >= 2 && ini.indexOf(q.replace(/\s+/g, "")) === 0) return 2;
+    return q.split(/\s+/).filter(Boolean).every(function (w) { return hay.indexOf(w) > -1; }) ? 1 : 0;
   }
+  // People: whole-name prefix 4, word prefix 3, substring 2; phone digits (3+) or handle/email 1.
+  function personScore(p, q) {
+    var n = norm(p.name), words = q.split(/\s+/).filter(Boolean), parts = n.split(/[\s.'-]+/);
+    if (n.indexOf(q) === 0) return 4;
+    if (words.every(function (w) { return parts.some(function (x) { return x.indexOf(w) === 0; }); })) return 3;
+    if (n.indexOf(q) > -1) return 2;
+    var d = q.replace(/\D/g, "");
+    if (d.length >= 3 && d.length === q.replace(/[\s()+.-]/g, "").length && String(p.phone || "").replace(/\D/g, "").indexOf(d) > -1) return 1;
+    var h = q.replace(/^@/, "");
+    if (h.length >= 3 && (norm(p.ig).replace(/^@/, "").indexOf(h) > -1 || norm(p.email).split("@")[0].indexOf(h) > -1)) return 1;
+    return 0;
+  }
+  function todayNY() { return new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" }); }
+  function dayLabel(iso, long) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(iso || "")) return iso || "";
+    var o = { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" }; if (long) o.year = "numeric";
+    return new Date(iso + "T12:00:00Z").toLocaleDateString("en-US", o);
+  }
+  function timeLabel(t) { var m = /^(\d{1,2}):(\d{2})/.exec(t || ""); if (!m) return ""; var h = +m[1]; return (h % 12 || 12) + ":" + m[2] + (h < 12 ? " AM" : " PM"); }
+  function ago(iso) { var d = (Date.now() - Date.parse(iso)) / 864e5; return !iso || isNaN(d) ? "" : d < 1 ? "Today" : d < 2 ? "Yesterday" : d < 60 ? Math.round(d) + "d ago" : dayLabel(iso.slice(0, 10)); }
+  function nice(n) { return n && n === n.toLowerCase() && n.indexOf("@") < 0 ? n.replace(/(^|[\s'-])(\p{L})/gu, function (_, a, b) { return a + b.toUpperCase(); }) : n; }
+  var CHANNEL = { quo: "Text", gmail: "Email", instagram: "Instagram" };
+  function personLine(p) {
+    if (p.next) return "Next: " + dayLabel(p.next.day) + ", " + timeLabel(p.next.time) + " · Party of " + p.next.party;
+    return [CHANNEL[p.channel] || "", ago(p.last) ? "Last Message " + ago(p.last) : ""].filter(Boolean).join(" · ");
+  }
+  function partyLine(p) { return [dayLabel(p.date, String(p.date).slice(0, 4) !== todayNY().slice(0, 4)), p.size ? "Party of " + p.size : "", p.status].filter(Boolean).join(" · "); }
+  function partyOrder(a, b) { var t = todayNY(), A = a.date >= t, B = b.date >= t; return A !== B ? (A ? -1 : 1) : A ? a.date.localeCompare(b.date) : b.date.localeCompare(a.date); }
+
+  var SRC = { people: { url: "/inbox/api/people", key: "people", state: "idle", rows: [], at: 0 },
+              parties: { url: "/private-dining/api/parties/search", key: "parties", state: "idle", rows: [], at: 0 } };
+  function fetchSrc(src) {
+    if (src.state === "ok" && Date.now() - src.at < 120000) return;
+    if (src.state === "loading") return;
+    // "signin" falls through: re-fetch each open so the row goes away once they sign in.
+    src.state = "loading";
+    fetch(src.url, { cache: "no-store", credentials: "same-origin", headers: { accept: "application/json" } }).then(function (r) {
+      if (r.status === 403) { src.state = "hidden"; src.rows = []; return; }
+      if (r.status === 401) { src.state = "signin"; src.rows = []; return; } // signed out of that app: offer its sign-in, retry next open
+      if (!r.ok || (r.headers.get("content-type") || "").indexOf("json") < 0) throw new Error(r.status);
+      return r.json().then(function (j) { src.rows = j[src.key] || []; src.state = "ok"; src.at = Date.now(); });
+    }).catch(function () { src.state = "error"; src.rows = []; }).then(function () { if (root && !root.hidden) paint(); });
+  }
+
   function gated() {
     var g = document.querySelectorAll("#gate, #authGate, .k-gate, [data-k-gate]");
     for (var i = 0; i < g.length; i++) if (!g[i].hidden && g[i].getClientRects().length) return true;
@@ -74,7 +126,7 @@
       '<div class="k-palette-scrim" data-close></div>' +
       '<div class="k-palette-dialog" role="dialog" aria-modal="true" aria-label="Search Staff Apps">' +
       '<div class="k-palette-head">' +
-      '<input class="k-palette-input" type="text" role="combobox" aria-expanded="true" aria-controls="k-palette-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Search apps and actions" aria-label="Search apps and actions">' +
+      '<input class="k-palette-input" type="text" role="combobox" aria-expanded="true" aria-controls="k-palette-list" aria-autocomplete="list" autocomplete="off" spellcheck="false" placeholder="Search apps, guests and parties" aria-label="Search apps, guests and parties">' +
       '<button type="button" class="k-palette-esc" data-close aria-label="Close">Esc</button></div>' +
       '<ul class="k-palette-list" id="k-palette-list" role="listbox" aria-label="Results"></ul></div>';
     document.body.appendChild(root);
@@ -102,6 +154,18 @@
     var g1 = rank(acts), g2 = rank(go);
     var groups = [["Actions", g1], ["Go To", g2]];
     if (q && g2.length && (!g1.length || g2[0].s > g1[0].s)) groups.reverse();
+    var searching = q.length >= 2;
+    if (searching) {
+      var ppl = SRC.people.rows.map(function (p) { return { p: p, s: personScore(p, q) }; }).filter(function (x) { return x.s; })
+        .sort(function (a, b) { return b.s - a.s || (+!!b.p.next) - (+!!a.p.next) || (+!!b.p.vip) - (+!!a.p.vip) || String(b.p.last || "").localeCompare(String(a.p.last || "")); })
+        .slice(0, 5).map(function (x) { var p = x.p; return { label: nice(p.name) || p.email || p.phone || p.ig, sub: personLine(p), vip: p.vip, s: x.s, href: "/inbox/contacts?c=" + encodeURIComponent(p.id), hard: true }; });
+      var pts = SRC.parties.rows.map(function (p) { return { p: p, s: personScore(p, q) || (norm(partyLine(p)).indexOf(q) > -1 || String(p.date).indexOf(q) > -1 ? 1 : 0) }; }).filter(function (x) { return x.s; })
+        .sort(function (a, b) { return b.s - a.s || partyOrder(a.p, b.p); })
+        .slice(0, 5).map(function (x) { var p = x.p; return { label: nice(p.name) || p.email || "Unnamed Party", sub: partyLine(p), s: x.s, href: "/private-dining?party=" + encodeURIComponent(p.id), hard: true }; });
+      if (SRC.people.state === "signin") ppl = [{ label: "Sign In to Search Guests", hint: "Inbox", s: 1, href: "/inbox", hard: true }];
+      if (SRC.parties.state === "signin") pts = [{ label: "Sign In to Search Parties", hint: "Private Dining", s: 1, href: "/private-dining", hard: true }];
+      groups.push(["Guests", ppl], ["Private Dining Parties", pts]);
+    }
     items = [];
     var html = "";
     groups.forEach(function (g) {
@@ -109,11 +173,17 @@
       html += '<li role="presentation" class="k-palette-group">' + g[0] + "</li>";
       g[1].forEach(function (x) {
         var i = items.push(x) - 1;
-        html += '<li role="option" id="k-pal-' + uid + "-" + i + '" data-i="' + i + '" aria-selected="false"' + (x.cur ? ' aria-current="page"' : "") + '>' +
-          '<span class="k-palette-label">' + esc(x.label) + "</span>" + (x.hint ? '<span class="k-palette-hint">' + x.hint + "</span>" : "") + "</li>";
+        html += '<li role="option" id="k-pal-' + uid + "-" + i + '" data-i="' + i + '" aria-selected="false"' + (x.cur ? ' aria-current="page"' : "") + (x.sub !== undefined ? ' class="k-palette-person"' : "") + '>' +
+          (x.sub !== undefined
+            ? '<span class="k-palette-label">' + (x.vip ? '<span class="k-palette-vip" aria-label="VIP">★</span> ' : "") + esc(x.label) + '<span class="k-palette-sub">' + esc(x.sub) + "</span></span>"
+            : '<span class="k-palette-label">' + esc(x.label) + "</span>" + (x.hint ? '<span class="k-palette-hint">' + x.hint + "</span>" : "")) + "</li>";
       });
     });
-    if (!items.length) html = '<li role="presentation" class="k-palette-empty">No Matches</li>';
+    var busy = searching && (SRC.people.state === "loading" || SRC.parties.state === "loading");
+    var failed = searching ? [SRC.people.state === "error" && "guests", SRC.parties.state === "error" && "parties"].filter(Boolean) : [];
+    if (!items.length && !busy) html = '<li role="presentation" class="k-palette-empty">' + (searching ? "No apps, guests or parties match" : "No Matches") + "</li>";
+    if (busy) html += '<li role="presentation" class="k-palette-note" aria-live="polite">Searching Guests and Parties…</li>';
+    if (failed.length) html += '<li role="presentation" class="k-palette-note">Couldn\u2019t search ' + failed.join(" or ") + ". App results still work.</li>";
     list.innerHTML = html;
     if (active >= items.length) active = 0;
     mark();
@@ -154,7 +224,7 @@
     if (!root) build();
     if (!root.hidden) { input.focus(); return true; }
     lastFocus = document.activeElement;
-    uid++; input.value = ""; active = 0; paint();
+    uid++; input.value = ""; active = 0; fetchSrc(SRC.people); fetchSrc(SRC.parties); paint();
     root.hidden = false;
     document.documentElement.classList.add("k-palette-open");
     input.focus();
