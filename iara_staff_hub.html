@@ -166,7 +166,7 @@
   .remember-row{ display:flex; align-items:center; gap:10px; min-height:44px; margin:2px 0 4px; font-size:14px; color:var(--ink-mid); cursor:pointer; }
   .remember-row input{ width:20px; height:20px; accent-color:var(--sun); margin:0; }
   .remember-who{ margin:0 0 8px; font-size:13px; color:var(--ink-soft); }
-  .remember-who .linkish{ display:inline; margin:0; padding:0; font-size:13px; min-height:0; }
+  .remember-who .linkish{ display:inline-flex; align-items:center; margin:0; padding:0; font-size:13px; min-height:var(--k-tap); vertical-align:middle; }
   .gate-note{ margin-top:18px; font-size:13px; color:var(--ink-soft); line-height:1.5; }
 
   /* ===================== Shell ===================== */
@@ -206,11 +206,14 @@
   .nav-btn:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   .nav-btn .ico{ width:18px; text-align:center; flex:none; }
   .sb-spacer{ flex:1; }
-  .sb-user{ padding:12px 12px; border-top:1px solid rgba(255,255,255,.15); margin-top:8px; }
-  .sb-user .name{ font-weight:700; font-size:14px; }
-  .sb-user .role{ font-size:12px; color:var(--sidebar-muted);  letter-spacing:.01em; }
-  .sb-user #sb-switch{ margin:8px 0 0 -12px; color:var(--sidebar-muted); }
-  .sb-user #sb-switch:hover{ color:var(--sidebar-ink); }
+  /* Who is signed in: a quiet card on the same 16px edge as Good Vibes. */
+  .sb-user{ display:flex; align-items:center; gap:10px; margin-top:8px; padding:10px 12px; border-radius:10px;
+    background:rgba(255,255,255,.05); border:1px solid rgba(255,255,255,.09); }
+  .sb-avatar{ flex:none; width:36px; height:36px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.12); color:var(--sidebar-ink); font-size:13px; font-weight:700; letter-spacing:.02em; }
+  .sb-id{ min-width:0; }
+  .sb-user .name{ font-weight:700; font-size:14px; line-height:1.3; color:var(--sidebar-ink); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .sb-user .role{ font-size:12px; line-height:1.35; color:var(--sidebar-muted); letter-spacing:.01em; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
   .content{ flex:1; min-width:0; display:flex; flex-direction:column; align-items:flex-start; }
 
@@ -476,7 +479,7 @@
   /* The home screen is the docket you are handed at the start of a shift. */
   /* Nav: set as a running order, not an icon list. The active item is marked
      with a rule in the margin the way a printed contents page marks a section. */
-  .nav-rule{ height:1px; background:var(--rule); margin:10px 12px; }
+  .nav-rule{ height:1px; background:var(--rule); margin:10px 0; }
   .sidebar .nav-btn{ position:relative; padding:10px 12px; font-size:14px; font-weight:500;
     letter-spacing:.01em; border-radius:0; }
   .sidebar .nav-btn::before{ content:""; position:absolute; left:-10px; top:50%; transform:translateY(-50%);
@@ -484,9 +487,8 @@
   .sidebar .nav-btn.active{ background:none; color:var(--sidebar-ink); font-weight:700; }
   .sidebar .nav-btn.active::before{ height:16px; }
   .sidebar .nav-btn:hover{ background:none; color:var(--sidebar-ink); }
-  .sb-admin{ margin-top:10px; font-size:12px !important; 
-    letter-spacing:.01em; color:var(--sidebar-muted) !important; padding-left:0 !important; margin-left:0; }
-  .sb-admin::before{ display:none; }
+  .sb-admin{ font-size:13px !important; letter-spacing:.01em; color:var(--sidebar-muted) !important; }
+  .sidebar .sb-admin.active{ color:var(--sidebar-ink) !important; }
 
   .fb-tab{ min-height:36px; padding:0 14px; border:0; border-radius:var(--k-radius); background:none;
     color:var(--k-muted); font-family:var(--k-font-sans); font-size:14px; font-weight:600; line-height:1;
@@ -524,12 +526,12 @@
   .deck-pct{ grid-column:2; grid-row:1; font-size:12px; color:var(--display);
     font-variant-numeric:tabular-nums; }
   .deck-bar{ grid-column:1 / -1; margin-top:7px; }
-  /* Deck picker as a tile grid (2026-10-16): left-aligned, 2-up on wide screens. */
-  #study-area .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; max-width:var(--measure); border-top:none; }
-  #study-area .deck{ text-align:left; border:1px solid var(--k-border); border-radius:12px; background:var(--k-surface); padding:14px 16px 12px; min-height:44px; cursor:pointer; color:var(--k-ink); }
-  #study-area .deck:hover{ padding-left:16px; border-color:var(--sun); }
-  #study-area .deck:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
-  #study-area .deck-meta{ color:var(--k-muted); line-height:1.4; }
+  /* Deck picker as a tile grid (2026-10-16): left-aligned, 2-up on wide screens. Shared by Study and the Watch List drill. */
+  #study-area .deck-grid, #watch-area .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; max-width:var(--measure); border-top:none; }
+  #study-area .deck, #watch-area .deck{ text-align:left; border:1px solid var(--k-border); border-radius:12px; background:var(--k-surface); padding:14px 16px 12px; min-height:44px; cursor:pointer; color:var(--k-ink); }
+  #study-area .deck:hover, #watch-area .deck:hover{ padding-left:16px; border-color:var(--sun); }
+  #study-area .deck:focus-visible, #watch-area .deck:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
+  #study-area .deck-meta, #watch-area .deck-meta{ color:var(--k-muted); line-height:1.4; }
   .study-price{ font-size:13px; color:var(--k-muted); white-space:nowrap; }
   .study-story{ margin-top:12px; border-top:1px solid var(--rule); padding-top:10px; }
   .study-story summary{ cursor:pointer; font-size:14px; font-weight:600; color:var(--sun); min-height:32px; display:flex; align-items:center; }
@@ -651,7 +653,13 @@
   .miss-rank .miss-q{ margin:0; font-size:15px; line-height:1.5; }
   .miss-rank .miss-meta{ margin:4px 0 0; font-size:13px; color:var(--ink-soft); }
   .fw-card{ padding:22px 24px; margin:0 0 30px; max-width:var(--measure); }
+  .fw-card{ position:relative; }
+  .fw-top{ padding-right:96px; }
   .fw-head{ font-family:var(--font-display); font-size:20px; color:var(--display); margin-bottom:4px; }
+  .fw-dismiss{ position:absolute; top:14px; right:12px; color:var(--ink-soft); }
+  @media (max-width:1023px){ .fw-dismiss{ top:8px; right:8px; } }
+  .fw-dismiss:hover{ color:var(--ink); }
+  .home-fw-restore{ margin:22px 0 0; font-size:14px; }
   .fw-lede{ margin:0 0 14px; font-size:14px; color:var(--ink-soft); line-height:1.5; }
   .fw-count{ font-size:15px; font-weight:700; margin-bottom:10px; }
   .fw-count .mono{ font-family:'IBM Plex Mono',monospace; color:var(--sun); font-size:18px; }
@@ -691,7 +699,7 @@
   dialog.lu-form{ display:none; } dialog.lu-form[open]{ display:grid; gap:16px; }
   dialog.lu-form .k-dialog-title, dialog.lu-form .k-dialog-actions{ margin:0; }
   /* Phones: kit toasts sit above the bottom nav. */
-  @media (max-width:860px){ .k-toaster{ bottom:calc(env(safe-area-inset-bottom, 0px) + 84px); } .field.two{ grid-template-columns:1fr; } }
+  @media (max-width:860px){ .k-toaster{ bottom:calc(env(safe-area-inset-bottom, 0px) + 128px); } .field.two{ grid-template-columns:1fr; } }
   /* Touch sizing. This is used on a phone, one-handed, mid-service, sometimes
      with wet hands. 44px is the size a thumb actually hits; the desktop sizes
      were 30 to 41 and fine for a mouse but not for that. */
@@ -971,6 +979,8 @@
     html .k-btn, html .k-chip{ min-height:44px; }
     .bio-more, .jump-link, .cl-help a, .wl-fine a, .wl-reviews a{ display:inline-flex; align-items:center; min-height:44px; }
     .view .say-btn, .view .dish-story-btn{ min-height:44px; }
+    .cl-item input{ width:22px; height:22px; }
+    .cl-item label{ padding:2px 0; min-height:44px; align-items:center; }
   }
   .cl-help a{ min-width:44px; }
   /* Mobile QA pass: 16px inputs stop iOS zoom-on-focus; 44px thumb targets. */
@@ -1073,24 +1083,25 @@
   .vb-shout .vb-txt{ color:#eafff6; font-size:16px; } .vb-shout .vb-badge, .vb-shout .vb-who{ color:#a9d8c6; }
   @media (max-width:860px){ .vb-wall{ columns:1; } .vb-hero{ padding:20px 18px 34px; } }
   @media (prefers-reduced-motion:reduce){ .vb-dot{ animation:none; } .vb-polaroid, .vb-polaroid:nth-child(even){ transform:none; } }
-  /* Feedback */
-  /* Desktop: pinned to the window's bottom edge inside the sidebar column
-     (which reserves the room), so it can never cover the content column. */
-  .fbk-fab{ position:fixed; z-index:30; width:198px; left:max(16px, calc((100vw - 1560px) / 2 + 16px));
-    bottom:calc(16px + env(safe-area-inset-bottom, 0px)); }
-  .sidebar{ padding-bottom:calc(76px + env(safe-area-inset-bottom, 0px)); }
-  /* Short windows: let the sidebar scroll so its last items clear the fixed Feedback button. */
+  /* Feedback: one floating bubble, bottom-right, on every page and size
+     (Jay, 2026-10-17). Desktop: the window's bottom-right corner, or the
+     shell's right edge on very wide screens. Phones: above the tab bar and
+     the home indicator. Views carry enough bottom padding that the last
+     line of any page scrolls clear of it. */
+  :root{ --fbk-gap:16px; --tabbar-h:0px; }
+  .fbk-fab{ position:fixed; z-index:30; right:max(var(--fbk-gap), calc((100vw - 1560px) / 2 + var(--fbk-gap)));
+    bottom:calc(var(--tabbar-h) + var(--fbk-gap) + env(safe-area-inset-bottom, 0px));
+    min-height:var(--k-tap); padding:0 18px 0 16px; gap:8px; border-radius:var(--k-radius-pill);
+    box-shadow:0 6px 20px rgba(0,0,0,.35), 0 1px 3px rgba(0,0,0,.3); }
   .sidebar{ overflow-y:auto; overscroll-behavior:contain; scrollbar-width:thin; }
   .sidebar > *{ flex-shrink:0; }
   .fbk-fab svg{ width:18px; height:18px; flex:none; }
   .fbk-fab:focus-visible{ outline:2px solid var(--k-ring); outline-offset:3px; }
-  /* Phones: in the flow after the view, left-aligned to the 16px gutter; the
-     content area pads for the tab bar instead of each view. */
   @media (max-width:860px){
-    .fbk-fab{ position:static; width:auto; align-self:flex-start; margin:0 16px; }
-    .content{ padding-bottom:calc(56px + 32px + env(safe-area-inset-bottom, 0px)); }
-    .view{ padding-bottom:32px !important; }
+    :root{ --tabbar-h:57px; --fbk-gap:12px; }
   }
+  /* Out of the way while a dialog, sheet or Watch List profile is open. */
+  html.fbk-open .fbk-fab, html.wl-locked .fbk-fab, html.wl-open .fbk-fab, html:has(dialog[open]) .fbk-fab{ visibility:hidden; }
   @media print{ .fbk-fab{ display:none; } }
   /* Feedback = kit .k-dialog (dialog.js); on phones it becomes a bottom sheet that rides the keyboard. */
   #fbk-dialog{ padding:0; }
@@ -1109,9 +1120,6 @@
   .fbk-hp{ position:absolute; left:-9999px; width:1px; height:1px; }
   .fbk-status{ min-height:20px; margin:8px 0 0; font-size:14px; color:var(--sun); }
   .fbk-actions{ display:flex; justify-content:flex-end; gap:10px; margin-top:8px; }
-  html.fbk-open .fbk-fab{ visibility:hidden; }
-  /* Home already has its own "Something broken…? Send Feedback" line: no second button there. */
-  html.on-home .fbk-fab{ display:none; }
   /* Phones: a bottom sheet that sits on top of the keyboard (visualViewport
      sets --fbk-kb and --fbk-vh), scrolls inside, and keeps Send pinned. */
   @media (max-width:860px){
@@ -1122,10 +1130,6 @@
       background:var(--paper-raised); border-top:1px solid var(--line); }
     #fbk-msg{ min-height:96px; }
   }
-  .home-feedback{ display:block; width:100%; text-align:left; margin:18px 0 0; padding:14px 16px; min-height:48px; border-radius:10px;
-    border:1.5px dashed var(--line); background:none; color:var(--ink-soft); font:inherit; font-size:15px; cursor:pointer; }
-  .home-feedback b{ color:var(--display); }
-  .home-feedback:hover{ border-color:var(--display); }
   /* Cleaning */
   .cl-warn{ margin:12px 0 14px; padding:10px 14px; border-radius:8px; border:1.5px solid var(--sun); color:var(--display); font-weight:700; font-size:15px; }
   .cl-where{ display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin:0 0 18px; }
@@ -1161,6 +1165,71 @@
   .sc-blank{ margin:0; font-size:14px; color:var(--ink-soft); }
   .sc-stats{ display:flex; gap:34px; flex-wrap:wrap; }
   .admin-stats{ margin:22px 0 34px; }
+  /* Admin: wider than the reading column, since the roster is a table. */
+  #view-progress{ max-width:1180px; }
+  .adm-stats{ display:grid; grid-template-columns:repeat(4, minmax(0,1fr)); gap:12px; margin:18px 0 8px; }
+  .adm-stat{ display:flex; flex-direction:column; gap:4px; padding:16px 18px; border-radius:var(--k-radius-lg); background:var(--paper-raised); border:1px solid var(--line); }
+  .adm-stat .num{ font-size:28px; line-height:1.1; color:var(--display); }
+  .adm-of{ font-size:16px; color:var(--ink-soft); }
+  .adm-stat .lbl{ font-size:13px; font-weight:600; color:var(--ink-mid); }
+  .adm-stat-sub{ font-size:12px; color:var(--ink-soft); }
+  .adm-count{ font-size:14px; color:var(--ink-soft); margin-left:6px; }
+  .adm-note{ margin:0 0 12px; }
+  .adm-card{ padding:4px 18px; }
+  .adm-empty{ padding:22px 24px; max-width:var(--measure); }
+  .adm-empty-h{ margin:0 0 8px; font-size:20px; }
+  .adm-muted{ color:var(--ink-soft); }
+  .adm-att{ font-size:12px; color:var(--ink-soft); }
+  .adm-score.is-good{ color:var(--sun); }
+  .adm-pill{ display:inline-flex; align-items:center; padding:2px 8px; border-radius:6px; font-size:12px; font-weight:600;
+    border:1px solid var(--line); color:var(--ink-mid); white-space:nowrap; }
+  .adm-pill.is-done{ border-color:var(--sun); color:var(--sun); }
+  .adm-person{ display:block; font-weight:700; color:var(--ink); font-size:15px; }
+  .adm-email{ display:block; font-size:12px; color:var(--ink-soft); overflow-wrap:anywhere; }
+  .adm-last{ white-space:nowrap; color:var(--ink-mid); font-size:14px; }
+  .adm-table{ max-width:none; border:1px solid var(--line); border-radius:var(--k-radius-lg); background:var(--paper-raised); }
+  .adm-table table.progress{ max-width:none; }
+  .adm-table table.progress th, .adm-table table.progress td{ padding:12px 14px; vertical-align:middle; }
+  .adm-table table.progress th{ padding:0 4px; white-space:nowrap; }
+  .adm-table table.progress td:first-child{ font-family:inherit; font-size:15px; color:inherit; }
+  .adm-role{ color:var(--ink-mid); font-size:14px; }
+  .adm-table td.num, .adm-table td:nth-child(3){ white-space:nowrap; }
+  .adm-table td.adm-name{ min-width:200px; max-width:260px; }
+  .th-btn{ min-height:44px; padding:0 10px; background:none; border:0; font:inherit; color:inherit; cursor:pointer; white-space:nowrap; border-radius:6px; }
+  .th-btn:hover{ color:var(--ink); }
+  .th-btn:focus-visible{ outline:2px solid var(--k-ring); outline-offset:-2px; }
+  .adm-sortbar{ display:none; align-items:center; gap:10px; margin:0 0 12px; flex-wrap:wrap; }
+  .adm-sortbar label{ font-size:13px; font-weight:600; color:var(--ink-soft); }
+  .adm-sortbar select{ min-height:var(--k-tap); padding:0 10px; border-radius:var(--k-radius); border:1px solid var(--k-border-input);
+    background:var(--k-surface); color:var(--k-ink); font:inherit; font-size:16px; }
+  .adm-cards{ display:none; list-style:none; margin:0; padding:0; }
+  .adm-pcard{ padding:16px 18px; margin:0 0 12px; }
+  .adm-pcard.row-flag{ box-shadow:inset 3px 0 var(--sun); }
+  .adm-pc-head{ display:flex; justify-content:space-between; align-items:flex-start; gap:12px; }
+  .adm-pc-id{ min-width:0; }
+  .adm-pc-sub{ display:block; font-size:13px; color:var(--ink-mid); }
+  .adm-pc-grid{ display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:10px 16px; margin:14px 0 0; }
+  .adm-pc-grid dt{ font-size:12px; color:var(--ink-soft); margin:0 0 2px; }
+  .adm-pc-grid dd{ margin:0; font-size:15px; }
+  .adm-pc-foot{ margin-top:10px; text-align:right; }
+  .miss-rank.adm-card{ list-style:none; padding:4px 18px; max-width:none; }
+  .miss-rank.adm-card li{ display:flex; gap:14px; align-items:flex-start; }
+  .miss-n{ flex:none; width:24px; height:24px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center;
+    font-size:12px; background:var(--k-raised, rgba(255,255,255,.08)); color:var(--ink-mid); margin-top:2px; }
+  .miss-body{ min-width:0; }
+  .miss-rank .miss-meta{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .nudge-who{ display:flex; flex-direction:column; }
+  @media (max-width:1199px){
+    .adm-table{ display:none; }
+    .adm-cards{ display:block; }
+    .adm-sortbar{ display:flex; }
+  }
+  @media (max-width:640px){
+    .adm-stats{ grid-template-columns:repeat(2, minmax(0,1fr)); }
+    .adm-stat{ padding:12px 14px; }
+    .adm-stat .num{ font-size:24px; }
+    .nudge-why{ margin-left:0; flex-basis:100%; }
+  }
   .admin-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .admin-h2{ font-size:20px; margin:38px 0 12px; }
   .row-flag td:first-child{ box-shadow:inset 3px 0 var(--sun); padding-left:11px; }
@@ -1359,11 +1428,13 @@
     <button class="nav-btn" data-view="study">Study</button>
     <button class="nav-btn" data-view="quiz">Final Exam</button>
     <div class="sb-spacer"></div>
-    <div class="sb-user">
-      <div class="name" id="sb-name"></div>
-      <div class="role" id="sb-role"></div>
-      <button id="sb-switch" type="button" class="k-btn k-btn-ghost k-btn-sm">Switch User</button>
-      <button class="nav-btn sb-admin" data-view="progress">Admin</button>
+    <button class="nav-btn sb-admin" data-view="progress">Admin</button>
+    <div class="sb-user" aria-label="Signed in">
+      <span class="sb-avatar" id="sb-avatar" aria-hidden="true"></span>
+      <div class="sb-id">
+        <div class="name" id="sb-name"></div>
+        <div class="role" id="sb-role"></div>
+      </div>
     </div>
   </aside>
 
@@ -1444,7 +1515,6 @@
           </nav>
         </div>
       </section>
-      <button class="home-feedback" data-feedback>Something broken, confusing, or missing? <b>Send Feedback</b></button>
 
 
       <ol class="startlist">
@@ -1461,6 +1531,7 @@
           <span class="sl-t">Take the Final Exam</span>
           <span class="sl-d">Find out what you actually know.</span></button></li>
       </ol>
+      <p class="home-fw-restore" id="home-fw-restore" hidden><button type="button" class="jump-link" id="home-fw-show">Show First Week</button></p>
     </section>
 
     <section class="view" id="view-manual">
@@ -1583,10 +1654,8 @@
       <p class="view-intro">Who is ready, and who needs another test.</p>
       <div id="progress-area"></div>
     </section>
-  <!-- The one Send Feedback control: desktop: fixed to the bottom of the window
-       in the sidebar column, so it never sits over content. Phones: the last
-       thing in the page, above the tab bar. -->
-  <button type="button" class="k-btn k-btn-primary fbk-fab" data-feedback><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Send Feedback</span></button>
+  <!-- The one Feedback entry point: a floating bubble, bottom-right, on every page. -->
+  <button type="button" class="k-btn k-btn-primary fbk-fab" data-feedback aria-label="Send Feedback"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Feedback</span></button>
   </main>
 
   <nav class="bottom-nav" aria-label="Lineup">
@@ -2590,6 +2659,9 @@ function hydrateProgress(d){
     Object.keys(d.checklistState).forEach(function(k){ if (d.checklistState[k]) c[k] = d.checklistState[k]; });
     if (JSON.stringify(c) !== cb) { saveChecklist(c); changed = true; }
   }
+  if (typeof d.firstWeekDismissed === "boolean" && d.firstWeekDismissed !== fwDismissed()) {
+    setFwDismissed(d.firstWeekDismissed, true);
+  }
   if (changed) {
     try { updateReadCount(); } catch(e){}
     try { renderHomeFirstWeek(); } catch(e){}
@@ -2758,6 +2830,9 @@ function enterShell(){
   syncNavAccount();
   document.getElementById("sb-name").textContent = profile.name;
   document.getElementById("sb-role").textContent = profile.role;
+  var sbAv = document.getElementById("sb-avatar");
+  if (sbAv) sbAv.textContent = (profile.name || "").trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w.charAt(0).toUpperCase(); }).join("") || "?";
+  document.querySelector(".sb-user").title = profile.name + (profile.role ? ", " + profile.role : "");
   var hFirst = (profile.name || "").trim().split(" ")[0];
   document.getElementById("home-greet").textContent = hFirst ? "Evening, " + hFirst + "." : "Good evening.";
   var dEl = document.getElementById("home-date");
@@ -2771,16 +2846,18 @@ function enterShell(){
   routeFromHash();
 }
 
-// Account menu in the kit app bar: shows the signed-in Firebase account and
-// reuses Switch User as its Sign Out (forget this device's profile, reload).
+// Account menu in the kit app bar: the one Sign Out (forget this device's
+// profile, reload). Shows the person's own email, since that is what their
+// progress is saved to; falls back to the Firebase account.
 function syncNavAccount(){
   var u = (window.firebase && firebase.auth && firebase.apps.length) ? firebase.auth().currentUser : null;
-  var acct = u ? { email: u.email, signOut: switchUser } : null;
+  var who = profile && profile.email ? (profile.name ? profile.name + " \u00b7 " : "") + profile.email : (u ? u.email : null);
+  var acct = (profile || u) ? { email: who, signOut: switchUser } : null;
   if (window.iaraNav) iaraNav.setAccount(acct);
   else document.addEventListener("DOMContentLoaded", function(){ if (window.iaraNav) iaraNav.setAccount(acct); });
 }
 // Remember Me: who last signed in here, kept separately from the live
-// session so signing out (Switch User) or an expired session still opens
+// session so signing out or an expired session still opens
 // the gate with email, name and role filled in. Unticking forgets them.
 var LS_REMEMBER = "iara_remember_v1";
 function rememberMe(p){
@@ -2795,15 +2872,22 @@ function remembered(){
 
 function switchUser(){
   confirmDialog({
-    title: "Switch User?",
-    body: "This device will sign you out. Your progress is saved to your email, so signing back in with it brings everything back.",
-    confirm: "Switch User"
+    title: "Sign Out?",
+    body: "Your progress is saved to your email" + (profile && profile.email ? " (" + profile.email + ")" : "") + ". Sign back in with it on any device and everything comes back.",
+    confirm: "Sign Out"
   }, function(){
     localStorage.removeItem(LS_KEY);
     location.reload();
   });
 }
-document.getElementById("sb-switch").addEventListener("click", switchUser);
+var fwShow = document.getElementById("home-fw-show");
+if (fwShow) fwShow.addEventListener("click", function(){
+  setFwDismissed(false);
+  var c = document.getElementById("home-firstweek");
+  if (c) c.scrollIntoView({ block: "start", behavior: "smooth" });
+});
+var sbSwitch = document.getElementById("sb-switch"); // removed from the sidebar; Sign Out lives in the account menu
+if (sbSwitch) sbSwitch.addEventListener("click", switchUser);
 
 /* ============================================================
    Nav
@@ -2849,7 +2933,7 @@ function showView(name, opts){
   document.title = (VIEW_TITLES[name] ? VIEW_TITLES[name] + " \u00b7 " : "") + "iara Lineup";
   if (name === "quiz" && !activeQuiz) renderQuizPicker();
   if (name === "study" && !studyDeck) renderStudyPicker();
-  if (name !== "watch" && WL) { WL.open = null; document.documentElement.classList.remove("wl-locked"); }
+  if (name !== "watch" && WL) { WL.open = null; document.documentElement.classList.remove("wl-locked", "wl-open"); }
   if (name === "watch") {
     if (opts.section) { WL.tab = "roster"; WL.open = null; WL.pushed = false; }
     else if (WL.open) { WL.open = null; WL.pushed = false; }
@@ -8325,6 +8409,7 @@ function renderWatchPanel(keepScroll){
   var p = WL.open ? WATCH.filter(function(x){ return x.slug === WL.open; })[0] : null;
   var sheet = wlIsSheet();
   document.documentElement.classList.toggle("wl-locked", !!p && sheet);
+  document.documentElement.classList.toggle("wl-open", !!p);
   if (backdrop) backdrop.classList.toggle("is-on", !!p && sheet);
   panel.classList.toggle("is-empty", !p);
   if (!p) {
@@ -8602,7 +8687,7 @@ function renderWatchDone(){
 }
 
 document.getElementById("wl-tab-roster").addEventListener("click", function(){ WL.tab = "roster"; WL.deck = null; renderWatch(); });
-document.getElementById("wl-tab-study").addEventListener("click", function(){ if (WL.open) history.replaceState(null, "", pathFor("watch") + location.search); WL.tab = "study"; WL.open = null; WL.pushed = false; document.documentElement.classList.remove("wl-locked"); renderWatch(); });
+document.getElementById("wl-tab-study").addEventListener("click", function(){ if (WL.open) history.replaceState(null, "", pathFor("watch") + location.search); WL.tab = "study"; WL.open = null; WL.pushed = false; document.documentElement.classList.remove("wl-locked", "wl-open"); renderWatch(); });
 
 
 /* ============================================================
@@ -8862,16 +8947,32 @@ async function autoChecks(){
   return res;
 }
 
+// First Week card can be dismissed from Home. Per person, so it lives in
+// localStorage under the profile id and on the staff doc (firstWeekDismissed),
+// and follows the email to any device via hydrateProgress.
+function fwDismissKey(){ return "iara_fwdismiss_" + (profile ? profile.id : "anon"); }
+function fwDismissed(){ try { return localStorage.getItem(fwDismissKey()) === "1"; } catch(e){ return false; } }
+function setFwDismissed(on, fromCloud){
+  try { if (on) localStorage.setItem(fwDismissKey(), "1"); else localStorage.removeItem(fwDismissKey()); } catch(e){}
+  if (!fromCloud && db && profile) db.doc("staff/" + profile.id).set({ firstWeekDismissed: !!on }, { merge: true }).catch(function(){});
+  renderHomeFirstWeek();
+}
 async function renderHomeFirstWeek(){
   var slot = document.getElementById("home-firstweek");
   if (!slot) return;
+  var restore = document.getElementById("home-fw-restore");
+  var hidden = fwDismissed();
+  if (restore) restore.hidden = !hidden;
+  if (hidden) { slot.innerHTML = ""; return; }
   var p = await checklistProgress();
+  if (fwDismissed()) { slot.innerHTML = ""; return; }
   if (p.complete) {
     slot.innerHTML = '<p class="fw-done">First week: done. ' +
       '<button class="jump-link" data-view="checklist">Look Back at It</button></p>';
   } else {
     slot.innerHTML = '<div class="card fw-card">' +
-      '<div class="fw-head">First Week</div>' +
+      '<div class="fw-top"><div class="fw-head">First Week</div>' +
+      '<button type="button" class="k-btn k-btn-ghost k-btn-sm fw-dismiss" data-fw-dismiss aria-label="Dismiss First Week from Home">Dismiss</button></div>' +
       '<p class="fw-lede">Finish this before anything else. Nothing here is timed.</p>' +
       '<div class="fw-count"><span class="mono">'+p.done+'</span> of <span class="mono">'+p.total+'</span> done</div>' +
       kBar(p.pct, "First week progress", "qbar") +
@@ -8880,6 +8981,11 @@ async function renderHomeFirstWeek(){
   }
   slot.querySelectorAll("[data-view]").forEach(function(b){
     b.addEventListener("click", function(){ showView(b.getAttribute("data-view")); });
+  });
+  var dz = slot.querySelector("[data-fw-dismiss]");
+  if (dz) dz.addEventListener("click", function(){
+    setFwDismissed(true);
+    if (typeof toast === "function") toast("First Week hidden. Show it again from the bottom of Home.");
   });
 }
 
@@ -9548,7 +9654,7 @@ async function renderProgress(){
       });
       rows.push({
         id: d.id, quizIds: qSnap.docs.map(function(qd){ return qd.id; }),
-        name: s.name, role: s.role, count: attempts.length, avg: overallAvg, byCat: byCat,
+        name: s.name, role: s.role, email: s.email || "", count: attempts.length, avg: overallAvg, byCat: byCat,
         last: s.lastActive, created: s.createdAt,
         // Undefined means this person has not opened First Week since the
         // sync shipped; treat that the same as not-yet-started rather than
@@ -9559,7 +9665,9 @@ async function renderProgress(){
       });
     }
     if (!rows.length) {
-      area.innerHTML = '<p class="placeholder-note">No one has opened Lineup yet.</p>';
+      area.innerHTML = '<div class="card adm-empty"><h2 class="adm-empty-h">No Team Records Yet</h2>' +
+        '<p class="placeholder-note">Everyone who signs in to Lineup with their email shows up here, with their First Week progress and test scores.</p>' +
+        '<p class="placeholder-note">Send new hires to <span class="mono">staff.iara.nyc/lineup</span> to get started.</p></div>';
       return;
     }
 
@@ -9574,65 +9682,64 @@ async function renderProgress(){
         '<button class="jump-link" id="mg-out">Sign Out</button>' +
       '</div>';
 
-    // ---- summary strip: the four numbers a manager actually wants first ----
+    // ---- summary: the numbers a manager wants first ----
     var scored = rows.filter(function(r){ return r.avg !== null; });
     var teamAvg = scored.length ? Math.round(scored.reduce(function(s,r){ return s+r.avg; },0)/scored.length) : null;
     var onboarded = rows.filter(function(r){ return r.clComplete; }).length;
     var activeWeek = rows.filter(function(r){ return r.lastDays !== null && r.lastDays <= 7; }).length;
-    html += '<div class="sc-stats admin-stats">' +
-      '<div><span class="num mono">'+rows.length+'</span><span class="lbl">Team</span></div>' +
-      '<div><span class="num mono">'+onboarded+'/'+rows.length+'</span><span class="lbl">Onboarded</span></div>' +
-      '<div><span class="num mono">'+(teamAvg===null?'None':teamAvg+'%')+'</span><span class="lbl">Team Test Average</span></div>' +
-      '<div><span class="num mono">'+activeWeek+'/'+rows.length+'</span><span class="lbl">Active This Week</span></div>' +
+    function stat(n, lbl, sub){ return '<div class="adm-stat"><span class="num mono">'+n+'</span><span class="lbl">'+lbl+'</span>'+(sub ? '<span class="adm-stat-sub">'+sub+'</span>' : '')+'</div>'; }
+    html += '<div class="adm-stats">' +
+      stat(rows.length, rows.length === 1 ? "Person on the Team" : "People on the Team") +
+      stat(onboarded+'<span class="adm-of">/'+rows.length+'</span>', "First Week Complete") +
+      stat(teamAvg===null ? 'None' : teamAvg+'%', "Average Exam Score", scored.length ? scored.length+' of '+rows.length+' tested' : 'No tests yet') +
+      stat(activeWeek+'<span class="adm-of">/'+rows.length+'</span>', "Active This Week") +
     '</div>';
 
     // ---- needs a nudge: incomplete onboarding that has had time to finish,
-    // or anyone who has gone quiet. This is the one list worth reading before
-    // the other two, since it is the only thing here that is actually overdue. ----
+    // or anyone who has gone quiet. The only thing here that is overdue. ----
     var nudge = rows.filter(function(r){
       var stuck = !r.clComplete && r.hireDays !== null && r.hireDays >= 7;
       var quiet = r.lastDays !== null && r.lastDays >= 14;
       return stuck || quiet;
     }).sort(function(a,b){ return (b.lastDays||0) - (a.lastDays||0); });
     if (nudge.length) {
-      html += '<h2 class="admin-h2 k-h-section">Needs a Nudge</h2>' +
-        '<div class="card"><ul class="nudge-list">' + nudge.map(function(r){
+      html += '<h2 class="admin-h2 k-h-section">Needs a Nudge <span class="adm-count mono">'+nudge.length+'</span></h2>' +
+        '<div class="card adm-card"><ul class="nudge-list">' + nudge.map(function(r){
           var bits = [];
           if (!r.clComplete && r.hireDays !== null && r.hireDays >= 7) {
-            bits.push((r.clTotal ? r.clDone+' of '+r.clTotal : 'First Week') + ' after '+r.hireDays+' days');
+            bits.push((r.clTotal ? 'First Week '+r.clDone+' of '+r.clTotal : 'First Week not started') + ' after '+r.hireDays+' days');
           }
-          if (r.lastDays !== null && r.lastDays >= 14) bits.push('quiet '+r.lastDays+' days');
-          if (r.lastDays === null) bits.push('never opened Lineup');
-          return '<li><span class="nudge-name">'+esc(r.name)+'</span>' +
-            '<span class="nudge-role placeholder-note">'+esc(r.role||"")+'</span>' +
-            '<span class="nudge-why">'+esc(bits.join(' \u00b7 '))+'</span></li>';
+          if (r.lastDays !== null && r.lastDays >= 14) bits.push('quiet for '+r.lastDays+' days');
+          return '<li><span class="nudge-who"><span class="nudge-name">'+esc(r.name)+'</span>' +
+            '<span class="nudge-role">'+esc(r.role||"")+'</span></span>' +
+            '<span class="nudge-why">'+esc(bits.join(', '))+'</span></li>';
         }).join('') + '</ul></div>';
-    }
-
-    // ---- what the team keeps missing: the part worth reading out at lineup ----
-    var misses = Object.keys(missTally).map(function(k){ return missTally[k]; })
-      .map(function(m){ m.people = Object.keys(m.who).length; return m; })
-      .sort(function(a,b){ return b.n - a.n || b.people - a.people; })
-      .slice(0, 8);
-    html += '<h2 class="admin-h2 k-h-section">What the Team Keeps Missing</h2>';
-    if (!misses.length) {
-      html += '<p class="placeholder-note">Nothing yet. This fills in as the team runs tests.</p>';
-    } else {
-      html += '<p class="placeholder-note" style="margin-bottom:10px;">Ranked by how often it has been missed. Worth reading out at lineup.</p>' +
-        '<ol class="miss-rank">' + misses.map(function(m){
-          return '<li><p class="miss-q">'+qtxt(m.q)+'</p>' +
-            '<p class="miss-meta"><span class="mono">'+m.n+'</span> '+(m.n===1?'miss':'misses')+
-            ' across <span class="mono">'+m.people+'</span> '+(m.people===1?'person':'people')+
-            ' \u00b7 '+esc(m.cat || '')+'</p></li>';
-        }).join('') + '</ol>';
     }
 
     // ---- full roster ----
     progressRows = rows;
     progressCats = CATS;
     html += '<h2 class="admin-h2 k-h-section">Whole Team</h2>' +
-      '<p class="placeholder-note" style="margin-bottom:10px;">Each test section shows average score across attempts, with the number of attempts in parentheses. Select a column to sort.</p>' +
+      '<p class="placeholder-note adm-note">Exam scores are the average across attempts; the small number is how many attempts. Select a column to sort.</p>' +
       '<div id="progress-table-wrap"></div>';
+
+    // ---- what the team keeps missing: the part worth reading out at lineup ----
+    var misses = Object.keys(missTally).map(function(k){ return missTally[k]; })
+      .map(function(m){ m.people = Object.keys(m.who).length; return m; })
+      .sort(function(a,b){ return b.n - a.n || b.people - a.people; })
+      .slice(0, 8);
+    html += '<h2 class="admin-h2 k-h-section">Most Missed Questions</h2>';
+    if (!misses.length) {
+      html += '<p class="placeholder-note">Nothing yet. This fills in as the team runs tests, ranked by how often each question is missed.</p>';
+    } else {
+      html += '<p class="placeholder-note adm-note">Ranked by how often each has been missed. Worth reading out at lineup.</p>' +
+        '<ol class="miss-rank card adm-card">' + misses.map(function(m, i){
+          return '<li><span class="miss-n mono">'+(i+1)+'</span><div class="miss-body"><p class="miss-q">'+qtxt(m.q)+'</p>' +
+            '<p class="miss-meta">'+(m.cat ? '<span class="adm-pill">'+esc(m.cat)+'</span>' : '') +
+            '<span><span class="mono">'+m.n+'</span> '+(m.n===1?'miss':'misses')+
+            ', <span class="mono">'+m.people+'</span> '+(m.people===1?'person':'people')+'</span></p></div></li>';
+        }).join('') + '</ol>';
+    }
 
     area.innerHTML = html;
     renderProgressTable();
@@ -9660,8 +9767,29 @@ function progressSortValue(r, key){
   return (!cell || cell.avg === null) ? -1 : cell.avg;
 }
 
-// Re-sorts and redraws only the table - renderProgress() already fetched
-// everything into progressRows, so a header click never re-hits Firestore.
+// Last active, said the way a manager would say it.
+function relDays(r){
+  if (!r.last) return "Never";
+  var d = r.lastDays;
+  if (d <= 0) return "Today";
+  if (d === 1) return "Yesterday";
+  if (d < 14) return d + " days ago";
+  if (d < 60) return Math.floor(d / 7) + " weeks ago";
+  return new Date(r.last).toLocaleDateString(undefined, { month:"short", day:"numeric" });
+}
+function fwStatus(r){
+  if (r.clComplete) return '<span class="adm-pill is-done">Done</span>';
+  if (r.clTotal === null) return '<span class="adm-muted">Not started</span>';
+  return '<span class="mono">'+r.clDone+'</span><span class="adm-muted"> of '+r.clTotal+'</span>';
+}
+function scoreCell(avg, count){
+  if (avg === null) return '<span class="adm-muted">None</span>';
+  return '<span class="adm-score'+(avg >= 80 ? ' is-good' : '')+'">'+avg+'%</span><span class="adm-att"> ('+count+')</span>';
+}
+
+// Re-sorts and redraws only the roster - renderProgress() already fetched
+// everything into progressRows, so a sort never re-hits Firestore. Wide
+// screens get a table; phones and narrow windows get one card per person.
 function renderProgressTable(){
   var wrap = document.getElementById("progress-table-wrap");
   if (!wrap || !progressRows) return;
@@ -9674,37 +9802,54 @@ function renderProgressTable(){
 
   function sortArrow(key){
     if (sort.key !== key) return "";
-    return ' <span class="sort-arrow">' + (sort.dir === "asc" ? "↑" : "↓") + '</span>';
+    return ' <span class="sort-arrow" aria-hidden="true">' + (sort.dir === "asc" ? "\u2191" : "\u2193") + '</span>';
   }
   function th(key, label, numeric){
-    return '<th class="sortable' + (numeric ? " num" : "") + '" data-sort="' + esc(key) + '">' + esc(label) + sortArrow(key) + '</th>';
+    var aria = sort.key === key ? (sort.dir === "asc" ? "ascending" : "descending") : "none";
+    return '<th class="sortable' + (numeric ? " num" : "") + '" aria-sort="'+aria+'"><button type="button" class="th-btn" data-sort="' + esc(key) + '">' + esc(label) + sortArrow(key) + '</button></th>';
   }
+  var keys = [["name","Name"],["role","Role"],["onboarding","First Week"],["overall","Exam Average"],["last","Last Active"]]
+    .concat(progressCats.map(function(c){ return [c.key, c.name]; }));
 
-  var catHeaders = progressCats.map(function(c){ return th(c.key, c.name, true); }).join("");
-  var html = '<div class="table-wrap"><table class="progress"><thead><tr>' +
-    th("name", "Name") + th("role", "Role") + th("onboarding", "Onboarding", true) +
-    catHeaders + th("overall", "Overall", true) + th("last", "Last Active", true) +
-    '<th></th>' +
+  var html = '<div class="adm-sortbar"><label for="adm-sort">Sort By</label>' +
+    '<select id="adm-sort">' + keys.map(function(k){ return '<option value="'+esc(k[0])+'"'+(sort.key===k[0]?' selected':'')+'>'+esc(k[1])+'</option>'; }).join('') + '</select>' +
+    '<button type="button" class="k-btn k-btn-secondary k-btn-sm" id="adm-dir">'+(sort.dir === "asc" ? "Ascending" : "Descending")+'</button></div>';
+
+  html += '<div class="table-wrap adm-table"><table class="progress"><thead><tr>' +
+    th("name", "Name") + th("role", "Role") + th("onboarding", "First Week") + th("overall", "Exam Avg", true) +
+    progressCats.map(function(c){ return th(c.key, c.name, true); }).join("") +
+    th("last", "Last Active", true) + '<th><span class="k-sr-only">Actions</span></th>' +
     '</tr></thead><tbody>';
   rows.forEach(function(r){
-    var catCells = progressCats.map(function(c){
-      var cell = r.byCat[c.key];
-      return '<td class="mono num">' + (cell.avg===null ? 'None' : cell.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+cell.count+')</span>') + '</td>';
-    }).join("");
-    var clCell = r.clTotal === null ? '<span class="placeholder-note">not yet</span>'
-      : (r.clComplete ? 'Done' : r.clDone+' of '+r.clTotal);
-    html += '<tr' + (r.clComplete === false && r.hireDays !== null && r.hireDays >= 7 ? ' class="row-flag"' : '') + '>' +
-      '<td>'+esc(r.name)+'</td><td>'+esc(r.role||"")+'</td>' +
-      '<td class="mono num">'+clCell+'</td>' +
-      catCells +
-      '<td class="mono num">'+(r.avg===null?'None':r.avg+'% <span class="placeholder-note" style="display:inline;font-size:11px;">('+r.count+')</span>')+'</td>' +
-      '<td class="mono num">'+(r.last ? new Date(r.last).toLocaleDateString(undefined,{month:'short',day:'numeric'}) : 'None')+'</td>' +
-      '<td class="num"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete</button></td></tr>';
+    var flag = r.clComplete === false && r.hireDays !== null && r.hireDays >= 7;
+    html += '<tr' + (flag ? ' class="row-flag"' : '') + '>' +
+      '<td class="adm-name"><span class="adm-person">'+esc(r.name)+'</span>'+(r.email ? '<span class="adm-email">'+esc(r.email)+'</span>' : '')+'</td>' +
+      '<td class="adm-role">'+esc(r.role||"")+'</td>' +
+      '<td>'+fwStatus(r)+'</td>' +
+      '<td class="num">'+scoreCell(r.avg, r.count)+'</td>' +
+      progressCats.map(function(c){ var cell = r.byCat[c.key]; return '<td class="num">'+scoreCell(cell.avg, cell.count)+'</td>'; }).join("") +
+      '<td class="num adm-last" title="'+esc(r.last ? new Date(r.last).toLocaleString() : "")+'">'+relDays(r)+'</td>' +
+      '<td class="num"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete<span class="k-sr-only"> '+esc(r.name)+'</span></button></td></tr>';
   });
   html += '</tbody></table></div>';
+
+  html += '<ul class="adm-cards">' + rows.map(function(r){
+    var flag = r.clComplete === false && r.hireDays !== null && r.hireDays >= 7;
+    return '<li class="card adm-pcard'+(flag ? ' row-flag' : '')+'">' +
+      '<div class="adm-pc-head"><div class="adm-pc-id"><span class="adm-person">'+esc(r.name)+'</span>' +
+        '<span class="adm-pc-sub">'+esc(r.role||"")+(r.email ? '<span class="adm-email">'+esc(r.email)+'</span>' : '')+'</span></div>' +
+        '<span class="adm-last">'+relDays(r)+'</span></div>' +
+      '<dl class="adm-pc-grid">' +
+        '<div><dt>First Week</dt><dd>'+fwStatus(r)+'</dd></div>' +
+        '<div><dt>Exam Average</dt><dd>'+scoreCell(r.avg, r.count)+'</dd></div>' +
+        progressCats.map(function(c){ var cell = r.byCat[c.key]; return '<div><dt>'+esc(c.name)+'</dt><dd>'+scoreCell(cell.avg, cell.count)+'</dd></div>'; }).join("") +
+      '</dl>' +
+      '<div class="adm-pc-foot"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete Record<span class="k-sr-only"> for '+esc(r.name)+'</span></button></div>' +
+    '</li>';
+  }).join('') + '</ul>';
   wrap.innerHTML = html;
 
-  wrap.querySelectorAll("th.sortable").forEach(function(header){
+  wrap.querySelectorAll("[data-sort]").forEach(function(header){
     header.addEventListener("click", function(){
       var key = header.getAttribute("data-sort");
       if (progressSort.key === key) progressSort.dir = progressSort.dir === "asc" ? "desc" : "asc";
@@ -9712,6 +9857,10 @@ function renderProgressTable(){
       renderProgressTable();
     });
   });
+  var sel = document.getElementById("adm-sort");
+  if (sel) sel.addEventListener("change", function(){ progressSort = { key: sel.value, dir: progressSort.dir }; renderProgressTable(); });
+  var dirB = document.getElementById("adm-dir");
+  if (dirB) dirB.addEventListener("click", function(){ progressSort.dir = progressSort.dir === "asc" ? "desc" : "asc"; renderProgressTable(); });
 
   wrap.querySelectorAll("[data-del-id]").forEach(function(btn){
     btn.addEventListener("click", function(){
