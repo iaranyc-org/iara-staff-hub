@@ -100,6 +100,8 @@
   th{ text-align:left; font-size:13px; color:var(--river); font-weight:700; padding:8px; border-bottom:1px solid var(--line); }
   td{ padding:10px 8px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); vertical-align:top; }
   td.num, th.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
+  .ch{ display:flex; align-items:flex-start; }
+  .ch .dot{ flex:none; margin-top:4px; }
   .dot{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:8px; vertical-align:-1px; }
   .split{ display:flex; height:14px; border-radius:7px; overflow:hidden; background:var(--paper); margin:4px 0 12px; }
   .split span{ display:block; height:100%; }
@@ -753,7 +755,7 @@
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" data-k-tip="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
       '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
-        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="dot" style="background:' + r.color + '"></span>' + esc(r.name) + '</td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "-" : r.needed) + '</td><td class="num">' + (isR ? "-" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "-" : hrs(r.median)) + '</td><td class="num">' + (isR ? "-" : r.waiting) + '</td></tr>'; }).join("") +
+        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="ch"><span class="dot" style="background:' + r.color + '"></span><span>' + esc(r.name) + '</span></span></td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "-" : r.needed) + '</td><td class="num">' + (isR ? "-" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "-" : hrs(r.median)) + '</td><td class="num">' + (isR ? "-" : r.waiting) + '</td></tr>'; }).join("") +
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
       '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>' +
       trendCard(a.trend, "Replied Within an Hour", [
