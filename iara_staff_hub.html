@@ -519,6 +519,20 @@
   .deck-pct{ grid-column:2; grid-row:1; font-size:12px; color:var(--display);
     font-variant-numeric:tabular-nums; }
   .deck-bar{ grid-column:1 / -1; margin-top:7px; height:2px; }
+  /* Deck picker as a tile grid (2026-10-16): left-aligned, 2-up on wide screens. */
+  #study-area .deck-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px, 1fr)); gap:10px; max-width:var(--measure); border-top:none; }
+  #study-area .deck{ text-align:left; border:1px solid var(--k-border); border-radius:12px; background:var(--k-surface); padding:14px 16px 12px; min-height:44px; cursor:pointer; color:var(--k-ink); }
+  #study-area .deck:hover{ padding-left:16px; border-color:var(--sun); }
+  #study-area .deck:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
+  #study-area .deck-meta{ color:var(--k-muted); line-height:1.4; }
+  .study-price{ font-size:13px; color:var(--k-muted); white-space:nowrap; }
+  .study-story{ margin-top:12px; border-top:1px solid var(--rule); padding-top:10px; }
+  .study-story summary{ cursor:pointer; font-size:14px; font-weight:600; color:var(--sun); min-height:32px; display:flex; align-items:center; }
+  .study-story p{ font-size:15px; line-height:1.6; color:var(--ink-mid); margin:6px 0 0; }
+  .q-why{ margin:8px 0 0; font-size:14px; line-height:1.5; color:var(--k-muted); flex-basis:100%; }
+  .miss-w{ margin:4px 0 0; font-size:13px; line-height:1.5; color:var(--k-muted); }
+  .kbd-hint{ display:none; margin:10px 0 0; text-align:center; font-size:12px; color:var(--k-muted); }
+  @media (hover:hover) and (pointer:fine){ .kbd-hint{ display:block; } }
 
   /* Checklist as a printed list with a rule per line. */
   .cl-summary{ background:none; border:none; border-bottom:1px solid var(--rule);
@@ -2009,27 +2023,27 @@ var MENU_STORY = [
 var FNB_CATEGORIES = ["Starters","Mains","Sides","Desserts","Cocktails","Wine & Beer"];
 var FNB_DEFAULTS = [
   /* --- Petiscos / Pão / Vegetais (opening menu, "Menu Master 9/5") --- */
-  { id:"d1", category:"Starters", name:"Tacacá", pronunciation:"too-koo-PEE", speak:"Tucupi", price:"$8", desc:"Fermented tucupi broth, plantain, Amazon beans.", allergens:["Allium","Cilantro"], example:false },
+  { id:"d1", category:"Starters", name:"Tacacá", pronunciation:"tah-kah-KAH", speak:"Tacacá", price:"$8", desc:"Fermented tucupi broth, plantain, Amazon beans.", allergens:["Allium","Cilantro"], example:false },
   { id:"d2", category:"Starters", name:"Dadinho de Tapioca", pronunciation:"dah-DEEN-yoo duh tah-pee-OH-kuh", speak:"Dadinho de Tapioca", price:"$16", desc:"Crispy tapioca, yellowfin tuna, smoked biquinho pepper, jambu.", allergens:["Fish","Dairy"], example:false },
   { id:"d3", category:"Starters", name:"Crocante de Mandioca", pronunciation:"kroh-KAHN-chee jee mahn-jee-OH-kah", speak:"Crocante de Mandioca", price:"$17", desc:"Cassava crisp, Atlantic scallop, charred pineapple, honey habanero.", allergens:["Shellfish"], example:false },
   { id:"d4", category:"Starters", name:"Ceviche com Tucupi", pronunciation:"sə-VEE-chay kohm too-koo-PEE", speak:"Ceviche com Tucupi", price:"$21", desc:"Dry-aged hiramasa, cashew nut, tucupi vinaigrette, charred plantain, herbs.", allergens:["Fish","Tree nut","Allium","Coconut","Citrus"], example:false },
   { id:"d5", category:"Starters", name:"Pão de Queijo", pronunciation:"pown deh KAY-zhoo", speak:"Pão de Queijo", price:"$14", desc:"Warm cassava cheese bread, charred eggplant dip, guava glaze.", allergens:["Dairy"], example:false },
   { id:"d6", category:"Starters", name:"Pão de Alho", pronunciation:"pown deh AHL-yoo", speak:"Pão de Alho", price:"$14", desc:"Charcoal-grilled bread, roasted garlic requeijão.", allergens:["Dairy","Allium","Gluten"], example:false },
-  { id:"d7", category:"Starters", name:"Palmito Carpaccio", pronunciation:"pahl-MEE-toh kar-PAH-chee-oh", speak:"", price:"$18", desc:"Grilled heart of palm, candied Brazil nut, basil dressing.", allergens:["Tree nut"], example:false },
-  { id:"d8", category:"Starters", name:"Caranguejo na Moranga", pronunciation:"kah-rahn-GAY-zhoo nah moh-RAHN-gah", speak:"", price:"$24", desc:"Honeynut squash, Jonah crab, Parmesan, Amazonian spiced pumpkin seeds.", allergens:["Dairy","Shellfish","Seeds","Allium"], example:false },
+  { id:"d7", category:"Starters", name:"Palmito Carpaccio", pronunciation:"pahl-MEE-toh kar-PAH-chee-oh", speak:"Palmito Carpaccio", price:"$18", desc:"Grilled heart of palm, candied Brazil nut, basil dressing.", allergens:["Tree nut"], example:false },
+  { id:"d8", category:"Starters", name:"Caranguejo na Moranga", pronunciation:"kah-rahn-GAY-zhoo nah moh-RAHN-gah", speak:"Caranguejo na Moranga", price:"$24", desc:"Honeynut squash, Jonah crab, Parmesan, Amazonian spiced pumpkin seeds.", allergens:["Dairy","Shellfish","Seeds","Allium"], example:false },
   { id:"d9", category:"Starters", name:"Vegetais Grelhados", pronunciation:"veh-zheh-TICE grel-YAH-dooss", speak:"Vegetais Grelhados", price:"$22", desc:"Charcoal-grilled cone cabbage, guava-puxuri dressing, farofa.", allergens:[], example:false },
   /* --- Pratos Principais --- */
   { id:"d10", category:"Mains", name:"Moqueca", pronunciation:"mo-KEH-kah", speak:"Moqueca", price:"$48", desc:"Dry-aged tilefish, coconut dendê broth, Hudson Valley rice. Secret vegan option available.", allergens:["Fish","Coconut","Allium","Capsicum","Dairy"], example:false },
   { id:"d11", category:"Mains", name:"Picanha com Fritas", pronunciation:"pee-KAH-nyah kohn FREE-tahs", speak:"Picanha com Fritas", price:"$68", desc:"12oz prime elite picanha steak, jiquitaia au poivre, tapioca fries, açaí ketchup.", allergens:["Allium"], example:false },
   { id:"d12", category:"Mains", name:"Frango Amazonas", pronunciation:"FRAHN-goo ah-mah-ZOH-nahs", speak:"Frango Amazonas", price:"$38", desc:"Charcoal-grilled Amazonian spiced chicken, manteiguinha beans, molho verde.", allergens:[], example:false },
   /* --- Acompanhamentos --- */
-  { id:"d14", category:"Sides", name:"Tapioca Fries", pronunciation:"tah-pee-OH-kah", speak:"Tapioca", price:"$14", desc:"With açaí ketchup.", allergens:[], example:false },
+  { id:"d14", category:"Sides", name:"Tapioca Fries", pronunciation:"tah-pee-OH-kah fries", speak:"Tapioca", price:"$14", desc:"With açaí ketchup.", allergens:[], example:false },
   { id:"d15", category:"Sides", name:"Arroz", pronunciation:"ah-HOHZ", speak:"Arroz", price:"$10", desc:"Hudson Valley rice with Brazilian refogado.", allergens:["Allium"], example:false },
   { id:"d16", category:"Sides", name:"Feijão Manteiguinha", pronunciation:"fay-ZHOW mahn-tay-GEEN-yah", speak:"Feijão Manteiguinha", price:"$8", desc:"Stewed Amazonian manteiguinha beans.", allergens:[], example:false },
   { id:"d17", category:"Sides", name:"Farofa", pronunciation:"fah-ROH-fah", speak:"Farofa", price:"With entrées", desc:"Toasted and seasoned cassava flour.", allergens:[], example:false },
   /* --- Sobremesas --- */
-  { id:"d18", category:"Desserts", name:"Pudim", pronunciation:"poo-DJEEN", speak:"Pudim", price:"$14", desc:"Flan with toasted sesame seeds.", allergens:["Egg","Dairy","Sesame"], example:false },
-  { id:"d19", category:"Desserts", name:"Bolo de Mandioca", pronunciation:"BOH-loh djee mahn-djoh-kah", speak:"Bolo de Mandioca", price:"$14", desc:"Cassava coconut toffee cake (flourless).", allergens:["Coconut","Dairy","Egg","Tonka bean"], example:false },
+  { id:"d18", category:"Desserts", name:"Pudim", pronunciation:"poo-JEEN", speak:"Pudim", price:"$14", desc:"Flan with toasted sesame seeds.", allergens:["Egg","Dairy","Sesame"], example:false },
+  { id:"d19", category:"Desserts", name:"Bolo de Mandioca", pronunciation:"BOH-loo jee mahn-jee-OH-kah", speak:"Bolo de Mandioca", price:"$14", desc:"Cassava coconut toffee cake (flourless).", allergens:["Coconut","Dairy","Egg","Tonka bean"], example:false },
   { id:"d20", category:"Desserts", name:"Sorvete", pronunciation:"sohr-VEH-chee", speak:"Sorvete", price:"$12", desc:"Cupuaçu ice cream with tapioca, puxuri, and sweet farofa.", allergens:["Dairy"], example:false },
   { id:"d21", category:"Desserts", name:"Brigadeiro", pronunciation:"bree-gah-DAY-roh", speak:"Brigadeiro", price:"$5/2pc", desc:"Brazilian chocolate fudge bon-bon. Dairy-free sub available (açaí pâte de fruit or toasted cassava).", allergens:["Dairy"], example:false },
   /* --- Cocktails --- */
@@ -2037,24 +2051,24 @@ var FNB_DEFAULTS = [
   { id:"d23", category:"Cocktails", name:"Batida de Coco", price:"$18", pronunciation:"bah-CHEE-dah jee KOH-koo", speak:"Batida de Coco", desc:"Seleta Gold cachaça, cream of coconut, sweetened condensed milk, lime juice, coconut-puxuri rim.", allergens:["Coconut","Dairy"], example:false },
   { id:"d42", category:"Cocktails", name:"T\u00f4nica Amaz\u00f4nica", price:"$19", pronunciation:"TOH-nee-kah ah-mah-ZOH-nee-kah", speak:"T\u00f4nica Amaz\u00f4nica", desc:"Am\u00e1zzoni gin, Amazonian botanicals.", allergens:[], example:false },
   { id:"d24", category:"Cocktails", name:"iara", price:"$20", pronunciation:"ee-AH-rah", speak:"iara", desc:"Pox, cupuaçu, Brazilian vanilla honey, jiquitaia tincture, Amazon spice rim. Milk-punched with coconut milk and strained clear. The restaurant's namesake cocktail.", allergens:["Coconut"], example:false },
-  { id:"d25", category:"Cocktails", name:"Tucupi Martini", price:"$20", pronunciation:"too-koo-PEE", speak:"Tucupi", desc:"Amázzoni gin infused with tucupi spice, Tokki soju, preserved lemon brine, lemon twist.", allergens:[], example:false },
+  { id:"d25", category:"Cocktails", name:"Tucupi Martini", price:"$20", pronunciation:"too-koo-PEE martini", speak:"Tucupi", desc:"Amázzoni gin infused with tucupi spice, Tokki soju, preserved lemon brine, lemon twist.", allergens:[], example:false },
   { id:"d26", category:"Cocktails", name:"Romeo and Juliet Martini", price:"$20", desc:"Mezcal, Queijo Minas-washed vermouth, guava eau de vie, blanc vermouth, Lillet, saline.", allergens:["Dairy"], example:false },
-  { id:"d27", category:"Wine & Beer", group:"Sparkling", name:"Cave Geisse Brut Nature", price:"$20", desc:"Pinto Bandeira, Serra Gaúcha, Brazil, 2023. Chardonnay and Pinot Noir.", allergens:["Sulfites"], example:false },
-  { id:"d28", category:"Wine & Beer", group:"Sparkling", name:"Luís Pato Vinha Formal Espumante", price:"$25", desc:"Bairrada, Portugal, 2019. Bical, Cerceal, and Sercial.", allergens:["Sulfites"], example:false },
-  { id:"d29", category:"Wine & Beer", group:"White", name:"Garzón Reserva", price:"$17", desc:"Maldonado, Uruguay, 2025. Albariño.", allergens:["Sulfites"], example:false },
-  { id:"d30", category:"Wine & Beer", group:"White", name:"Alberto Orte Vara y Pulgar Blanco", price:"$19", desc:"Cádiz, Andalucía, Spain, 2024. Palomino Fino.", allergens:["Sulfites"], example:false },
-  { id:"d31", category:"Wine & Beer", group:"White", name:"El Enemigo", price:"$20", desc:"Mendoza, Argentina, 2024. Semillón.", allergens:["Sulfites"], example:false },
+  { id:"d27", category:"Wine & Beer", group:"Sparkling", name:"Cave Geisse Brut Nature", pronunciation:"KAH-vee GUY-see brut nah-TOOR", speak:"Cave Geisse", price:"$20", desc:"Pinto Bandeira, Serra Gaúcha, Brazil, 2023. Chardonnay and Pinot Noir.", allergens:["Sulfites"], example:false },
+  { id:"d28", category:"Wine & Beer", group:"Sparkling", name:"Luís Pato Vinha Formal Espumante", pronunciation:"loo-EES PAH-too VEEN-yah for-MAHL ess-poo-MAHN-chee", speak:"Luís Pato Vinha Formal Espumante", price:"$25", desc:"Bairrada, Portugal, 2019. Bical, Cerceal, and Sercial.", allergens:["Sulfites"], example:false },
+  { id:"d29", category:"Wine & Beer", group:"White", name:"Garzón Reserva", pronunciation:"gar-SOHN reh-SEHR-vah", speak:"Garzón Reserva", price:"$17", desc:"Maldonado, Uruguay, 2025. Albariño.", allergens:["Sulfites"], example:false },
+  { id:"d30", category:"Wine & Beer", group:"White", name:"Alberto Orte Vara y Pulgar Blanco", pronunciation:"ahl-BEHR-toh OR-teh VAH-rah ee pool-GAR BLAHN-koh", speak:"Alberto Orte Vara y Pulgar Blanco", price:"$19", desc:"Cádiz, Andalucía, Spain, 2024. Palomino Fino.", allergens:["Sulfites"], example:false },
+  { id:"d31", category:"Wine & Beer", group:"White", name:"El Enemigo", pronunciation:"el eh-neh-MEE-goh", speak:"El Enemigo", price:"$20", desc:"Mendoza, Argentina, 2024. Semillón.", allergens:["Sulfites"], example:false },
   { id:"d32", category:"Wine & Beer", group:"White", name:"Brij Chardonnay", price:"$22", desc:"San Luis Obispo Coast, California, 2025. Chardonnay.", allergens:["Sulfites"], example:false },
-  { id:"d33", category:"Wine & Beer", group:"Rosé & Orange", name:"De Fermo Concrete Rosato", price:"$18", desc:"Abruzzo, Italy, 2024. Montepulciano.", allergens:["Sulfites"], example:false },
+  { id:"d33", category:"Wine & Beer", group:"Rosé & Orange", name:"De Fermo Concrete Rosato", pronunciation:"deh FAIR-moh concrete roh-ZAH-toh", speak:"De Fermo Rosato", price:"$18", desc:"Abruzzo, Italy, 2024. Montepulciano.", allergens:["Sulfites"], example:false },
   { id:"d34", category:"Wine & Beer", group:"Rosé & Orange", name:"Day Wines Vin de Days L’Orange", price:"$18", desc:"Willamette Valley, Oregon, 2025. Riesling, Pinot Gris, Gewürztraminer.", allergens:["Sulfites"], example:false },
   { id:"d35", category:"Wine & Beer", group:"Red", name:"Martha Stoumen Post Flirtation Red", price:"$18", desc:"Mendocino & Contra Costa, California, 2025. Zinfandel and Carignan. Served chilled.", allergens:["Sulfites"], example:false },
-  { id:"d36", category:"Wine & Beer", group:"Red", name:"David Moreau Bourgogne Rouge Sous Montot", price:"$24", desc:"Burgundy, France, 2023. Pinot Noir.", allergens:["Sulfites"], example:false },
-  { id:"d37", category:"Wine & Beer", group:"Red", name:"Susana Esteban Aventura Tinto", price:"$18", desc:"Alentejo, Portugal, 2024. Aragonez and Touriga Nacional.", allergens:["Sulfites"], example:false },
-  { id:"d38", category:"Wine & Beer", group:"Red", name:"Zuccardi Polígonos Altamira Malbec", price:"$22", desc:"Paraje Altamira, Valle de Uco, Argentina, 2023. Malbec.", allergens:["Sulfites"], example:false },
-  { id:"d39", category:"Wine & Beer", group:"Beer", name:"Super Bock Mini", price:"$6", desc:"Portugal. Lager, 6.8 oz bottle.", allergens:["Gluten"], example:false },
-  { id:"d43", category:"Wine & Beer", group:"Beer", name:"Brahma Duplo Malte", price:"$8", desc:"Brazil. Pure malt lager.", allergens:["Gluten"], example:false },
+  { id:"d36", category:"Wine & Beer", group:"Red", name:"David Moreau Bourgogne Rouge Sous Montot", pronunciation:"dah-VEED moh-ROH boor-GOHN-yuh ROOZH soo mohn-TOH", speak:"David Moreau Bourgogne Rouge Sous Montot", price:"$24", desc:"Burgundy, France, 2023. Pinot Noir.", allergens:["Sulfites"], example:false },
+  { id:"d37", category:"Wine & Beer", group:"Red", name:"Susana Esteban Aventura Tinto", pronunciation:"soo-ZAH-nah ess-TEH-bahn ah-ven-TOO-rah CHEEN-too", speak:"Susana Esteban Aventura Tinto", price:"$18", desc:"Alentejo, Portugal, 2024. Aragonez and Touriga Nacional.", allergens:["Sulfites"], example:false },
+  { id:"d38", category:"Wine & Beer", group:"Red", name:"Zuccardi Polígonos Altamira Malbec", pronunciation:"zoo-KAR-dee poh-LEE-goh-nohs ahl-tah-MEE-rah mahl-BEK", speak:"Zuccardi Polígonos Altamira Malbec", price:"$22", desc:"Paraje Altamira, Valle de Uco, Argentina, 2023. Malbec.", allergens:["Sulfites"], example:false },
+  { id:"d39", category:"Wine & Beer", group:"Beer", name:"Super Bock Mini", pronunciation:"SOO-per bock MEE-nee", speak:"Super Bock", price:"$6", desc:"Portugal. Lager, 6.8 oz bottle.", allergens:["Gluten"], example:false },
+  { id:"d43", category:"Wine & Beer", group:"Beer", name:"Brahma Duplo Malte", pronunciation:"BRAH-mah DOO-ploo MAHL-chee", speak:"Brahma Duplo Malte", price:"$8", desc:"Brazil. Pure malt lager.", allergens:["Gluten"], example:false },
   { id:"d40", category:"Wine & Beer", group:"Beer", name:"Grimm Weisse", price:"$12", desc:"Brooklyn. Wheat ale.", allergens:["Gluten"], example:false },
-  { id:"d41", category:"Wine & Beer", group:"Beer", name:"Xingu Black", price:"$10", desc:"Brazil. Black lager.", allergens:["Gluten"], example:false },
+  { id:"d41", category:"Wine & Beer", group:"Beer", name:"Xingu Black", pronunciation:"shin-GOO black", speak:"Xingu", price:"$10", desc:"Brazil. Black lager.", allergens:["Gluten"], example:false },
   /* --- Wine & Beer (list still being finalized) --- */
 ];
 
@@ -2100,7 +2114,7 @@ var INGREDIENTS = [
     def:"A major Amazon River tributary and the name of a Brazilian black lager created to draw attention to the rainforest, inspired by accounts of Amazon tribes brewing dark beer from roasted corn and manioc." },
   { id:"ing-dende", term:"Dendê", pronunciation:"den-DEH", speak:"Dendê",
     def:"Red palm oil from the African oil palm, the backbone of Bahian cooking and a legacy of Afro-Brazilian tradition. Deep orange, with a rich, earthy, slightly floral flavor." },
-  { id:"ing-mandioca", term:"Mandioca (Cassava)", pronunciation:"mahn-jee-AW-kah", speak:"Mandioca",
+  { id:"ing-mandioca", term:"Mandioca (Cassava)", pronunciation:"mahn-jee-OH-kah", speak:"Mandioca",
     def:"A starchy root native to South America, also called manioc or yuca. The foundation of Amazonian cooking: tapioca, farofa, and tucupi all come from it." },
   { id:"ing-palmito", term:"Palmito (Heart of Palm)", pronunciation:"pahl-MEE-toh", speak:"Palmito",
     def:"The tender inner core of certain palm trees. Mild, slightly crisp, and often compared to artichoke." },
@@ -2128,6 +2142,10 @@ var INGREDIENTS = [
     def:"Brazil's national spirit, distilled from fresh fermented sugarcane juice (most rum is made from molasses). The base of the caipirinha." },
   { id:"ing-pox", term:"Pox", pronunciation:"POSH", speak:"Pox",
     def:"A Mayan spirit from Chiapas, Mexico, distilled from corn, sugarcane, and wheat. Pronounced \"posh.\"" },
+  { id:"ing-refogado", term:"Refogado", pronunciation:"heh-foh-GAH-doo", speak:"Refogado",
+    def:"Portuguese for a gently sautéed aromatic base. iara's Arroz is cooked with a Brazilian refogado, and the manteiguinha beans get a refogado of garlic, serrano, and ginger." },
+  { id:"ing-molhoverde", term:"Molho Verde", pronunciation:"MOHL-yoo VEHR-jee", speak:"Molho verde",
+    def:"Portuguese for \"green sauce.\" It finishes the Frango Amazonas." },
   { id:"ing-oleo", term:"Oleo Saccharum", pronunciation:"OH-lee-oh SACK-ah-rum", speak:"Oleo saccharum",
     def:"A cocktail syrup made by drawing the oils out of citrus peels with sugar." },
 ];
@@ -2142,40 +2160,34 @@ var QUIZ_FOOD_EXTRA = [
   { q:"What oil gives Moqueca its signature color?", a:["Olive oil","Dendê (palm) oil","Sesame oil","Coconut oil"], c:1 },
   { q:"What condiment comes with the fries in Picanha com Fritas?", a:["Ranch","Housemade açaí ketchup","Chimichurri","Aioli"], c:1 },
   { q:"What size is the Picanha com Fritas steak?", a:["8oz","10oz","12oz","14oz"], c:2 },
-  { q:"Which dessert is a cassava and coconut cake with puxuri caramel?", a:["Pudim","Bolo de Mandioca","Sorvete","Brigadeiro"], c:1 },
+  { q:"Which dessert is a cassava coconut toffee cake?", a:["Pudim","Bolo de Mandioca","Sorvete","Brigadeiro"], c:1 },
   { q:"What is Sorvete's flavor?", a:["Vanilla bean","Cupuaçu","Chocolate","Coconut"], c:1 },
   { q:"What dairy-free substitution is offered for Brigadeiro?", a:["Almond butter cups","Açaí pâte de fruit or toasted cassava","Coconut candy","Fruit leather"], c:1 },
   { q:"What is Farofa made from?", a:["Toasted, seasoned cassava flour","Toasted breadcrumbs","Ground corn meal","Rice flour"], c:0 },
-  { q:"How is Feijão Manteiguinha served?", a:["Hot and mashed","Stewed with garlic, serrano, and ginger","Fried into cakes","Pureed into a soup"], c:1 },
-  { q:"What makes iara's Arroz distinctive?", a:["It's fried rice","Long-grain upstate rice with Brazilian refogado","It's black rice","It's coconut rice only"], c:1 },
+  { q:"How is Feijão Manteiguinha served?", a:["Hot and mashed","Stewed with garlic, serrano, and ginger","Fried into cakes","Pureed into a soup"], c:1, w:"The Menu Story: small butter beans from Santarém, stewed with garlic, serrano, and ginger." },
+  { q:"What makes iara's Arroz distinctive?", a:["It's fried rice","Hudson Valley rice cooked with a Brazilian refogado","It's black rice","It's coconut rice only"], c:1, w:"Hudson Valley rice from Great Joy Farms, cooked with a Brazilian refogado." },
   { q:"What dressing is on the Palmito Carpaccio?", a:["Balsamic vinaigrette","Basil dressing","Caesar dressing","Citrus vinaigrette"], c:1 },
   { q:"What shellfish is featured in Caranguejo na Moranga?", a:["Shrimp","Jonah crab","Lobster","Scallops"], c:1 },
   { q:"What squash is used in Caranguejo na Moranga?", a:["Butternut","Honeynut","Acorn","Kabocha"], c:1 },
   { q:"What is Crocante de Mandioca topped with?", a:["Atlantic scallops, charred pineapple, and honey habanero","Smoked salmon and capers","Tuna tartare","Shaved ham"], c:0 },
-  { q:"What dip is served with Pão de Queijo?", a:["Smoky eggplant dip","Marinara","Garlic aioli","Honey butter"], c:0 },
-  { q:"What is Pão de Alho stuffed with?", a:["Roasted garlic","Melted mozzarella only","Herb butter","Sun-dried tomatoes"], c:0 },
-  { q:"Which petisco is a hot Amazonian broth of tucupi with jambu leaves?", a:["Tacacá","Moqueca","Caldo verde","Feijoada"], c:0 },
+  { q:"What dip is served with Pão de Queijo?", a:["Charred eggplant dip and guava glaze","Marinara","Garlic aioli","Honey butter"], c:0 },
+  { q:"What is Pão de Alho stuffed with?", a:["Requeijão and roasted garlic","Melted mozzarella only","Herb butter","Sun-dried tomatoes"], c:0, w:"Charcoal-grilled bread stuffed with requeijão (Brazilian cream cheese) and roasted garlic." },
+  { q:"Which petisco is a fermented tucupi broth with plantain and Amazon beans?", a:["Tacacá","Moqueca","Caldo verde","Feijoada"], c:0 },
 ];
 
 var QUIZ_BEVERAGE_MORE = [
-  { q:"Which cocktail contains Chartreuse?", a:["Caipirinha","iara","Tucupi Martini","Romeo and Juliet Martini"], c:1 },
-  { q:"Which cocktail uses Cocchi, an aperitif wine?", a:["Batida de Coco","Tucupi Martini","Caipirinha","Romeo and Juliet Martini"], c:1 },
   { q:"Which cocktail includes Lillet?", a:["Romeo and Juliet Martini","iara","Batida de Coco","Tucupi Martini"], c:0 },
-  { q:"Which cocktail contains rice soju?", a:["iara","Tucupi Martini","Batida de Coco","Caipirinha"], c:1 },
+  { q:"Which cocktail contains Tokki soju?", a:["iara","Tucupi Martini","Batida de Coco","Caipirinha"], c:1 },
   { q:"What adds a briny, savory note to a couple of iara's martinis?", a:["Preserved lemon brine and saline","Soy sauce","Fish sauce","Worcestershire sauce"], c:0 },
   { q:"Which cocktail is the simplest, built from just cachaça, sweetener, and lime?", a:["Caipirinha","iara","Tucupi Martini","Romeo and Juliet Martini"], c:0 },
   { q:"What category do iara's non-cocktail alcoholic beverages fall under?", a:["Mocktails","Wine &amp; Beer","Digestifs","Aperitifs"], c:1 },
   { q:"Which of these cocktails contains no coconut?", a:["Batida de Coco","iara","Caipirinha","Both Batida de Coco and iara"], c:2 },
-  { q:"What spirit family does Cocchi belong to?", a:["Aperitif wine","Whiskey","Gin","Tequila"], c:0 },
-  { q:"Mezcal and Pox are both examples of what?", a:["Agave spirits","Grape brandies","Sugarcane spirits","Grain whiskies"], c:0 },
+  { q:"What is pox, the base of the iara cocktail, distilled from?", a:["Corn, sugarcane, and wheat","Agave","Grapes","Rice"], c:0, w:"Pox (said \"posh\") is a Mayan spirit from Chiapas, Mexico, distilled from corn, sugarcane, and wheat. Not an agave spirit." },
   { q:"What is a \"washed\" vermouth, as used in the Romeo and Juliet Martini?", a:["A vermouth fat-washed/infused with cheese","A vermouth diluted with water","A non-alcoholic vermouth","A carbonated vermouth"], c:0 },
   { q:"What does preserved lemon brine add to a cocktail?", a:["Sweetness","Salty, tangy brininess","Bitterness","Smokiness"], c:1 },
   { q:"What is an \"eau de vie,\" as in the guava eau de vie in the Romeo and Juliet Martini?", a:["A clear fruit brandy","A type of wine","A liqueur syrup","A bitters blend"], c:0 },
   { q:"Why should you always double-check a drink's allergens before serving it?", a:["It's not necessary","To protect guests with food allergies","Only bartenders need to know this","It only matters for wine"], c:1 },
-  { q:"What is oleo saccharum, used in the Caipirinha?", a:["An oil-based citrus sugar made from lime peels","A type of simple syrup","A citrus liqueur","A bitters blend"], c:0 },
   { q:"What spirit category is Novo Fogo?", a:["Cachaça","Gin","Mezcal","Vodka"], c:0 },
-  { q:"Which cachaça brand is used in the Batida de Coco?", a:["Novo Fogo","Seleta Gold","Amazzoni","Salers"], c:1 },
-  { q:"What Amazonian ingredient is used as a rim on the Batida de Coco?", a:["Cumaru","Puxuri","Jambu","Jiquitaia pepper"], c:1 },
 ];
 
 var QUIZ_GLOSSARY = [
@@ -2192,6 +2204,75 @@ var QUIZ_GLOSSARY = [
   { q:"Feijão Manteiguinha is known for:", a:["A spicy, fiery flavor","A buttery texture and mild, slightly sweet flavor","A crunchy texture","A sour, tangy flavor"], c:1 },
   { q:"Cupuaçu is closely related to which other plant?", a:["Coffee","Cacao","Vanilla orchid","Banana"], c:1 },
   { q:"Brigadeiro is best described as:", a:["A soft, fudgy chocolate truffle","A crispy cookie","A citrus sorbet","A layered cake"], c:0 },
+];
+
+/* Added 2026-10-16 from the Oct 16 dinner + private dining menus and the
+   Menu Story / Drinks Story docs. "w" is the one-line why shown after the
+   answer. Only facts printed in those sources. */
+var QUIZ_FOOD_STORY = [
+  { q:"What is the Ceviche com Tucupi's hiramasa marinated in?", a:["Amazonian powders: tucupi, Yanomami mushroom, and tomato","Lime juice and chili","Soy and ginger","Coconut milk"], c:0, w:"Dry-aged hiramasa in tucupi, Yanomami mushroom, and tomato powders, finished with tucupi vinaigrette." },
+  { q:"Who gathers the Yanomami mushrooms used in iara's spice powders?", a:["Yanomami (Sanöma) women in the Yanomami Indigenous Territory","A New York mushroom farm","The kitchen team, in the Hudson Valley","Baniwa farmers on the Rio Negro"], c:0, w:"Wild mushrooms gathered by Yanomami (Sanöma) women, dried, then ground into a savory powder." },
+  { q:"Which 2 dishes use Yanomami mushroom powder?", a:["Ceviche com Tucupi and Frango Amazonas","Pudim and Sorvete","Pão de Alho and Arroz","Tacacá and Picanha"], c:0, w:"It is in the ceviche marinade and the Frango Amazonas spice marinade." },
+  { q:"What is jiquitaia?", a:["An Amazonian chili powder made by the Baniwa people","A fermented cassava juice","A numbing Amazonian herb","A Brazilian nutmeg"], c:0, w:"Dried, ground native peppers and salt, from the Baniwa people of the Rio Negro." },
+  { q:"Where does jiquitaia show up on the menu?", a:["The Picanha's au poivre and the iara cocktail","The Pudim and the Sorvete","Only on the Tacacá","The Caipirinha rim"], c:0, w:"Picanha com Fritas comes with jiquitaia au poivre; the iara cocktail gets a jiquitaia tincture." },
+  { q:"What is dendê?", a:["Red palm oil, the backbone of Bahian cooking","A Brazilian cheese","Fermented cassava juice","A green herb sauce"], c:0, w:"Deep orange red palm oil, a legacy of Afro-Brazilian tradition. It is in the Moqueca broth." },
+  { q:"What makes iara's moqueca an Amazonian moqueca?", a:["Pairing dendê with tucupi","Using Jonah crab","Serving it with farofa","Topping it with sesame"], c:0, w:"Per the Menu Story: pairing dendê with tucupi is what makes it Amazonian." },
+  { q:"Is there coconut fruit in the Moqueca?", a:["No, coconut milk is the body of the sauce","Yes, shredded coconut on top","Yes, coconut water in the broth","No coconut in any form"], c:0, w:"Coconut milk is the sauce's main liquid, like a curry. There is no coconut fruit in it." },
+  { q:"How is the Moqueca's tilefish prepared before cooking?", a:["Dry-aged in-house","Smoked over charcoal","Cured in salt","Marinated in lime"], c:0 },
+  { q:"What does Picanha com Fritas riff on?", a:["Steak frites at New York's French bistros","A churrascaria rodízio","A Philly cheesesteak","Steak tartare"], c:0 },
+  { q:"In the Amazon, how is açaí eaten, per the Menu Story?", a:["Savory, morning, noon, and night","Only as a sweet smoothie bowl","Only at festivals","Only as juice"], c:0, w:"That is why it becomes a savory ketchup here." },
+  { q:"What is the Frango Amazonas finished with?", a:["Molho verde","Açaí ketchup","Guava glaze","Honey habanero"], c:0, w:"Charcoal-grilled Amazonian spiced chicken, manteiguinha beans, molho verde." },
+  { q:"What is the Frango Amazonas chicken marinated in?", a:["Cupuaçu, tucupi, and Yanomami mushroom powders","Lime and garlic","Dendê and coconut milk","Soy and honey"], c:0 },
+  { q:"Where does the Arroz's Hudson Valley rice come from?", a:["Great Joy Farms in upstate New York","A farm in Bahia","Santarém in the Amazon","Arkansas"], c:0 },
+  { q:"What is unusual about iara's Pão de Queijo vs. the traditional recipe?", a:["It is enriched with smoked Gouda (plus Parmesan)","It uses wheat flour","It is fried","It has no cheese"], c:0 },
+  { q:"What is the New York touch on top of the Pão de Alho and the Pudim?", a:["Sesame seeds","Everything bagel spice","Black pepper","Sea salt"], c:0 },
+  { q:"What is layered inside the Dadinho de Tapioca?", a:["Smoked trout mousse, biquinho pepper, and pickled onion","Guava paste","Shrimp and lime","Black beans"], c:0 },
+  { q:"What does iara serve the Tacacá broth with?", a:["Herb oil, plantain coconut cream, and jambu leaves","Dried shrimp and rice","Crab and Parmesan","Farofa and egg"], c:0, w:"In the Amazon it comes with dried salted river shrimp; iara's version uses herb oil, plantain coconut cream, and jambu." },
+  { q:"Caranguejo na Moranga is a take on a dish from which part of Brazil?", a:["Southern Brazil, where Chef Vitor grew up","Bahia","The Amazon","Rio de Janeiro"], c:0 },
+  { q:"What is the Bolo de Mandioca finished with?", a:["Puxuri caramel sauce and coconut-lime sorbet","Chocolate ganache","Whipped cream","Guava glaze"], c:0 },
+  { q:"What are the Brigadeiros rolled in?", a:["Large chunks of cacao nibs","Sprinkles","Coconut flakes","Crushed Brazil nuts"], c:0 },
+  { q:"What is in the Sorvete besides cupuaçu ice cream?", a:["Tapioca, puxuri, and sweet farofa","Lemon verbena and honey","Chocolate and cacao nibs","Guava and cheese"], c:0 },
+  { q:"What does the V tag on the menu mean?", a:["Vegan, or can be made vegan on request","Vegetarian only","Very popular","Vitor's pick"], c:0 },
+  { q:"What does the GF tag on the menu mean?", a:["Gluten free","Guest favorite","Grilled over fire","Good for sharing"], c:0 },
+  { q:"Which bread on the menu is NOT gluten free?", a:["Pão de Alho","Pão de Queijo","Both are gluten free","Neither"], c:0, w:"Pão de Queijo is made with cassava starch (GF). Pão de Alho is wheat bread and lists gluten." },
+  { q:"How is Farofa served?", a:["A small cup to every table alongside entrées","Only on request, $6","Only with dessert","Sprinkled on every dish"], c:0 },
+  { q:"What is the Picanha's steak?", a:["12oz prime elite picanha","16oz ribeye","8oz filet","10oz strip"], c:0 },
+  { q:"Crocante de Mandioca is topped with which seafood?", a:["Seared, sliced Atlantic scallops","Jonah crab","Yellowfin tuna","Hiramasa"], c:0 },
+  { q:"What is \"refogado\"?", a:["A gently sautéed aromatic base","A green herb sauce","A fermented cassava juice","A cheese bread"], c:0 },
+];
+var QUIZ_BEV_STORY = [
+  { q:"What is the Tônica Amazônica made with?", a:["Amázzoni gin and Amazonian botanicals","Cachaça and tonic","Pox and cupuaçu","Mezcal and guava"], c:0, w:"$19. Amázzoni is a Brazilian gin made with Amazonian botanicals." },
+  { q:"What is Brahma Duplo Malte?", a:["A pure malt lager from Brazil","A wheat ale from Brooklyn","A black lager from Brazil","A Portuguese lager in a 6.8 oz bottle"], c:0, w:"$8." },
+  { q:"How cold does iara serve its beer?", a:["−5°C, just below freezing, the way Brazilians drink it","Cellar temperature","Room temperature","Over ice"], c:0, w:"\"Estupidamente gelada,\" stupidly cold." },
+  { q:"What is the price of the Super Bock Mini?", a:["$6","$8","$10","$12"], c:0 },
+  { q:"What is the glass price of the Susana Esteban Aventura Tinto?", a:["$18","$15","$22","$24"], c:0 },
+  { q:"How is wine sold on iara's dinner menu?", a:["By the glass","By the bottle only","By the carafe only","Glass and bottle, same list"], c:0, w:"The Oct 16 menu lists wine by the glass only." },
+  { q:"Which wine by the glass is served chilled?", a:["Martha Stoumen Post Flirtation Red","David Moreau Bourgogne Rouge","Zuccardi Polígonos Malbec","Susana Esteban Aventura Tinto"], c:0 },
+  { q:"Which sparkling wine is from Brazil?", a:["Cave Geisse Brut Nature","Luís Pato Vinha Formal Espumante","Garzón Reserva","El Enemigo"], c:0, w:"Pinto Bandeira, Serra Gaúcha. Traditional method, no added sugar." },
+  { q:"What does \"Brut Nature\" on the Cave Geisse mean, per the story?", a:["No added sugar, so it drinks dry","It is a still wine","It is aged in oak","It is a rosé"], c:0 },
+  { q:"Which wine is made by Portugal's 2012 winemaker of the year, the first woman to win it?", a:["Susana Esteban Aventura Tinto","Luís Pato Vinha Formal","De Fermo Rosato","Brij Chardonnay"], c:0 },
+  { q:"Which white is Palomino Fino, the sherry grape, made as a dry still wine?", a:["Alberto Orte Vara y Pulgar Blanco","El Enemigo","Garzón Reserva","Brij Chardonnay"], c:0 },
+  { q:"Which wine is from Uruguay?", a:["Garzón Reserva (Albariño)","El Enemigo (Semillón)","Zuccardi Polígonos (Malbec)","Cave Geisse (Brut Nature)"], c:0 },
+  { q:"Which red sees no oak, aging only in concrete?", a:["Zuccardi Polígonos Altamira Malbec","David Moreau Bourgogne Rouge","Martha Stoumen Post Flirtation","None of them"], c:0 },
+  { q:"Which wine is skin-fermented (an orange wine)?", a:["Day Wines Vin de Days L'Orange","De Fermo Concrete Rosato","Brij Chardonnay","Garzón Reserva"], c:0 },
+  { q:"Who built iara's wine and beer list?", a:["GM Ronald Rufino, a Certified Sommelier","Head Bartender Calvin Czypinski","Chef Vitor Mendes","Exec Sous Chef Eli Gitelman"], c:0 },
+  { q:"Why does the Caipirinha use an oleo saccharum instead of muddled sugar?", a:["The lime peel oil gives its bright, candy-like fruitiness","It is cheaper","It is sugar-free","It keeps the drink clear"], c:0 },
+  { q:"How is the Batida de Coco served?", a:["Without ice, so it warms and opens up","Over crushed ice","Frozen, blended","Hot"], c:0 },
+  { q:"How is the iara cocktail made clear?", a:["Milk-punched with coconut milk, then strained","Filtered through charcoal","Centrifuged","It is not clear"], c:0 },
+  { q:"What does Tokki soju add to the Tucupi Martini?", a:["A floral note","Smoke","Sweetness","Bitterness"], c:0 },
+  { q:"What mezcal is the base of the Romeo and Juliet Martini?", a:["Claridad Espadín","Del Maguey Vida","Pox","Seleta Gold"], c:0 },
+  { q:"What is cachaça distilled from?", a:["Fresh fermented sugarcane juice","Molasses","Agave","Corn"], c:0, w:"Most rum is made from molasses; cachaça uses fresh sugarcane juice." },
+];
+var QUIZ_SERVICE_PDR = [
+  { q:"What does Private Dining at iara cost per person?", a:["$125","$95","$150","$175"], c:0 },
+  { q:"How many guests does the private dining room seat?", a:["7 to 10","4 to 6","12 to 20","Up to 30"], c:0 },
+  { q:"How is the private dining menu served?", a:["Family style, every dish shared","Plated individual courses","Buffet","Tasting menu at the counter"], c:0 },
+  { q:"On the private dining menu, how many Pratos Principais does the group choose?", a:["2 of 3, or all 3 for +$25 per person","1 each","All 3 included","Guests order à la carte"], c:0 },
+  { q:"What does every private dining guest end the night with?", a:["A Brigadeiro","A Caipirinha","A Pudim","A glass of sparkling"], c:0 },
+  { q:"Which 3 dishes open every private dinner (Para Começar)?", a:["Pão de Queijo, Dadinho de Tapioca, Ceviche com Tucupi","Tacacá, Pão de Alho, Crocante","Palmito, Vegetais, Caranguejo","Moqueca, Picanha, Frango"], c:0 },
+  { q:"What gratuity is added to a private dining bill?", a:["20%, distributed in full to the staff","18%","No gratuity","25%"], c:0 },
+  { q:"What is the private dining cancellation policy?", a:["Free up to 48 hours before; after that $50 per person","Free any time","Non-refundable once booked","Free up to 24 hours"], c:0 },
+  { q:"How are drinks handled at a private dinner?", a:["Ordered freely and billed as you go","Included in the $125","A fixed drink package","Not allowed"], c:0 },
 ];
 var QUIZ_MANUAL = [
   { q:"What is the maximum number of plates a server should carry to a table at one time?", a:["2","3","4","5"], c:1 },
@@ -3097,7 +3178,7 @@ function renderFbTabs(){
 var fbQuery = "";
 // Stories (MENU_STORY) attach to cards by name. Aliases cover cards whose
 // menu name differs from the story doc's heading.
-var STORY_ALIASES = {};
+var STORY_ALIASES = { "garzon reserva": "garzon albarino reserva", "el enemigo": "el enemigo semillon" };
 function storyKey(n){ return String(n || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, " ").trim(); }
 var STORY_BY_NAME = null;
 function storyFor(it){
@@ -3832,6 +3913,7 @@ function buildDeck(key){
       var used = dishesForIngredient(ing).map(function(d){ return d.name; });
       cards.push({
         id: "ing:" + ing.term, kind: "ingredient",
+        speakId: ing.id, speak: ing.speak || "", pron: ing.pronunciation || "",
         front: ing.term, back: ing.def,
         extra: used.length ? "On the menu in: " + used.join(", ") : ""
       });
@@ -3839,7 +3921,7 @@ function buildDeck(key){
   } else {
     var items = fbItems.filter(function(it){ return key === "all" || it.category === key; });
     items.forEach(function(it){
-      var ings = ingredientsForDish(it).map(function(x){ return x.term; });
+      var ings = ingredientsForDish(it).filter(function(x){ return storyKey(x.term) !== storyKey(it.name); }).map(function(x){ return x.term; });
       var bits = [];
       if (ings.length) bits.push("Key ingredients: " + ings.join(", "));
       bits.push((it.allergens && it.allergens.length)
@@ -3848,13 +3930,25 @@ function buildDeck(key){
       cards.push({
         id: "dish:" + it.id, kind: "dish", speakId: it.id, speak: it.speak || "",
         front: it.name, pron: it.pronunciation || "",
-        back: it.desc || "", extra: bits.join(".  ")
+        back: it.desc || "", extra: bits.join(".  "),
+        price: it.price || "", group: it.group || "", story: storyFor(it)
       });
     });
   }
   return cards;
 }
 
+var DECK_BLURBS = {
+  all: "Every dish and drink, shuffled.",
+  Starters: "Breads, petiscos, and vegetais.",
+  Mains: "Moqueca, Picanha, Frango.",
+  Sides: "Fries, rice, beans, farofa.",
+  Desserts: "Sobremesas.",
+  Cocktails: "The 6 house cocktails.",
+  "Wine & Beer": "12 wines by the glass, 4 beers.",
+  ingredients: "The Amazonian words behind the menu.",
+  allergens: "Name every allergen, graded."
+};
 function studyDecks(){
   var decks = [{ key:"all", label:"Whole Menu" }];
   FNB_CATEGORIES.forEach(function(c){ decks.push({ key:c, label:c }); });
@@ -3884,15 +3978,15 @@ function renderStudyPicker(){
         : 'Nothing waiting. Everything is either solid or already counted for this shift.') + '</p>' +
       (ready ? '<button class="k-btn k-btn-primary" id="lineup-go">Run the Lineup</button>' : '') +
     '</div>';
-  html += '<h2 class="drill-head k-h-section">Every Deck</h2><div class="deck-grid">';
+  html += '<h2 class="drill-head k-h-section">Pick a Deck</h2><div class="deck-grid">';
   studyDecks().forEach(function(d){
     var cards = buildDeck(d.key);
     var pct = deckMastery(cards);
     html += '<button class="deck" data-deck="'+esc(d.key)+'">' +
       '<span class="deck-name">'+esc(d.label)+'</span>' +
-      '<span class="deck-meta">'+cards.length+(cards.length===1?' card':' cards')+'</span>' +
+      '<span class="deck-meta">'+cards.length+(cards.length===1?' card':' cards')+(DECK_BLURBS[d.key] ? ' \u00b7 '+esc(DECK_BLURBS[d.key]) : '')+'</span>' +
       '<span class="deck-bar"><span style="width:'+pct+'%"></span></span>' +
-      (pct ? '<span class="deck-pct mono">'+pct+'% mastered</span>' : '') + '</button>';
+      '<span class="deck-pct mono">'+(pct ? pct+'% mastered' : 'New')+'</span>' + '</button>';
   });
   html += '</div>';
   area.innerHTML = html;
@@ -3970,13 +4064,15 @@ function renderStudyCard(){
       : "Recall what this is and where it shows up on the menu.")+'</p>' +
       '<button class="k-btn k-btn-primary" id="study-reveal">Show Answer</button>';
   } else {
-    html += '<div class="study-back"><p>'+esc(c.back)+'</p>' +
-      (c.extra ? '<p class="study-extra">'+esc(c.extra)+'</p>' : '') + '</div>' +
+    html += '<div class="study-back"><p>'+esc(c.back)+(c.price ? ' <span class="study-price mono">'+esc(c.price)+(c.group ? ' \u00b7 '+esc(c.group) : '')+'</span>' : '')+'</p>' +
+      (c.extra ? '<p class="study-extra">'+esc(c.extra)+'</p>' : '') +
+      (c.story ? '<details class="study-story"><summary>The Story</summary><p>'+esc(c.story)+'</p></details>' : '') + '</div>' +
       '<div class="study-grade">' +
         '<button class="k-btn k-btn-secondary" id="study-again">Missed It</button>' +
         '<button class="k-btn k-btn-primary" id="study-got">Got It</button></div>';
   }
-  html += '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="study-quit">Back to Study</button></div>';
+  html += '<p class="kbd-hint">Space to flip, \u2192 Got It, \u2190 Missed It.</p>' +
+    '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="study-quit">Back to Study</button></div>';
   area.innerHTML = html;
 
   var rev = document.getElementById("study-reveal");
@@ -4062,7 +4158,7 @@ function renderAllergenCard(){
   } else {
     var nb = document.getElementById("allerg-next");
     if (nb) nb.addEventListener("click", function(){
-      if (allergenResult.correct) d.right++; else { d.wrong++; d.cards.push(c); }
+      if (allergenResult.correct) d.right++; else { d.wrong++; d.cards.push(c); d.missedIds = d.missedIds || {}; d.missedIds[c.id] = c; }
       d.idx++;
       allergenPick = null; allergenResult = null;
       renderStudyCard();
@@ -4076,6 +4172,7 @@ function renderAllergenCard(){
 function gradeStudy(got){
   var d = studyDeck;
   var c = d.cards[d.idx];
+  if (!got) { d.missedIds = d.missedIds || {}; d.missedIds[c.id] = c; }
   bumpMastery(c.id, got);
   // A missed card still comes back this session for the practice, but it can
   // no longer bank credit today, so the repeat is revision, not progress.
@@ -4093,10 +4190,12 @@ function renderStudyDone(){
   var pct = isLineup
     ? Math.round((d.right / (d.right + d.wrong)) * 100)
     : deckMastery(buildDeck(d.key));
-  var actions = isLineup
-    ? '<button class="k-btn k-btn-primary" id="study-decks">Back to Study</button>'
-    : '<button class="k-btn k-btn-primary" id="study-redo">Study Again</button>' +
-      '<button class="k-btn k-btn-secondary" id="study-decks">Pick Another Deck</button>';
+  var missed = Object.keys(d.missedIds || {}).map(function(k){ return d.missedIds[k]; });
+  var actions = (missed.length ? '<button class="k-btn k-btn-primary" id="study-missed">Study the '+missed.length+' Missed</button>' : '') +
+    (isLineup
+    ? '<button class="k-btn '+(missed.length ? 'k-btn-secondary' : 'k-btn-primary')+'" id="study-decks">Back to Study</button>'
+    : '<button class="k-btn '+(missed.length ? 'k-btn-secondary' : 'k-btn-primary')+'" id="study-redo">Study Again</button>' +
+      '<button class="k-btn k-btn-secondary" id="study-decks">Pick Another Deck</button>');
   studyArea().innerHTML =
     '<div class="card result-wrap">' +
       '<div class="eyebrow">'+esc(d.label)+'</div>' +
@@ -4105,6 +4204,11 @@ function renderStudyDone(){
       '<div class="result-actions">' + actions + '</div></div>';
   var redo = document.getElementById("study-redo");
   if (redo) redo.addEventListener("click", function(){ startStudy(d.key); });
+  var sm = document.getElementById("study-missed");
+  if (sm) sm.addEventListener("click", function(){
+    studyDeck = { key:d.key, label:d.label + " \u00b7 Missed", cards:shuffle(missed), idx:0, revealed:false, right:0, wrong:0 };
+    renderStudyCard();
+  });
   document.getElementById("study-decks").addEventListener("click", function(){
     exitStudy();
   });
@@ -8096,8 +8200,8 @@ var QUIZ_BEVERAGE = [
   { q:"What is the garnish/rim on the Batida de Coco?", a:["A salt rim","A coconut-puxuri rim","A sugar rim","A chili-salt rim"], c:1 },
   { q:"The \"iara\" cocktail is named after:", a:["The chef's hometown","The restaurant itself","A type of cachaça","A cocktail competition"], c:1 },
   { q:"What tropical Amazonian fruit stars in the \"iara\" cocktail?", a:["Guava","Cupuaçu","Passion fruit","Pineapple"], c:1 },
-  { q:"What agave spirit from Chiapas, Mexico appears in the \"iara\" cocktail?", a:["Mezcal","Pox","Tequila","Raicilla"], c:1 },
-  { q:"What Amazonian pepper blend is added as a tincture to the \"iara\" cocktail for heat?", a:["Puxuri","Jiquitaia","Jambu","Guaraná"], c:1 },
+  { q:"What Mayan spirit from Chiapas, Mexico is the base of the \"iara\" cocktail?", a:["Mezcal","Pox","Tequila","Raicilla"], c:1 },
+  { q:"What Amazonian pepper blend is added as a tincture to the \"iara\" cocktail for heat?", a:["Puxuri","Jiquitaia","Jambu","Guaraná"], c:1, w:"Jiquitaia, the Baniwa chili powder used throughout the kitchen (it is also in the Picanha's au poivre)." },
   { q:"What 2 clear spirits are shaken together in the Tucupi Martini?", a:["Vodka and sake","Gin and soju","Tequila and shochu","Rum and soju"], c:1 },
   { q:"What Amazonian ingredient lends its name and tang to the Tucupi Martini, via an infused gin?", a:["Cassava","Tucupi","Jambu","Farofa"], c:1 },
   { q:"What briny ingredient rounds out the Tucupi Martini?", a:["Olive brine","Preserved lemon brine","Caper brine","Pickle brine"], c:1 },
@@ -8115,12 +8219,17 @@ function buildFbQuestions(categories){
   var pool = [];
   fbItems.filter(function(it){ return categories.indexOf(it.category) !== -1; }).forEach(function(it){
     if (!it.allergens) return;
-    // Category question
-    pool.push({
-      q: "Which category does \""+it.name+"\" belong to?",
-      a: shuffle(FNB_CATEGORIES.filter(function(c){return c!==it.category;})).slice(0,3).concat([it.category]),
-      correctText: it.category
-    });
+    // Name the item from its menu line. "Which category" was trivia nobody
+    // needs on the floor; matching the description to the name is the menu.
+    var sibs = fbItems.filter(function(o){ return o.id !== it.id && categories.indexOf(o.category) !== -1; });
+    if (it.desc && sibs.length >= 3) {
+      pool.push({
+        q: "Which " + (BEVERAGE_CATEGORIES.indexOf(it.category) !== -1 ? "drink" : "dish") + " is this? \u201c" + it.desc.replace(/ Secret vegan option available\.| Dairy-free sub available.*$/,"") + "\u201d",
+        a: shuffle(sibs).slice(0,3).map(function(o){ return o.name; }).concat([it.name]),
+        correctText: it.name,
+        w: it.name + (it.price ? ", " + it.price : "") + "."
+      });
+    }
     // Allergen question (only if it has at least one allergen)
     if (it.allergens.length) {
       var wrongPools = ["Dairy","Egg","Fish","Shellfish","Gluten","Tree nut","Soy","Sesame","Sulfites","Coconut"].filter(function(a){ return it.allergens.indexOf(a) === -1; });
@@ -8128,23 +8237,24 @@ function buildFbQuestions(categories){
       pool.push({
         q: "Which of these allergens is present in \""+it.name+"\"?",
         a: shuffle(wrong.concat([it.allergens[0]])),
-        correctText: it.allergens[0]
+        correctText: it.allergens[0],
+        w: it.allergens.length > 1 ? "Full allergen list: " + it.allergens.join(", ") + "." : ""
       });
     }
   });
   return pool.map(function(p){
     var opts = p.a;
     var c = opts.indexOf(p.correctText);
-    return { q: p.q, a: opts, c: c };
+    return { q: p.q, a: opts, c: c, w: p.w };
   });
 }
 
 var QUIZ_POOL_CAP = 40;
 
 var QUIZ_META = {
-  general:  { name:"Service", desc:"Service standards, hospitality, iara's concept, and team.", pool: function(){ return capPool(QUIZ_MANUAL.concat(QUIZ_GENERAL).concat(QUIZ_GENERAL_EXTRA).concat(QUIZ_GENERAL_MORE), QUIZ_POOL_CAP); } },
-  food:     { name:"Food", desc:"Dishes and core Brazilian/Amazonian ingredients.", pool: function(){ return capPool(buildFbQuestions(FOOD_CATEGORIES).concat(QUIZ_GLOSSARY).concat(QUIZ_FOOD_EXTRA), QUIZ_POOL_CAP); } },
-  beverage: { name:"Beverage", desc:"Cocktails, wine & beer, and their allergens.", pool: function(){ return capPool(buildFbQuestions(BEVERAGE_CATEGORIES).concat(QUIZ_BEVERAGE).concat(QUIZ_BEVERAGE_MORE), QUIZ_POOL_CAP); } }
+  general:  { name:"Service", desc:"Service standards, team, and private dining.", pool: function(){ return QUIZ_MANUAL.concat(QUIZ_GENERAL).concat(QUIZ_GENERAL_EXTRA).concat(QUIZ_GENERAL_MORE).concat(QUIZ_SERVICE_PDR); } },
+  food:     { name:"Food", desc:"Dishes, the Menu Story, ingredients, and allergens.", pool: function(){ return buildFbQuestions(FOOD_CATEGORIES).concat(QUIZ_GLOSSARY).concat(QUIZ_FOOD_EXTRA).concat(QUIZ_FOOD_STORY); } },
+  beverage: { name:"Beverage", desc:"Cocktails, wine, beer, and their stories.", pool: function(){ return buildFbQuestions(BEVERAGE_CATEGORIES).concat(QUIZ_BEVERAGE).concat(QUIZ_BEVERAGE_MORE).concat(QUIZ_BEV_STORY); } }
 };
 
 var activeQuiz = null; // {key, questions, idx, score}
@@ -8208,9 +8318,18 @@ function startQuiz(key){
   var n = Math.min(20, pool.length);
   var chosen = shuffle(pool).slice(0, n).map(function(q){
     var order = shuffle(q.a.map(function(text, i){ return {text:text, correct:i===q.c}; }));
-    return { q: q.q, opts: order };
+    return { q: q.q, opts: order, w: q.w || "" };
   });
   activeQuiz = { key:key, questions: chosen, idx: 0, score: 0, answered: false, missed: [] };
+  renderQuizQuestion();
+}
+// Practice run of just the questions missed last time. Not saved as an exam
+// attempt, so it never inflates a score on the manager dashboard.
+function startMissedReview(key, missedQs){
+  var chosen = shuffle(missedQs.slice()).map(function(q){
+    return { q: q.q, opts: shuffle(q.opts.map(function(o){ return { text:o.text, correct:o.correct }; })), w: q.w || "" };
+  });
+  activeQuiz = { key:key, questions: chosen, idx: 0, score: 0, answered: false, missed: [], review: true };
   renderQuizQuestion();
 }
 
@@ -8222,7 +8341,7 @@ function renderQuizQuestion(){
   var pctDone = Math.round((aq.idx / aq.questions.length) * 100);
   var html = '<div class="card qcard">' +
     '<div class="qprog"><span class="qprog-n">'+(aq.idx+1)+' of '+aq.questions.length+'</span>' +
-      '<span class="qprog-m">'+esc(QUIZ_META[aq.key].name)+'</span>' +
+      '<span class="qprog-m">'+esc(QUIZ_META[aq.key].name)+(aq.review ? ' \u00b7 Missed Review' : '')+'</span>' +
       '<span class="qprog-s" id="quiz-score">'+(aq.idx ? aq.score+' of '+aq.idx+' right' : '')+'</span></div>' +
     '<div class="qbar"><span style="width:'+pctDone+'%"></span></div>' +
     '<p class="qtext">'+qtxt(q.q)+'</p>' +
@@ -8230,6 +8349,7 @@ function renderQuizQuestion(){
       return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span><span class="opt-t">'+qtxt(o.text)+'</span></button>';
     }).join("") +
     '<div id="q-feedback" class="q-feedback" hidden></div>' +
+    '<p class="kbd-hint">Press 1 to '+q.opts.length+' to answer, Enter for next.</p>' +
     // Study lets you back out mid-deck; a test should not trap you either.
     '<button type="button" class="k-btn k-btn-ghost k-btn-sm card-quit" id="quiz-quit">Back to Final Exam</button>' +
     '</div>';
@@ -8252,7 +8372,7 @@ function answerQuiz(i){
   var correctIdx = q.opts.findIndex(function(o){ return o.correct; });
   var correct = i === correctIdx;
   if (correct) aq.score++;
-  else aq.missed.push({ q: q.q, right: q.opts[correctIdx].text, chose: q.opts[i] ? q.opts[i].text : "" });
+  else aq.missed.push({ q: q.q, right: q.opts[correctIdx].text, chose: q.opts[i] ? q.opts[i].text : "", opts: q.opts, w: q.w || "" });
   document.querySelectorAll(".opt").forEach(function(btn, idx){
     btn.setAttribute("disabled","disabled");
     if (idx === correctIdx) btn.classList.add("correct");
@@ -8265,12 +8385,16 @@ function answerQuiz(i){
   fb.innerHTML = '<p class="q-msg">' + (correct
       ? '<strong>Correct.</strong>'
       : '<strong>Not quite.</strong> The answer is <em>'+qtxt(q.opts[correctIdx].text)+'</em>.') + '</p>' +
+    (q.w ? '<p class="q-why">'+qtxt(q.w)+'</p>' : '') +
     '<button class="k-btn k-btn-primary btn-next" id="q-next">' +
       (aq.idx + 1 >= aq.questions.length ? 'See Your Score' : 'Next Question') + '</button>';
   fb.hidden = false;
   var nextBtn = document.getElementById("q-next");
   nextBtn.addEventListener("click", nextQuizQuestion);
-  nextBtn.focus();
+  nextBtn.focus({ preventScroll: true });
+  // On a phone the feedback lands below the fold; bring Next into reach.
+  var r = fb.getBoundingClientRect();
+  if (r.bottom > window.innerHeight - 96) window.scrollBy(0, r.bottom - (window.innerHeight - 96));
 }
 
 function nextQuizQuestion(){
@@ -8320,7 +8444,7 @@ document.addEventListener("keydown", function(ev){
 function renderQuizResult(){
   var aq = activeQuiz;
   var pct = Math.round((aq.score / aq.questions.length) * 100);
-  saveQuizAttempt(QUIZ_META[aq.key].name, aq.score, aq.questions.length, aq.missed).then(refreshHomeStats);
+  if (!aq.review) saveQuizAttempt(QUIZ_META[aq.key].name, aq.score, aq.questions.length, aq.missed.map(function(m){ return { q:m.q, right:m.right, chose:m.chose }; })).then(refreshHomeStats);
   // Dry, specific, no confetti. The brand voice does not cheer.
   var verdict = pct === 100 ? "Clean" : pct >= 80 ? "Passed" : pct >= 60 ? "Close" : "Run It Again";
   var note = pct === 100 ? "Every one. Go again tomorrow so it sticks."
@@ -8335,6 +8459,7 @@ function renderQuizResult(){
         return '<li><p class="miss-q">'+qtxt(m.q)+'</p>' +
           '<p class="miss-a"><span>Answer</span> '+qtxt(m.right)+'</p>' +
           (m.chose ? '<p class="miss-c"><span>You said</span> '+qtxt(m.chose)+'</p>' : '') +
+          (m.w ? '<p class="miss-w">'+qtxt(m.w)+'</p>' : '') +
           '</li>';
       }).join("") + '</ol></div>';
   }
@@ -8342,12 +8467,16 @@ function renderQuizResult(){
       '<div class="stamp"><span class="stamp-verdict">'+esc(verdict)+'</span>' +
         '<span class="stamp-score mono">'+aq.score+'/'+aq.questions.length+'</span>' +
         '<span class="stamp-cat">'+esc(QUIZ_META[aq.key].name)+'</span></div>' +
-      '<p class="result-note">'+esc(note)+'</p>' +
+      '<p class="result-note">'+esc(aq.review ? (aq.missed.length ? "Practice round, not saved. A few still slipping." : "Practice round, not saved. All of them stuck.") : note)+'</p>' +
       '<div class="result-actions">' +
-        '<button class="k-btn k-btn-primary" id="quiz-again">Run It Again</button>' +
+        (aq.missed.length ? '<button class="k-btn k-btn-primary" id="quiz-missed">Retry the '+aq.missed.length+' Missed</button>' : '') +
+        '<button class="k-btn '+(aq.missed.length ? 'k-btn-secondary' : 'k-btn-primary')+'" id="quiz-again">'+(aq.review ? 'Full Exam' : 'Run It Again')+'</button>' +
         '<button class="k-btn k-btn-secondary" id="quiz-back">Pick Another Section</button></div>' +
       review + '</div>';
   document.getElementById("quiz-again").addEventListener("click", function(){ startQuiz(aq.key); });
+  var qm = document.getElementById("quiz-missed");
+  if (qm) qm.addEventListener("click", function(){ startMissedReview(aq.key, aq.missed); });
+  window.scrollTo({ top: 0 });
   document.getElementById("quiz-back").addEventListener("click", renderQuizPicker);
 }
 
