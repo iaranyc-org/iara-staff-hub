@@ -847,7 +847,7 @@
   }
 
   /* Watch List */
-  .wl-filters{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 16px; }
+  .wl-filters{ display:flex; gap:8px; flex-wrap:wrap; margin:0 0 24px; }
   .wl-filters .k-chip{ white-space:nowrap; flex:none; }
   .k-chip:focus-visible{ outline:2px solid var(--k-ring); outline-offset:2px; }
   .wl-grid{ list-style:none; margin:0; padding:0; display:grid;
@@ -967,7 +967,9 @@
   .misses li::after{ content:""; display:block; clear:both; }
   @media (max-width:860px){
     .wl-grid{ gap:12px; }
-    .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; }
+    .wl-filters{ flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; padding-right:40px;
+      -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent);
+      mask-image:linear-gradient(to right,#000 calc(100% - 36px),transparent); }
     .wl-filters::-webkit-scrollbar{ display:none; }
   }
   /* Phones: two columns. Wider (tablet, phone landscape) keeps auto-fill so cards stay card-sized. */
