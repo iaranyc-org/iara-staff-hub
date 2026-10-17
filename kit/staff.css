@@ -181,7 +181,19 @@
 .k-alert > p { margin: 0; flex: 1 1 240px; }
 .k-skeleton { border-radius: var(--k-radius); background: var(--k-raised); animation: k-pulse 1.5s ease-in-out infinite; }
 @keyframes k-pulse { 50% { background: var(--k-raised-hover); } }
-@media (prefers-reduced-motion: reduce) { .k-skeleton, .k-skel-card, [class*="k-skel"] { animation: none; } .k-btn, .k-chip, .k-tab { transition: none; } .k-btn:active, .k-chip:active { transform: none; } }
+/* Kitchen loading line (next/loading.tsx, loading.js): one aria-hidden line under a skeleton.
+   Height is reserved before the text lands at 200ms. Only the icon moves, transform only. */
+.k-cook { display: flex; align-items: center; gap: 8px; min-height: 20px; margin: 4px 0 0; grid-column: 1 / -1; color: var(--k-muted); font: 500 13px/20px var(--k-font-sans); }
+.k-cook-icon { flex: none; color: var(--k-accent-text); transform-origin: 50% 90%; animation: k-wobble 1.6s ease-in-out infinite; }
+@keyframes k-wobble { 0%, 100% { transform: rotate(-8deg); } 50% { transform: rotate(8deg); } }
+/* CSS mode (route loading.tsx, never hydrated): whole line appears at 200ms, then one of 13 stacked
+   lines is visible per 1.6s slot. 7.69% = 1/13 of the 20.8s cycle. */
+.k-cook-css { animation: k-cook-show 0s linear 200ms both; }
+@keyframes k-cook-show { from { visibility: hidden; } to { visibility: visible; } }
+.k-cook-cycle { display: grid; }
+.k-cook-cycle > span { grid-area: 1 / 1; visibility: hidden; animation: k-cook-slot 20.8s linear infinite; animation-delay: calc(var(--i) * 1.6s + 200ms); }
+@keyframes k-cook-slot { 0%, 7.68% { visibility: visible; } 7.69%, 100% { visibility: hidden; } }
+@media (prefers-reduced-motion: reduce) { .k-skeleton, .k-skel-card, [class*="k-skel"], .k-cook-icon { animation: none; } .k-cook-cycle > span { animation: none; } .k-cook-cycle > span:first-child { visibility: visible; } .k-btn, .k-chip, .k-tab { transition: none; } .k-btn:active, .k-chip:active { transform: none; } }
 
 /* Sign-in gate */
 .k-gate { min-height: 100dvh; display: grid; place-items: center; padding: 16px; }

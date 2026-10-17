@@ -18,7 +18,8 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v60';   // v50: kit v2 dialog.js/toast.js/confirm.js precached (Lineup More sheet + feedback need them offline)
+const VERSION = 'iara-lineup-v61';   // v61: kit loading.js precached (kitchen loading line)
+// v50: kit v2 dialog.js/toast.js/confirm.js precached (Lineup More sheet + feedback need them offline)
 // v45: /analytics precached so an offline reload shows the cached page; kit tabs.js
 const CORE = [
   './',
@@ -34,6 +35,7 @@ const CORE = [
   './kit/dialog.js',
   './kit/toast.js',
   './kit/confirm.js',
+  './kit/loading.js',
   './ops',
   './iara_kitchen_ops.html',
   './manifest.json',
