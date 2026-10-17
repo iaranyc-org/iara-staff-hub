@@ -68,6 +68,9 @@ def items():
     seen, out = set(), []
     for m in ITEM_RE.finditer(src):
         d = m.groupdict()
+        # Source text uses JS \uXXXX escapes for accents; decode them, or the
+        # TTS reads the escape code aloud ("Am\u00e1zzoni" came out as noise).
+        d["speak"] = re.sub(r"\\u([0-9a-fA-F]{4})", lambda m: chr(int(m.group(1), 16)), d["speak"])
         if d["speak"] and d["id"] not in seen:
             seen.add(d["id"]); out.append(d)
     return out

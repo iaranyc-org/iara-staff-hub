@@ -1,0 +1,2876 @@
+{
+ "d1": {
+  "speak": "Tacacá",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Taca-cá!",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Taca ca!",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Takaka.",
+    "score": 0.67
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Takaka!",
+    "score": 0.67
+   },
+   {
+    "voice": "Laura",
+    "heard": "Takaká!",
+    "score": 0.67
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Takaka.",
+    "score": 0.67
+   },
+   {
+    "voice": "River",
+    "heard": "Takaka!",
+    "score": 0.67
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Takaka",
+    "score": 0.67
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Takacá!",
+    "score": 0.67
+   },
+   {
+    "voice": "Chris",
+    "heard": "Takakaa",
+    "score": 0.62
+   }
+  ]
+ },
+ "d2": {
+  "speak": "Dadinho de Tapioca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Dadinho de Tapioca",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Dadinho de tapioca",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Dadinho de tapioca",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Tadinho de tapioca",
+    "score": 0.94
+   },
+   {
+    "voice": "Brian",
+    "heard": "Dadinho de tapió.",
+    "score": 0.93
+   },
+   {
+    "voice": "Eric",
+    "heard": "Dadinga de Tapioca.",
+    "score": 0.88
+   }
+  ]
+ },
+ "d3": {
+  "speak": "Crocante de Mandioca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Matilda",
+    "heard": "Crocante de Mandiocca",
+    "score": 0.97
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Crocante de Mandiocca",
+    "score": 0.97
+   },
+   {
+    "voice": "River",
+    "heard": "Crocante de Mendioca",
+    "score": 0.94
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Crocante de Manjioca",
+    "score": 0.94
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Crocante de Mandiaca",
+    "score": 0.94
+   },
+   {
+    "voice": "Chris",
+    "heard": "Crocante de Menjioca",
+    "score": 0.89
+   }
+  ]
+ },
+ "d4": {
+  "speak": "Ceviche com Tucupi",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Cê vige como tu cupi.",
+    "score": 0.88
+   },
+   {
+    "voice": "Chris",
+    "heard": "Se visse como tu cumpri.",
+    "score": 0.74
+   },
+   {
+    "voice": "Will",
+    "heard": "C'est vici comme tout coupi.",
+    "score": 0.74
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Servi-te como Tukupi!",
+    "score": 0.73
+   },
+   {
+    "voice": "Alice",
+    "heard": "C'est vite com tout coupé.",
+    "score": 0.72
+   },
+   {
+    "voice": "Laura",
+    "heard": "Se vejo como tu cumpir.",
+    "score": 0.71
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Se visse como tu copia.",
+    "score": 0.71
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Se vici, come to Coupé!",
+    "score": 0.67
+   },
+   {
+    "voice": "Brian",
+    "heard": "Se vixe com tudo que o P.",
+    "score": 0.65
+   },
+   {
+    "voice": "River",
+    "heard": "Se vish, come to koopi.",
+    "score": 0.61
+   }
+  ]
+ },
+ "d5": {
+  "speak": "Pão de Queijo",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Pão de Queijo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Pão de Queijo.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Alice",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   }
+  ]
+ },
+ "d6": {
+  "speak": "Pão de Alho",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Matilda",
+    "heard": "Pão de alho",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Pão de Alho",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Pão de alho",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Pão de alho",
+    "score": 1.0
+   }
+  ]
+ },
+ "d7": {
+  "speak": "Palmito Carpaccio",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Palmito Carpaccio",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Palmito Carpaccio.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Palmito Carpaccio",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Palmito Carpaccio.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Palmito Carpaccio",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Palmeiro Carpatio.",
+    "score": 0.81
+   }
+  ]
+ },
+ "d8": {
+  "speak": "Caranguejo na Moranga",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Caranguejo na Moranga",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Caranguejo na Moranga",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Caranguejo na Moranga.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Laura",
+    "heard": "Caranguejo na Moranga",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Caranguejo na Moranga",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Caranguejo na Muranga",
+    "score": 0.95
+   }
+  ]
+ },
+ "d9": {
+  "speak": "Vegetais Grelhados",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Vegetais Grelhados",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Vegetais Grelhados",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Vegetais Grelhados",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Vegetais grelhados",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Vegetais Grelhado",
+    "score": 0.97
+   },
+   {
+    "voice": "Brian",
+    "heard": "Vejetais grelhados",
+    "score": 0.94
+   }
+  ]
+ },
+ "d10": {
+  "speak": "Moqueca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Moqueca",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Moqueca.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Moqueca",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Moqueca.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Moqueca.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Moqueca.",
+    "score": 1.0
+   }
+  ]
+ },
+ "d11": {
+  "speak": "Picanha com Fritas",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Brian",
+    "heard": "Picanha com fritas.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Picanha com fritas",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "picanha com fritas",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Chris",
+    "heard": "Picanha com fritas.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "picanha com fritas",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Picanha com frita.",
+    "score": 0.97
+   }
+  ]
+ },
+ "d12": {
+  "speak": "Frango Amazonas",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Frango Amazonas",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Frango Amazonas",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Frango Amazonas",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Brian",
+    "heard": "Frango Amazonas",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Frango Amazonas",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Frango, Amazonas.",
+    "score": 1.0
+   }
+  ]
+ },
+ "d14": {
+  "speak": "Tapioca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Tapiaca.",
+    "score": 0.86
+   },
+   {
+    "voice": "Matilda",
+    "heard": "TAPIACA",
+    "score": 0.86
+   },
+   {
+    "voice": "River",
+    "heard": "TAPIACA",
+    "score": 0.86
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Sarah",
+    "heard": "TAPIACA!",
+    "score": 0.86
+   },
+   {
+    "voice": "Will",
+    "heard": "TAPIACA",
+    "score": 0.86
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Tapiaca",
+    "score": 0.86
+   }
+  ]
+ },
+ "d15": {
+  "speak": "Arroz",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Eric",
+    "heard": "Arroz.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Arroz.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Arroz!",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Arroz.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Arooo!",
+    "score": 0.6
+   },
+   {
+    "voice": "Alice",
+    "heard": "Ahol!",
+    "score": 0.44
+   }
+  ]
+ },
+ "d16": {
+  "speak": "Feijão Manteiguinha",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Feijão Manteiguinha",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Feijão manteiguinha.",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Feijão manteiguinha.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Laura",
+    "heard": "Feijão Manteiguinha",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Feijão Manteguinha",
+    "score": 0.97
+   },
+   {
+    "voice": "Alice",
+    "heard": "Feijão Manteguinha",
+    "score": 0.97
+   }
+  ]
+ },
+ "d17": {
+  "speak": "Farofa",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Farofa.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Farofa.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Farafa.",
+    "score": 0.83
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Farafa.",
+    "score": 0.83
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Farafa",
+    "score": 0.83
+   },
+   {
+    "voice": "Sarah",
+    "heard": "For Offer",
+    "score": 0.57
+   }
+  ]
+ },
+ "d18": {
+  "speak": "Pudim",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Pudim!",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Pudim",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Poudim",
+    "score": 0.91
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "PUDIN",
+    "score": 0.8
+   },
+   {
+    "voice": "Matilda",
+    "heard": "PUDIN",
+    "score": 0.8
+   },
+   {
+    "voice": "Laura",
+    "heard": "Puding.",
+    "score": 0.73
+   }
+  ]
+ },
+ "d19": {
+  "speak": "Bolo de Mandioca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Brian",
+    "heard": "Bolo de Mandioca",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Bolo de mandioca",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Bolo de Mandioca",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Chris",
+    "heard": "Bolo de mandioca.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Bolo de Mandiaca.",
+    "score": 0.93
+   },
+   {
+    "voice": "Eric",
+    "heard": "Bolo de Mandiaca.",
+    "score": 0.93
+   }
+  ]
+ },
+ "d20": {
+  "speak": "Sorvete",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Sorvete!",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Sorvete!",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Sorvete.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Sorvete!",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Sorvete!",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Solve-o!",
+    "score": 0.62
+   }
+  ]
+ },
+ "d21": {
+  "speak": "Brigadeiro",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Brigadeiro!",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Brigadeiro.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Brigadeiro.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Sarah",
+    "heard": "Brigadeiro.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Brigadeiro.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Obrigado.",
+    "score": 0.78
+   }
+  ]
+ },
+ "d22": {
+  "speak": "Caipirinha",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Caipirinha.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Caipirinha",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Kaipirinha!",
+    "score": 0.9
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Kaipirinha.",
+    "score": 0.9
+   },
+   {
+    "voice": "Chris",
+    "heard": "Kaipirinha.",
+    "score": 0.9
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Haipirinha!",
+    "score": 0.9
+   }
+  ]
+ },
+ "d23": {
+  "speak": "Batida de Coco",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Batida de Coco",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "batida de coco.",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Batida de Cocoa",
+    "score": 0.96
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Alice",
+    "heard": "Bacida de Coco",
+    "score": 0.92
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Bacida de Cocoa",
+    "score": 0.88
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Bacido de Coco",
+    "score": 0.83
+   }
+  ]
+ },
+ "d42": {
+  "speak": "Tônica Amazônica",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Tônica Amazônica",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Tônica Amazonica",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Tônica Amazonica",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Sarah",
+    "heard": "Tônica, Amazônica",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Tônica Amazônica",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Tônica, Amazônica",
+    "score": 1.0
+   }
+  ]
+ },
+ "d24": {
+  "speak": "iara",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Iara",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Iara.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Iara",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Iara",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Iara.",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Yaiara.",
+    "score": 0.8
+   }
+  ]
+ },
+ "d25": {
+  "speak": "Tucupi",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Tocupi.",
+    "score": 0.83
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Tukupi!",
+    "score": 0.83
+   },
+   {
+    "voice": "Brian",
+    "heard": "Tukupi!",
+    "score": 0.83
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Alice",
+    "heard": "Tukupi!",
+    "score": 0.83
+   },
+   {
+    "voice": "Eric",
+    "heard": "Tukupi!",
+    "score": 0.83
+   },
+   {
+    "voice": "Laura",
+    "heard": "Tchukupi!",
+    "score": 0.71
+   }
+  ]
+ },
+ "d27": {
+  "speak": "Cave Geisse",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Cave Geis",
+    "score": 0.89
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Cave Geis",
+    "score": 0.89
+   },
+   {
+    "voice": "Chris",
+    "heard": "Cave Geisir",
+    "score": 0.8
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Cave Guys",
+    "score": 0.67
+   },
+   {
+    "voice": "Alice",
+    "heard": "Cave Guys!",
+    "score": 0.67
+   },
+   {
+    "voice": "Eric",
+    "heard": "Cave Guys!",
+    "score": 0.67
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Carve Gaice",
+    "score": 0.6
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Calva, gás!",
+    "score": 0.56
+   },
+   {
+    "voice": "Brian",
+    "heard": "Cabe guys!",
+    "score": 0.56
+   },
+   {
+    "voice": "Laura",
+    "heard": "Kava guys!",
+    "score": 0.44
+   }
+  ]
+ },
+ "d28": {
+  "speak": "Luís Pato Vinha Formal Espumante",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Luís Pato vinha formal espumante.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Luiz Pato, vinha formal espumante.",
+    "score": 0.96
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Luiz Pato, vinha formal espumante.",
+    "score": 0.96
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Chris",
+    "heard": "Luiz Patvinha formal espumantes.",
+    "score": 0.93
+   },
+   {
+    "voice": "Eric",
+    "heard": "Luiz Pato vinha formar o espumante.",
+    "score": 0.91
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Luiz Pato, vinha formar o espumante.",
+    "score": 0.91
+   }
+  ]
+ },
+ "d29": {
+  "speak": "Garzón Reserva",
+  "lang": "es",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Garzón Reserva",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Garzón Reserva",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Garzón Reserva",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Garzón Reserva.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Garzón Reserva",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Garcione Reserva",
+    "score": 0.86
+   }
+  ]
+ },
+ "d30": {
+  "speak": "Alberto Orte Vara y Pulgar Blanco",
+  "lang": "es",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Alberto Ortevara y Pulgar Blanco.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Alberto Ortevara y Pulgar Blanco",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Alberto Ortevara y Pulgar Blanco.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Brian",
+    "heard": "Alberto Ortevara y Pulgar Blanco.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Alberto Ortevara y Pulgar Blanco.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Alberto Horte, Vara y Pulgar Blanco.",
+    "score": 0.98
+   }
+  ]
+ },
+ "d31": {
+  "speak": "El Enemigo",
+  "lang": "es",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "El enemigo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "El enemigo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "El enemigo.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "El enemigo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "El enemigo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "el enemigo.",
+    "score": 1.0
+   }
+  ]
+ },
+ "d33": {
+  "speak": "De Fermo Rosato",
+  "lang": "it",
+  "kept": [
+   {
+    "voice": "Brian",
+    "heard": "Defermo rosato",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Defermo rosato",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Defermo rosato",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Defermo rosato",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Defermo rossato",
+    "score": 0.96
+   },
+   {
+    "voice": "Eric",
+    "heard": "Defermo il rosato.",
+    "score": 0.93
+   }
+  ]
+ },
+ "d36": {
+  "speak": "David Moreau Bourgogne Rouge Sous Montot",
+  "lang": "fr",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "David Moreau, Bourgogne-Rouge, sous-monteau.",
+    "score": 0.93
+   },
+   {
+    "voice": "Eric",
+    "heard": "David Moreau, Bourgogne, Rouge, Sous-Monteau.",
+    "score": 0.93
+   },
+   {
+    "voice": "Sarah",
+    "heard": "David Moreau Bourgogne Rouge, sous Manteau.",
+    "score": 0.9
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "David Moreau Bourgogne-Yarouge  Sous-Monteau",
+    "score": 0.9
+   },
+   {
+    "voice": "Jessica",
+    "heard": "David Moreau, Bourgogne-Yarouge-Sous-Monteau.",
+    "score": 0.9
+   },
+   {
+    "voice": "Brian",
+    "heard": "David Moreau, Bourgogne-Rue-Sumento.",
+    "score": 0.89
+   }
+  ]
+ },
+ "d37": {
+  "speak": "Susana Esteban Aventura Tinto",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Susana Esteban Aventura Tinto",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Susana Esteban Aventura Tinto",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Susana Esteban Aventura, Chinto.",
+    "score": 0.94
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Susana está em uma aventura tinto.",
+    "score": 0.89
+   },
+   {
+    "voice": "Chris",
+    "heard": "Susana Esteban, Aventura 5.",
+    "score": 0.88
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Suzana esteve na aventura chinto.",
+    "score": 0.81
+   }
+  ]
+ },
+ "d38": {
+  "speak": "Zuccardi Polígonos Altamira Malbec",
+  "lang": "es",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Sucardi Polígonos, Altamira Malbec.",
+    "score": 0.95
+   },
+   {
+    "voice": "Eric",
+    "heard": "Sucardi Polígonos, Altamira Malbec.",
+    "score": 0.95
+   },
+   {
+    "voice": "Laura",
+    "heard": "Sucardi Polígonos, Altamira Malbec.",
+    "score": 0.95
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Sucardi Polígonos, Altamira Malbec.",
+    "score": 0.95
+   },
+   {
+    "voice": "Chris",
+    "heard": "Sucardi Polígonos, Alta Miramalbeck.",
+    "score": 0.94
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Sucardi, Polígonos Altamira Malbeck.",
+    "score": 0.94
+   }
+  ]
+ },
+ "d39": {
+  "speak": "Super Bock",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Super Boc.",
+    "score": 0.94
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Superboc.",
+    "score": 0.94
+   },
+   {
+    "voice": "Brian",
+    "heard": "super-boc",
+    "score": 0.94
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Alice",
+    "heard": "Super Boc!",
+    "score": 0.94
+   },
+   {
+    "voice": "Eric",
+    "heard": "Super Boc!",
+    "score": 0.94
+   },
+   {
+    "voice": "Laura",
+    "heard": "Super Boc!",
+    "score": 0.94
+   }
+  ]
+ },
+ "d43": {
+  "speak": "Brahma Duplo Malte",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Brama Duplo Malte",
+    "score": 0.97
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Brama Duplo Malte",
+    "score": 0.97
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Brama Duplo Malte",
+    "score": 0.97
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Brama Duplo Malt.",
+    "score": 0.93
+   },
+   {
+    "voice": "Will",
+    "heard": "Prama Duplo Maltei",
+    "score": 0.88
+   },
+   {
+    "voice": "Brian",
+    "heard": "Brama Duplo Maldito",
+    "score": 0.85
+   }
+  ]
+ },
+ "d41": {
+  "speak": "Xingu",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Eric",
+    "heard": "Xingu.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Xingü!",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Xingu",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Laura",
+    "heard": "Shingu",
+    "score": 0.73
+   },
+   {
+    "voice": "River",
+    "heard": "Shingu",
+    "score": 0.73
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Shingu",
+    "score": 0.73
+   }
+  ]
+ },
+ "ing-tapioca": {
+  "speak": "Tapioca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Tapioca",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "TAPIACA!",
+    "score": 0.86
+   },
+   {
+    "voice": "Brian",
+    "heard": "TAPIACA",
+    "score": 0.86
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "TAPIACA",
+    "score": 0.86
+   },
+   {
+    "voice": "Laura",
+    "heard": "TAPIACA",
+    "score": 0.86
+   },
+   {
+    "voice": "Chris",
+    "heard": "TAPIACA",
+    "score": 0.86
+   }
+  ]
+ },
+ "ing-jambu": {
+  "speak": "Jambu",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Jambu.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Jambu",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Jambu!",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Jambu",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Jambu!",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Jambu!",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-tucupi": {
+  "speak": "Tucupi",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Tukupi!",
+    "score": 0.83
+   },
+   {
+    "voice": "Chris",
+    "heard": "Tocupi.",
+    "score": 0.83
+   },
+   {
+    "voice": "Matilda",
+    "heard": "TUCAPI",
+    "score": 0.83
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Tukupi.",
+    "score": 0.83
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Tukupi!",
+    "score": 0.83
+   },
+   {
+    "voice": "Will",
+    "heard": "Tukupi.",
+    "score": 0.83
+   }
+  ]
+ },
+ "ing-paodequeijo": {
+  "speak": "Pão de Queijo",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Brian",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Pão de queijo",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Laura",
+    "heard": "Pão de Queijo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Pão de Queijo.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Pão de Queijo",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-paodealho": {
+  "speak": "Pão de Alho",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Brian",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Pão de alho.",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-acai": {
+  "speak": "Açaí",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Açai",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Açaí.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Açaí!",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Açaí.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Açaí.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Assai",
+    "score": 0.67
+   }
+  ]
+ },
+ "ing-cumaru": {
+  "speak": "Cumaru",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Kumaru!",
+    "score": 0.83
+   },
+   {
+    "voice": "Laura",
+    "heard": "Kumaru!",
+    "score": 0.83
+   },
+   {
+    "voice": "Chris",
+    "heard": "KumaRu.",
+    "score": 0.83
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "KumaRu",
+    "score": 0.83
+   },
+   {
+    "voice": "River",
+    "heard": "Kumaru!",
+    "score": 0.83
+   },
+   {
+    "voice": "Eric",
+    "heard": "Um marro.",
+    "score": 0.62
+   }
+  ]
+ },
+ "ing-puxuri": {
+  "speak": "Puxuri",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Puxuri.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Puxuri.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Puxuri!",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Puxuri!",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "PUSHURI",
+    "score": 0.77
+   },
+   {
+    "voice": "Laura",
+    "heard": "Poocherie!",
+    "score": 0.4
+   }
+  ]
+ },
+ "ing-moqueca": {
+  "speak": "Moqueca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Matilda",
+    "heard": "Moqueca",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Moqueca.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Moqueca",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Moqueca",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Moqueca.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Mô Kika",
+    "score": 0.46
+   }
+  ]
+ },
+ "ing-picanha": {
+  "speak": "Picanha",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Eric",
+    "heard": "Picanha!",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Picanha.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Picanha!",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Laura",
+    "heard": "Pecanha",
+    "score": 0.86
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Bicanha!",
+    "score": 0.86
+   },
+   {
+    "voice": "River",
+    "heard": "Pecanha.",
+    "score": 0.86
+   }
+  ]
+ },
+ "ing-feijao": {
+  "speak": "Feijão Manteiguinha",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Eric",
+    "heard": "Feijão manteiguinha.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Feijão Manteiguinha",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Feijão manteiguinha.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Feijão Manteguinha",
+    "score": 0.97
+   },
+   {
+    "voice": "Brian",
+    "heard": "Feijão Manteguinha.",
+    "score": 0.97
+   },
+   {
+    "voice": "Alice",
+    "heard": "Feijão Manteguinha",
+    "score": 0.97
+   }
+  ]
+ },
+ "ing-farofa": {
+  "speak": "Farofa",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Farofa.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Farofa",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Farofa.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "River",
+    "heard": "Farafa.",
+    "score": 0.83
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Farafa",
+    "score": 0.83
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Far offer",
+    "score": 0.71
+   }
+  ]
+ },
+ "ing-cupuacu": {
+  "speak": "Cupuaçu",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Kupuachu.",
+    "score": 0.8
+   },
+   {
+    "voice": "Laura",
+    "heard": "Coupou-a-sou.",
+    "score": 0.71
+   },
+   {
+    "voice": "Chris",
+    "heard": "Kupu asu.",
+    "score": 0.71
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "KUPUASU",
+    "score": 0.71
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Coupou a chouxe.",
+    "score": 0.7
+   },
+   {
+    "voice": "Alice",
+    "heard": "Coupou a chouxe.",
+    "score": 0.7
+   },
+   {
+    "voice": "River",
+    "heard": "Coupou-a-sous.",
+    "score": 0.67
+   },
+   {
+    "voice": "Eric",
+    "heard": "Coupou-a-sous.",
+    "score": 0.67
+   },
+   {
+    "voice": "Brian",
+    "heard": "Coupou-sou.",
+    "score": 0.62
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Coupou-sous.",
+    "score": 0.59
+   }
+  ]
+ },
+ "ing-brigadeiro": {
+  "speak": "Brigadeiro",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Brian",
+    "heard": "Brigadeiro.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Brigadeiro!",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Brigadeiro!",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Chris",
+    "heard": "Brigadeiro.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Obrigadero.",
+    "score": 0.9
+   },
+   {
+    "voice": "Eric",
+    "heard": "Brigadier",
+    "score": 0.84
+   }
+  ]
+ },
+ "ing-tacaca": {
+  "speak": "Tacacá",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Taca-cá!",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Tacacá!",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Taca-cão!",
+    "score": 0.92
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Sarah",
+    "heard": "Takacá.",
+    "score": 0.67
+   },
+   {
+    "voice": "Will",
+    "heard": "Takacá.",
+    "score": 0.67
+   },
+   {
+    "voice": "Brian",
+    "heard": "Takacá!",
+    "score": 0.67
+   }
+  ]
+ },
+ "ing-yanomami": {
+  "speak": "Yanomami",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Yanomami.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Yanomami.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Yanomami",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Sarah",
+    "heard": "Yanomami",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Yanomami.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Yanomami",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-amazzoni": {
+  "speak": "Amázzoni",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Amazôni.",
+    "score": 0.93
+   },
+   {
+    "voice": "Eric",
+    "heard": "Amazônia.",
+    "score": 0.88
+   },
+   {
+    "voice": "Laura",
+    "heard": "Amazônia.",
+    "score": 0.88
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Chris",
+    "heard": "Amazônia",
+    "score": 0.88
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Amazônia.",
+    "score": 0.88
+   },
+   {
+    "voice": "Alice",
+    "heard": "Amazon.",
+    "score": 0.86
+   }
+  ]
+ },
+ "ing-xingu": {
+  "speak": "Xingu",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Xingu!",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Xingu",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Xingu.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Laura",
+    "heard": "Xingu!",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "SINGU",
+    "score": 0.8
+   },
+   {
+    "voice": "Eric",
+    "heard": "Shingon.",
+    "score": 0.5
+   }
+  ]
+ },
+ "ing-dende": {
+  "speak": "Dendê",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Matilda",
+    "heard": "Dende.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Dende.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Dende.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Dende.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Dende!",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Dendei!",
+    "score": 0.91
+   }
+  ]
+ },
+ "ing-mandioca": {
+  "speak": "Mandioca",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Mandiocca",
+    "score": 0.94
+   },
+   {
+    "voice": "Eric",
+    "heard": "Mandaioc.",
+    "score": 0.88
+   },
+   {
+    "voice": "River",
+    "heard": "Mandiaca.",
+    "score": 0.88
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Alice",
+    "heard": "Mundioca",
+    "score": 0.88
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Mandaiacca.",
+    "score": 0.78
+   },
+   {
+    "voice": "Chris",
+    "heard": "Mendiaca.",
+    "score": 0.75
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Mandiaka.",
+    "score": 0.75
+   },
+   {
+    "voice": "Brian",
+    "heard": "MUNDIACA",
+    "score": 0.75
+   },
+   {
+    "voice": "Laura",
+    "heard": "Mandaiaka.",
+    "score": 0.71
+   },
+   {
+    "voice": "Will",
+    "heard": "Mendai Aca",
+    "score": 0.71
+   }
+  ]
+ },
+ "ing-palmito": {
+  "speak": "Palmito",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Palmito.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Palmito.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Palmito.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Palmito!",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Palmito",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Palmetto",
+    "score": 0.8
+   }
+  ]
+ },
+ "ing-brazilnut": {
+  "speak": "Brazil nut",
+  "lang": "en",
+  "kept": [
+   {
+    "voice": "River",
+    "heard": "Brazil Nut",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Brazil nut",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Brazil nut.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Alice",
+    "heard": "Brazil nut",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Brazil NUG",
+    "score": 0.89
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Brazil Nota.",
+    "score": 0.84
+   }
+  ]
+ },
+ "ing-plantain": {
+  "speak": "Plantain",
+  "lang": "en",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Plantain.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Plantain",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Plantain.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Plantain",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Plantin",
+    "score": 0.93
+   },
+   {
+    "voice": "Chris",
+    "heard": "Planton.",
+    "score": 0.8
+   }
+  ]
+ },
+ "ing-biquinho": {
+  "speak": "Biquinho",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Brian",
+    "heard": "Biquinho",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "biquinho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Biquinho.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Biquinho.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Piquinho",
+    "score": 0.88
+   },
+   {
+    "voice": "Eric",
+    "heard": "Piquing.",
+    "score": 0.67
+   }
+  ]
+ },
+ "ing-jiquitaia": {
+  "speak": "Jiquitaia",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Jiquitáia",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Jiquitáia",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Jiquitaya",
+    "score": 0.89
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "de Itaia.",
+    "score": 0.62
+   },
+   {
+    "voice": "Brian",
+    "heard": "Zikitaya",
+    "score": 0.59
+   },
+   {
+    "voice": "Eric",
+    "heard": "Chikitaya!",
+    "score": 0.56
+   }
+  ]
+ },
+ "ing-requeijao": {
+  "speak": "Requeijão",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Requeijão.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Requeijão.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Requeijão.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Sarah",
+    "heard": "Requeijão.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Requeijão.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Requeijão.",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-queijominas": {
+  "speak": "Queijo Minas",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Queijo Minas!",
+    "score": 1.0
+   },
+   {
+    "voice": "Eric",
+    "heard": "Queijo Minas.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Queijo Minas.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Chris",
+    "heard": "Queijo Minas!",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Queijo minas!",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Queijo Minas.",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-moranga": {
+  "speak": "Moranga",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Will",
+    "heard": "Moranga.",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Moranga",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Moranga",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Moringa",
+    "score": 0.86
+   },
+   {
+    "voice": "Brian",
+    "heard": "Morunga",
+    "score": 0.86
+   },
+   {
+    "voice": "Eric",
+    "heard": "Moringa.",
+    "score": 0.86
+   }
+  ]
+ },
+ "ing-hiramasa": {
+  "speak": "Hiramasa",
+  "lang": "en",
+  "kept": [
+   {
+    "voice": "Matilda",
+    "heard": "Hiramasa.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Hiramasa.",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Hiramasa.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "Hiramasa.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Hiramasa.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Hiramasa.",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-tilefish": {
+  "speak": "Tilefish",
+  "lang": "en",
+  "kept": [
+   {
+    "voice": "Eric",
+    "heard": "Tilefish.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Tilefish.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "tilefish.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Tilefish.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Tilefish",
+    "score": 1.0
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Tilefish.",
+    "score": 1.0
+   }
+  ]
+ },
+ "ing-jonahcrab": {
+  "speak": "Jonah crab",
+  "lang": "en",
+  "kept": [
+   {
+    "voice": "Jessica",
+    "heard": "Jonah Crabb",
+    "score": 0.95
+   },
+   {
+    "voice": "Brian",
+    "heard": "Jonah Crabb",
+    "score": 0.95
+   },
+   {
+    "voice": "Alice",
+    "heard": "Jonah Crabb",
+    "score": 0.95
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Jonah Crabb",
+    "score": 0.95
+   },
+   {
+    "voice": "Laura",
+    "heard": "Jonah Crabb",
+    "score": 0.95
+   },
+   {
+    "voice": "Chris",
+    "heard": "Jonah Krabb.",
+    "score": 0.84
+   }
+  ]
+ },
+ "ing-cachaca": {
+  "speak": "Cachaça",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Cachaça",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Cachassa.",
+    "score": 0.8
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Cachassa!",
+    "score": 0.8
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Cachassa.",
+    "score": 0.8
+   },
+   {
+    "voice": "Brian",
+    "heard": "Cachassa.",
+    "score": 0.8
+   },
+   {
+    "voice": "Will",
+    "heard": "Cachos deeeeeee",
+    "score": 0.38
+   }
+  ]
+ },
+ "ing-pox": {
+  "speak": "Pox",
+  "lang": "es",
+  "kept": [
+   {
+    "voice": "Laura",
+    "heard": "Pox.",
+    "score": 1.0
+   },
+   {
+    "voice": "Matilda",
+    "heard": "pox",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "POX",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Will",
+    "heard": "pox",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Pax.",
+    "score": 0.67
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Pauks.",
+    "score": 0.25
+   }
+  ]
+ },
+ "ing-refogado": {
+  "speak": "Refogado",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Alice",
+    "heard": "Refogado.",
+    "score": 1.0
+   },
+   {
+    "voice": "Laura",
+    "heard": "Refogado.",
+    "score": 1.0
+   },
+   {
+    "voice": "Chris",
+    "heard": "Refogado.",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Matilda",
+    "heard": "Refogado.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "Refogad.",
+    "score": 0.93
+   },
+   {
+    "voice": "Eric",
+    "heard": "RefaGuard",
+    "score": 0.71
+   }
+  ]
+ },
+ "ing-molhoverde": {
+  "speak": "Molho verde",
+  "lang": "pt",
+  "kept": [
+   {
+    "voice": "Sarah",
+    "heard": "Molho verde.",
+    "score": 1.0
+   },
+   {
+    "voice": "Jessica",
+    "heard": "Molho Verde",
+    "score": 1.0
+   },
+   {
+    "voice": "Alice",
+    "heard": "Molho verde",
+    "score": 1.0
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Eric",
+    "heard": "Molho verde.",
+    "score": 1.0
+   },
+   {
+    "voice": "Brian",
+    "heard": "MOLHO VERGE",
+    "score": 0.9
+   },
+   {
+    "voice": "Will",
+    "heard": "MOLHO VERG",
+    "score": 0.84
+   }
+  ]
+ },
+ "ing-oleo": {
+  "speak": "Oleo saccharum",
+  "lang": "en",
+  "kept": [
+   {
+    "voice": "Chris",
+    "heard": "Oleo saccharum.",
+    "score": 1.0
+   },
+   {
+    "voice": "Will",
+    "heard": "Oleo Saccharum.",
+    "score": 1.0
+   },
+   {
+    "voice": "River",
+    "heard": "Olio Saccorum.",
+    "score": 0.8
+   }
+  ],
+  "dropped": [
+   {
+    "voice": "Jessica",
+    "heard": "Olio Sakaram.",
+    "score": 0.67
+   },
+   {
+    "voice": "Matilda",
+    "heard": "Olio Saka Room.",
+    "score": 0.64
+   },
+   {
+    "voice": "Sarah",
+    "heard": "Oliya Sakaram.",
+    "score": 0.56
+   }
+  ]
+ }
+}
