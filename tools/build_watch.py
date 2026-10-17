@@ -226,6 +226,20 @@ for e in LOOKBOOK:
         if e.get(k):
             p[k] = e[k]
 HIDE -= {e['slug'] for e in LOOKBOOK}  # Jay, 2026-10-13: show everyone in the Hall PR Look Book.
+
+# Current roles from each person's own verified bio (2026-10-17, Jay approved). Applied
+# after the Look Book block so its older shortRole does not overwrite them.
+ROLE_UPDATES = {
+    'tierney-plumb': {'outlet': 'Eater DC', 'role': 'Editor, Eater DC (per her Instagram bio)', 'shortRole': 'Eater DC Editor'},
+    'kathleen-squires': {'outlet': 'Wirecutter (formerly The Wall Street Journal)',
+                         'role': "Senior staff writer, Wirecutter's kitchen section; former WSJ columnist (per her Instagram bio)",
+                         'shortRole': 'Wirecutter Staff Writer'},
+    'chris-stang': {'role': 'Co-founder of The Infatuation; Chief Product Officer at Chase (per his Instagram bio)'},
+    'paolo-lucchesi': {'role': 'Editor-in-Chief, Resy (per his Instagram bio)', 'shortRole': 'Resy Editor-in-Chief'},
+}
+for s_, o in ROLE_UPDATES.items():
+    if s_ in roster:
+        roster[s_].update(o)
 for s_, p in roster.items():
     p['hidden'] = s_ in HIDE
 
