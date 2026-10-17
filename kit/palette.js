@@ -102,9 +102,11 @@
   function fetchSrc(src) {
     if (src.state === "ok" && Date.now() - src.at < 120000) return;
     if (src.state === "loading") return;
+    // "signin" falls through: re-fetch each open so the row goes away once they sign in.
     src.state = "loading";
     fetch(src.url, { cache: "no-store", credentials: "same-origin", headers: { accept: "application/json" } }).then(function (r) {
       if (r.status === 403) { src.state = "hidden"; src.rows = []; return; }
+      if (r.status === 401) { src.state = "signin"; src.rows = []; return; } // signed out of that app: offer its sign-in, retry next open
       if (!r.ok || (r.headers.get("content-type") || "").indexOf("json") < 0) throw new Error(r.status);
       return r.json().then(function (j) { src.rows = j[src.key] || []; src.state = "ok"; src.at = Date.now(); });
     }).catch(function () { src.state = "error"; src.rows = []; }).then(function () { if (root && !root.hidden) paint(); });
@@ -160,6 +162,8 @@
       var pts = SRC.parties.rows.map(function (p) { return { p: p, s: personScore(p, q) || (norm(partyLine(p)).indexOf(q) > -1 || String(p.date).indexOf(q) > -1 ? 1 : 0) }; }).filter(function (x) { return x.s; })
         .sort(function (a, b) { return b.s - a.s || partyOrder(a.p, b.p); })
         .slice(0, 5).map(function (x) { var p = x.p; return { label: nice(p.name) || p.email || "Unnamed Party", sub: partyLine(p), s: x.s, href: "/private-dining?party=" + encodeURIComponent(p.id), hard: true }; });
+      if (SRC.people.state === "signin") ppl = [{ label: "Sign In to Search Guests", hint: "Inbox", s: 1, href: "/inbox", hard: true }];
+      if (SRC.parties.state === "signin") pts = [{ label: "Sign In to Search Parties", hint: "Private Dining", s: 1, href: "/private-dining", hard: true }];
       groups.push(["Guests", ppl], ["Private Dining Parties", pts]);
     }
     items = [];
