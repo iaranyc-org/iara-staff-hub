@@ -163,6 +163,10 @@
   .gate-card .k-btn, .pin-gate .k-btn{ width:100%; }
   /* Below 1024 every button is a full 44px thumb target, small ones included. */
   @media (max-width:1023px){ .k-btn-sm{ min-height:var(--k-tap); } }
+  .remember-row{ display:flex; align-items:center; gap:10px; min-height:44px; margin:2px 0 4px; font-size:14px; color:var(--ink-mid); cursor:pointer; }
+  .remember-row input{ width:20px; height:20px; accent-color:var(--sun); margin:0; }
+  .remember-who{ margin:0 0 8px; font-size:13px; color:var(--ink-soft); }
+  .remember-who .linkish{ display:inline; margin:0; padding:0; font-size:13px; min-height:0; }
   .gate-note{ margin-top:18px; font-size:13px; color:var(--ink-soft); line-height:1.5; }
 
   /* ===================== Shell ===================== */
@@ -1290,6 +1294,8 @@
         <input id="in-pw" type="password" autocomplete="current-password" aria-describedby="in-pw-hint">
         <p class="field-help" id="in-pw-hint">Ask your manager. It's the same password for the whole team.</p>
       </div>
+      <label class="remember-row"><input type="checkbox" id="in-remember" checked> Remember Me on This Device</label>
+      <p class="remember-who" id="remember-who" hidden>Not you? <button type="button" class="linkish" id="remember-forget">Use a different email</button></p>
       <p class="form-err" id="gate-err" hidden></p>
       <button type="submit" class="k-btn k-btn-primary">Start</button>
     </form>
@@ -2699,6 +2705,7 @@ document.getElementById("gate-form").addEventListener("submit", async function(e
   await adoptLegacy(legacy);
   btn.disabled = false; btn.textContent = "Start";
   saveProfile(profile);
+  rememberMe(document.getElementById("in-remember").checked ? profile : null);
   enterShell();
 });
 
@@ -2731,6 +2738,20 @@ function syncNavAccount(){
   if (window.iaraNav) iaraNav.setAccount(acct);
   else document.addEventListener("DOMContentLoaded", function(){ if (window.iaraNav) iaraNav.setAccount(acct); });
 }
+// Remember Me: who last signed in here, kept separately from the live
+// session so signing out (Switch User) or an expired session still opens
+// the gate with email, name and role filled in. Unticking forgets them.
+var LS_REMEMBER = "iara_remember_v1";
+function rememberMe(p){
+  try {
+    if (p) localStorage.setItem(LS_REMEMBER, JSON.stringify({ email: p.email, name: p.name, role: p.role }));
+    else localStorage.removeItem(LS_REMEMBER);
+  } catch(e){}
+}
+function remembered(){
+  try { return JSON.parse(localStorage.getItem(LS_REMEMBER) || "null"); } catch(e){ return null; }
+}
+
 function switchUser(){
   confirmDialog({
     title: "Switch User?",
@@ -8757,6 +8778,21 @@ async function boot(data){
   // No session to restore, so the gate is the right surface to show.
   document.getElementById("gate").hidden = false;
   document.documentElement.classList.remove("booting");
+  var rem = remembered();
+  if ((!existing || !existing.name) && rem && rem.email) {
+    document.getElementById("in-email").value = rem.email || "";
+    document.getElementById("in-name").value = rem.name || "";
+    if (rem.role) document.getElementById("in-role").value = rem.role;
+    document.getElementById("pw-field").hidden = signedIn;
+    document.getElementById("remember-who").hidden = false;
+  }
+  document.getElementById("remember-forget").addEventListener("click", function(){
+    rememberMe(null);
+    ["in-email","in-name"].forEach(function(id){ document.getElementById(id).value = ""; });
+    document.getElementById("in-role").value = "";
+    document.getElementById("remember-who").hidden = true;
+    document.getElementById("in-email").focus();
+  });
   if (existing && existing.name) {
     // Known name but no session: prefill and ask only for the password.
     document.getElementById("in-name").value = existing.name;
