@@ -3328,7 +3328,7 @@ var fbAdminUnlocked = false;
 // append a new one (an addition), and a tombstone in menu_deleted_defaults
 // hides a default that was deleted without ever being edited first.
 async function loadFbItems(){
-  if (!db) { fbItems = FNB_DEFAULTS.slice(); return; }
+  if (!db) { fbItems = FNB_DEFAULTS.map(titleAllergens); return; }
   var byId = {};
   FNB_DEFAULTS.forEach(function(d){ byId[d.id] = d; });
   // Each read stands on its own. menu_deleted_defaults needs its own
@@ -3346,7 +3346,14 @@ async function loadFbItems(){
     var snap = await db.collection("menu_items").get();
     snap.docs.forEach(function(d){ var v = d.data(); v.id = d.id; byId[d.id] = v; });
   } catch(e) { /* offline or genuinely no access - defaults still render */ }
-  fbItems = Object.keys(byId).map(function(id){ return byId[id]; });
+  fbItems = Object.keys(byId).map(function(id){ return byId[id]; }).map(titleAllergens);
+}
+// Allergen labels display in Title Case ("Tree Nut", "Tonka Bean"); Jay 2026-10-17, casing only.
+function titleAllergens(it){
+  if (!it || !Array.isArray(it.allergens)) return it;
+  var c = Object.assign({}, it);
+  c.allergens = it.allergens.map(function(a){ return String(a).replace(/(^|[\s-])([a-z])/g, function(m, p1, ch){ return p1 + ch.toUpperCase(); }); });
+  return c;
 }
 
 function renderFbTabs(){
@@ -9316,7 +9323,7 @@ function buildFbQuestions(categories){
     }
     // Allergen question (only if it has at least one allergen)
     if (it.allergens.length) {
-      var wrongPools = ["Dairy","Egg","Fish","Shellfish","Gluten","Tree nut","Soy","Sesame","Sulfites","Coconut"].filter(function(a){ return it.allergens.indexOf(a) === -1; });
+      var wrongPools = ["Dairy","Egg","Fish","Shellfish","Gluten","Tree Nut","Soy","Sesame","Sulfites","Coconut"].filter(function(a){ return it.allergens.indexOf(a) === -1; });
       var wrong = shuffle(wrongPools).slice(0,3);
       pool.push({
         q: "Which of these allergens is present in \""+it.name+"\"?",
