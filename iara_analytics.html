@@ -132,6 +132,11 @@
   .bars.tr .bar .none{ align-self:center; margin:auto; font-size:11.5px; color:var(--river); }
   .xl{ display:flex; gap:3px; font-size:12px; color:var(--river); margin-top:6px; }
   .xl div{ flex:1; min-width:0; text-align:center; white-space:nowrap; overflow:visible; }
+  /* "(so far)" on its own line, right-aligned: inline it overflowed a narrow last cell and widened the page on phones. */
+  .xl .sofar{ display:block; }
+  /* Many thin bars on a phone: the % labels ran into each other. The tooltip and table still carry the numbers. */
+  @media (max-width:600px){ .bars.tr.dense em, #panel-phone .bars.trend.dense em{ display:none; } }
+  .xl div:last-child{ text-align:right; }
   /* Narrow phones: smaller axis text so 10/10-style labels don't touch; tighter header so the title and Updated time fit side by side. */
   @media (max-width:420px){ .xl{ font-size:11px; } .updated{ font-size:12px; } }
   .hbar{ display:grid; grid-template-columns:96px 1fr 36px; align-items:center; gap:10px; font-size:14px; margin-bottom:8px; }
@@ -258,7 +263,8 @@
   #panel-phone .bar span{ display:block; border-radius:2px 2px 0 0; }
   #panel-phone .bar:hover{ outline:1px solid var(--line); outline-offset:2px; }
   #panel-phone .xl{ display:flex; gap:3px; font-size:12px; color:var(--river); margin-top:6px; }
-  #panel-phone .xl div{ flex:1; text-align:center; white-space:nowrap; overflow:visible; }
+  #panel-phone .xl div{ flex:1; min-width:0; text-align:center; white-space:nowrap; overflow:visible; }
+  #panel-phone .xl div:last-child{ text-align:right; }
   #panel-phone .tip{ position:fixed; pointer-events:none; background:var(--k-raised); border:1px solid var(--k-border); border-radius:var(--k-radius); padding:8px 10px; font-size:12.5px; box-shadow:var(--shadow); z-index:9; }
   #panel-phone table{ width:100%; border-collapse:collapse; font-size:14px; }
   #panel-phone th{ text-align:left; font-size:13px; color:var(--river); font-weight:700; padding:8px 8px; border-bottom:1px solid var(--line); }
@@ -546,10 +552,12 @@ document.addEventListener("DOMContentLoaded", function(){
   firebase.auth().onAuthStateChanged(function(user){
     try { if (user) localStorage.setItem("iara_auth_hint", "1"); else localStorage.removeItem("iara_auth_hint"); } catch(e){}
     if (user){ $("gate").hidden = true; $("an-bar").hidden = false; $("app").hidden = false; paint(); load(); }
-    else { $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; }
+    else { $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; try { $("pw").focus({ preventScroll: true }); } catch(e){} }
   });
+  // Same wording as the hub gate: an empty field is not a wrong password.
   $("gate-form").addEventListener("submit", function(ev){ ev.preventDefault(); $("gate-err").hidden = true;
-    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(e){ $("gate-err").textContent = e && e.code === "auth/network-request-failed" ? "Couldn't reach sign-in. Check your connection and try again." : "That password is not right. Ask your manager."; $("gate-err").hidden = false; }); });
+    if (!$("pw").value){ $("gate-err").textContent = "Enter the password."; $("gate-err").hidden = false; $("pw").focus(); return; }
+    firebase.auth().signInWithEmailAndPassword(STAFF_EMAIL, $("pw").value).catch(function(e){ $("gate-err").textContent = e && e.code === "auth/network-request-failed" ? "Couldn't reach sign-in. Check your connection and try again." : "That password is not right. Ask your manager."; $("gate-err").hidden = false; $("pw").select(); }); });
 
   // One error box for the page (kit .k-alert) with Try Again; offline gets its own wording and a banner.
   function showErr(msg){
@@ -615,12 +623,12 @@ document.addEventListener("DOMContentLoaded", function(){
       head = gapNote && full >= 2 ? gapNote(wk) : "Pick a longer range to see a trend.";
     }
     var max = series[0].max || niceMax(Math.max.apply(null, pts.map(function(p){ return Math.max.apply(null, series.map(function(s){ return s.val(p) || 0; })); }).concat([1])));
-    var bars = '<div class="bars tr">' + pts.map(function(p){
+    var bars = '<div class="bars tr' + (pts.length * series.length > 10 ? ' dense' : '') + '">' + pts.map(function(p){
       var vals = series.map(function(s){ return s.val(p); });
       var tip = esc(p.label + (p.partial ? " (so far)" : "") + ": " + series.map(function(s, i){ return s.name + " " + (vals[i] == null ? "-" : s.fmt(vals[i])); }).join(", "));
       return '<div class="bar' + (p.partial ? " partial" : "") + '" data-k-tip="' + tip + '">' + (vals.every(function(v){ return v == null; }) ? '<span class="none" aria-label="No data">-</span>' :
         series.map(function(s, i){ var v = vals[i]; return '<span style="height:' + (v == null ? 0 : Math.max(100 * v / max, 1)) + '%;background:' + s.color + '">' + (v != null && !p.partial ? "<em>" + s.fmt(v) + "</em>" : "") + '</span>'; }).join("")) + '</div>'; }).join("") + '</div>';
-    var xl = '<div class="xl">' + pts.map(function(p){ return '<div>' + esc((wk ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : "")) + '</div>'; }).join("") + '</div>';
+    var xl = '<div class="xl">' + pts.map(function(p){ return '<div>' + esc((wk ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1])) + (p.partial ? '<span class="sofar">(so far)</span>' : "") + '</div>'; }).join("") + '</div>';
     return '<div class="card" style="margin-bottom:12px"><h2>' + title + (wk ? " · Week over Week" : " · Day over Day") + '</h2><p style="margin:0 0 10px">' + head + '</p>' +
       legend(series.map(function(s){ return { name: s.name, color: s.color }; })) + withAxis(max, bars, xl) +
       '<p class="note">' + (wk ? "Mon to Sun weeks" : "Open days only (closed Sun and Mon)") + ', from opening. The hatched bar is still in progress.</p></div>';
@@ -880,7 +888,7 @@ document.addEventListener("DOMContentLoaded", function(){
       head = name(b) + ": <b>" + rb + "%</b> answered during business hours, " + (diff > 0 ? "up " + diff + " pts" : diff < 0 ? "down " + (-diff) + " pts" : "level") + " from " + name(a) + " (" + ra + "%).";
     } else head = withCalls.length ? "Pick a longer range to see a trend." : "No calls during business hours in this range.";
     $("trend-head").innerHTML = head;
-    var bars = $("trend"); bars.innerHTML = ""; $("trend-x").innerHTML = "";
+    var bars = $("trend"); bars.innerHTML = ""; $("trend-x").innerHTML = ""; bars.classList.toggle("dense", pts.length > 5);
     pts.forEach(function(p){
       var b = document.createElement("div"); b.className = "bar";
       var ar = r(p.svcAnswered, p.svcTotal), hr = r(p.handled, p.needed);
@@ -894,7 +902,8 @@ document.addEventListener("DOMContentLoaded", function(){
       });
       tipOn(b, "<b>" + p.label + "</b><br>Answered " + p.svcAnswered + " of " + p.svcTotal + " business-hours calls<br>Answered " + p.handled + " of " + p.needed + " guests");
       bars.appendChild(b);
-      var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1]) + (p.partial ? " (so far)" : ""); $("trend-x").appendChild(l);
+      var l = document.createElement("div"); l.textContent = (unit === "week" ? p.label.replace("Wk ", "") : pts.length <= 5 && window.innerWidth > 420 ? p.label : p.label.split(" ")[1]);
+      if (p.partial){ var sf = document.createElement("span"); sf.className = "sofar"; sf.textContent = "(so far)"; l.appendChild(sf); } $("trend-x").appendChild(l);
     });
     $("trend-y").innerHTML = "<span style='bottom:0'>0</span><span style='bottom:50%'>50%</span><span style='bottom:100%'>100%</span>";
     bars.querySelectorAll(".grid").forEach(function(g){ g.remove(); });
