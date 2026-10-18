@@ -29,12 +29,12 @@ const CORE = [
   './iara_staff_hub.html',
   './analytics',
   './iara_analytics.html',
-  './kit/tokens.css',
-  './kit/staff.css',
-  './kit/dialog.js',
-  './kit/toast.js',
-  './kit/confirm.js',
-  './kit/loading.js',
+  './kit/tokens.css?v=5ac7b7c914',
+  './kit/staff.css?v=47daffe097',
+  './kit/dialog.js?v=cb70755f73',
+  './kit/toast.js?v=0085d82749',
+  './kit/confirm.js?v=7db7e84d1a',
+  './kit/loading.js?v=488aec5b9c',
   './ops',
   './iara_kitchen_ops.html',
   './manifest.json',
@@ -90,7 +90,12 @@ self.addEventListener('fetch', (e) => {
   // The shared staff kit (/kit/*: CSS, nav and palette scripts) changes with every UI release and
   // must always match the page it ships with. Cache-first served yesterday's kit under today's page
   // and broke the nav (2026-10-13). So: network first, cache only as the offline fallback.
-  const isKit = url.origin === location.origin && url.pathname.startsWith('/kit/');
+  const isKitPath = url.origin === location.origin && url.pathname.startsWith('/kit/');
+  // Versioned kit URLs (?v=<content hash>, stamped by tools/version_assets.py) can never go
+  // stale - new content means a new URL - so they take the cache-first path below. Only
+  // unversioned /kit/ requests keep network-first.
+  const isVersioned = url.origin === location.origin && url.searchParams.has('v') && (isKitPath || url.pathname === '/lineup.js');
+  const isKit = isKitPath && !isVersioned;
 
   // Root now covers three pages (the hub, Lineup at /lineup, Ops at /ops), so
   // each is cached and matched by its own request rather than one hardcoded
