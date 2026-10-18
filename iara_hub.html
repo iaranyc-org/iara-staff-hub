@@ -219,8 +219,7 @@
 (function(){ var h=null; try{ h=localStorage.getItem("iara_auth_hint"); }catch(e){}
   document.getElementById(h ? "launcher" : "gate").hidden = false; })();
 </script>
-<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script type="module" src="/kit/fb-auth.js"></script>
 <script>
 /* deferred: runs after the deferred Firebase scripts (perf) */
 document.addEventListener("DOMContentLoaded", function(){
