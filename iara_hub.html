@@ -19,8 +19,13 @@
 <link rel="apple-touch-icon" href="/icon-512.png">
 <link rel="icon" href="/icon-512.png">
 <meta name="theme-color" content="#391d1f">
-<link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://use.typekit.net" crossorigin>
+<link rel="preconnect" href="https://p.typekit.net" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://iara-lineup.firebaseapp.com">
+<link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="/kit/tokens.css">
 <link rel="stylesheet" href="/kit/staff.css">
 <script src="/kit/spotlight.js" defer></script>
@@ -211,9 +216,11 @@
 (function(){ var h=null; try{ h=localStorage.getItem("iara_auth_hint"); }catch(e){}
   document.getElementById(h ? "launcher" : "gate").hidden = false; })();
 </script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
+/* deferred: runs after the deferred Firebase scripts (perf) */
+document.addEventListener("DOMContentLoaded", function(){
 (function(){
   // The typed password is checked against Firebase for real, the same way
   // iara_staff_hub.html itself does it. A hardcoded string comparison here
@@ -350,4 +357,5 @@
   // (@iara.nyc only). Going straight there avoids signing in twice (2026-10-14).
   mgrBtn.addEventListener("click", function(){ location.href = "/home"; });
 })();
+});
 </script>
