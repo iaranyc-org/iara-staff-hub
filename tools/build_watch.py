@@ -388,3 +388,25 @@ wl_path = os.path.expanduser('~/Claude/iara-inbox/ig-worker/watchlist.json')
 if os.path.isdir(os.path.dirname(wl_path)):
     json.dump(wl, open(wl_path, 'w'), ensure_ascii=False, indent=1)
     print('bom dia watchlist:', len(wl), 'people,', sum(1 for w in wl if w['aliases']), 'with aliases ->', wl_path)
+
+# The iara Inbox manager app (staff.iara.nyc/inbox/watch) shows the same Watch List. It gets the
+# display-cleaned, non-hidden list from this build (never hand-copied), with absolute image URLs and
+# the booking aliases its reservation matcher needs (same rule as ig-worker/reviews.mjs).
+full_path = os.path.expanduser('~/Claude/iara-inbox/app/src/data/watchlist.full.json')
+if os.path.isdir(os.path.dirname(os.path.dirname(full_path))):
+    os.makedirs(os.path.dirname(full_path), exist_ok=True)
+    alias_by = {w['name']: w for w in wl}
+    ABS = 'https://staff.iara.nyc/'
+    def _abs(u):
+        return ABS + u.lstrip('/') if isinstance(u, str) and u.lstrip('/').startswith('img/') else u
+    full = []
+    for p in out:
+        q = copy.deepcopy(p)
+        q['photo'] = _abs(q.get('photo'))
+        q['photos'] = [dict(ph, src=_abs(ph.get('src'))) for ph in (q.get('photos') or [])]
+        w = alias_by.get(q['name'], {})
+        q['match'] = w.get('match', [q['name']])
+        q['aliases'] = sorted(set((q.get('aliases') or []) + (w.get('aliases') or [])))
+        full.append(q)
+    json.dump(full, open(full_path, 'w'), ensure_ascii=False, indent=1)
+    print('inbox watchlist:', len(full), 'people ->', full_path)
