@@ -27,6 +27,7 @@ const CORE = [
   './iara_home.html',
   './lineup',
   './iara_staff_hub.html',
+  './lineup.js?v=9c600f151d',
   './analytics',
   './iara_analytics.html',
   './kit/tokens.css?v=5ac7b7c914',
@@ -94,7 +95,7 @@ self.addEventListener('fetch', (e) => {
   // Versioned kit URLs (?v=<content hash>, stamped by tools/version_assets.py) can never go
   // stale - new content means a new URL - so they take the cache-first path below. Only
   // unversioned /kit/ requests keep network-first.
-  const isVersioned = url.origin === location.origin && url.searchParams.has('v') && (isKitPath || url.pathname === '/lineup.js');
+  const isVersioned = url.origin === location.origin && url.searchParams.has('v') && (isKitPath || /^\/lineup\.js$/.test(url.pathname));
   const isKit = isKitPath && !isVersioned;
 
   // Root now covers three pages (the hub, Lineup at /lineup, Ops at /ops), so
