@@ -939,6 +939,13 @@ async function touchStaffDoc(){
     var ref = db.doc("staff/" + profile.id);
     var snap = await ref.get();
     var now = new Date().toISOString();
+    // This device's record was merged into another since it last opened:
+    // switch to the combined record and carry on there.
+    if (snap.exists && snap.data().mergedInto && snap.data().mergedInto !== profile.id) {
+      profile.id = await resolveStaffId(snap.data().mergedInto);
+      saveProfile(profile);
+      return touchStaffDoc();
+    }
     var visit = visitFields(snap.exists ? snap.data() : {}, now);
     if (snap.exists) {
       await ref.update(Object.assign({ name: profile.name, role: profile.role, email: profile.email || null, lastActive: now }, visit));
@@ -1156,10 +1163,25 @@ function gateStep1(){
   gateBusy(false);
   e.focus(); e.select();
 }
+// A record a manager merged into another carries mergedInto. Signing in with
+// that email (e.g. a typo'd address that was folded into the real one) must
+// land on the combined record, not start a fresh empty one.
+async function resolveStaffId(id){
+  if (!db) return id;
+  try {
+    for (var hop = 0; hop < 5; hop++) {
+      var snap = await db.doc("staff/" + id).get();
+      var to = snap.exists && snap.data().mergedInto;
+      if (!to || to === id) return id;
+      id = to;
+    }
+  } catch(e){}
+  return id;
+}
 async function lookupStaff(email){
   if (!db) return null;
   try {
-    var snap = await db.doc("staff/" + emailId(email)).get();
+    var snap = await db.doc("staff/" + (await resolveStaffId(emailId(email)))).get();
     return snap.exists ? snap.data() : null;
   } catch(e){ return null; }
 }
@@ -1167,7 +1189,7 @@ async function finishSignIn(email, name, role){
   var prev = loadProfile();
   var legacy = [stableId(name, role)];
   if (prev && prev.id && legacy.indexOf(prev.id) === -1) legacy.push(prev.id);
-  profile = { id: emailId(email), email: email, name: name, role: role };
+  profile = { id: await resolveStaffId(emailId(email)), email: email, name: name, role: role };
   gateBusy(true, "Loading your progress\u2026");
   await adoptLegacy(legacy);
   justSignedIn = true;
@@ -8256,10 +8278,29 @@ function allQuestionTexts(){
 // or an old name-based record next to their new email record). Suggested,
 // never automatic; a manager confirms each merge.
 function personKey(n){ return String(n || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[^a-z ]/g, " ").replace(/\s+/g, " ").trim(); }
+// Two emails that are clearly the same person mistyped: same domain (or a
+// one-letter domain slip like gmaqil.com) and the same address once digits
+// and dots are ignored, or at most one character apart.
+function editDist(a, b){
+  var m = a.length, n = b.length, d = [];
+  for (var i = 0; i <= m; i++) { d[i] = [i]; }
+  for (var j = 1; j <= n; j++) d[0][j] = j;
+  for (i = 1; i <= m; i++) for (j = 1; j <= n; j++)
+    d[i][j] = Math.min(d[i-1][j] + 1, d[i][j-1] + 1, d[i-1][j-1] + (a[i-1] === b[j-1] ? 0 : 1));
+  return d[m][n];
+}
+function emailsClose(x, y){
+  x = String(x).toLowerCase(); y = String(y).toLowerCase();
+  var px = x.split("@"), py = y.split("@");
+  if (px.length !== 2 || py.length !== 2) return false;
+  if (editDist(px[1], py[1]) > 1) return false;
+  var lx = px[0].replace(/[0-9.]/g, ""), ly = py[0].replace(/[0-9.]/g, "");
+  return lx.length >= 4 && (lx === ly || editDist(px[0], py[0]) <= 1);
+}
 function likelySame(a, b){
   var ka = personKey(a.rawName || a.name), kb = personKey(b.rawName || b.name);
   if (!ka || !kb) return false;
-  if (a.email && b.email && a.email !== b.email) return false;
+  if (a.email && b.email && a.email !== b.email) return emailsClose(a.email, b.email);
   var sameRole = !a.role || !b.role || a.role === b.role;
   if (ka === kb) return true;
   var ta = ka.split(" "), tb = kb.split(" ");
@@ -8267,8 +8308,10 @@ function likelySame(a, b){
   if (sameRole && (ta.length === 1 || tb.length === 1) && ta[0] === tb[0]) return true;
   return false;
 }
+// Keep whichever record has the most progress (Jay 2026-10-18): tests first,
+// then First Week, then visits; an email record wins a tie.
 function keeperOf(a, b){
-  var score = function(r){ return (r.email ? 100 : 0) + (personKey(r.name).split(" ").length > 1 ? 10 : 0) + r.count; };
+  var score = function(r){ return r.count * 1000 + (r.clDone || 0) * 20 + (r.visits || 0) + (r.email ? 1 : 0); };
   return score(a) >= score(b) ? [a, b] : [b, a];
 }
 function duplicatePairs(rows){
