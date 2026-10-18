@@ -3161,6 +3161,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Staff Writer, The New Yorker.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",
@@ -3263,6 +3264,7 @@ var WATCH = /*WATCH_DATA*/[
   ],
   "hidden": false,
   "hallIntel": "Former NYT Restaurant Critic.",
+  "tier": "need",
   "links": [
    {
     "type": "instagram",

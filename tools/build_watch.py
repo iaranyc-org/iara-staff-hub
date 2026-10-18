@@ -260,6 +260,7 @@ NEED_TO_KNOW = {
     'morgan-carter',                                                # Time Out NY food editor (best-of lists)
     'robert-sietsema', 'steve-cuozzo',                              # Independent and NY Post critics
     'michelin-inspectors',
+    'pete-wells', 'hannah-goldfield',                               # Jay 2026-10-18: former critics staff should still know on sight
 }
 ALIAS_RE_T = __import__('re').compile(r'(?i:under the name|alias(?: name)?(?: is|:)?|books? (?:as|under)|reservations? (?:are made )?(?:as|under))\s+["“]?([A-Z][a-z]+ [A-Z][a-zA-Z\'-]+)')
 for s_, p in roster.items():

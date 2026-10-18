@@ -318,7 +318,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Staff Writer, The New Yorker. Instagram: @hannahgoldfield."
+  "hallIntel": "Staff Writer, The New Yorker. Instagram: @hannahgoldfield.",
+  "tier": "need"
  },
  {
   "slug": "gwendal-poullennec",
@@ -502,7 +503,8 @@
    }
   ],
   "hidden": false,
-  "hallIntel": "Former NYT Restaurant Critic. Twitter and Instagram: @pete_wells."
+  "hallIntel": "Former NYT Restaurant Critic. Twitter and Instagram: @pete_wells.",
+  "tier": "need"
  },
  {
   "slug": "florence-fabricant",
