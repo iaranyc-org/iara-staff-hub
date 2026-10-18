@@ -204,6 +204,13 @@
   </main>
 </div>
 
+<script>
+/* Paint at once instead of waiting on Firebase (perf). A device that was
+   signed in last time sees the launcher (static links, no private data);
+   anyone else sees the gate. onAuthStateChanged below reconciles either way. */
+(function(){ var h=null; try{ h=localStorage.getItem("iara_auth_hint"); }catch(e){}
+  document.getElementById(h ? "launcher" : "gate").hidden = false; })();
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
@@ -244,6 +251,7 @@
   // leaving #gate's default [hidden] alone here left a signed-out visitor
   // looking at a blank page.
   firebase.auth().onAuthStateChanged(function(user){
+    try { if (user) localStorage.setItem("iara_auth_hint", "1"); else localStorage.removeItem("iara_auth_hint"); } catch(e){}
     if (user) unlock();
     else {
       gate.hidden = false; launcher.hidden = true;

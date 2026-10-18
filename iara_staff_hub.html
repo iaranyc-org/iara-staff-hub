@@ -6,7 +6,7 @@
   // never strand the page if boot throws. Counted from the end of parsing,
   // so a slow connection keeps the loader up instead of going blank.
   document.addEventListener("DOMContentLoaded", function(){
-    setTimeout(function(){ document.documentElement.classList.remove("booting"); }, 4000);
+    setTimeout(function(){ document.documentElement.classList.remove("booting"); }, 2500);
   });
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -2651,8 +2651,9 @@ function visitFields(d, now){
   return out;
 }
 
+var lineupOptimistic = false; // true while the shell is painted ahead of auth
 async function touchStaffDoc(){
-  if (!db || !profile) return;
+  if (!db || !profile || lineupOptimistic) return;
   try {
     var ref = db.doc("staff/" + profile.id);
     var snap = await ref.get();
@@ -10097,14 +10098,37 @@ async function deleteStaffRow(row){
    Boot
    ============================================================ */
 async function boot(data){
+  // Paint before Firebase answers (perf). This device's own saved profile
+  // means it was signed in last time: show the shell now (static content
+  // only; nothing is read or written until the session is confirmed).
+  // No profile: the gate is the answer anyway, so show it now.
+  var early = (data && data.profile) ? data.profile : loadProfile();
+  var optimistic = !!(early && early.id && early.name && early.email);
+  if (!optimistic) {
+    document.getElementById("gate").hidden = false;
+    document.documentElement.classList.remove("booting");
+  }
   await initDb();
+  if (optimistic) {
+    renderManual();
+    renderCleaning();
+    renderTeam();
+    renderLore();
+    profile = early;
+    lineupOptimistic = true;
+    enterShell();
+    document.documentElement.classList.remove("booting");
+  }
   // A device that has signed in before goes straight back in; the menu and
   // progress both need a session before they can read anything.
   await restoreSession();
-  renderManual();
-  renderCleaning();
-  renderTeam();
-  renderLore();
+  lineupOptimistic = false;
+  if (!optimistic) {
+    renderManual();
+    renderCleaning();
+    renderTeam();
+    renderLore();
+  }
   await loadFbItems();
   renderFbTabs();
   renderFbGrid();
@@ -10115,9 +10139,17 @@ async function boot(data){
   var signedIn = !db || !firebase.auth || !!firebase.auth().currentUser;
   if (existing && existing.id && existing.name && existing.email && signedIn) {
     profile = existing;
-    enterShell();
+    if (optimistic) { touchStaffDoc(); refreshHomeStats(); }
+    else enterShell();
     document.documentElement.classList.remove("booting");
     return;
+  }
+  if (optimistic) {
+    // Session gone: take the optimistic shell back down before the gate.
+    profile = null;
+    document.getElementById("shell").classList.remove("active");
+    document.getElementById("lineup-appbar").hidden = true;
+    document.getElementById("gate").style.display = "";
   }
   // No session to restore, so the gate is the right surface to show.
   document.getElementById("gate").hidden = false;

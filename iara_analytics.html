@@ -439,6 +439,12 @@
 </main>
 </div>
 
+<script>
+/* Paint at once (perf): signed in last time -> the app frame (empty until
+   load(), which only runs once auth confirms); otherwise the gate. */
+(function(){ var h=null; try{ h=localStorage.getItem("iara_auth_hint"); }catch(e){}
+  if (h){ document.getElementById("app").hidden = false; } else document.getElementById("gate").hidden = false; })();
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script>
@@ -532,6 +538,7 @@
   window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = tabOf(t); var nr = resolve(r || rangeTag()), changed = (nr.from + nr.to + nr.key) !== (range.from + range.to + range.key); range = nr; syncHash(); paint(); if (changed) load(); });
 
   firebase.auth().onAuthStateChanged(function(user){
+    try { if (user) localStorage.setItem("iara_auth_hint", "1"); else localStorage.removeItem("iara_auth_hint"); } catch(e){}
     if (user){ $("gate").hidden = true; $("an-bar").hidden = false; $("app").hidden = false; paint(); load(); }
     else { $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; }
   });

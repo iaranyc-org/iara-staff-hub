@@ -357,6 +357,12 @@
   </div>
 </div>
 
+<script>
+/* Paint at once (perf): a device with no manager session last time sees the
+   sign-in gate immediately instead of after Firebase answers. */
+(function(){ var h=null; try{ h=localStorage.getItem("iara_mgr_auth_hint"); }catch(e){}
+  if (!h){ document.getElementById("authGate").hidden = false; var b=document.querySelector("[data-k-appbar]"); if(b) b.hidden = true; } })();
+</script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
@@ -936,6 +942,7 @@ async function initApp(){
       state.dbAvailable = false;
       updateSyncChip(false);
       adminAuth.onAuthStateChanged(function(u){
+        try{ if(u && isManagerEmail(u.email)) localStorage.setItem("iara_mgr_auth_hint","1"); else localStorage.removeItem("iara_mgr_auth_hint"); }catch(e){}
         if(u && isManagerEmail(u.email)){
           adminUser = u;
           db = adminApp.firestore();
