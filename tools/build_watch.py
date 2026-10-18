@@ -1,4 +1,4 @@
-"""Rebuild the Watch List embed in iara_staff_hub.html.
+"""Rebuild the Watch List embed in lineup.js (moved out of iara_staff_hub.html 2026-10-17).
 
 Inputs: watch_final.json (current roster), photo_staging_*.json + img/watch_staging
 (verified photos and new people), watch_dossier.json (how they dine etc).
@@ -357,12 +357,14 @@ for p in out:
         if ph.get('src') in NO_QUIZ_PHOTO:
             ph['noQuiz'] = True
 
-page = os.path.join(ROOT, 'iara_staff_hub.html')
+page = os.path.join(ROOT, 'lineup.js')
 s = open(page, encoding='utf-8').read()
 a = s.index('/*WATCH_DATA*/') + len('/*WATCH_DATA*/')
 b = s.index('/*END_WATCH_DATA*/')
 s = s[:a] + json.dumps(out, ensure_ascii=False, indent=1).replace('</', '<\\/').replace('"img/watch/', '"/img/watch/') + s[b:]
 open(page, 'w', encoding='utf-8').write(s)
+# lineup.js is served with a content hash; refresh it so the new data isn't cached away.
+import subprocess; subprocess.run(['python3', os.path.join(ROOT, 'tools', 'version_assets.py')], check=True)
 
 from collections import Counter
 print(len(out), 'people;', sum(1 for p in out if p['photo']), 'with photo')

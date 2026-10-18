@@ -2,7 +2,7 @@
 """
 Generate Brazilian Portuguese pronunciation clips for every iara menu item.
 
-Reads the `speak:` field of each item in iara_staff_hub.html, sends it to the
+Reads the `speak:` field of each item in lineup.js, sends it to the
 ElevenLabs TTS API with a pt-BR voice, and writes audio/<id>.mp3.
 
 Usage:
@@ -18,7 +18,7 @@ offline once cached.
 import os, re, sys, json, pathlib, urllib.request, urllib.error
 
 ROOT  = pathlib.Path(__file__).resolve().parent.parent
-HTML  = ROOT / "iara_staff_hub.html"
+HTML  = ROOT / "lineup.js"   # menu data moved out of iara_staff_hub.html 2026-10-17
 OUT   = ROOT / "audio"
 
 MODEL_ID = os.environ.get("ELEVENLABS_MODEL_ID", "eleven_multilingual_v2")
