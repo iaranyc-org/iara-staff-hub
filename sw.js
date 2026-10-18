@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v64';   // v64: kit loading.js precached (bold loader) + Lineup spacing QA. v62: Lineup queue. v50: kit v2 dialog/toast/confirm precached.
+const VERSION = 'iara-lineup-v65';   // v65: perf branch (amazon.avif/webp, versioned kit). v64: kit loading.js precached (bold loader) + Lineup spacing QA. v62: Lineup queue. v50: kit v2 dialog/toast/confirm precached.
 // v45: /analytics precached so an offline reload shows the cached page; kit tabs.js
 const CORE = [
   './',
@@ -41,6 +41,8 @@ const CORE = [
   './ops-manifest.json',
   './icon-512.png',
   './img/amazon.jpg',
+  './img/amazon.avif',
+  './img/amazon.webp',
   './img/vitor.jpg',
   './img/lineup-logo.png'
 ];

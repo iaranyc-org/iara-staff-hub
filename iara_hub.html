@@ -71,6 +71,9 @@
     background:
       linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
       url("/img/amazon.jpg") center/cover no-repeat, var(--k-page);
+    background:
+      linear-gradient(140deg, rgba(43,21,23,.88) 0%, rgba(57,29,31,.82) 52%, rgba(85,41,31,.86) 100%),
+      image-set(url("/img/amazon.avif") type("image/avif"), url("/img/amazon.webp") type("image/webp"), url("/img/amazon.jpg") type("image/jpeg")) center/cover no-repeat, var(--k-page);
   }
   .gate-card{
     width:100%; max-width:400px; background:var(--k-surface); border:1px solid var(--k-border);
