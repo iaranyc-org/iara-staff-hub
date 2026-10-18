@@ -102,7 +102,9 @@
       '<div class="k-menu-label">' + esc(account.email || "Signed in") + '</div><div class="k-menu-sep" role="separator"></div>' +
       (account.signOut ? '<button type="button" class="k-menu-item" role="menuitem" data-k-signout>' + ICON.out + "<span>Sign Out</span></button>" : "")) : "";
     var so = box.querySelector("[data-k-signout]");
-    if (so) so.addEventListener("click", function () { closeAll(); account.signOut(); });
+    // Focus the account button first: the menu item is about to be hidden, so a
+    // confirm dialog opened by signOut() returns focus somewhere real on Cancel.
+    if (so) so.addEventListener("click", function () { closeAll(); var ab = box.querySelector("[aria-haspopup=menu]"); if (ab) ab.focus(); account.signOut(); });
   }
 
   // Vertical roll when arriving from a different staff app (same origin, so sessionStorage is shared).

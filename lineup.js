@@ -1111,20 +1111,90 @@ async function loadOwnAttempts(){
 /* ============================================================
    Gate / login
    ============================================================ */
+// One screen: the email (plus the staff password only when this device has
+// no session). A known email signs straight in with the name and role on
+// its staff doc. Only a new email, or a record missing name or role, gets a
+// second small step asking for them.
+var gateKnown = null;   // {name, role, email} already known on this device (old profile or Remember Me)
+var gateEmail = null;   // set once step 1 passes and step 2 is showing
+function gateBusy(on, label){
+  var btn = document.getElementById("gate-submit");
+  btn.disabled = on;
+  btn.textContent = label || (gateEmail ? "Start" : "Sign In");
+}
+function gateError(t){
+  var err = document.getElementById("gate-err");
+  err.textContent = t; err.hidden = !t;
+}
+function gateStep2(email, name, role){
+  gateEmail = email;
+  document.getElementById("in-email").readOnly = true;
+  document.getElementById("pw-field").hidden = true;
+  document.getElementById("remember-who").hidden = true;
+  document.getElementById("gate-step2").hidden = false;
+  document.getElementById("gate-back").hidden = false;
+  document.getElementById("gate-step-who").textContent = (name || role)
+    ? "Almost there. Finish your profile for " + email + "."
+    : "First time with " + email + ". Tell us who you are.";
+  var n = document.getElementById("in-name"), r = document.getElementById("in-role");
+  n.required = true; r.required = true;
+  if (name) n.value = name;
+  if (role) r.value = role;
+  gateBusy(false);
+  (name ? r : n).focus();
+}
+function gateStep1(){
+  gateEmail = null;
+  var e = document.getElementById("in-email");
+  e.readOnly = false;
+  document.getElementById("gate-step2").hidden = true;
+  document.getElementById("gate-back").hidden = true;
+  document.getElementById("in-name").required = false;
+  document.getElementById("in-role").required = false;
+  document.getElementById("pw-field").hidden = !(db && firebase.auth && !firebase.auth().currentUser);
+  gateError("");
+  gateBusy(false);
+  e.focus(); e.select();
+}
+async function lookupStaff(email){
+  if (!db) return null;
+  try {
+    var snap = await db.doc("staff/" + emailId(email)).get();
+    return snap.exists ? snap.data() : null;
+  } catch(e){ return null; }
+}
+async function finishSignIn(email, name, role){
+  var prev = loadProfile();
+  var legacy = [stableId(name, role)];
+  if (prev && prev.id && legacy.indexOf(prev.id) === -1) legacy.push(prev.id);
+  profile = { id: emailId(email), email: email, name: name, role: role };
+  gateBusy(true, "Loading your progress\u2026");
+  await adoptLegacy(legacy);
+  justSignedIn = true;
+  gateBusy(false);
+  saveProfile(profile);
+  rememberMe(document.getElementById("in-remember").checked ? profile : null);
+  enterShell();
+}
+document.getElementById("gate-back").addEventListener("click", gateStep1);
 document.getElementById("gate-form").addEventListener("submit", async function(ev){
   ev.preventDefault();
-  var email = normEmail(document.getElementById("in-email").value);
-  var name = document.getElementById("in-name").value.trim();
-  var role = document.getElementById("in-role").value;
-  var err  = document.getElementById("gate-err");
-  var btn  = ev.target.querySelector('button[type="submit"]');
-  if (!name || !role || !email) return;
-  if (!validEmail(email)) {
-    err.textContent = "That email doesn't look right. Check it and try again.";
-    err.hidden = false;
+  if (gateEmail) {
+    var name = document.getElementById("in-name").value.trim();
+    var role = document.getElementById("in-role").value;
+    if (!name) { gateError("Enter your name."); document.getElementById("in-name").focus(); return; }
+    if (!role) { gateError("Choose your role."); document.getElementById("in-role").focus(); return; }
+    gateError("");
+    await finishSignIn(gateEmail, name, role);
     return;
   }
-
+  var email = normEmail(document.getElementById("in-email").value);
+  if (!email) { gateError("Enter your email."); document.getElementById("in-email").focus(); return; }
+  if (!validEmail(email)) {
+    gateError("That email doesn't look right. Check it and try again.");
+    document.getElementById("in-email").focus();
+    return;
+  }
   // Only ask for the password when there is no session to restore.
   if (db && firebase.auth && !firebase.auth().currentUser) {
     var pwField = document.getElementById("pw-field");
@@ -1132,32 +1202,29 @@ document.getElementById("gate-form").addEventListener("submit", async function(e
     if (!pw) {
       pwField.hidden = false;
       document.getElementById("in-pw").focus();
-      err.textContent = "Enter the staff password to continue.";
-      err.hidden = false;
+      gateError("Enter the staff password to continue.");
       return;
     }
-    btn.disabled = true; btn.textContent = "Checking\u2026";
+    gateBusy(true, "Checking\u2026");
     var ok = await signInStaff(pw);
-    btn.disabled = false; btn.textContent = "Start";
+    gateBusy(false);
     if (!ok) {
       pwField.hidden = false;
-      err.textContent = "That password is not right. Ask your manager.";
-      err.hidden = false;
+      gateError("That password is not right. Ask your manager.");
+      document.getElementById("in-pw").select();
       return;
     }
   }
-  err.hidden = true;
-  var prev = loadProfile();
-  var legacy = [stableId(name, role)];
-  if (prev && prev.id && legacy.indexOf(prev.id) === -1) legacy.push(prev.id);
-  profile = { id: emailId(email), email: email, name: name, role: role };
-  btn.disabled = true; btn.textContent = "Loading your progress\u2026";
-  await adoptLegacy(legacy);
-  justSignedIn = true;
-  btn.disabled = false; btn.textContent = "Start";
-  saveProfile(profile);
-  rememberMe(document.getElementById("in-remember").checked ? profile : null);
-  enterShell();
+  gateError("");
+  gateBusy(true, "Checking\u2026");
+  var d = await lookupStaff(email);
+  // A remembered name only belongs to the email it was remembered with;
+  // someone typing a different address on this phone is someone else.
+  var known = (gateKnown && (!gateKnown.email || gateKnown.email === email)) ? gateKnown : {};
+  var name = (d && d.name) || known.name || "";
+  var role = (d && d.role) || known.role || "";
+  if (name && role) { await finishSignIn(email, name, role); return; }
+  gateStep2(email, name, role);
 });
 
 function enterShell(){
@@ -1306,10 +1373,10 @@ function openManualSection(id){
   MANUAL.forEach(function(sec, i){ if (sec.id === id) idx = i; });
   if (idx === -1) { window.scrollTo(0,0); return; }
   var els = document.querySelectorAll("#manual-accordions .accordion");
-  els.forEach(function(el){ el.classList.remove("open"); });
+  els.forEach(function(el){ el.classList.remove("open"); accAria(el); });
   var target = els[idx];
   if (!target) return;
-  target.classList.add("open");
+  target.classList.add("open"); accAria(target);
   target.scrollIntoView({ block: "start", behavior: "smooth" });
 }
 
@@ -1431,6 +1498,7 @@ function manualSearch(q){
       // Respect Expand All rather than silently collapsing everything back
       // down to just the first section the moment a search is cleared.
       c.classList.toggle("open", manualAllOpen || i === 0);
+      accAria(c);
       c.querySelectorAll("mark").forEach(unmark);
     });
     count.hidden = true;
@@ -1445,6 +1513,7 @@ function manualSearch(q){
     var match = c.textContent.toLowerCase().indexOf(term) !== -1;
     c.hidden = !match;
     c.classList.toggle("open", match);
+    accAria(c);
     if (match) { hits++; highlight(c, term); }
   });
   count.hidden = !hits;
@@ -1499,13 +1568,19 @@ function renderCleaning(){
   });
 }
 
+// Screen readers need to hear whether a section is open; the Manual's
+// headers never said (Cleaning's did).
+function accAria(card){
+  var h = card && card.querySelector(".acc-head");
+  if (h) h.setAttribute("aria-expanded", String(card.classList.contains("open")));
+}
 function renderManual(){
   var wrap = document.getElementById("manual-accordions");
   wrap.innerHTML = MANUAL.map(function(sec, i){
     var items = sec.body.map(function(b){ return "<li>" + b + "</li>"; }).join("");
     var extra = sec.id === "loop" ? loopDiagram() : "";
     return '<div class="card accordion" data-i="'+i+'" data-sec="'+esc(sec.id||String(i))+'">' +
-      '<button class="acc-head"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
+      '<button class="acc-head" aria-expanded="false"><span class="acc-num mono">'+(i+1 < 10 ? "0" : "")+(i+1)+'</span>' +
         '<h2>'+sec.title+'</h2><span class="acc-read-tag">Read</span><span class="chev">▾</span></button>' +
       '<div class="acc-body"><ul>'+items+'</ul>'+extra+'</div></div>';
   }).join("");
@@ -1513,12 +1588,13 @@ function renderManual(){
     h.addEventListener("click", function(){
       var card = h.closest(".accordion");
       card.classList.toggle("open");
+      accAria(card);
       if (card.classList.contains("open")) markRead(card.dataset.sec);
     });
   });
   // The first section starts open as a preview; it only counts as read once
   // someone opens it themselves. Existing read lists are left as they are.
-  if (wrap.firstElementChild) wrap.firstElementChild.classList.add("open");
+  if (wrap.firstElementChild) { wrap.firstElementChild.classList.add("open"); accAria(wrap.firstElementChild); }
   applyGlossary(wrap);
   updateReadCount();
   var q = document.getElementById("manual-q");
@@ -1542,6 +1618,7 @@ function renderManual(){
       wrap.querySelectorAll(".accordion").forEach(function(c, i){
         if (c.hidden) return; // leave an active search filter alone
         c.classList.toggle("open", manualAllOpen || i === 0);
+        accAria(c);
         if (c.classList.contains("open")) markRead(c.dataset.sec);
       });
     });
@@ -7145,7 +7222,12 @@ function renderVibes(){
     }).join('') + '</div>' : '') +
     '<div class="vb-wall">' + list.map(function(v){ return vibeCard(v, seen); }).join('') + '</div>';
   area.querySelectorAll("[data-vf]").forEach(function(b){
-    b.addEventListener("click", function(){ vibesFilter = b.getAttribute("data-vf"); renderVibes(); });
+    // The re-render replaces the chips, so put keyboard focus back on the
+    // one just pressed instead of dropping it to the page.
+    b.addEventListener("click", function(){
+      vibesFilter = b.getAttribute("data-vf"); renderVibes();
+      var nb = area.querySelector('[data-vf="' + vibesFilter + '"]'); if (nb) nb.focus({ preventScroll: true });
+    });
   });
   clearInterval(vibesHeroTimer);
   if (heroes.length) {
@@ -8439,29 +8521,28 @@ async function boot(data){
   document.getElementById("gate").hidden = false;
   document.documentElement.classList.remove("booting");
   var rem = remembered();
-  if ((!existing || !existing.name) && rem && rem.email) {
-    document.getElementById("in-email").value = rem.email || "";
-    document.getElementById("in-name").value = rem.name || "";
-    if (rem.role) document.getElementById("in-role").value = rem.role;
-    document.getElementById("pw-field").hidden = signedIn;
+  var emailEl = document.getElementById("in-email");
+  if (existing && existing.name) {
+    // Signed up before emails existed: only the email is new. Name and role
+    // carry over, so this is still one step.
+    gateKnown = { name: existing.name, role: existing.role || "", email: existing.email ? normEmail(existing.email) : null };
+    if (existing.email) emailEl.value = existing.email;
+  } else if (rem && rem.email) {
+    emailEl.value = rem.email;
+    gateKnown = (rem.name && rem.role) ? { name: rem.name, role: rem.role, email: normEmail(rem.email) } : null;
     document.getElementById("remember-who").hidden = false;
   }
+  document.getElementById("pw-field").hidden = signedIn;
   document.getElementById("remember-forget").addEventListener("click", function(){
     rememberMe(null);
-    ["in-email","in-name"].forEach(function(id){ document.getElementById(id).value = ""; });
+    gateKnown = null;
+    emailEl.value = "";
+    document.getElementById("in-name").value = "";
     document.getElementById("in-role").value = "";
     document.getElementById("remember-who").hidden = true;
-    document.getElementById("in-email").focus();
+    emailEl.focus();
   });
-  if (existing && existing.name) {
-    // Known name but no session: prefill and ask only for the password.
-    document.getElementById("in-name").value = existing.name;
-    if (existing.role) document.getElementById("in-role").value = existing.role;
-    if (existing.email) document.getElementById("in-email").value = existing.email;
-    // Already signed in on this device, just missing an email (signed up
-    // before emails existed): only the email is new, no password needed.
-    document.getElementById("pw-field").hidden = signedIn;
-  }
+  try { (emailEl.value && !signedIn ? document.getElementById("in-pw") : emailEl).focus({ preventScroll: true }); } catch(e){}
   // Menu items need a session, so load them once one exists.
   if (db && firebase.auth && firebase.auth().currentUser) {
     await loadFbItems(); renderFbGrid();

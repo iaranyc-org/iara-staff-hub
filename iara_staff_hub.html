@@ -70,7 +70,7 @@
 <link rel="stylesheet" href="/kit/tokens.css?v=5ac7b7c914">
 <link rel="stylesheet" href="/kit/staff.css?v=47daffe097">
 <script src="/kit/palette.js?v=4ab44535a9" defer></script>
-<script src="/kit/nav.js?v=765c6c224b" defer></script>
+<script src="/kit/nav.js?v=a865931a10" defer></script>
 <script src="/kit/tabs.js?v=1d2aae8497" defer></script>
 <script src="/kit/dialog.js?v=cb70755f73" defer></script>
 <script src="/kit/toast.js?v=0085d82749" defer></script>
@@ -186,6 +186,9 @@
   .remember-row input{ width:20px; height:20px; accent-color:var(--sun); margin:0; }
   .remember-who{ margin:0 0 8px; font-size:13px; color:var(--ink-soft); }
   .remember-who .linkish{ display:inline-flex; align-items:center; margin:0; padding:0; font-size:13px; min-height:var(--k-tap); vertical-align:middle; }
+  .gate-step-who{ margin:4px 0 14px; font-size:14px; color:var(--ink-mid); line-height:1.5; }
+  .gate-back{ margin:10px auto 0; }
+  #in-email[readonly]{ color:var(--ink-soft); background:transparent; }
   .gate-note{ margin-top:18px; font-size:13px; color:var(--ink-soft); line-height:1.5; }
 
   /* ===================== Shell ===================== */
@@ -673,10 +676,11 @@
   .miss-rank .miss-meta{ margin:4px 0 0; font-size:13px; color:var(--ink-soft); }
   .fw-card{ padding:22px 24px; margin:0 0 24px; max-width:var(--measure); }
   .fw-card{ position:relative; }
-  .fw-top{ padding-right:96px; }
-  .fw-head{ font-family:var(--font-display); font-size:20px; color:var(--display); margin-bottom:4px; }
-  .fw-dismiss{ position:absolute; top:14px; right:12px; color:var(--ink-soft); }
-  @media (max-width:1023px){ .fw-dismiss{ top:14px; right:8px; } }
+  /* Header row, not an absolutely placed button: the absolute one drifted
+     down onto the lede on phones. */
+  .fw-top{ display:flex; align-items:center; justify-content:space-between; gap:12px; margin:-8px -8px 4px 0; }
+  .fw-head{ font-family:var(--font-display); font-size:20px; color:var(--display); }
+  .fw-dismiss{ flex:none; color:var(--ink-soft); }
   .fw-dismiss:hover{ color:var(--ink); }
   .home-fw-restore{ margin:22px 0 0; font-size:14px; }
   .fw-lede{ margin:0 0 14px; font-size:14px; color:var(--ink-soft); line-height:1.5; }
@@ -1410,42 +1414,46 @@
       <span class="word">Lineup</span>
     </div>
     <p class="gate-sub">The manual, the menu, and the tests. Everything for your first shift.</p>
-    <form id="gate-form">
+    <form id="gate-form" novalidate>
       <div class="field">
         <label for="in-email">Your Email</label>
         <input id="in-email" type="email" required autocomplete="email" inputmode="email" autocapitalize="off" spellcheck="false" placeholder="you@gmail.com">
-      </div>
-      <div class="field">
-        <label for="in-name">Your Name</label>
-        <input id="in-name" type="text" required autocomplete="name" placeholder="e.g. Jordan Alves">
-      </div>
-      <div class="field">
-        <label for="in-role">Your Role</label>
-        <select class="k-select" id="in-role" required>
-          <option value="" disabled selected>Choose a role</option>
-          <option>Host</option>
-          <option>Server</option>
-          <option>Busser</option>
-          <option>Bartender</option>
-          <option>Food Runner</option>
-          <option>Line Cook</option>
-          <option>Executive Sous Chef</option>
-          <option>Lead Line Cook</option>
-          <option>Prep Cook</option>
-          <option>Dishwasher</option>
-          <option>Barback</option>
-          <option>General Manager</option>
-        </select>
       </div>
       <div class="field" id="pw-field" hidden>
         <label for="in-pw">Staff Password</label>
         <input id="in-pw" type="password" autocomplete="current-password" aria-describedby="in-pw-hint">
         <p class="field-help" id="in-pw-hint">Ask your manager. It's the same password for the whole team.</p>
       </div>
+      <div id="gate-step2" hidden>
+        <p class="gate-step-who" id="gate-step-who">First time here. Tell us who you are.</p>
+        <div class="field">
+          <label for="in-name">Your Name</label>
+          <input id="in-name" type="text" autocomplete="name" placeholder="e.g. Jordan Alves">
+        </div>
+        <div class="field">
+          <label for="in-role">Your Role</label>
+          <select class="k-select" id="in-role">
+            <option value="" disabled selected>Choose a role</option>
+            <option>Host</option>
+            <option>Server</option>
+            <option>Busser</option>
+            <option>Bartender</option>
+            <option>Food Runner</option>
+            <option>Line Cook</option>
+            <option>Executive Sous Chef</option>
+            <option>Lead Line Cook</option>
+            <option>Prep Cook</option>
+            <option>Dishwasher</option>
+            <option>Barback</option>
+            <option>General Manager</option>
+          </select>
+        </div>
+      </div>
       <label class="remember-row"><input type="checkbox" id="in-remember" checked> Remember Me on This Device</label>
-      <p class="remember-who" id="remember-who" hidden>Not you? <button type="button" class="linkish" id="remember-forget">Use a different email</button></p>
-      <p class="form-err" id="gate-err" hidden></p>
-      <button type="submit" class="k-btn k-btn-primary">Start</button>
+      <p class="remember-who" id="remember-who" hidden>Not you? <button type="button" class="linkish" id="remember-forget">Use a Different Email</button></p>
+      <p class="form-err" id="gate-err" role="alert" hidden></p>
+      <button type="submit" class="k-btn k-btn-primary" id="gate-submit">Sign In</button>
+      <button type="button" class="linkish gate-back" id="gate-back" hidden>Use a Different Email</button>
     </form>
     <p class="gate-note">Your email is how your progress gets saved. Use the same one on any phone and you pick up where you left off.</p>
   </div>
@@ -1748,7 +1756,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=16b9820f87" defer></script>
+<script src="/lineup.js?v=e16457d307" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([

@@ -130,9 +130,7 @@
   }
   .card-title{ margin:0 0 8px; font-family:'Fraunces',Georgia,serif; font-weight:400; font-size:26px; line-height:1.15; color:var(--display); letter-spacing:-.01em; }
   .card-desc{ margin:0 0 24px; font-size:15px; line-height:1.5; color:var(--ink-soft); }
-  #lineup-form{ display:flex; flex-direction:column; flex:1; }
-  #lineup-form .k-btn, .mgr-actions{ margin-top:auto; }
-  #lineup-form .field:last-of-type{ margin-bottom:24px; }
+  #lineup-go, .mgr-actions{ margin-top:auto; }
   .mgr-actions .form-err{ margin:0 0 16px; }
   .field select{
     width:100%; padding:10px 12px; border-radius:var(--k-radius); border:1px solid var(--k-border-input);
@@ -172,31 +170,7 @@
       <section class="card k-spotlight" aria-labelledby="lineup-title">
         <h2 class="card-title" id="lineup-title">Lineup</h2>
         <p class="card-desc">Learn the menu and service, then test what you know.</p>
-        <form id="lineup-form">
-          <div class="field">
-            <label for="ll-name">Your Name</label>
-            <input id="ll-name" type="text" required autocomplete="name" placeholder="e.g. Jordan Alves">
-          </div>
-          <div class="field">
-            <label for="ll-role">Your Role</label>
-            <select id="ll-role" required>
-              <option value="" disabled selected>Choose a role</option>
-              <option>Host</option>
-              <option>Server</option>
-              <option>Busser</option>
-              <option>Bartender</option>
-              <option>Food Runner</option>
-              <option>Line Cook</option>
-              <option>Executive Sous Chef</option>
-              <option>Lead Line Cook</option>
-              <option>Prep Cook</option>
-              <option>Dishwasher</option>
-              <option>Barback</option>
-              <option>General Manager</option>
-            </select>
-          </div>
-          <button type="submit" class="k-btn k-btn-primary k-btn-lg k-btn-block">Continue to Lineup</button>
-        </form>
+        <a id="lineup-go" class="k-btn k-btn-primary k-btn-lg k-btn-block" href="/lineup">Open Lineup</a>
       </section>
 
       <section class="card k-spotlight" aria-labelledby="mgr-title">
@@ -300,38 +274,11 @@ document.addEventListener("DOMContentLoaded", function(){
     });
   });
 
-  // ---- Hand off straight into Lineup, already signed in ----
-  //
-  // Same localStorage key and {id, name, role} shape iara_staff_hub.html's
-  // own gate writes (LS_KEY = "iara_hub_profile_v1"). Its boot() skips its
-  // gate entirely once that key holds a profile AND there is an active
-  // Firebase session - both are already true by the time this fires, since
-  // the hub's own gate just did the real sign-in. Filling this in a second
-  // time inside Lineup is exactly the redundant step this page exists to
-  // remove.
-  // Same stableId contract as Lineup's own copy (iara_staff_hub.html) - the
-  // Firestore doc is keyed by this id, so it must stay identical in both
-  // places or the hub and a direct /lineup sign-in would fork the same
-  // person into two records again.
-  function stableId(name, role){
-    var slug = (String(name || "") + "-" + String(role || ""))
-      .toLowerCase()
-      .normalize("NFD").replace(/[̀-ͯ]/g, "")
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-+|-+$/g, "");
-    if (slug) return slug;
-    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
-    return "id-" + Date.now() + "-" + Math.random().toString(16).slice(2);
-  }
-  document.getElementById("lineup-form").addEventListener("submit", function(ev){
-    ev.preventDefault();
-    var name = document.getElementById("ll-name").value.trim();
-    var role = document.getElementById("ll-role").value;
-    if (!name || !role) return;
-    var profile = { id: stableId(name, role), name: name, role: role };
-    try { localStorage.setItem("iara_hub_profile_v1", JSON.stringify(profile)); } catch(e){}
-    location.href = "/lineup";
-  });
+  // ---- Lineup ----
+  // Plain link. Lineup asks for the person's email itself (one step, and the
+  // staff session from this gate carries over, so no second password). The
+  // old name + role form here wrote a profile without an email, which only
+  // made Lineup ask again.
 
   // ---- Manager Login ----
   // Same Google sign-in as Kitchen Ops and Lineup's admin: a SECOND Firebase
