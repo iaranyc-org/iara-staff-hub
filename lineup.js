@@ -774,6 +774,23 @@ function loadProfile(){
 function saveProfile(p){
   try { localStorage.setItem(LS_KEY, JSON.stringify(p)); } catch(e){}
 }
+// Watch List photos have 160w/320w WebP copies next to them (tools/watch_webp.js),
+// so cards and faces fetch ~5-11 KB instead of the ~35 KB original. A missing
+// copy falls back to the original (see the error handler by wlBrand).
+function wlSrcsetVal(src){
+  if (!/^\/img\/watch\/[^"|]+\.(jpe?g|png)$/i.test(src || "")) return "";
+  var b = String(src).replace(/\.[^.]+$/, "");
+  return b + ".160.webp 160w, " + b + ".320.webp 320w";
+}
+function wlSrcset(src, sizes){
+  var v = wlSrcsetVal(src);
+  return v ? ' srcset="'+esc(v)+'" sizes="'+sizes+'" decoding="async"' : "";
+}
+function wlSetSrc(img, src){
+  var v = wlSrcsetVal(src);
+  if (v) img.setAttribute("srcset", v); else img.removeAttribute("srcset");
+  img.src = src;
+}
 function esc(v){
   return String(v == null ? "" : v)
     .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
@@ -6601,7 +6618,7 @@ function renderWatchList(){
     var pics = wlPhotos(p), i = WL.cardPic[p.slug] || 0;
     if (i >= pics.length) i = 0;
     var photo = pics.length
-      ? '<img src="'+esc(pics[i].src)+'" alt="'+esc(p.name)+'" loading="lazy" width="320" height="400" draggable="false">'
+      ? '<img src="'+esc(pics[i].src)+'"'+wlSrcset(pics[i].src, "172px")+' alt="'+esc(p.name)+'" loading="lazy" width="320" height="400" draggable="false">'
       : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous. No photo exists.' : 'No reliable photo yet.') + '</span>';
     var flip = pics.length > 1
       ? '<button class="wl-flip wl-prev" data-flip="-1" aria-label="Previous photo of '+esc(p.name)+'">&#8249;</button>' +
@@ -6659,10 +6676,10 @@ function wlFlipCard(slug, dir){
   var li = document.querySelector('.wl-card[data-card="'+slug+'"]');
   if (!li) return;
   var img = li.querySelector(".wl-photo img");
-  if (img) { img.src = pics[i].src; img.loading = "eager"; }
+  if (img) { wlSetSrc(img, pics[i].src); img.loading = "eager"; }
   li.querySelectorAll(".wl-dots i").forEach(function(d, k){ d.classList.toggle("on", k === i); });
   var nxt = pics[(i + 1) % pics.length];
-  if (nxt) { var pre = new Image(); pre.src = nxt.src; }
+  if (nxt) { var pre = new Image(); var ns = wlSrcsetVal(nxt.src); if (ns) { pre.sizes = "172px"; pre.srcset = ns; } pre.src = nxt.src; }
   if (WL.open === slug) { WL.pic = i; renderWatchPanel(true); }
 }
 
@@ -6752,10 +6769,10 @@ function renderWatchPanel(keepScroll){
   if (WL.pic == null || WL.pic >= pics.length) WL.pic = 0;
   var cur = pics[WL.pic];
   var photo = cur
-    ? '<img src="'+esc(cur.src)+'" alt="'+esc(p.name)+(pics.length > 1 ? ', photo '+(WL.pic+1)+' of '+pics.length : '')+'" width="320" height="400">'
+    ? '<img src="'+esc(cur.src)+'"'+wlSrcset(cur.src, "320px")+' alt="'+esc(p.name)+(pics.length > 1 ? ', photo '+(WL.pic+1)+' of '+pics.length : '')+'" width="320" height="400">'
     : '<span class="wl-nophoto">' + (p.anonymous ? 'Anonymous.' : 'No reliable photo yet.') + '</span>';
   var thumbs = pics.length > 1 ? '<div class="wl-thumbs" role="group" aria-label="More photos of '+esc(p.name)+'">' + pics.map(function(x, i){
-    return '<button class="wl-thumb'+(i === WL.pic ? ' is-on' : '')+'" data-pic="'+i+'" aria-label="Photo '+(i+1)+'"'+(i === WL.pic ? ' aria-current="true"' : '')+'><img src="'+esc(x.src)+'" alt="" loading="lazy" width="64" height="80"></button>';
+    return '<button class="wl-thumb'+(i === WL.pic ? ' is-on' : '')+'" data-pic="'+i+'" aria-label="Photo '+(i+1)+'"'+(i === WL.pic ? ' aria-current="true"' : '')+'><img src="'+esc(x.src)+'"'+wlSrcset(x.src, "64px")+' alt="" loading="lazy" width="64" height="80"></button>';
   }).join('') + '</div>' : '';
   var tag = p.status ? '<span class="wl-tag'+(p.status === "Reviews Restaurants" ? ' is-hot' : '')+'">'+esc(p.status)+'</span>' : '';
   var reviews = (p.recentReviews || []).filter(function(r){ return r && r.restaurant; }).slice(0, 3).map(function(r){
@@ -6830,14 +6847,17 @@ function wlNextPhoto(p){
 }
 function wlFaceImg(p, src, cls){
   var alts = wlQuizPhotos(p).map(function(x){ return x.src; }).filter(function(x){ return x !== src; }).join("|");
-  return '<div class="wl-face'+(cls ? ' '+cls : '')+'"><img src="'+esc(src)+'" alt="Photo of a person on the Watch List" width="320" height="400" data-wl-alt="'+esc(alts)+'"></div>';
+  return '<div class="wl-face'+(cls ? ' '+cls : '')+'"><img src="'+esc(src)+'"'+wlSrcset(src, "320px")+' alt="Photo of a person on the Watch List" width="320" height="400" data-wl-alt="'+esc(alts)+'"></div>';
 }
 // A broken photo falls back to the next photo of the same person, then to a note.
 document.addEventListener("error", function(e){
   var img = e.target;
-  if (!img || img.tagName !== "IMG" || !img.hasAttribute("data-wl-alt")) return;
+  if (!img || img.tagName !== "IMG") return;
+  // A WebP copy that is missing (photo added without tools/watch_webp.js): use the original.
+  if (img.hasAttribute("srcset") && /\/img\/watch\//.test(img.getAttribute("srcset"))) { img.removeAttribute("srcset"); return; }
+  if (!img.hasAttribute("data-wl-alt")) return;
   var alts = img.getAttribute("data-wl-alt").split("|").filter(Boolean);
-  if (alts.length) { img.setAttribute("data-wl-alt", alts.slice(1).join("|")); img.src = alts[0]; return; }
+  if (alts.length) { img.setAttribute("data-wl-alt", alts.slice(1).join("|")); wlSetSrc(img, alts[0]); return; }
   var s = document.createElement("span"); s.className = "wl-nophoto"; s.textContent = "Photo did not load.";
   img.replaceWith(s);
 }, true);
@@ -7750,7 +7770,7 @@ function renderQuizQuestion(){
       '<span class="qprog-s" id="quiz-score">'+(aq.idx ? aq.score+' of '+aq.idx+' right' : '')+'</span></div>' +
     kBar(pctDone, "Exam progress", "qbar") +
     '<p class="qtext">'+qtxt(q.q)+'</p>' +
-    (q.img ? '<div class="wl-face q-face"><img src="'+esc(q.img)+'" alt="Photo of a person on the Watch List" width="320" height="400"></div>' : '') +
+    (q.img ? '<div class="wl-face q-face"><img src="'+esc(q.img)+'"'+wlSrcset(q.img, "320px")+' alt="Photo of a person on the Watch List" width="320" height="400"></div>' : '') +
     q.opts.map(function(o, i){
       return '<button class="opt" data-i="'+i+'"><span class="optkey">'+(i+1)+'</span><span class="opt-t">'+qtxt(o.text)+'</span></button>';
     }).join("") +
@@ -7868,7 +7888,7 @@ function renderQuizResult(){
   if (aq.missed.length) {
     review = '<div class="misses"><h3>What to Go Over</h3><ol>' +
       aq.missed.map(function(m){
-        return '<li>'+(m.img ? '<img class="miss-img" src="'+esc(m.img)+'" alt="" width="56" height="70">' : '')+'<p class="miss-q">'+qtxt(m.q)+'</p>' +
+        return '<li>'+(m.img ? '<img class="miss-img" src="'+esc(m.img)+'"'+wlSrcset(m.img, "56px")+' alt="" width="56" height="70">' : '')+'<p class="miss-q">'+qtxt(m.q)+'</p>' +
           '<p class="miss-a"><span>Answer</span> '+qtxt(m.right)+'</p>' +
           (m.chose ? '<p class="miss-c"><span>You said</span> '+qtxt(m.chose)+'</p>' : '') +
           (m.w ? '<p class="miss-w">'+qtxt(m.w)+'</p>' : '') +
