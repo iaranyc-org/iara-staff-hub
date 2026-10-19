@@ -34,6 +34,7 @@
     { label: "Phone", href: "/analytics#t=phone", keywords: "inbox analytics calls texts quo answer rate" },
     { label: "Inbox Settings", href: "/inbox/settings", keywords: "inbox preferences config" },
     { label: "Private Dining", href: "/private-dining", keywords: "pdr events parties" },
+    { label: "Watch List", href: "/inbox/watch", keywords: "press critics media hall pr watch" },
     { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" }
   ];
   window.IARA_APPS = APPS;
