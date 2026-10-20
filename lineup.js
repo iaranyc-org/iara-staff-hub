@@ -7165,6 +7165,8 @@ function updateVibesBadges(){
   var n = vibesNewCount();
   var sb = document.getElementById("sb-vibes-sub");
   if (sb) sb.innerHTML = n ? '<i class="vb-dot"></i>' + n + ' new since you looked' : 'Love for iara';
+  var mv = document.getElementById("more-vibes-sub");
+  if (mv) mv.innerHTML = n ? '<i class="vb-dot"></i>' + n + ' new since you looked' : 'Love for iara';
   var dot = document.getElementById("tb-vibes-dot");
   if (dot) dot.hidden = !n;
   var hs = document.getElementById("home-vibes-sub");

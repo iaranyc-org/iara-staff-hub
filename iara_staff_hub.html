@@ -1058,6 +1058,13 @@
   .sidebar .nav-btn.sb-vibes.active{ box-shadow:0 0 0 2px var(--k-sun), 0 0 0 4px rgba(251,191,86,.25); }
   .sidebar .nav-btn.sb-vibes::before{ display:none; }
   .sidebar .sb-vibes:focus-visible{ outline:2px solid #fbbf56; outline-offset:2px; }
+  /* Phones: the same Good Vibes card leads the More menu (sidebar is hidden there). */
+  #more-sheet .nav-btn.more-vibes, #more-sheet .nav-btn.more-vibes.active{ grid-column:1 / -1; opacity:1; display:block; width:100%; text-align:left; min-height:56px; padding:12px 14px; margin:0 0 8px;
+    border-radius:12px; background:linear-gradient(135deg,var(--k-primary) 0%,var(--k-sun) 100%); color:var(--k-primary-ink); }
+  #more-sheet .more-vibes b{ display:block; font-size:15px; color:var(--k-primary-ink); }
+  #more-sheet .more-vibes span{ display:block; margin-top:2px; font-size:12.5px; font-weight:400; color:var(--k-primary-ink); }
+  #more-sheet .more-vibes::before{ display:none; }
+  #more-sheet .more-vibes:focus-visible{ outline:2px solid #fbbf56; outline-offset:2px; }
   .vb-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--k-primary-ink); margin-right:5px; animation:vb-pulse 1.6s infinite; }
   @keyframes vb-pulse{ 50%{ opacity:.3; } }
   .home-vibes{ display:block; width:100%; text-align:left; margin:0 0 18px; padding:16px 18px; border-radius:12px; border:none; cursor:pointer;
@@ -1717,10 +1724,10 @@
   <dialog id="more-sheet" class="k-sheet" aria-labelledby="more-title">
       <div class="k-sheet-head"><h2 id="more-title">More</h2><button type="button" class="k-btn k-btn-ghost k-btn-icon more-close" aria-label="Close" data-k-dialog-close><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg></button></div>
       <div class="k-sheet-body more-list">
+        <button class="nav-btn more-vibes" data-view="vibes"><b>Good Vibes</b><span id="more-vibes-sub">Love for iara</span></button>
         <button class="nav-btn" data-view="watch">Watch List</button>
         <button class="nav-btn" data-view="cleaning">Cleaning</button>
         <button class="nav-btn" data-view="team">Team</button>
-        <button class="nav-btn" data-view="vibes">Good Vibes</button>
         <button class="nav-btn" data-view="progress">Admin</button>
       </div>
   </dialog>
@@ -1756,7 +1763,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=07b7250911" defer></script>
+<script src="/lineup.js?v=cc746d0f32" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([
