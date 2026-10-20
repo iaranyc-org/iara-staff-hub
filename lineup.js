@@ -1370,6 +1370,7 @@ function showView(name, opts){
   if (name === "vibes") openVibes();
   if (name === "checklist") renderChecklist();
   if (name === "home") renderHomeFirstWeek();
+  if (name === "home") renderHomeComing();
   if (name === "progress") renderProgress();
   if (name === "home") refreshHomeStats();
 
@@ -7352,6 +7353,115 @@ async function autoChecks(){
   try { res.manual = manualReadPct() >= 100; } catch(e){ res.manual = false; }
   return res;
 }
+
+/* Who's Coming (Home): VIPs, PX, press, industry and investors on tonight and the next
+   open nights, with Hall PR face sheets and Watch List matches, so every shift can see
+   who is coming in. Feed: /inbox/api/lineup/coming (iara Inbox, same origin through the
+   hub proxy), authorised with this device's Firebase ID token. The last good answer is
+   kept in localStorage so the section still reads offline, labelled with its time. */
+var WC_KEY = "iara_coming_v1";
+var wcBusy = false, wcLast = 0;
+function wcCache(){ try { return JSON.parse(localStorage.getItem(WC_KEY) || "null"); } catch(e){ return null; } }
+function wcSave(d){ try { localStorage.setItem(WC_KEY, JSON.stringify(d)); } catch(e){} }
+function wcFetchToken(){
+  if (!(window.firebase && firebase.auth && firebase.apps.length)) return Promise.resolve(null);
+  var a = firebase.auth();
+  if (a.currentUser) return a.currentUser.getIdToken();
+  return new Promise(function(res){
+    var off = a.onAuthStateChanged(function(u){ off(); res(u ? u.getIdToken() : null); });
+    setTimeout(function(){ res(null); }, 8000);
+  });
+}
+async function renderHomeComing(force){
+  var box = document.getElementById("home-coming");
+  if (!box) return;
+  var cached = wcCache();
+  if (cached && cached.data) wcPaint(box, cached.data, cached.savedAt, null);
+  if (wcBusy || (!force && Date.now() - wcLast < 5 * 60e3 && cached)) return;
+  wcBusy = true;
+  var problem = null;
+  try {
+    var tok = await wcFetchToken();
+    if (!tok) problem = "signin";
+    else {
+      var r = await fetch("/inbox/api/lineup/coming", { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
+      var j = await r.json().catch(function(){ return null; });
+      if (r.ok && j && Array.isArray(j.days)) {
+        wcLast = Date.now();
+        wcSave({ data: j, savedAt: new Date().toISOString() });
+        wcPaint(box, j, null, null);
+        return;
+      }
+      problem = "load";
+    }
+  } catch(e){ problem = navigator.onLine === false ? "offline" : "load"; }
+  finally { wcBusy = false; }
+  if (problem === "signin" && !cached) { box.hidden = true; return; }
+  wcPaint(box, cached && cached.data, cached && cached.savedAt, problem);
+}
+function wcWhen(iso){
+  var d = new Date(iso);
+  if (isNaN(d)) return "";
+  var t = d.toLocaleTimeString("en-US", { hour:"numeric", minute:"2-digit" });
+  var same = d.toDateString() === new Date().toDateString();
+  return same ? t : d.toLocaleDateString("en-US", { weekday:"short", month:"short", day:"numeric" }) + ", " + t;
+}
+function wcDayName(day){
+  var d = new Date(day.iso + "T12:00:00Z");
+  return d.toLocaleDateString("en-US", { weekday:"long", month:"short", day:"numeric", timeZone:"UTC" });
+}
+function wcPaint(box, data, savedAt, problem){
+  box.hidden = false;
+  var today = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
+  var days = data && Array.isArray(data.days) ? data.days.filter(function(d){ return d.iso >= today && d.entries && d.entries.length; }) : [];
+  var head = '<div class="wc-head"><h2 class="wc-title" id="wc-title">Who’s Coming</h2>';
+  var asof = savedAt ? "As of " + wcWhen(savedAt) : (data && data.at ? "Updated " + wcWhen(data.at) : "");
+  head += asof ? '<p class="wc-asof">' + esc(asof) + '</p></div>' : '</div>';
+  var body = "";
+  if (problem && !data) body = '<p class="wc-quiet">' + (problem === "offline" ? "You’re offline. Who’s Coming shows once you’re back online." : "Couldn’t load reservations. Try again in a few minutes.") + '</p>';
+  else if (!days.length) body = '<p class="wc-quiet">No VIPs or press on the book this week.</p>';
+  else body = days.map(function(d, i){
+    // Tonight opens; on a closed night (Sun, Mon) the next open night with guests opens instead.
+    var n = d.entries.length, open = i === 0;
+    return '<details class="wc-day"' + (open ? " open" : "") + '><summary>' +
+      (d.iso === today ? "Tonight" : esc(wcDayName(d))) + ' <span class="wc-n">· ' + n + (n === 1 ? " guest" : " guests") + '</span></summary>' +
+      '<ul class="wc-list">' + d.entries.map(wcEntry).join("") + '</ul></details>';
+  }).join("");
+  if (problem && data) body += '<p class="wc-quiet">' + (problem === "offline" ? "Offline: showing the last saved list." : "Couldn’t refresh: showing the last saved list.") + '</p>';
+  box.innerHTML = head + body;
+  box.querySelectorAll("[data-wc-watch]").forEach(function(b){
+    b.addEventListener("click", function(){ showView("watch"); openWatchProfile(b.getAttribute("data-wc-watch"), b); });
+  });
+}
+var WC_PILL = { VIP:"vip", PX:"px", Press:"press", Industry:"industry" };
+function wcEntry(e){
+  var meta = [];
+  if (e.party) meta.push("Party of " + e.party);
+  if (e.table) meta.push("Table " + e.table);
+  var pills = (e.status ? '<span class="wc-pill wc-pill-' + (WC_PILL[e.status] || "tag") + '">' + esc(e.status) + '</span>' : "") +
+    (e.who || []).map(function(t){ return '<span class="wc-pill wc-pill-tag">' + esc(t) + '</span>'; }).join("");
+  var h = '<li class="wc-item"><div class="wc-row"><span class="wc-time">' + esc(e.time) + '</span>' +
+    '<span class="wc-name">' + esc(e.name) + '</span>' + pills +
+    (meta.length ? '<span class="wc-meta">' + esc(meta.join(" · ")) + '</span>' : "") + '</div>';
+  if (e.note) h += '<p class="wc-note">' + esc(e.note) + '</p>';
+  var w = (e.watch || [])[0], f = e.face;
+  if (e.watch && e.watch.length > 1) h += '<p class="wc-note">Booking alias shared by ' + esc(e.watch.map(function(x){ return x.name; }).join(" and ")) + '. Could be either.</p>';
+  else if (w && w.alias) h += '<p class="wc-note">Booked as ' + esc(w.alias) + ', a known alias of ' + esc(w.name) + '.</p>';
+  if (f || w) {
+    var img = (f && f.headshot) || (w && w.photo);
+    var outlet = f ? f.outletLine : [w.outlet, w.role].filter(Boolean).join(" · ");
+    var links = "";
+    if (f && f.instagram) links += '<a href="https://instagram.com/' + encodeURIComponent(f.instagram) + '" target="_blank" rel="noopener noreferrer">@' + esc(f.instagram) + '</a>';
+    (e.watch || []).forEach(function(x){
+      if (typeof wlFind === "function" && wlFind(x.slug)) links += '<button type="button" data-wc-watch="' + esc(x.slug) + '">' + (e.watch.length > 1 ? esc(x.name) + "’s Profile" : "Watch List Profile") + '</button>';
+    });
+    h += '<div class="wc-face">' + (img ? '<img src="' + esc(img) + '" alt="' + esc((f ? e.name : w.name)) + '" loading="lazy" width="72" height="72">' : "") +
+      '<div class="wc-face-body"><p class="wc-outlet">' + esc(outlet) + '</p>' + (f && f.bio ? '<p class="wc-bio">' + esc(f.bio) + '</p>' : "") +
+      (links ? '<div class="wc-links">' + links + '</div>' : "") + '</div></div>';
+  }
+  return h + '</li>';
+}
+window.addEventListener("online", function(){ if (document.documentElement.classList.contains("on-home")) renderHomeComing(true); });
 
 // First Week card can be dismissed from Home. Per person, so it lives in
 // localStorage under the profile id and on the staff doc (firstWeekDismissed),
