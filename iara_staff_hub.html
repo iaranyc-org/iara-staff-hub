@@ -1135,6 +1135,12 @@
   @media (max-width:860px){
     :root{ --tabbar-h:57px; --fbk-gap:12px; }
   }
+  /* 320px phones: the labelled pill covers a third of the width, sitting over
+     Study cards and exam answers. Icon only there; the aria-label still names it. */
+  @media (max-width:359px){
+    .fbk-fab{ width:var(--k-tap); padding:0; justify-content:center; }
+    .fbk-fab span{ display:none; }
+  }
   /* Out of the way while a dialog, sheet or Watch List profile is open. */
   html.fbk-open .fbk-fab, html.wl-locked .fbk-fab, html.wl-open .fbk-fab, html:has(dialog[open]) .fbk-fab{ visibility:hidden; }
   @media print{ .fbk-fab{ display:none; } }
@@ -1170,7 +1176,7 @@
   /* Admin: logins + duplicates */
   .table-wrap.adm-table{ max-width:100%; overflow-x:auto; position:relative; }
   .dup-list{ list-style:none; margin:0; padding:0; }
-  .dup-list li{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; }
+  .dup-list li{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; padding:12px 0; }
   .dup-list li + li{ border-top:1px solid var(--line); }
   .dup-who{ flex:1 1 320px; line-height:1.5; }
   /* Cleaning */
@@ -1273,7 +1279,7 @@
   }
   .admin-head{ display:flex; align-items:baseline; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .admin-h2{ font-size:20px; margin:38px 0 12px; }
-  .row-flag td:first-child{ box-shadow:inset 3px 0 var(--k-warning); }
+  tr.row-flag > td:first-child{ box-shadow:inset 3px 0 var(--k-warning); }
   /* Admin roster v2: filter, Last Exam, expandable person details */
   @media (max-width:1100px){ .adm-stats{ grid-template-columns:repeat(3, minmax(0,1fr)); } }
   @media (max-width:640px){ .adm-stats{ grid-template-columns:repeat(2, minmax(0,1fr)); } }
@@ -1335,6 +1341,9 @@
   .adm-d-foot{ grid-column:1 / -1; display:flex; justify-content:flex-end; border-top:1px solid var(--line); padding-top:6px; }
   .adm-pc-disc{ width:100%; justify-content:center; margin-top:14px; }
   .adm-pcard .adm-detail{ grid-template-columns:minmax(0,1fr); margin-top:12px; padding:14px; }
+  /* Narrow phones: the detail tables are wider than the card at 320, so tighten and let them scroll rather than spill. */
+  .adm-pcard .adm-d-sec{ overflow-x:auto; }
+  @media (max-width:400px){ .adm-pcard .adm-detail{ padding:12px 10px; } .adm-pcard .adm-d-table th, .adm-pcard .adm-d-table td{ padding-right:5px; } .adm-pcard .adm-d-table td{ font-size:13px; } }
   .adm-pcard .adm-flags{ margin-top:8px; }
   .adm-pcard.row-flag{ box-shadow:inset 3px 0 var(--k-warning); }
   @media (min-width:700px) and (max-width:1199px){ .adm-pc-grid{ grid-template-columns:repeat(4, minmax(0,1fr)); } }
@@ -1814,7 +1823,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=2ffb75f521" defer></script>
+<script src="/lineup.js?v=b847b41c95" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([

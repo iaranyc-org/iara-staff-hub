@@ -7296,16 +7296,18 @@ document.addEventListener("visibilitychange", function(){ if (!document.hidden) 
   }
   if (vv) { vv.addEventListener("resize", fit); vv.addEventListener("scroll", fit); }
   msg.addEventListener("focus", function(){ setTimeout(function(){ fit(); send.scrollIntoView({ block: "nearest" }); }, 300); });
-  function open(){
+  function open(opener){
     status.textContent = ""; send.disabled = false;
     fit();
     document.documentElement.classList.add("fbk-open");
-    if (window.iaraDialog) window.iaraDialog.open(dlg); else dlg.showModal();
+    // Pass the button that was tapped: iOS Safari does not focus a tapped
+    // button, so activeElement would send focus back somewhere else on close.
+    if (window.iaraDialog) window.iaraDialog.open(dlg, { opener: opener }); else dlg.showModal();
     setTimeout(function(){ msg.focus(); }, 50);
   }
   function close(){ dlg.close(); }
   dlg.addEventListener("close", function(){ document.documentElement.classList.remove("fbk-open"); });
-  document.addEventListener("click", function(e){ var b = e.target.closest("[data-feedback]"); if (b) { e.preventDefault(); open(); } });
+  document.addEventListener("click", function(e){ var b = e.target.closest("[data-feedback]"); if (b) { e.preventDefault(); open(b); } });
   document.getElementById("fbk-cancel").addEventListener("click", close);
   document.getElementById("fbk-form").addEventListener("submit", function(e){
     e.preventDefault();
