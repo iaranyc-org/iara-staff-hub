@@ -80,6 +80,8 @@
   .whint{ margin-top:6px; font-size:12px; color:var(--k-muted); }
   .whint [data-k-tip]{ text-decoration:underline dotted; text-underline-offset:2px; cursor:help; }
   .kpi .n a{ white-space:nowrap; }
+  /* Touch: the Open iara Inbox link sits in 13.5px helper text; give it a full 44px hit row. */
+  @media (pointer:coarse){ .kpi .n a{ display:inline-flex; align-items:center; min-height:44px; } }
   /* Custom dates: a popover hanging from the Custom button, shared by every tab. */
   .range-bar{ position:relative; }
   .range-pop{ position:absolute; left:0; z-index:30; display:grid; grid-template-columns:repeat(2, minmax(0, 1fr)); gap:10px 12px; align-items:end;

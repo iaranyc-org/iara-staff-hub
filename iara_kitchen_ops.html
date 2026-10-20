@@ -314,7 +314,7 @@
   .pr-link{all:unset; box-sizing:border-box; cursor:pointer; color:inherit; font:inherit; border-radius:4px;}
   .pr-link:focus-visible{outline:2px solid var(--k-ring); outline-offset:2px;}
   /* Touch: report links and sort headers were 15-17px tall. */
-  @media (pointer:coarse){ .pr-link, .th-sort{display:inline-flex; align-items:center; min-height:var(--k-tap);} }
+  @media (pointer:coarse){ .pr-link, .th-sort{display:inline-flex; align-items:center; min-height:var(--k-tap); min-width:var(--k-tap);} }
   .sort-arrow{font-size:9px; margin-left:2px; color:var(--accent-strong);}
   .filter-row select, .filter-row input{border:1px solid var(--k-border-input); background:var(--k-surface); border-radius:var(--k-radius); padding:7px 10px; min-height:36px; font-size:16px;}
   .pr-clickable td{cursor:pointer;}
