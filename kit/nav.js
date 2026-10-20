@@ -28,6 +28,7 @@
     { label: "Analytics", href: "/analytics" },
     { label: "Settings", href: "/inbox/settings" }
   ];
+  // `more: true` tabs fold into a "More" menu on phones under 480px (staff.css hides them, shows the More button).
   var APPS = [
     { label: "Home", title: "Home", href: "/home", sub: "Today at iara, from this morning's Bom Dia." },
     // Hidden (Jay, 2026-10-14: still being built). /ops keeps working and its bar still renders,
@@ -37,8 +38,8 @@
     { label: "Analytics", title: "Inbox", href: "/analytics", sub: "See how fast we answer guests and how bookings are going.", hidden: true, parent: "/inbox" },
     { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
     // Own tab (Jay, 2026-10-19: "watch list on the main nav, not hidden in inbox"). Page lives in the Inbox app.
-    { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days." },
-    { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true }
+    { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", more: true },
+    { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
   var ICON = {
@@ -68,7 +69,8 @@
     var solo = el.getAttribute("data-mode") === "solo";   // Lineup: its own instance, no manager tabs or search
     if (solo) document.documentElement.setAttribute("data-k-nav", "solo");
     var lists = "";
-    var tabs = solo ? "" : '<nav class="k-apptabs" aria-label="Manager apps">' + APPS.filter(function (a) { return !a.hidden; }).map(function (a) {
+    var shown = APPS.filter(function (a) { return !a.hidden; });
+    var tabs = solo ? "" : '<nav class="k-apptabs" aria-label="Manager apps">' + shown.map(function (a) {
       var on = cur && (a === cur || a.href === cur.parent);
       if (a.menu) {
         // Button in the (sideways-scrolling) tab row; its list lives outside the row so it is never clipped.
@@ -79,9 +81,10 @@
         }).join("") + "</div>";
         return '<button type="button" class="k-apptab" aria-haspopup="menu" aria-expanded="false" aria-controls="' + id + '"' + (on ? ' aria-current="page"' : "") + ">" + a.label + ICON.down + "</button>";
       }
-      return '<a class="k-apptab" href="' + a.href + '"' + (on ? ' aria-current="page"' : "") +
+      return '<a class="k-apptab" href="' + a.href + '"' + (on ? ' aria-current="page"' : "") + (a.more ? " data-k-overflow" : "") +
         (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
-    }).join("") + "</nav>";
+    }).join("") + moreTab(shown, cur) + "</nav>";
+    if (!solo) lists += moreList(shown, cur);
     el.innerHTML = '<header class="k-appbar"' + (solo ? ' data-mode="solo"' : "") + '><div class="k-appbar-inner">' +
       '<a class="k-appbar-mark" href="' + (solo ? "/" : "/home") + '" aria-label="' + (solo ? "iara Staff, home" : "Manager Home") + '"><img src="/kit/iara-orange.svg" alt="iara"></a>' +
       '<span class="k-appbar-title"><span class="k-roll"><span class="k-roll-in">' + esc(name) + "</span></span></span>" +
@@ -90,11 +93,34 @@
     var slot = el.querySelector("[data-k-palette-slot]");
     if (slot && window.iaraPalette) slot.appendChild(window.iaraPalette.trigger());
     var row = el.querySelector(".k-apptabs");
-    if (row) row.addEventListener("scroll", function () { closeAll(); }, { passive: true });
+    if (row) {
+      row.addEventListener("scroll", function () { closeAll(); }, { passive: true });
+      showCurrent(row);
+    }
     paintAccount(el);
     roll(el.querySelector(".k-roll"), name);
     // The one-line subtitle (what this app does) goes wherever the app put [data-k-subtitle].
     document.querySelectorAll("[data-k-subtitle]").forEach(function (p) { if (cur) p.textContent = cur.sub; p.classList.add("k-app-sub"); });
+  }
+
+  // Phone-only "More" tab (CSS shows it under 480px): a menu of the `more` tabs. Marked current when one of them is.
+  function moreTab(shown, cur) {
+    var on = shown.some(function (a) { return a.more && a === cur; });
+    return '<button type="button" class="k-apptab k-apptab-more" aria-haspopup="menu" aria-expanded="false" aria-controls="k-tabmenu-more"' + (on ? ' aria-current="page"' : "") + ">More" + ICON.down + "</button>";
+  }
+  function moreList(shown, cur) {
+    return '<div class="k-menu-list k-menu-fixed" role="menu" id="k-tabmenu-more" aria-label="More apps" hidden>' + shown.filter(function (a) { return a.more; }).map(function (a) {
+      return '<a class="k-menu-item" role="menuitem" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") +
+        (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
+    }).join("") + "</div>";
+  }
+  // The row scrolls sideways under 1100px: bring the current tab into view (row only, never the page).
+  function showCurrent(row) {
+    var on = Array.prototype.filter.call(row.querySelectorAll('[aria-current="page"]'), function (t) { return t.offsetParent; })[0];
+    if (!on || row.scrollWidth <= row.clientWidth) return;
+    var r = row.getBoundingClientRect(), t = on.getBoundingClientRect();
+    if (t.right > r.right - 32) row.scrollLeft += t.right - r.right + 40;
+    else if (t.left < r.left) row.scrollLeft -= r.left - t.left + 8;
   }
 
   // Account menu repaints on its own, so a late sign-in never interrupts the name roll.
@@ -155,7 +181,7 @@
       if (opening) { place(m); var it = items(m); (it.filter(function (x) { return x.getAttribute("aria-current"); })[0] || it[0] || b).focus(); }
       return;
     }
-    if (!(e.target.closest && e.target.closest(".k-menu-list"))) closeAll();
+    if (!(e.target.closest && e.target.closest(".k-menu-list")) || e.target.closest("a.k-menu-item")) closeAll();   // a picked link (e.g. Lineup in a new tab) closes its menu
   });
   document.addEventListener("keydown", function (e) {
     var m = document.activeElement && document.activeElement.closest && document.activeElement.closest(".k-appbar .k-menu-list");

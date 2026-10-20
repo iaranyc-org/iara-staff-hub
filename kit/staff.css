@@ -300,6 +300,14 @@ button.k-apptab { margin: 0; border: 0; background: none; cursor: pointer; }
 .k-apptab[aria-haspopup] svg { transition: transform var(--k-fast) var(--k-ease); }
 .k-apptab[aria-expanded="true"] svg { transform: rotate(180deg); }
 @media (pointer: coarse), (max-width: 1023px) { .k-apptab { min-height: var(--k-tap); } }
+/* Phones (Jay, 2026-10-19: Lineup was cut off at 360): under 480px the row shows Home, Inbox, Private Dining
+   and a "More" menu holding the rest (Watch List, Lineup). Desktop/tablet never render the More button. */
+.k-apptab-more { display: none; }
+@media (max-width: 479px) {
+  .k-apptab-more { display: inline-flex; }
+  .k-apptab[data-k-overflow] { display: none; }
+  .k-apptab { padding: 0 10px; }   /* 4 pills fit 360 with room to spare (PD measured 1px over at 12px) */
+}
 
 .k-appbar .k-palette-trigger { border-color: transparent; background: none; }
 .k-appbar .k-palette-trigger:hover, .k-appbar .k-palette-trigger[aria-expanded="true"] { background: var(--k-raised); }
