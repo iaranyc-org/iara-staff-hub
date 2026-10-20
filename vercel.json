@@ -21,6 +21,10 @@
       "destination": "/iara_kitchen_ops.html"
     },
     {
+      "source": "/supplies",
+      "destination": "/iara_kitchen_ops.html"
+    },
+    {
       "source": "/analytics",
       "destination": "/iara_analytics.html"
     },

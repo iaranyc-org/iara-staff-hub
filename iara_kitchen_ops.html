@@ -341,9 +341,9 @@
 
 <div id="app">
   <div data-k-appbar data-app="Kitchen Ops" data-home="/ops"></div>
-  <h1 class="k-sr-only">Kitchen Ops</h1>
+  <h1 class="k-sr-only" id="appH1">Kitchen Ops</h1>
   <main class="k-page">
-  <p data-k-subtitle></p>
+  <p data-k-subtitle id="appSub"></p>
   <div class="tabs-bar">
     <div class="k-tabs ops-tabs" id="tabNav" role="tablist" aria-label="Sections"></div>
     <div class="tabs-status">
@@ -366,6 +366,27 @@
   </div>
 </div>
 
+<script>
+/* One file, two apps (Jay, 2026-10-20): /ops is Kitchen Ops (food + beverage),
+   /supplies is Supplies (bathroom, cleaning, paper, smallwares - everything else the
+   restaurant buys). Same database; the department on each item decides which app owns it.
+   Set before nav.js runs so the app bar says the right name. */
+var MODE = (/^\/supplies/.test(location.pathname) || /[?&]app=supplies/.test(location.search)) ? 'supplies' : 'kitchen';
+(function(){
+  if (MODE !== 'supplies') return;
+  var bar = document.querySelector("[data-k-appbar]");
+  bar.setAttribute("data-app", "Supplies"); bar.setAttribute("data-home", "/supplies");
+  document.getElementById("appH1").textContent = "Supplies";
+  document.getElementById("appSub").textContent = "Track bathroom, cleaning, paper and smallwares, and see what to reorder.";
+  document.title = "Supplies · iara"; var mf = document.querySelector('link[rel="manifest"]'); if (mf) mf.href = "/supplies-manifest.json";
+  document.querySelector('meta[property="og:title"]').content = "iara Supplies";
+  document.querySelector('meta[name="twitter:title"]').content = "iara Supplies";
+  document.querySelector('meta[name="apple-mobile-web-app-title"]').content = "iara Supplies";
+  document.querySelector('.brand-word').textContent = "Supplies";
+  var d = document.querySelector('#authGate .modal-card > div[style]'); 
+  if (d) d.textContent = "Supplies holds purchasing and business data, so it's manager-only. Sign in with your @iara.nyc Google account.";
+})();
+</script>
 <script>
 /* Paint at once (perf): a device with no manager session last time sees the
    sign-in gate immediately instead of after Firebase answers. */
@@ -404,11 +425,11 @@ var FIREBASE_CONFIG = {
 // to fall back on.
 var REORDER_LEAD_DAYS = 3;
 var PAR_COVER_DAYS = 14;
-var ING_CATS = ["Protein","Produce","Dairy","Dry Goods","Pantry","Wine","Liquor","Beer","N/A Bev","Non-Food/Bev","Maintenance","Other"];
+var ING_CATS = MODE==="supplies" ? ["Maintenance","Non-Food/Bev","Other"] : ["Protein","Produce","Dairy","Dry Goods","Pantry","Wine","Liquor","Beer","N/A Bev"];
 // Display names only: stored category values stay "N/A Bev" / "Non-Food/Bev".
 var CAT_LABELS = {"N/A Bev":"Non-Alcoholic Bev", "Non-Food/Bev":"Non-Food Supplies"};
 function catLabel(c){ return CAT_LABELS[c] || c; }
-var STORAGE_AREAS = ["Walk-in Cooler","Freezer","Dry Storage","Bar","Front of House","Main Bathroom"];
+var STORAGE_AREAS = MODE==="supplies" ? ["Main Bathroom","Dry Storage","Front of House","Bar","Office"] : ["Walk-in Cooler","Freezer","Dry Storage","Bar","Front of House"];
 var COUNT_UNITS = ["each","ea","dozen","can","cans","count","ct","case","bottle","jar","bag","box","pack","pc","piece"];
 var UNITS = ["oz","lb","g","kg","ml","L","fl oz","each","dozen","qt","gal"];
 var RECIPE_CATS = ["Appetizer","Entree","Side","Dessert","Beverage","Prep/Batch"];
@@ -419,9 +440,16 @@ var CAT_COLOR = {"Appetizer":"var(--cat-1)","Entree":"var(--cat-2)","Side":"var(
 var CAT_COLOR_TEXT = {"Appetizer":"var(--cat-1-text)","Entree":"var(--cat-2-text)","Side":"var(--cat-3-text)","Dessert":"var(--cat-4-text)","Beverage":"var(--cat-5-text)","Prep/Batch":"var(--cat-6-text)"};
 var PO_STATUSES = ["draft","sent","received"];
 var DAY = 86400000;
-var DEPARTMENTS = ["Food","Beverage","Supplies"];
+var DEPARTMENTS = MODE==="supplies" ? ["Supplies"] : ["Food","Beverage"];
 
-var TABS = [
+var TABS = (MODE==="supplies" ? [
+  {id:"dashboard", label:"Dashboard"},
+  {id:"ingredients", label:"Items"},
+  {id:"counts", label:"Inventory Counts"},
+  {id:"purchasing", label:"Purchasing"},
+  {id:"pricing", label:"Price Search"},
+  {id:"reports", label:"Reports"}
+] : [
   {id:"dashboard", label:"Dashboard"},
   {id:"ingredients", label:"Ingredients"},
   {id:"recipes", label:"Recipes"},
@@ -429,7 +457,7 @@ var TABS = [
   {id:"purchasing", label:"Purchasing"},
   {id:"pricing", label:"Price Search"},
   {id:"reports", label:"Reports"}
-];
+]);
 
 /* ---------------- utilities ---------------- */
 function $(sel, root){ return (root||document).querySelector(sel); }
@@ -898,9 +926,28 @@ function buildSeed(){
 }
 
 /* ---------------- db bootstrap ---------------- */
+// Which app owns an ingredient: Supplies items belong to /supplies, everything
+// else to Kitchen Ops. POs and counts only keep the lines that belong to this app.
+var rawDocs = {};
+function inThisApp(ing){ return (ingDept(ing)==='Supplies') === (MODE==='supplies'); }
+function applyMode(){
+  var ings = rawDocs.ingredients;
+  if(!ings) return;
+  state.ingredients = ings.filter(inThisApp);
+  var ids = {}; state.ingredients.forEach(function(i){ ids[i.id]=true; });
+  ['pos','counts'].forEach(function(n){
+    if(!rawDocs[n]) return;
+    state[n] = rawDocs[n].map(function(d){
+      var ls = (d.lines||[]).filter(function(l){ return ids[l.ingredientId]; });
+      return ls.length ? Object.assign({}, d, {lines: ls}) : null;
+    }).filter(Boolean);
+  });
+}
 function subscribeCollection(name){
   db.collection(name).onSnapshot(function(snap){
-    state[name] = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    var docs = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    if(name==='ingredients' || name==='pos' || name==='counts'){ rawDocs[name] = docs; applyMode(); }
+    else state[name] = docs;
     state.ready[name] = true;
     render();
   }, function(err){
@@ -1229,7 +1276,7 @@ function updateTabCue(){
 function render(){
   renderNav();
   var activeTab = TABS.filter(function(t){ return t.id===state.tab; })[0];
-  document.title = (activeTab ? activeTab.label + ' · ' : '') + 'iara Kitchen Ops';
+  document.title = (activeTab ? activeTab.label + ' · ' : '') + (MODE==='supplies' ? 'iara Supplies' : 'iara Kitchen Ops');
   var main = $('#main');
   if(!isReady()){
     // Full-page first load: the bold kitchen loader. Kept in place across re-renders so it doesn't restart.
@@ -1270,7 +1317,78 @@ function valueTrendPoints(){
   return pts;
 }
 
+
+/* ---------------- supplies: reorder timing ----------------
+   Supplies are reordered, not recipe-costed, so the useful question is "how long
+   did the last order last, and when will we need it again". Order history comes
+   from received purchase orders; with two or more orders we know the real gap. */
+function orderDatesFor(ingId){
+  var ds = [];
+  state.pos.forEach(function(po){
+    if(po.status!=='received') return;
+    if((po.lines||[]).some(function(l){ return l.ingredientId===ingId && num(l.qty)>0; })) ds.push(String(po.date).slice(0,10));
+  });
+  return ds.sort();
+}
+function dayNum(ymd){ var p=ymd.split('-'); return Date.UTC(+p[0],+p[1]-1,+p[2])/DAY; }
+function reorderInfo(ing){
+  var ds = orderDatesFor(ing.id);
+  if(!ds.length) return {orders:0};
+  var last = ds[ds.length-1], today = dayNum(nyDate());
+  var info = {orders:ds.length, last:last, sinceDays: Math.round(today-dayNum(last))};
+  if(ds.length>=2){
+    info.gapDays = Math.round((dayNum(last)-dayNum(ds[0]))/(ds.length-1));
+    info.dueInDays = info.gapDays - info.sinceDays;
+  }
+  return info;
+}
+function ageLabel(days){ if(days<=0) return 'Today'; if(days===1) return '1 Day Ago'; if(days<14) return days+' Days Ago'; return Math.round(days/7)+' Weeks Ago'; }
+function spanLabel(days){ if(days<14) return days+(days===1?' Day':' Days'); return Math.round(days/7)+' Weeks'; }
+function reorderSoonList(){
+  var out = [];
+  state.ingredients.forEach(function(i){
+    var r = reorderInfo(i);
+    if(r.dueInDays!=null && r.dueInDays<=7) out.push({ing:i, info:r});
+  });
+  return out.sort(function(a,b){ return a.info.dueInDays-b.info.dueInDays; });
+}
+function reorderBadge(r){
+  if(!r.orders) return '<span class="k-badge k-badge-muted">No Orders Yet</span>';
+  if(r.dueInDays==null) return '<span class="k-badge k-badge-muted">1 Order So Far</span>';
+  if(r.dueInDays<=0) return '<span class="k-badge k-badge-serious">Reorder Now</span>';
+  if(r.dueInDays<=7) return '<span class="k-badge k-badge-warning">Due in '+spanLabel(r.dueInDays)+'</span>';
+  return '<span class="k-badge k-badge-good">Due in '+spanLabel(r.dueInDays)+'</span>';
+}
+
+function renderSuppliesDashboard(){
+  var soon = reorderSoonList();
+  var low = stockRiskIngredients();
+  var cutoff = dayNum(nyDate()) - 30;
+  var spent30 = sum(state.pos.filter(function(po){ return po.status==='received' && dayNum(String(po.date).slice(0,10))>=cutoff; }), poTotal);
+  var html = '<div class="panel-head"><div><h2>Dashboard</h2><div class="desc">What the restaurant uses up, and when to order it again.</div></div></div>';
+  var attn = [];
+  soon.slice(0,6).forEach(function(x){
+    var r = x.info;
+    attn.push({t:x.ing.name, s:'Ordered every ~'+spanLabel(r.gapDays)+' · last ordered '+ageLabel(r.sinceDays).toLowerCase(), badge: r.dueInDays<=0?'serious':'warning'});
+  });
+  low.slice(0,4).forEach(function(x){
+    if(soon.some(function(y){ return y.ing.id===x.ing.id; })) return;
+    attn.push({t:x.ing.name, s:'On hand '+x.ing.onHand+' '+x.ing.invUnit+' · par '+x.ing.parLevel, badge:x.risk.level});
+  });
+  html += '<div class="card'+(attn.length?' attn-card':'')+'"><div class="section-title">Reorder Soon</div>' + (attn.length ? attn.map(function(a){
+    return '<div class="attn-item"><span class="attn-dot '+esc(a.badge)+'"></span><div class="attn-body"><div class="t">'+esc(a.t)+'</div><div class="s">'+esc(a.s)+'</div></div><button class="k-btn k-btn-sm k-btn-ghost" data-action="setTab" data-tab="purchasing">Order</button></div>';
+  }).join('') : '<div class="empty-state">Nothing to reorder yet. Once an item has been ordered twice, this list learns how long it lasts.</div>') + '</div>';
+  html += '<div class="kpis">'+
+    '<div class="kpi"><div class="label">Inventory Value</div><div class="value">'+money(currentInventoryValue())+'</div><div class="foot">'+plural(state.ingredients.length,'item')+' tracked</div></div>'+
+    '<div class="kpi'+(soon.length?' alert':'')+'"><div class="label">Due To Reorder</div><div class="value">'+soon.length+'</div><div class="foot">within the next week</div></div>'+
+    '<div class="kpi"><div class="label">Spent Last 30 Days</div><div class="value">'+money(spent30)+'</div><div class="foot">on received orders</div></div>'+
+    '<div class="kpi'+(low.length?' alert':'')+'"><div class="label">Below Par</div><div class="value">'+low.length+'</div><div class="foot">at risk of running out</div></div>'+
+  '</div>';
+  return html;
+}
+
 function renderDashboard(){
+  if(MODE==='supplies') return renderSuppliesDashboard();
   var invVal = currentInventoryValue();
   var afc = avgFoodCostPct();
   var low = stockRiskIngredients();
@@ -1323,17 +1441,15 @@ function renderDashboard(){
     '<div class="dept-bar">'+
       (fPct>0?'<div class="seg food" style="width:'+fPct+'%" data-k-tip="Food '+pct(fPct,0)+'"></div>':'')+
       (bPct>0?'<div class="seg bev" style="width:'+bPct+'%" data-k-tip="Beverage '+pct(bPct,0)+'"></div>':'')+
-      (sPct>0?'<div class="seg sup" style="width:'+sPct+'%" data-k-tip="Supplies '+pct(sPct,0)+'"></div>':'')+
+
     '</div>'+
     '<table class="k-sr-only"><caption>Inventory value by department</caption><thead><tr><th>Department</th><th>Share</th><th>Value</th></tr></thead><tbody>'+
       '<tr><td>Food</td><td>'+pct(fPct,0)+'</td><td>'+money(foodStats.inventoryValue)+'</td></tr>'+
       '<tr><td>Beverage</td><td>'+pct(bPct,0)+'</td><td>'+money(bevStats.inventoryValue)+'</td></tr>'+
-      '<tr><td>Supplies</td><td>'+pct(sPct,0)+'</td><td>'+money(supStats.inventoryValue)+'</td></tr>'+
     '</tbody></table>'+
     '<div class="dept-rows">'+
       '<div class="dept-row"><span class="dept-dot food"></span><span class="dept-name">Food</span><span class="dept-num">'+pct(foodStats.avgCostPct)+' cost</span><span class="dept-sub">'+money(foodStats.inventoryValue)+' · '+plural(foodStats.itemCount,'item')+'</span></div>'+
       '<div class="dept-row"><span class="dept-dot bev"></span><span class="dept-name">Beverage</span><span class="dept-num">'+pct(bevStats.avgCostPct)+' cost</span><span class="dept-sub">'+money(bevStats.inventoryValue)+' · '+plural(bevStats.itemCount,'item')+'</span></div>'+
-      '<div class="dept-row"><span class="dept-dot sup"></span><span class="dept-name">Supplies</span><span class="dept-num">'+money(supStats.inventoryValue)+'</span><span class="dept-sub">'+plural(supStats.itemCount,'item')+'</span></div>'+
     '</div>'+
   '</div>';
   html += '</div>';
@@ -1370,8 +1486,8 @@ function ingredientsTableHtml(){
   }
   var s = state.ingredientsSort;
   var html = '<div class="table-wrap"><table><thead><tr>'+
-    sortTh('Name','ingredients','name',s)+sortTh('Category','ingredients','category',s)+sortTh('Dept','ingredients','department',s)+sortTh('Vendor','ingredients','vendor',s)+
-    sortTh('Unit Cost','ingredients','unitCost',s,'num')+sortTh('On Hand','ingredients','onHand',s,'num')+sortTh('Par','ingredients','par',s,'num')+sortTh('Status','ingredients','status',s)+
+    sortTh('Name','ingredients','name',s)+sortTh('Category','ingredients','category',s)+(MODE==='supplies'?'':sortTh('Dept','ingredients','department',s))+sortTh('Vendor','ingredients','vendor',s)+
+    sortTh('Unit Cost','ingredients','unitCost',s,'num')+sortTh('On Hand','ingredients','onHand',s,'num')+(MODE==='supplies'?'<th>Last Ordered</th><th>Lasts About</th><th>Reorder</th>':sortTh('Par','ingredients','par',s,'num')+sortTh('Status','ingredients','status',s))+
     '<th></th></tr></thead><tbody>';
   rows.forEach(function(ing){
     var risk = stockRisk(ing);
@@ -1383,12 +1499,13 @@ function ingredientsTableHtml(){
     html += '<tr>'+
       '<td>'+esc(ing.name)+'<div class="muted" style="font-size:11.5px">'+esc(ing.storageArea||'')+'</div></td>'+
       '<td>'+esc(catLabel(ing.category))+'</td>'+
-      '<td><span class="k-badge k-badge-muted">'+ingDept(ing)+'</span></td>'+
+      (MODE==='supplies'?'':'<td><span class="k-badge k-badge-muted">'+ingDept(ing)+'</span></td>')+
       '<td>'+esc(ing.vendor||'None')+'</td>'+
       '<td class="num">'+money(unitCostOf(ing))+'/'+esc(ing.invUnit)+'</td>'+
       '<td class="num">'+ing.onHand+' '+esc(ing.invUnit)+'</td>'+
-      '<td class="num">'+ing.parLevel+' '+esc(ing.invUnit)+'</td>'+
-      '<td>'+statusHtml+'</td>'+
+      (MODE==='supplies' ? (function(){ var r=reorderInfo(ing);
+        return '<td>'+(r.orders?esc(ageLabel(r.sinceDays)):'—')+'</td><td>'+(r.gapDays!=null?esc(spanLabel(r.gapDays)):'—')+'</td><td>'+reorderBadge(r)+'</td>'; })()
+       : '<td class="num">'+ing.parLevel+' '+esc(ing.invUnit)+'</td><td>'+statusHtml+'</td>')+
       '<td class="row-actions"><button class="k-btn k-btn-sm k-btn-ghost" data-action="editIngredient" data-id="'+ing.id+'">Edit</button></td>'+
     '</tr>';
   });
@@ -1399,7 +1516,7 @@ function renderIngredientsTableWrap(){ var el = $('#ingredientsTableWrap'); if(e
 
 function renderIngredients(){
   var filter = state.ingredientsDept || 'All';
-  var html = '<div class="panel-head"><div><h2>Ingredients</h2><div class="desc">Purchased items: pack cost, count unit, par &amp; on-hand.</div></div><button class="k-btn k-btn-primary" data-action="newIngredient">+ Add Ingredient</button></div>';
+  var html = '<div class="panel-head"><div><h2>'+(MODE==='supplies'?'Items':'Ingredients')+'</h2><div class="desc">'+(MODE==='supplies'?'Everything we restock: last ordered, how long it lasts, and where it lives.':'Purchased items: pack cost, count unit, par &amp; on-hand.')+'</div></div><button class="k-btn k-btn-primary" data-action="newIngredient">+ Add '+(MODE==='supplies'?'Item':'Ingredient')+'</button></div>';
   html += '<div class="toolbar-row">'+deptPillsHtml('ingredientsDept', filter)+searchBoxHtml('ingredientsSearchInput','Search ingredients or vendor…', state.ingredientsSearch)+'</div>';
   html += '<div id="ingredientsTableWrap">'+ingredientsTableHtml()+'</div>';
   return html;

@@ -18,7 +18,7 @@
  *   Firebase      never cached; it needs the network and has its own offline
  *                 handling
  */
-const VERSION = 'iara-lineup-v67';   // v67: Ops + Analytics QA fixes. v66: Lineup email-first sign-in, hub Lineup card is a link. v65: perf branch (amazon.avif/webp, versioned kit). v64: kit loading.js precached (bold loader) + Lineup spacing QA. v62: Lineup queue. v50: kit v2 dialog/toast/confirm precached.
+const VERSION = 'iara-lineup-v68';   // v68: /supplies (Supplies app split from Kitchen Ops).   // v67: Ops + Analytics QA fixes. v66: Lineup email-first sign-in, hub Lineup card is a link. v65: perf branch (amazon.avif/webp, versioned kit). v64: kit loading.js precached (bold loader) + Lineup spacing QA. v62: Lineup queue. v50: kit v2 dialog/toast/confirm precached.
 // v45: /analytics precached so an offline reload shows the cached page; kit tabs.js
 const CORE = [
   './',
@@ -37,6 +37,8 @@ const CORE = [
   './kit/confirm.js?v=7db7e84d1a',
   './kit/loading.js?v=488aec5b9c',
   './ops',
+  './supplies',
+  './supplies-manifest.json',
   './iara_kitchen_ops.html',
   './manifest.json',
   './ops-manifest.json',
