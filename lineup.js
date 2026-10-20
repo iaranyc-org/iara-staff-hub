@@ -7478,7 +7478,8 @@ async function renderHomeFirstWeek(){
   if (!slot) return;
   var restore = document.getElementById("home-fw-restore");
   var hidden = fwDismissed();
-  if (restore) restore.hidden = !hidden;
+  // Dismissed is for good (Jay 2026-10-20): no "Show First Week" link on Home.
+  if (restore) restore.hidden = true;
   if (hidden) { slot.innerHTML = ""; return; }
   var p = await checklistProgress();
   if (fwDismissed()) { slot.innerHTML = ""; return; }
@@ -7500,8 +7501,11 @@ async function renderHomeFirstWeek(){
   });
   var dz = slot.querySelector("[data-fw-dismiss]");
   if (dz) dz.addEventListener("click", function(){
-    setFwDismissed(true);
-    if (typeof toast === "function") toast("First Week hidden. Show it again from the bottom of Home.");
+    confirmDialog({
+      title: "Hide First Week for Good?",
+      body: "It won't come back on Home, on this phone or any other. Your progress stays saved.",
+      confirm: "Hide It", cancel: "Keep It"
+    }, function(){ setFwDismissed(true); });
   });
 }
 
