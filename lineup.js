@@ -8056,6 +8056,8 @@ var progressUnlocked = false;
 var progressRows = null;
 var progressCats = null;
 var progressSort = { key: "name", dir: "asc" };
+var progressFilter = "all";   // "all" or "nudge"
+var progressOpen = null;      // id of the one expanded person, or null
 
 async function renderProgress(){
   var area = document.getElementById("progress-area");
@@ -8118,7 +8120,12 @@ async function renderProgress(){
         // guessing, and it self-corrects the next time they open the app.
         clDone: typeof s.checklistDone === "number" ? s.checklistDone : null,
         clTotal: typeof s.checklistTotal === "number" ? s.checklistTotal : null,
-        clComplete: !!s.checklistComplete
+        clComplete: !!s.checklistComplete,
+        fwDismissed: !!s.firstWeekDismissed,
+        // Every attempt, newest first, for the expandable history.
+        attempts: attempts.map(function(a){
+          return { category: a.category || "", score: +a.score || 0, total: +a.total || 0, missed: (a.missed || []).length, date: a.date || null };
+        }).sort(function(x, y){ return (y.date || "") < (x.date || "") ? -1 : (y.date || "") > (x.date || "") ? 1 : 0; })
       });
     }
     if (!rows.length) {
@@ -8131,7 +8138,12 @@ async function renderProgress(){
     var DAY = 86400000;
     var now = Date.now();
     var daysSince = function(iso){ return iso ? Math.floor((now - new Date(iso).getTime()) / DAY) : null; };
-    rows.forEach(function(r){ r.lastDays = daysSince(r.last); r.hireDays = daysSince(r.created); });
+    rows.forEach(function(r){
+      r.lastDays = daysSince(r.last); r.hireDays = daysSince(r.created);
+      r.lastExam = r.attempts.length ? r.attempts[0].date : null;
+      r.examDays = daysSince(r.lastExam);
+      r.nudge = nudgeReasons(r);
+    });
 
     // ---- header: signed in as, sign out ----
     var html = '<div class="admin-head">' +
@@ -8150,28 +8162,8 @@ async function renderProgress(){
       stat(onboarded+'<span class="adm-of">/'+rows.length+'</span>', "First Week Complete") +
       stat(teamAvg===null ? 'None' : teamAvg+'%', "Average Exam Score", scored.length ? scored.length+' of '+rows.length+' tested' : 'No tests yet') +
       stat(activeWeek+'<span class="adm-of">/'+rows.length+'</span>', "Active This Week") +
+      stat(rows.filter(function(r){ return r.nudge.length; }).length, "Need a Nudge", "Stuck on First Week or quiet") +
     '</div>';
-
-    // ---- needs a nudge: incomplete onboarding that has had time to finish,
-    // or anyone who has gone quiet. The only thing here that is overdue. ----
-    var nudge = rows.filter(function(r){
-      var stuck = !r.clComplete && r.hireDays !== null && r.hireDays >= 7;
-      var quiet = r.lastDays !== null && r.lastDays >= 14;
-      return stuck || quiet;
-    }).sort(function(a,b){ return (b.lastDays||0) - (a.lastDays||0); });
-    if (nudge.length) {
-      html += '<h2 class="admin-h2 k-h-section">Needs a Nudge <span class="adm-count mono">'+nudge.length+'</span></h2>' +
-        '<div class="card adm-card"><ul class="nudge-list">' + nudge.map(function(r){
-          var bits = [];
-          if (!r.clComplete && r.hireDays !== null && r.hireDays >= 7) {
-            bits.push((r.clTotal ? 'First Week '+r.clDone+' of '+r.clTotal : 'First Week not started') + ' after '+r.hireDays+' days');
-          }
-          if (r.lastDays !== null && r.lastDays >= 14) bits.push('quiet for '+r.lastDays+' days');
-          return '<li><span class="nudge-who"><span class="nudge-name">'+esc(r.name)+'</span>' +
-            '<span class="nudge-role">'+esc(r.role||"")+'</span></span>' +
-            '<span class="nudge-why">'+esc(bits.join(', '))+'</span></li>';
-        }).join('') + '</ul></div>';
-    }
 
     // ---- possible duplicates: suggested merges, manager confirms each ----
     var dups = duplicatePairs(rows);
@@ -8189,7 +8181,7 @@ async function renderProgress(){
     progressRows = rows;
     progressCats = CATS;
     html += '<h2 class="admin-h2 k-h-section">Whole Team</h2>' +
-      '<p class="placeholder-note adm-note">Exam scores are the average across attempts; the small number is how many attempts. Select a column to sort.</p>' +
+      '<p class="placeholder-note adm-note">Exam scores are the average across attempts; the small number is how many attempts. Select a column to sort, or a person to see every test they have taken.</p>' +
       '<div id="progress-table-wrap"></div>';
 
     // ---- what the team keeps missing: the part worth reading out at lineup ----
@@ -8350,15 +8342,74 @@ async function mergeStaffRows(keep, drop){
   await kRef.set(upd, { merge: true });
   await dRef.set({ mergedInto: keep.id }, { merge: true });
 }
-function loginCell(r){
-  if (!r.visits) return '<span class="adm-muted">None yet</span>';
-  var ago = (function(iso){ var m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
-    return m < 60 ? m + "m ago" : m < 1440 ? Math.floor(m / 60) + "h ago" : Math.floor(m / 1440) + "d ago"; })(r.lastLogin);
+// Why someone needs a nudge, in the fewest words. Same rule as before:
+// First Week unfinished a week after they were added, or quiet for 2 weeks.
+function nudgeReasons(r){
+  var out = [];
+  if (!r.clComplete && r.hireDays !== null && r.hireDays >= 7) {
+    out.push(r.clTotal ? "First Week " + r.clDone + " of " + r.clTotal : "First Week Not Started");
+  }
+  if (r.lastDays !== null && r.lastDays >= 14) out.push("Quiet " + r.lastDays + " days");
+  return out;
+}
+function nudgePills(r){
+  return r.nudge.length ? '<span class="adm-flags">' + r.nudge.map(function(t){ return '<span class="adm-pill is-nudge">'+esc(t)+'</span>'; }).join('') + '</span>' : '';
+}
+function agoShort(iso){
+  var m = Math.floor((Date.now() - new Date(iso).getTime()) / 60000);
+  return m < 60 ? m + "m ago" : m < 1440 ? Math.floor(m / 60) + "h ago" : Math.floor(m / 1440) + "d ago";
+}
+function fullDate(iso){ return iso ? new Date(iso).toLocaleString(undefined, { month:"short", day:"numeric", year:"numeric", hour:"numeric", minute:"2-digit" }) : ""; }
+function pct(a){ return a.total ? Math.round(a.score / a.total * 100) : 0; }
+
+// Logins, now shown in a person's details instead of a dropdown in the row.
+function loginDetail(r){
+  if (!r.visits) return '<p class="adm-muted adm-d-empty">No visits yet.</p>';
   var hist = r.loginLog.slice(-8).reverse().map(function(l){
     return '<li><span>'+esc(new Date(l.at).toLocaleString(undefined, { month:"short", day:"numeric", hour:"numeric", minute:"2-digit" }))+'</span>' +
-      '<span class="adm-muted">'+esc(l.kind)+' · '+esc(l.device || "")+'</span></li>'; }).join('');
-  return '<details class="adm-logins"><summary><span class="mono">'+r.visits+'</span> '+(r.visits === 1 ? 'visit' : 'visits')+' · '+ago+'</summary>' +
-    '<ul>'+hist+'</ul></details>';
+      '<span class="adm-muted">'+esc(l.kind)+(l.device ? ' · '+esc(l.device) : '')+'</span></li>'; }).join('');
+  return '<p class="adm-d-line"><span class="mono">'+r.visits+'</span> '+(r.visits === 1 ? 'visit' : 'visits') +
+    (r.signIns ? ', <span class="mono">'+r.signIns+'</span> '+(r.signIns === 1 ? 'sign-in' : 'sign-ins') : '') +
+    (r.lastLogin ? '<span class="adm-muted"> · last '+agoShort(r.lastLogin)+'</span>' : '') + '</p>' +
+    (hist ? '<ul class="adm-d-log">'+hist+'</ul>' : '');
+}
+
+// The expanded view of one person: are they engaged, and are they getting better?
+function personDetail(r){
+  // Per test: attempts, best, latest, and the change since the first try.
+  var cats = {};
+  r.attempts.slice().reverse().forEach(function(a){ (cats[a.category] = cats[a.category] || []).push(a); }); // oldest first
+  var catNames = Object.keys(cats).sort(function(x, y){ return cats[y].length - cats[x].length || (x < y ? -1 : 1); });
+  var summary = !catNames.length ? '<p class="adm-muted adm-d-empty">No tests taken yet.</p>' :
+    '<table class="adm-d-table"><thead><tr><th>Test</th><th class="num">Tries</th><th class="num">Best</th><th class="num">Latest</th><th class="num">Change</th></tr></thead><tbody>' +
+    catNames.map(function(c){
+      var list = cats[c], first = pct(list[0]), latest = pct(list[list.length - 1]);
+      var best = Math.max.apply(null, list.map(pct)), diff = latest - first;
+      var change = list.length < 2 ? '<span class="adm-muted">One try</span>' :
+        diff > 0 ? '<span class="adm-up">+'+diff+' pts</span>' :
+        diff < 0 ? '<span class="adm-muted">'+diff+' pts</span>' : '<span class="adm-muted">Even</span>';
+      return '<tr><td>'+esc(c)+'</td><td class="num mono">'+list.length+'</td><td class="num mono">'+best+'%</td><td class="num mono">'+latest+'%</td><td class="num">'+change+'</td></tr>';
+    }).join('') + '</tbody></table>';
+  var hist = !r.attempts.length ? '<p class="adm-muted adm-d-empty">Nothing yet.</p>' :
+    '<table class="adm-d-table"><thead><tr><th>Date</th><th>Test</th><th class="num">Score</th><th class="num">Missed</th></tr></thead><tbody>' +
+    r.attempts.map(function(a){
+      return '<tr><td class="adm-d-date" title="'+esc(fullDate(a.date))+'">'+esc(a.date ? new Date(a.date).toLocaleDateString(undefined, { month:"short", day:"numeric" }) : "Unknown")+'</td>' +
+        '<td>'+esc(a.category)+'</td>' +
+        '<td class="num"><span class="mono">'+a.score+'/'+a.total+'</span> <span class="adm-score'+(pct(a) >= 80 ? ' is-good' : '')+'">'+pct(a)+'%</span></td>' +
+        '<td class="num mono">'+a.missed+'</td></tr>';
+    }).join('') + '</tbody></table>';
+  var fw = r.clComplete ? 'Complete' + (r.clTotal ? ' <span class="adm-muted">('+r.clTotal+' of '+r.clTotal+')</span>' : '') :
+    r.clTotal === null ? '<span class="adm-muted">Not started</span>' :
+    '<span class="mono">'+r.clDone+'</span> of <span class="mono">'+r.clTotal+'</span> done';
+  if (r.fwDismissed && !r.clComplete) fw += '<span class="adm-muted">, hidden from their Home screen</span>';
+  return '<div class="adm-detail">' +
+    '<section class="adm-d-sec adm-d-wide"><h3 class="adm-d-h">Progress by Test</h3>'+summary+'</section>' +
+    '<section class="adm-d-sec adm-d-wide"><h3 class="adm-d-h">Exam History <span class="adm-count mono">'+r.attempts.length+'</span></h3>'+hist+'</section>' +
+    '<section class="adm-d-sec"><h3 class="adm-d-h">Logins</h3>'+loginDetail(r)+'</section>' +
+    '<section class="adm-d-sec"><h3 class="adm-d-h">First Week</h3><p class="adm-d-line">'+fw+'</p>' +
+      (r.created ? '<p class="adm-d-line adm-muted">Added '+esc(new Date(r.created).toLocaleDateString(undefined, { month:"short", day:"numeric" }))+'</p>' : '') + '</section>' +
+    '<div class="adm-d-foot"><button type="button" class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete Record<span class="k-sr-only"> for '+esc(r.name)+'</span></button></div>' +
+  '</div>';
 }
 
 // One value per sortable column, null-safe so nobody-started/never-tested
@@ -8370,21 +8421,25 @@ function progressSortValue(r, key){
   if (key === "onboarding") return r.clTotal === null ? -1 : (r.clComplete ? 999 : r.clDone);
   if (key === "overall") return r.avg === null ? -1 : r.avg;
   if (key === "last") return r.lastDays === null ? Infinity : r.lastDays;
+  if (key === "lastExam") return r.examDays === null ? Infinity : r.examDays;
+  if (key === "nudge") return r.nudge.length ? 100000 + (r.lastDays || 0) : (r.lastDays || 0) / 1000;
   if (key === "logins") return r.visits || 0;
   var cell = r.byCat && r.byCat[key];
   return (!cell || cell.avg === null) ? -1 : cell.avg;
 }
+// Keys where the useful end is the top when descending (most flagged first).
+var PROGRESS_DESC_FIRST = { nudge: true };
 
 // Last active, said the way a manager would say it.
-function relDays(r){
-  if (!r.last) return "Never";
-  var d = r.lastDays;
+function relWhen(iso, d){
+  if (!iso) return "Never";
   if (d <= 0) return "Today";
   if (d === 1) return "Yesterday";
   if (d < 14) return d + " days ago";
   if (d < 60) return Math.floor(d / 7) + " weeks ago";
-  return new Date(r.last).toLocaleDateString(undefined, { month:"short", day:"numeric" });
+  return new Date(iso).toLocaleDateString(undefined, { month:"short", day:"numeric" });
 }
+function relDays(r){ return relWhen(r.last, r.lastDays); }
 function fwStatus(r){
   if (r.clComplete) return '<span class="adm-pill is-done">Done</span>';
   if (r.clTotal === null) return '<span class="adm-muted">Not started</span>';
@@ -8402,75 +8457,115 @@ function renderProgressTable(){
   var wrap = document.getElementById("progress-table-wrap");
   if (!wrap || !progressRows) return;
   var sort = progressSort;
-  var rows = progressRows.slice().sort(function(a, b){
+  var nudgeCount = progressRows.filter(function(r){ return r.nudge && r.nudge.length; }).length;
+  if (progressFilter === "nudge" && !nudgeCount) progressFilter = "all";
+  var rows = progressRows.filter(function(r){ return progressFilter !== "nudge" || r.nudge.length; }).sort(function(a, b){
     var va = progressSortValue(a, sort.key), vb = progressSortValue(b, sort.key);
     var cmp = va < vb ? -1 : va > vb ? 1 : 0;
+    if (!cmp) cmp = a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1;
     return sort.dir === "asc" ? cmp : -cmp;
   });
 
   function sortArrow(key){
     if (sort.key !== key) return "";
-    return ' <span class="sort-arrow" aria-hidden="true">' + (sort.dir === "asc" ? "\u2191" : "\u2193") + '</span>';
+    return ' <span class="sort-arrow" aria-hidden="true">' + (sort.dir === "asc" ? "↑" : "↓") + '</span>';
   }
-  function th(key, label, numeric){
+  function th(key, label, numeric, cls){
     var aria = sort.key === key ? (sort.dir === "asc" ? "ascending" : "descending") : "none";
-    return '<th class="sortable' + (numeric ? " num" : "") + '" aria-sort="'+aria+'"><button type="button" class="th-btn" data-sort="' + esc(key) + '">' + esc(label) + sortArrow(key) + '</button></th>';
+    return '<th class="sortable' + (numeric ? " num" : "") + (cls ? " " + cls : "") + '" aria-sort="'+aria+'"><button type="button" class="th-btn" data-sort="' + esc(key) + '">' + esc(label) + sortArrow(key) + '</button></th>';
   }
-  var keys = [["name","Name"],["role","Role"],["onboarding","First Week"],["overall","Exam Average"],["logins","Logins"],["last","Last Active"]]
+  var keys = [["name","Name"],["nudge","Needs a Nudge"],["role","Role"],["onboarding","First Week"],["overall","Exam Average"],["lastExam","Last Exam"],["last","Last Active"],["logins","Logins"]]
     .concat(progressCats.map(function(c){ return [c.key, c.name]; }));
 
-  var html = '<div class="adm-sortbar"><label for="adm-sort">Sort By</label>' +
+  var html = '<div class="adm-toolbar">' +
+    '<div class="k-tabs adm-filter" role="group" aria-label="Show">' +
+      '<button type="button" class="k-tab" data-filter="all" aria-pressed="'+(progressFilter === "all")+'">All <span class="mono">'+progressRows.length+'</span></button>' +
+      '<button type="button" class="k-tab" data-filter="nudge" aria-pressed="'+(progressFilter === "nudge")+'"'+(nudgeCount ? '' : ' disabled')+'>Needs a Nudge <span class="mono">'+nudgeCount+'</span></button>' +
+    '</div>' +
+    '<div class="adm-sortbar"><label for="adm-sort">Sort By</label>' +
     '<select id="adm-sort">' + keys.map(function(k){ return '<option value="'+esc(k[0])+'"'+(sort.key===k[0]?' selected':'')+'>'+esc(k[1])+'</option>'; }).join('') + '</select>' +
-    '<button type="button" class="k-btn k-btn-secondary k-btn-sm" id="adm-dir">'+(sort.dir === "asc" ? "Ascending" : "Descending")+'</button></div>';
+    '<button type="button" class="k-btn k-btn-secondary k-btn-sm" id="adm-dir">'+(sort.dir === "asc" ? "Ascending" : "Descending")+'</button></div></div>';
 
+  var COLS = 7 + progressCats.length;
   html += '<div class="table-wrap adm-table"><table class="progress"><thead><tr>' +
-    th("name", "Name") + th("role", "Role") + th("onboarding", "First Week") + th("overall", "Exam Avg", true) +
+    th("name", "Name", false, "adm-th-name") + th("onboarding", "First Week") + th("overall", "Exam Avg", true) +
     progressCats.map(function(c){ return th(c.key, c.name, true); }).join("") +
-    th("logins", "Logins") + th("last", "Last Active", true) + '<th><span class="k-sr-only">Actions</span></th>' +
+    th("lastExam", "Last Exam", true) + th("last", "Last Active", true) + '<th class="adm-th-act"><span class="k-sr-only">Details</span></th>' +
     '</tr></thead><tbody>';
   rows.forEach(function(r){
-    var flag = r.clComplete === false && r.hireDays !== null && r.hireDays >= 7;
-    html += '<tr' + (flag ? ' class="row-flag"' : '') + '>' +
-      '<td class="adm-name"><span class="adm-person">'+esc(r.name)+'</span>'+(r.email ? '<span class="adm-email">'+esc(r.email)+'</span>' : '')+'</td>' +
-      '<td class="adm-role">'+esc(r.role||"")+'</td>' +
-      '<td>'+fwStatus(r)+'</td>' +
+    var open = progressOpen === r.id;
+    html += '<tr class="adm-row' + (r.nudge.length ? ' row-flag' : '') + (open ? ' is-open' : '') + '" data-row-id="'+esc(r.id)+'">' +
+      '<td class="adm-name"><span class="adm-person" title="'+esc(r.name)+'">'+esc(r.name)+'</span>' +
+        '<span class="adm-role">'+esc(r.role||"No role")+'</span>' +
+        (r.email ? '<span class="adm-email" title="'+esc(r.email)+'">'+esc(r.email)+'</span>' : '<span class="adm-email">No email</span>')+nudgePills(r)+'</td>' +
+      '<td class="adm-fw">'+fwStatus(r)+'</td>' +
       '<td class="num">'+scoreCell(r.avg, r.count)+'</td>' +
       progressCats.map(function(c){ var cell = r.byCat[c.key]; return '<td class="num">'+scoreCell(cell.avg, cell.count)+'</td>'; }).join("") +
-      '<td class="adm-login-td">'+loginCell(r)+'</td>' +
-      '<td class="num adm-last" title="'+esc(r.last ? new Date(r.last).toLocaleString() : "")+'">'+relDays(r)+'</td>' +
-      '<td class="num"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete<span class="k-sr-only"> '+esc(r.name)+'</span></button></td></tr>';
+      '<td class="num adm-last" title="'+esc(fullDate(r.lastExam))+'">'+relWhen(r.lastExam, r.examDays)+'</td>' +
+      '<td class="num adm-last" title="'+esc(fullDate(r.last))+'">'+relDays(r)+'</td>' +
+      '<td class="adm-act"><button type="button" class="adm-disc" data-details="'+esc(r.id)+'" aria-expanded="'+open+'" aria-controls="adm-d-'+esc(r.id)+'" title="Details"><span class="k-sr-only">Details for '+esc(r.name)+'</span><span class="adm-chev" aria-hidden="true"></span></button></td></tr>';
+    if (open) html += '<tr class="adm-detail-row" id="adm-d-'+esc(r.id)+'"><td colspan="'+COLS+'">'+personDetail(r)+'</td></tr>';
   });
   html += '</tbody></table></div>';
 
   html += '<ul class="adm-cards">' + rows.map(function(r){
-    var flag = r.clComplete === false && r.hireDays !== null && r.hireDays >= 7;
-    return '<li class="card adm-pcard'+(flag ? ' row-flag' : '')+'">' +
+    var open = progressOpen === r.id;
+    return '<li class="card adm-pcard'+(r.nudge.length ? ' row-flag' : '')+'">' +
       '<div class="adm-pc-head"><div class="adm-pc-id"><span class="adm-person">'+esc(r.name)+'</span>' +
-        '<span class="adm-pc-sub">'+esc(r.role||"")+(r.email ? '<span class="adm-email">'+esc(r.email)+'</span>' : '')+'</span></div>' +
-        '<span class="adm-last">'+relDays(r)+'</span></div>' +
+        '<span class="adm-pc-sub">'+esc(r.role||"")+'</span>' +
+        (r.email ? '<span class="adm-email">'+esc(r.email)+'</span>' : '<span class="adm-email adm-muted">No email</span>') + '</div></div>' +
+      nudgePills(r) +
       '<dl class="adm-pc-grid">' +
         '<div><dt>First Week</dt><dd>'+fwStatus(r)+'</dd></div>' +
         '<div><dt>Exam Average</dt><dd>'+scoreCell(r.avg, r.count)+'</dd></div>' +
-        '<div class="adm-pc-wide"><dt>Logins</dt><dd>'+loginCell(r)+'</dd></div>' +
+        '<div><dt>Last Exam</dt><dd title="'+esc(fullDate(r.lastExam))+'">'+relWhen(r.lastExam, r.examDays)+'</dd></div>' +
+        '<div><dt>Last Active</dt><dd title="'+esc(fullDate(r.last))+'">'+relDays(r)+'</dd></div>' +
         progressCats.map(function(c){ var cell = r.byCat[c.key]; return '<div><dt>'+esc(c.name)+'</dt><dd>'+scoreCell(cell.avg, cell.count)+'</dd></div>'; }).join("") +
       '</dl>' +
-      '<div class="adm-pc-foot"><button class="jump-link danger-link" data-del-id="'+esc(r.id)+'">Delete Record<span class="k-sr-only"> for '+esc(r.name)+'</span></button></div>' +
+      '<button type="button" class="adm-disc adm-pc-disc" data-details="'+esc(r.id)+'" aria-expanded="'+open+'" aria-controls="adm-dc-'+esc(r.id)+'">'+(open ? 'Hide Details' : 'Details')+'<span class="k-sr-only"> for '+esc(r.name)+'</span><span class="adm-chev" aria-hidden="true"></span></button>' +
+      (open ? '<div id="adm-dc-'+esc(r.id)+'">'+personDetail(r)+'</div>' : '') +
     '</li>';
   }).join('') + '</ul>';
+  if (!rows.length) html += '<p class="placeholder-note">Nobody needs a nudge right now.</p>';
   wrap.innerHTML = html;
 
   wrap.querySelectorAll("[data-sort]").forEach(function(header){
     header.addEventListener("click", function(){
       var key = header.getAttribute("data-sort");
       if (progressSort.key === key) progressSort.dir = progressSort.dir === "asc" ? "desc" : "asc";
-      else progressSort = { key: key, dir: "asc" };
+      else progressSort = { key: key, dir: PROGRESS_DESC_FIRST[key] ? "desc" : "asc" };
       renderProgressTable();
     });
   });
   var sel = document.getElementById("adm-sort");
-  if (sel) sel.addEventListener("change", function(){ progressSort = { key: sel.value, dir: progressSort.dir }; renderProgressTable(); });
+  if (sel) sel.addEventListener("change", function(){ progressSort = { key: sel.value, dir: PROGRESS_DESC_FIRST[sel.value] ? "desc" : progressSort.dir }; renderProgressTable(); });
   var dirB = document.getElementById("adm-dir");
   if (dirB) dirB.addEventListener("click", function(){ progressSort.dir = progressSort.dir === "asc" ? "desc" : "asc"; renderProgressTable(); });
+  wrap.querySelectorAll("[data-filter]").forEach(function(b){
+    b.addEventListener("click", function(){ progressFilter = b.getAttribute("data-filter"); renderProgressTable(); });
+  });
+
+  // Expand one person at a time. The whole desktop row is a click target for
+  // the mouse; the Details button is the keyboard and screen reader path.
+  function toggle(id, focusSel){
+    progressOpen = progressOpen === id ? null : id;
+    renderProgressTable();
+    var again = wrap.querySelector(focusSel + '[data-details="'+id+'"]');
+    if (again && document.activeElement !== again) again.focus({ preventScroll: true });
+  }
+  wrap.querySelectorAll("[data-details]").forEach(function(btn){
+    btn.addEventListener("click", function(e){
+      e.stopPropagation();
+      toggle(btn.getAttribute("data-details"), btn.closest(".adm-cards") ? ".adm-cards " : ".adm-table ");
+    });
+  });
+  wrap.querySelectorAll("tr.adm-row").forEach(function(tr){
+    tr.addEventListener("click", function(e){
+      if (e.target.closest("button, a")) return;
+      if (window.getSelection && String(window.getSelection())) return; // let people copy an email
+      toggle(tr.getAttribute("data-row-id"), ".adm-table ");
+    });
+  });
 
   wrap.querySelectorAll("[data-del-id]").forEach(function(btn){
     btn.addEventListener("click", function(){
