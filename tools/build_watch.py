@@ -160,6 +160,8 @@ REJECT_EXTRA = {'hunter-lewis/3.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' en
 REJECT_EXTRA |= {
     'willa-moore/r3-1.jpg',          # duplicate of willa-moore.jpg, Jay 2026-10-20
     'willa-moore/lb.jpg',            # duplicate of willa-moore.jpg (zoomed), Jay 2026-10-20
+    'steve-cuozzo/lb.jpg',           # duplicate of steve-cuozzo-5.jpg (same thumbs-up shot), Jay 2026-10-20
+    'matthew-schneier/lb.jpg',       # duplicate of matthew-schneier-5.jpg (same portrait), Jay 2026-10-20
     'melissa-mccart/r3-1.jpg',       # duplicate of melissa-mccart.jpg, Jay 2026-10-20
     'melissa-mccart/2.jpg',          # duplicate of melissa-mccart-lb.jpg (wider crop), Jay 2026-10-20
     'stephanie-wu/3.jpg',            # duplicate of stephanie-wu-lb.jpg (text overlay), Jay 2026-10-20

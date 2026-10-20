@@ -192,10 +192,6 @@
     "credit": "Cultured magazine interview, cross-checked with Cultured group portrait"
    },
    {
-    "src": "img/watch/matthew-schneier-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "img/watch/matthew-schneier-2.jpg",
     "credit": "cfda.com"
    },
@@ -206,6 +202,10 @@
    {
     "src": "img/watch/matthew-schneier-4.jpg",
     "credit": "culturedmag.com"
+   },
+   {
+    "src": "img/watch/matthew-schneier-5.jpg",
+    "credit": "nymag.com"
    }
   ],
   "hidden": false,
@@ -1069,10 +1069,6 @@
     "credit": "nypost.com"
    },
    {
-    "src": "img/watch/steve-cuozzo-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "img/watch/steve-cuozzo-2.jpg",
     "credit": "youtube.com"
    },
@@ -1082,6 +1078,10 @@
    },
    {
     "src": "img/watch/steve-cuozzo-4.jpg",
+    "credit": "nypost.com"
+   },
+   {
+    "src": "img/watch/steve-cuozzo-5.jpg",
     "credit": "nypost.com"
    }
   ],

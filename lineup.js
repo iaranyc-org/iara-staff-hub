@@ -3036,10 +3036,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "Cultured magazine interview, cross-checked with Cultured group portrait"
    },
    {
-    "src": "/img/watch/matthew-schneier-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/matthew-schneier-2.jpg",
     "credit": "cfda.com"
    },
@@ -3050,6 +3046,10 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/matthew-schneier-4.jpg",
     "credit": "culturedmag.com"
+   },
+   {
+    "src": "/img/watch/matthew-schneier-5.jpg",
+    "credit": "nymag.com"
    }
   ],
   "hidden": false,
@@ -3797,10 +3797,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "nypost.com"
    },
    {
-    "src": "/img/watch/steve-cuozzo-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/steve-cuozzo-2.jpg",
     "credit": "youtube.com"
    },
@@ -3810,6 +3806,10 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/steve-cuozzo-4.jpg",
+    "credit": "nypost.com"
+   },
+   {
+    "src": "/img/watch/steve-cuozzo-5.jpg",
     "credit": "nypost.com"
    }
   ],
