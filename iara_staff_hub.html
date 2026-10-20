@@ -294,21 +294,17 @@
   .ff-copy.copied{ color:var(--forest); }
   .ff-copy.copied .ff-copy-ico .plain{ display:none; }
   .ff-copy.copied .ff-copy-ico .check{ display:block; }
-  .ff-socials{
-    display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; padding-top:12px;
-    border-top:1px solid var(--line);
-  }
-  .ff-social-item{ display:inline-flex; align-items:center; gap:6px; }
-  .ff-socials a{
-    font-size:13px; font-weight:700; letter-spacing:.01em; color:var(--ink-soft);
-    background:var(--paper); border:1px solid var(--line); border-radius:100px;
-    padding:0 14px; min-height:44px; display:inline-flex; align-items:center;
-    transition:color .12s ease, border-color .12s ease;
-  }
-  .ff-socials a:hover{ color:var(--ink); border-color:var(--ink-soft); }
-  .ff-socials a:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  /* Links as a compact icon row (Jay 2026-10-20); labels live in aria-label + tooltip. */
+  .ff-socials{ display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; padding-top:12px; border-top:1px solid var(--line); }
+  .ff-socials a.ff-ico{ width:44px; height:44px; padding:0; border-radius:12px; display:inline-flex; align-items:center; justify-content:center;
+    color:var(--ink-soft); background:var(--paper); border:1px solid var(--line); }
+  .ff-socials a.ff-ico svg{ width:21px; height:21px; }
+  .ff-socials a.ff-ico:hover{ color:var(--ink); border-color:var(--ink-soft); }
+  .ff-socials a.ff-ico:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
   @media (max-width:860px){
-    .ff-grid{ grid-template-columns:1fr; }
+    .ff-grid{ grid-template-columns:1fr 1fr; }
+    .ff-grid .ff-item:nth-child(1), .ff-grid .ff-item:nth-child(2), .ff-grid .ff-item-wide{ grid-column:1 / -1; }
+    .ff-grid .ff-item:nth-child(4) .ff-value{ white-space:nowrap; }
     .ff-copy{ width:44px; height:44px; }
   }
 
@@ -1651,23 +1647,11 @@
               </p>
             </div>
           </div>
-          <nav class="ff-socials" aria-label="Follow iara">
-            <div class="ff-social-item">
-              <a href="https://instagram.com/iara.nyc" target="_blank" rel="noopener">Instagram</a>
-              <button class="ff-copy" data-copy="https://instagram.com/iara.nyc" aria-label="Copy Instagram link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
-            </div>
-            <div class="ff-social-item">
-              <a href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener">LinkedIn</a>
-              <button class="ff-copy" data-copy="https://www.linkedin.com/company/iaranyc/" aria-label="Copy LinkedIn link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
-            </div>
-            <div class="ff-social-item">
-              <a href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener">Culinary Agents</a>
-              <button class="ff-copy" data-copy="https://culinaryagents.com/entities/1102076-iara/business_profile" aria-label="Copy Culinary Agents link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
-            </div>
-            <div class="ff-social-item">
-              <a href="https://drive.google.com/file/d/1KqWlvd1kGi9lQjiUAPvsZPmL2uGrdoT2/view" target="_blank" rel="noopener">LinkedIn Banner</a>
-              <button class="ff-copy" data-copy="https://drive.google.com/file/d/1KqWlvd1kGi9lQjiUAPvsZPmL2uGrdoT2/view" aria-label="Copy LinkedIn banner link"><svg class="ff-copy-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><g class="plain"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></g><polyline class="check" points="20 6 9 17 4 12"/></svg></button>
-            </div>
+          <nav class="ff-socials" aria-label="iara links">
+            <a class="ff-ico" href="https://instagram.com/iara.nyc" target="_blank" rel="noopener" aria-label="Instagram" title="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".9" fill="currentColor" stroke="none"/></svg></a>
+            <a class="ff-ico" href="https://www.linkedin.com/company/iaranyc/" target="_blank" rel="noopener" aria-label="LinkedIn" title="LinkedIn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M8 10.5V17"/><circle cx="8" cy="7.4" r=".9" fill="currentColor" stroke="none"/><path d="M12 17v-6.5M12 13.2c0-1.6 1-2.7 2.4-2.7S17 11.4 17 13v4"/></svg></a>
+            <a class="ff-ico" href="https://culinaryagents.com/entities/1102076-iara/business_profile" target="_blank" rel="noopener" aria-label="Culinary Agents (jobs)" title="Culinary Agents (jobs)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 14.5h10V20H7z"/><path d="M7 14.5c-2.3-.4-3.8-2.3-3.5-4.5.3-2 2.2-3.4 4.2-3.1C8.4 4.6 10 3.5 12 3.5s3.6 1.1 4.3 3.4c2-.3 3.9 1.1 4.2 3.1.3 2.2-1.2 4.1-3.5 4.5"/></svg></a>
+            <a class="ff-ico" href="https://drive.google.com/file/d/1KqWlvd1kGi9lQjiUAPvsZPmL2uGrdoT2/view" target="_blank" rel="noopener" aria-label="LinkedIn Banner (image)" title="LinkedIn Banner (image)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.6"/><path d="M21 16l-5-5-7 7"/></svg></a>
           </nav>
         </div>
       </section>
