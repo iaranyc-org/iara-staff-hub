@@ -1138,6 +1138,8 @@
   /* Out of the way while a dialog, sheet or Watch List profile is open. */
   html.fbk-open .fbk-fab, html.wl-locked .fbk-fab, html.wl-open .fbk-fab, html:has(dialog[open]) .fbk-fab{ visibility:hidden; }
   @media print{ .fbk-fab{ display:none; } }
+  /* Admin is manager-only and its tables run to the edge: no floating bubble over them. */
+  html.on-admin .fbk-fab{ display:none; }
   /* Feedback = kit .k-dialog (dialog.js); on phones it becomes a bottom sheet that rides the keyboard. */
   #fbk-dialog{ padding:0; }
   #fbk-form{ padding:22px; }
@@ -1812,7 +1814,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=483a8b353b" defer></script>
+<script src="/lineup.js?v=2ffb75f521" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([

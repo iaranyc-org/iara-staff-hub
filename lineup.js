@@ -1347,6 +1347,7 @@ function showView(name, opts){
   document.querySelectorAll(".view").forEach(function(v){ v.classList.remove("active"); });
   document.getElementById("view-" + name).classList.add("active");
   document.documentElement.classList.toggle("on-home", name === "home");
+  document.documentElement.classList.toggle("on-admin", name === "progress");
   var lit = (name === "checklist") ? "home" : name;
   document.querySelectorAll(".nav-btn[data-view]").forEach(function(b){
     var on = b.getAttribute("data-view") === lit;
