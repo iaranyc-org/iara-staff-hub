@@ -39,6 +39,8 @@
     { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
     // Own tab (Jay, 2026-10-19: "watch list on the main nav, not hidden in inbox"). Page lives in the Inbox app.
     { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", more: true },
+    // Own tab (Jay, 2026-10-20). Page lives in the Inbox app.
+    { label: "Negative Reviews", title: "Negative Reviews", href: "/inbox/negative-reviews", sub: "See every Resy rating of 4 stars or below and check in with the guest.", more: true },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
