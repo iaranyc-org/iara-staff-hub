@@ -246,6 +246,10 @@
      (205 Allen) is used deliberately, not the legal deed address (201 Allen -
      see feedback_iara_205_allen note); this card is for staff wayfinding,
      not paperwork. */
+  .svc-head{ margin:0 0 14px; display:flex; flex-direction:column; gap:2px; font-size:inherit; }
+  .svc-eyebrow{ font:700 12px/1.3 var(--font-mono, ui-monospace, monospace); letter-spacing:.12em; text-transform:uppercase; color:var(--sun); }
+  .svc-date{ font-family:var(--font-display); font-size:30px; line-height:1.15; font-weight:400; color:var(--display); }
+  @media (max-width:860px){ .svc-date{ font-size:26px; } }
   .fastfacts{ padding:0 0 14px; max-width:var(--measure); }
   .ff-card{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
@@ -1592,24 +1596,9 @@
 
     <!-- HOME -->
     <section class="view active" id="view-home">
-      <p data-k-subtitle></p>
-      <div class="shiftcard">
-        <p class="sc-date mono" id="home-date"></p>
-        <h1 class="sc-name" id="home-greet">Good evening.</h1>
-        <p class="sc-sub">Your first week: Manual, Menu, Study, Final Exam.</p>
-        <div class="sc-rule"></div>
-        <p class="sc-blank" id="sc-blank" hidden>No tests run yet. Take the Final Exam when you're ready.</p>
-        <div class="sc-stats">
-          <div><span class="num mono" id="stat-attempts">0</span><span class="lbl">Tests Run</span></div>
-          <div><span class="num mono" id="stat-best">None</span><span class="lbl">Average Score</span></div>
-          <div><span class="num mono" id="stat-last">None</span><span class="lbl">Last Test</span></div>
-        </div>
-      </div>
-
-      <section class="wc" id="home-coming" aria-labelledby="wc-title" hidden></section>
-
-      <div id="home-firstweek"></div>
-
+      <!-- Home is a daily service-prep page (Jay 2026-10-20): date, the facts staff
+           reach for, then who is coming tonight. -->
+      <h1 class="svc-head"><span class="svc-eyebrow">Service Prep</span><span class="svc-date" id="home-date"></span></h1>
       <section class="fastfacts" aria-label="Fast facts">
         <div class="ff-card">
           <p class="ff-title">Fast Facts</p>
@@ -1655,6 +1644,11 @@
           </nav>
         </div>
       </section>
+
+      <section class="wc" id="home-coming" aria-labelledby="wc-title" hidden></section>
+
+      <div id="home-firstweek"></div>
+
 
 
       <ol class="startlist">
@@ -1850,7 +1844,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=ea1297dd4d" defer></script>
+<script src="/lineup.js?v=ab1037df67" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([

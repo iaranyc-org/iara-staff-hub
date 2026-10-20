@@ -1261,10 +1261,11 @@ function enterShell(){
   if (sbAv) sbAv.textContent = (profile.name || "").trim().split(/\s+/).filter(Boolean).slice(0, 2).map(function(w){ return w.charAt(0).toUpperCase(); }).join("") || "?";
   document.querySelector(".sb-user").title = profile.name + (profile.role ? ", " + profile.role : "");
   var hFirst = (profile.name || "").trim().split(" ")[0];
-  document.getElementById("home-greet").textContent = hFirst ? "Evening, " + hFirst + "." : "Good evening.";
+  var gEl = document.getElementById("home-greet");
+  if (gEl) gEl.textContent = hFirst ? "Evening, " + hFirst + "." : "Good evening.";
   var dEl = document.getElementById("home-date");
   if (dEl) dEl.textContent = new Date().toLocaleDateString(undefined,
-    { weekday:"short", month:"short", day:"numeric" });
+    { weekday:"long", month:"long", day:"numeric" });
   // Edit Menu is a manager tool; servers never see a button that dead-ends.
   var eb = document.getElementById("fb-admin-btn");
   if (eb) eb.style.display = (profile.role === "General Manager" || isManagerSignedIn()) ? "" : "none";
@@ -8088,8 +8089,9 @@ function renderQuizResult(){
    Home stats
    ============================================================ */
 async function refreshHomeStats(){
-  var attempts = await loadOwnAttempts();
   var row = document.querySelector(".sc-stats");
+  if (!row) return; // Home no longer shows personal test stats (service-prep layout)
+  var attempts = await loadOwnAttempts();
   var blank = document.getElementById("sc-blank");
   if (!attempts.length) {
     // Nothing to report yet, so say so rather than showing 0 and two dashes.
