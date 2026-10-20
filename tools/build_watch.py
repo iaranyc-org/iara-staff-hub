@@ -155,6 +155,28 @@ for f in sorted(glob.glob(T('more_photos_*.json'))):
         print('skip', f, e)
 PRIMARY = {'morgan-carter': 'img/watch/morgan-carter-r2-2.jpg'}  # clearest captioned face leads
 REJECT_EXTRA = {'hunter-lewis/3.jpg', 'alan-sytsma/r2-5.jpg'}  # 'slug/n.jpg' entries rejected on visual review
+# Same-shot duplicates (same photograph cropped/zoomed/recolored, or consecutive frames), Jay 2026-10-20.
+# 'slug/lb.jpg' rejects the Hall PR Look Book copy as an extra photo.
+REJECT_EXTRA |= {
+    'willa-moore/r3-1.jpg',          # duplicate of willa-moore.jpg, Jay 2026-10-20
+    'willa-moore/lb.jpg',            # duplicate of willa-moore.jpg (zoomed), Jay 2026-10-20
+    'melissa-mccart/r3-1.jpg',       # duplicate of melissa-mccart.jpg, Jay 2026-10-20
+    'melissa-mccart/2.jpg',          # duplicate of melissa-mccart-lb.jpg (wider crop), Jay 2026-10-20
+    'stephanie-wu/3.jpg',            # duplicate of stephanie-wu-lb.jpg (text overlay), Jay 2026-10-20
+    'ryan-sutton/lb.jpg',            # duplicate of ryan-sutton-r2-4.jpg (consecutive frame), Jay 2026-10-20
+    'chris-crowley/lb.jpg',          # duplicate of chris-crowley.jpg, Jay 2026-10-20
+    'bryan-kim/lb.jpg',              # duplicate of bryan-kim.jpg, Jay 2026-10-20
+    'julia-moskin/lb.jpg',           # duplicate of julia-moskin.jpg, Jay 2026-10-20
+    'prairie-rose/r4-3.jpg',         # duplicate of prairie-rose-lb.jpg (B&W copy), Jay 2026-10-20
+    'hannah-goldfield/lb.jpg',       # duplicate of hannah-goldfield.jpg (B&W copy), Jay 2026-10-20
+    'elyse-inamine/r3-1.jpg',        # duplicate of elyse-inamine-r3-2.jpg (circle crop), Jay 2026-10-20
+    'dana-brown/r3-2.jpg',           # duplicate of dana-brown-r3-1.jpg (tighter crop), Jay 2026-10-20
+    'mahira-rivers/lb.jpg',          # duplicate of mahira-rivers-3.jpg, Jay 2026-10-20
+    'tejal-rao/4.jpg',               # duplicate of tejal-rao-lb.jpg (name caption), Jay 2026-10-20
+    'adam-platt/lb.jpg',             # duplicate of adam-platt.jpg, Jay 2026-10-20
+    'tammie-teclemariam/lb.jpg',     # duplicate of tammie-teclemariam-3.jpg, Jay 2026-10-20
+    'stephanie-wu/r2-5.jpg',         # duplicate of stephanie-wu-2.jpg (zoomed), Jay 2026-10-20
+}
 for s_, p in roster.items():
     files = (sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more', s_, '*.jpg')))
              + sorted(glob.glob(os.path.join(ROOT, 'img', 'watch_more2', s_, '*.jpg')))
@@ -171,7 +193,7 @@ for s_, p in roster.items():
             p['photo'] = lb_rel
             p['photoCredit'] = {'text': 'Hall PR Look Book'}
             photos.append({'src': lb_rel, 'credit': 'Hall PR Look Book'})
-        elif not any(x['src'] == lb_rel for x in photos):
+        elif f'{s_}/lb.jpg' not in REJECT_EXTRA and not any(x['src'] == lb_rel for x in photos):
             photos.insert(1, {'src': lb_rel, 'credit': 'Hall PR Look Book'})
     for src in files:
         n = os.path.splitext(os.path.basename(src))[0]

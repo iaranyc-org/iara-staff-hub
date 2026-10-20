@@ -2968,9 +2968,8 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "youtube.com"
    },
    {
-    "src": "/img/watch/tejal-rao-4.jpg",
-    "credit": "youtube.com",
-    "noQuiz": true
+    "src": "/img/watch/tejal-rao-r2-5.jpg",
+    "credit": "youtube.com"
    }
   ],
   "hidden": false,
@@ -3166,10 +3165,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "wesleyanargus.com"
    },
    {
-    "src": "/img/watch/hannah-goldfield-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/hannah-goldfield-2.jpg",
     "credit": "jewishinsider.com"
    },
@@ -3180,6 +3175,10 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/hannah-goldfield-4.jpg",
     "credit": "permanentcollection.com"
+   },
+   {
+    "src": "/img/watch/hannah-goldfield-5.jpg",
+    "credit": "writersblocpresents.com"
    }
   ],
   "hidden": false,
@@ -3471,10 +3470,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "messaging-custom-newsletters.nytimes.com"
    },
    {
-    "src": "/img/watch/ryan-sutton-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/ryan-sutton-2.jpg",
     "credit": "muckrack.com"
    },
@@ -3618,10 +3613,6 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/stephanie-wu-2.jpg",
     "credit": "goldhouse.org"
-   },
-   {
-    "src": "/img/watch/stephanie-wu-3.jpg",
-    "credit": "nyunews.com"
    },
    {
     "src": "/img/watch/stephanie-wu-4.jpg",
@@ -3863,10 +3854,6 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/adam-platt.jpg",
     "credit": "journalism.nyu.edu"
-   },
-   {
-    "src": "/img/watch/adam-platt-lb.jpg",
-    "credit": "Hall PR Look Book"
    },
    {
     "src": "/img/watch/adam-platt-2.jpg",
@@ -4134,10 +4121,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "nytimes.com byline page"
    },
    {
-    "src": "/img/watch/julia-moskin-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/julia-moskin-2.jpg",
     "credit": "youtube.com"
    }
@@ -4289,14 +4272,6 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/melissa-mccart-lb.jpg",
     "credit": "Hall PR Look Book"
-   },
-   {
-    "src": "/img/watch/melissa-mccart-2.jpg",
-    "credit": "penguinrandomhouse.com"
-   },
-   {
-    "src": "/img/watch/melissa-mccart-r3-1.jpg",
-    "credit": "eater.com"
    }
   ],
   "hidden": false,
@@ -4396,10 +4371,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "staycurrant.com"
    },
    {
-    "src": "/img/watch/chris-crowley-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/chris-crowley-2.jpg",
     "credit": "grubstreet.com"
    },
@@ -4449,10 +4420,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "cjr.org"
    },
    {
-    "src": "/img/watch/tammie-teclemariam-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/tammie-teclemariam-2.jpg",
     "credit": "youtube.com"
    },
@@ -4463,6 +4430,10 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/tammie-teclemariam-4.jpg",
     "credit": "magzter.com"
+   },
+   {
+    "src": "/img/watch/tammie-teclemariam-5.jpg",
+    "credit": "nytimes.com"
    }
   ],
   "hidden": false,
@@ -4507,10 +4478,6 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "theinfatuation.com"
    },
    {
-    "src": "/img/watch/bryan-kim-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/bryan-kim-2.jpg",
     "credit": "youtube.com"
    },
@@ -4520,6 +4487,10 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/bryan-kim-4.jpg",
+    "credit": "youtube.com"
+   },
+   {
+    "src": "/img/watch/bryan-kim-r2-5.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -4657,20 +4628,12 @@ var WATCH = /*WATCH_DATA*/[
     "credit": "theinfatuation.com"
    },
    {
-    "src": "/img/watch/willa-moore-lb.jpg",
-    "credit": "Hall PR Look Book"
-   },
-   {
     "src": "/img/watch/willa-moore-2.jpg",
     "credit": "youtube.com"
    },
    {
     "src": "/img/watch/willa-moore-3.jpg",
     "credit": "web.archive.org"
-   },
-   {
-    "src": "/img/watch/willa-moore-r3-1.jpg",
-    "credit": "theinfatuation.com"
    }
   ],
   "hidden": false,
@@ -4806,10 +4769,6 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/mahira-rivers.jpg",
     "credit": "nytimes.com byline page"
-   },
-   {
-    "src": "/img/watch/mahira-rivers-lb.jpg",
-    "credit": "Hall PR Look Book"
    },
    {
     "src": "/img/watch/mahira-rivers-2.jpg",
@@ -5409,10 +5368,6 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/prairie-rose-r4-2.jpg",
     "credit": "bartenderatlas.com"
-   },
-   {
-    "src": "/img/watch/prairie-rose-r4-3.jpg",
-    "credit": "ascotawards.com"
    }
   ],
   "status": "Editor",
@@ -5447,10 +5402,6 @@ var WATCH = /*WATCH_DATA*/[
    },
    {
     "src": "/img/watch/dana-brown-r3-1.jpg",
-    "credit": "youtube.com"
-   },
-   {
-    "src": "/img/watch/dana-brown-r3-2.jpg",
     "credit": "youtube.com"
    }
   ],
@@ -6455,10 +6406,6 @@ var WATCH = /*WATCH_DATA*/[
    {
     "src": "/img/watch/elyse-inamine-lb.jpg",
     "credit": "Hall PR Look Book"
-   },
-   {
-    "src": "/img/watch/elyse-inamine-r3-1.jpg",
-    "credit": "bonappetit.com"
    },
    {
     "src": "/img/watch/elyse-inamine-r3-2.jpg",
