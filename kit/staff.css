@@ -179,6 +179,10 @@
    <div class="k-alert" role="alert"><p>Couldn't load analytics. Try again in a minute.</p><button class="k-btn k-btn-outline k-btn-sm">Try Again</button></div> */
 .k-alert { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: var(--k-radius-lg); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font: 400 14px/1.4 var(--k-font-sans); }
 .k-alert > p { margin: 0; flex: 1 1 240px; }
+/* Heads-up banner (not an error): same box, warning edge, ink text, a link and a Dismiss button.
+   <div class="k-alert k-alert-warning" role="status"><p><svg…/> 3 low Resy ratings to check. <a href="…">Open Negative Reviews</a></p><button class="k-btn k-btn-ghost k-btn-sm">Dismiss</button></div> */
+.k-alert-warning { border-color: var(--k-warning); color: var(--k-ink); }
+.k-alert-warning a { color: var(--k-accent-text); font-weight: 600; text-underline-offset: 3px; }
 .k-skeleton { border-radius: var(--k-radius); background: var(--k-raised); animation: k-pulse 1.5s ease-in-out infinite; }
 @keyframes k-pulse { 50% { background: var(--k-raised-hover); } }
 /* Kitchen loading line (next/loading.tsx, loading.js): one aria-hidden line under a skeleton.
@@ -302,6 +306,12 @@ button.k-apptab { margin: 0; border: 0; background: none; cursor: pointer; }
 @media (pointer: coarse), (max-width: 1023px) { .k-apptab { min-height: var(--k-tap); } }
 /* Phones (Jay, 2026-10-19: Lineup was cut off at 360): under 480px the row shows Home, Inbox, Private Dining
    and a "More" menu holding the rest (Watch List, Lineup). Desktop/tablet never render the More button. */
+/* Open-count badge on a tab, the phone More trigger and a More item (Jay, 2026-10-21: Negative Reviews open count).
+   Kit badge style (radius-sm, solid ground, warning text 7.27+ on raised, 8.00 on surface) sized to sit in a 36px pill.
+   Markup: <span class="k-tab-count"><span aria-hidden="true">3</span><span class="k-sr-only">, 3 open</span></span> */
+.k-tab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 18px; margin-left: 4px; padding: 0 5px; box-sizing: border-box; border-radius: var(--k-radius-sm); background: var(--k-raised); color: var(--k-warning); font: 600 12px/1 var(--k-font-sans); font-variant-numeric: tabular-nums; }
+.k-apptab:hover .k-tab-count, .k-apptab[aria-expanded="true"] .k-tab-count, .k-menu-item .k-tab-count, [data-slot="menu-content"] .k-tab-count { background: var(--k-surface); }
+.k-apptab[aria-current="page"] .k-tab-count { background: var(--k-primary-ink); color: var(--k-warning); }   /* 9+ on the orange pill */
 .k-apptab-more { display: none; }
 @media (max-width: 479px) {
   .k-apptab-more { display: inline-flex; }

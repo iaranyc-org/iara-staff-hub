@@ -197,9 +197,43 @@
     else if (e.key === "Tab") closeAll();
   });
 
+  // Open-count badges (Jay, 2026-10-21): Negative Reviews shows its open count (Not Contacted + Contacted) on its
+  // tab, the phone More trigger and its item inside More. Same endpoint and markup as next/staff-bar.tsx.
+  // Same-origin fetch; any failure (signed out, offline, old Inbox) just leaves the bar without badges.
+  var COUNT_URL = "/inbox/api/low-reviews?count=1", counts = {}, countAt = 0;
+  function badge(n) {
+    return n ? '<span class="k-tab-count"><span aria-hidden="true">' + (n > 99 ? "99+" : n) + '</span><span class="k-sr-only">, ' + n + " open</span></span>" : "";
+  }
+  function paintCounts(el) {
+    if (el.querySelector('.k-appbar[data-mode="solo"]')) return;
+    el.querySelectorAll(".k-tab-count").forEach(function (b) { b.remove(); });
+    var more = 0;
+    APPS.forEach(function (a) {
+      var n = counts[a.href]; if (!n || a.hidden) return;
+      if (a.more) more += n;
+      el.querySelectorAll('.k-apptab[href="' + a.href + '"], .k-menu-item[href="' + a.href + '"]').forEach(function (t) {
+        var ext = t.querySelector("svg"); t.insertAdjacentHTML("beforeend", badge(n)); if (ext) t.appendChild(ext);   // badge before the new-tab arrow
+      });
+    });
+    var mb = el.querySelector(".k-apptab-more");
+    if (mb && more) mb.insertBefore(document.createRange().createContextualFragment(badge(more)), mb.querySelector("svg"));
+  }
+  function loadCounts() {
+    if (!window.fetch || Date.now() - countAt < 60000) return;
+    countAt = Date.now();
+    fetch(COUNT_URL, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || typeof j.open !== "number") return;
+      counts = { "/inbox/negative-reviews": j.open };
+      bars.forEach(paintCounts);
+    }).catch(function () {});
+  }
+  document.addEventListener("visibilitychange", function () { if (document.visibilityState === "visible") loadCounts(); });
+
   function mount() {
     bars = Array.prototype.slice.call(document.querySelectorAll("[data-k-appbar]"));
     bars.forEach(render);
+    bars.forEach(paintCounts);
+    if (bars.some(function (el) { return el.getAttribute("data-mode") !== "solo"; })) loadCounts();
   }
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount); else mount();
 
