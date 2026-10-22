@@ -180,7 +180,7 @@
 .k-alert { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: var(--k-radius-lg); border: 1px solid var(--k-critical); background: var(--k-surface); color: var(--k-critical); font: 400 14px/1.4 var(--k-font-sans); }
 .k-alert > p { margin: 0; flex: 1 1 240px; }
 /* Heads-up banner (not an error): same box, warning edge, ink text, a link and a Dismiss button.
-   <div class="k-alert k-alert-warning" role="status"><p><svg…/> 3 low Resy ratings to check. <a href="…">Open Negative Reviews</a></p><button class="k-btn k-btn-ghost k-btn-sm">Dismiss</button></div> */
+   <div class="k-alert k-alert-warning" role="status"><p><svg…/> 3 low Resy ratings to check. <a href="…">Open Guest Reviews</a></p><button class="k-btn k-btn-ghost k-btn-sm">Dismiss</button></div> */
 .k-alert-warning { border-color: var(--k-warning); color: var(--k-ink); }
 .k-alert-warning a { color: var(--k-accent-text); font-weight: 600; text-underline-offset: 3px; }
 .k-skeleton { border-radius: var(--k-radius); background: var(--k-raised); animation: k-pulse 1.5s ease-in-out infinite; }
@@ -306,7 +306,7 @@ button.k-apptab { margin: 0; border: 0; background: none; cursor: pointer; }
 @media (pointer: coarse), (max-width: 1023px) { .k-apptab { min-height: var(--k-tap); } }
 /* Phones (Jay, 2026-10-19: Lineup was cut off at 360): under 480px the row shows Home, Inbox, Private Dining
    and a "More" menu holding the rest (Watch List, Lineup). Desktop/tablet never render the More button. */
-/* Open-count badge on a tab, the phone More trigger and a More item (Jay, 2026-10-21: Negative Reviews open count).
+/* Open-count badge on a tab, the phone More trigger and a More item (Jay, 2026-10-21: Guest Reviews open low-review count).
    Kit badge style (radius-sm, solid ground, warning text 7.27+ on raised, 8.00 on surface) sized to sit in a 36px pill.
    Markup: <span class="k-tab-count"><span aria-hidden="true">3</span><span class="k-sr-only">, 3 open</span></span> */
 .k-tab-count { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 18px; margin-left: 4px; padding: 0 5px; box-sizing: border-box; border-radius: var(--k-radius-sm); background: var(--k-raised); color: var(--k-warning); font: 600 12px/1 var(--k-font-sans); font-variant-numeric: tabular-nums; }
@@ -427,7 +427,7 @@ button.k-apptab { margin: 0; border: 0; background: none; cursor: pointer; }
 @keyframes k-title-in { from { transform: translateY(110%); } }
 /* Slot = the longest name ("Private Dining", 106px at 18px Fraunces italic) + room for the italic overhang,
    so the divider hugs it and never moves. Sized off the title font, not the bar's 16px em. */
-@media (min-width: 1100px) { .k-appbar-title { width: calc(var(--k-lockup-word) * 7.8); box-sizing: content-box; } }  /* 7.8: fits "Negative Reviews" (widest app name, 2026-10-20) */
+@media (min-width: 1100px) { .k-appbar-title { width: calc(var(--k-lockup-word) * 7.8); box-sizing: content-box; } }  /* 7.8: fit "Negative Reviews" (2026-10-20); "Guest Reviews" (2026-10-22) is shorter */
 /* The account slot always takes the avatar's width, so Search sits in the same spot in every app,
    with or without a signed-in account (the bar must not shift between apps). */
 .k-acct-slot { display: inline-flex; align-items: center; justify-content: center; min-width: var(--k-tap); }

@@ -35,7 +35,7 @@
     { label: "Inbox Settings", href: "/inbox/settings", keywords: "inbox preferences config" },
     { label: "Private Dining", href: "/private-dining", keywords: "pdr events parties" },
     { label: "Watch List", href: "/inbox/watch", keywords: "press critics media hall pr watch" },
-    { label: "Negative Reviews", href: "/inbox/negative-reviews", keywords: "low reviews ratings resy guests check in complaints" },
+    { label: "Guest Reviews", href: "/inbox/guest-reviews", keywords: "negative reviews low reviews praise ratings resy guests check in complaints thank you" },
     { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" }
   ];
   window.IARA_APPS = APPS;

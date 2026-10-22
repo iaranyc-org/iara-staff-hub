@@ -40,7 +40,7 @@
     // Own tab (Jay, 2026-10-19: "watch list on the main nav, not hidden in inbox"). Page lives in the Inbox app.
     { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", more: true },
     // Own tab (Jay, 2026-10-20). Page lives in the Inbox app.
-    { label: "Negative Reviews", title: "Negative Reviews", href: "/inbox/negative-reviews", sub: "See every Resy rating of 4 stars or below and check in with the guest.", more: true },
+    { label: "Guest Reviews", title: "Guest Reviews", href: "/inbox/guest-reviews", sub: "See every low Resy rating, plus 5-star notes from VIPs and regulars worth answering.", more: true },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
@@ -197,7 +197,7 @@
     else if (e.key === "Tab") closeAll();
   });
 
-  // Open-count badges (Jay, 2026-10-21): Negative Reviews shows its open count (Not Contacted + Contacted) on its
+  // Open-count badges (Jay, 2026-10-21): Guest Reviews shows its open low-review count (Not Contacted + Contacted; 5-star Praise never counts) on its
   // tab, the phone More trigger and its item inside More. Same endpoint and markup as next/staff-bar.tsx.
   // Same-origin fetch; any failure (signed out, offline, old Inbox) just leaves the bar without badges.
   var COUNT_URL = "/inbox/api/low-reviews?count=1", counts = {}, countAt = 0;
@@ -223,7 +223,7 @@
     countAt = Date.now();
     fetch(COUNT_URL, { credentials: "same-origin" }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       if (!j || typeof j.open !== "number") return;
-      counts = { "/inbox/negative-reviews": j.open };
+      counts = { "/inbox/guest-reviews": j.open };
       bars.forEach(paintCounts);
     }).catch(function () {});
   }
