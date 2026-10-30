@@ -692,5 +692,14 @@
    "authorPage": "input source, page check"
   },
   "_verified": "2026-10-17"
+ },
+ "nicole-kliest": {
+  "instagram": "https://www.instagram.com/nickliest/",
+  "authorPage": "https://www.vogue.com/contributor/nicole-kliest",
+  "_source": {
+   "instagram": "handle listed on her Zoe Report author profile (unconfirmed on IG itself)",
+   "authorPage": "Vogue contributor page loads"
+  },
+  "_verified": "2026-10-30"
  }
 }

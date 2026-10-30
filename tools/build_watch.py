@@ -29,6 +29,22 @@ for e in LOOKBOOK:
                      'sources': [e['source']] if e.get('source') else [], 'anonymous': False}
     roster[s]['hallIntel'] = e['hallIntel']
 
+# Added by hand from Hall PR texts (Jay 2026-10-30). Not in the Look Book, so hideable.
+MANUAL = {
+    'nicole-kliest': {
+        'name': 'Nicole Kliest', 'outlet': 'Freelance (Vogue contributor)',
+        'role': 'Freelance writer and editor, New York; bylines in Vogue, Harper\'s Bazaar, Elle, Condé Nast Traveler, Domino, Who What Wear',
+        'beat': 'Fashion, travel, wine, design and beauty', 'group': 'Independent',
+        'note': 'Not a restaurant critic. Watched because Hall PR texted on 10/30/2026 that she just inquired about walking in.',
+        'hallIntel': 'Hall PR text, 10/30/2026: keep an eye out for Vogue writer Nicole Kliest, she just inquired about walking in.',
+        'sources': ['https://www.thezoereport.com/profile/nicole-kliest-9436370', 'https://www.whowhatwear.com/author/nicole-kliest', 'https://www.vogue.com/contributor/nicole-kliest'],
+        'anonymous': False, 'shortRole': 'Vogue Contributor', 'status': 'Food Writer',
+        'recognizeBy': 'Fair skin, light blue eyes, shoulder-length strawberry-blonde hair parted in the middle. West Village based.',
+    },
+}
+for s_, e in MANUAL.items():
+    roster.setdefault(s_, {'slug': s_}).update(e)
+
 # New people from the roster expansion.
 NEW_STATUS = {
     'melissa-mccart': ('Eater Regional Editor', 'Editor'),

@@ -6589,6 +6589,54 @@ var WATCH = /*WATCH_DATA*/[
     "url": "https://www.shayeweaver.com/"
    }
   ]
+ },
+ {
+  "slug": "nicole-kliest",
+  "name": "Nicole Kliest",
+  "outlet": "Freelance (Vogue contributor)",
+  "role": "Freelance writer and editor, New York; bylines in Vogue, Harper's Bazaar, Elle, Condé Nast Traveler, Domino, Who What Wear",
+  "beat": "Fashion, travel, wine, design and beauty",
+  "group": "Independent",
+  "note": "Not a restaurant critic.",
+  "hallIntel": "Hall PR text, 10/30/2026: keep an eye out for Vogue writer Nicole Kliest, she just inquired about walking in.",
+  "sources": [
+   "https://www.thezoereport.com/profile/nicole-kliest-9436370",
+   "https://www.whowhatwear.com/author/nicole-kliest",
+   "https://www.vogue.com/contributor/nicole-kliest"
+  ],
+  "anonymous": false,
+  "shortRole": "Vogue Contributor",
+  "status": "Food Writer",
+  "recognizeBy": "Fair skin, light blue eyes, shoulder-length strawberry-blonde hair parted in the middle. West Village based.",
+  "photo": "/img/watch/nicole-kliest-1.jpg",
+  "photoCredit": {
+   "text": "vogue.com"
+  },
+  "photos": [
+   {
+    "src": "/img/watch/nicole-kliest-1.jpg",
+    "credit": "vogue.com"
+   },
+   {
+    "src": "/img/watch/nicole-kliest-2.jpg",
+    "credit": "whowhatwear.com"
+   },
+   {
+    "src": "/img/watch/nicole-kliest-3.jpg",
+    "credit": "2026"
+   }
+  ],
+  "hidden": false,
+  "links": [
+   {
+    "type": "instagram",
+    "url": "https://www.instagram.com/nickliest/"
+   },
+   {
+    "type": "authorPage",
+    "url": "https://www.vogue.com/contributor/nicole-kliest"
+   }
+  ]
  }
 ]/*END_WATCH_DATA*/;
 var WL = { tab:"roster", outlet:"All", q:"", pic:0, cardPic:{}, open:null, deck:null, picked:null };
