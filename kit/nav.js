@@ -31,9 +31,6 @@
   // `more: true` tabs fold into a "More" menu on phones under 480px (staff.css hides them, shows the More button).
   var APPS = [
     { label: "Home", title: "Home", href: "/home", sub: "Today at iara, from this morning's Bom Dia." },
-    // Hidden (Jay, 2026-10-14: still being built). /ops keeps working and its bar still renders,
-    // but nothing links to it: no tab, no palette entry, no shortcut.
-    { label: "Kitchen Ops", title: "Kitchen Ops", href: "/ops", sub: "Track ingredient costs, recipes, inventory and orders.", hidden: true },
     { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send.", menu: INBOX_MENU },
     { label: "Analytics", title: "Inbox", href: "/analytics", sub: "See how fast we answer guests and how bookings are going.", hidden: true, parent: "/inbox" },
     { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
@@ -41,6 +38,8 @@
     { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", more: true },
     // Own tab (Jay, 2026-10-20). Page lives in the Inbox app.
     { label: "Guest Reviews", title: "Guest Reviews", href: "/inbox/guest-reviews", sub: "See every low Resy rating, plus 5-star notes from VIPs and regulars worth answering.", more: true },
+    // Own tab (Jay, 2026-11-04): Kitchen Ops becomes Finance, between Guest Reviews and Lineup. Manager login only.
+    { label: "Finance", title: "Finance", href: "/ops", sub: "Invoices, costs and margins, checked against the accountant's books.", more: true },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
