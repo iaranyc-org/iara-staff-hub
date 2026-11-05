@@ -259,7 +259,7 @@ function vOverview(D){
         (D.nodate.length? item("info", D.nodate.length+(D.nodate.length===1?" bill":" bills")+" Ottimate hasn't read yet", "No vendor or date yet, still being processed.") : "")+
       '</div></div>'+
       '<div class="k-card"><div class="section-title">Due in the Next 7 Days</div>'+
-        (D.dueWeek.length ? '<div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n:"")); }).join("")+'</div>' : '<p class="note">Nothing due this week.</p>')+
+        (D.dueWeek.length ? '<div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n.replace(/^#/,""):"")); }).join("")+'</div>' : '<p class="note">Nothing due this week.</p>')+
       '</div>'+
     '</div>'+
     '<div class="k-card"><div class="section-title">What Comes Next</div><div class="list">'+
