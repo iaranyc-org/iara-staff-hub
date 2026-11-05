@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>iara Finance</title>
+<meta name="description" content="Invoices, vendors and duplicates for iara, checked against the accountant's books. Manager-only.">
+<meta name="robots" content="noindex, nofollow">
+<meta property="og:title" content="iara Finance">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://staff.iara.nyc/ops">
+<link rel="manifest" href="/ops-manifest.json">
+<link rel="apple-touch-icon" href="/icon-512.png">
+<link rel="icon" href="/icon-512.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="iara Finance">
+<meta name="theme-color" content="#391d1f">
+<link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/kit/tokens.css?v=5ac7b7c914">
+<link rel="stylesheet" href="/kit/staff.css?v=f0a71ed6c3">
+<script src="/kit/palette.js?v=9ff8de66f7" defer></script>
+<script src="/kit/nav.js?v=38f8766038" defer blocking="render"></script>
+<script src="/kit/toast.js?v=0085d82749" defer></script>
+<script src="/kit/tabs.js?v=1d2aae8497" defer></script>
+<style>
+  /* Finance (Jay, 2026-11-05): a fresh start, replacing Kitchen Ops at /ops.
+     Audit the money first (Ottimate invoices, then QuickBooks and the
+     accountant's file); food costing gets rebuilt later on top of numbers we trust.
+     Dark maroon only, like every manager app. */
+  :root{ color-scheme:dark; }
+  *{box-sizing:border-box;}
+  html,body{background:var(--k-page); color:var(--k-ink); font-family:var(--k-font-sans); margin:0; -webkit-font-smoothing:antialiased;}
+  h1,h2,h3{margin:0; text-wrap:balance;}
+  h2{font-family:var(--k-font-display); font-weight:600; color:var(--k-display); font-size:30px; letter-spacing:-.015em; line-height:1.15;}
+  p{margin:0; text-wrap:pretty;}
+  [data-k-appbar]{position:sticky; top:0; z-index:900;}
+  .num{font-family:var(--k-font-mono); font-variant-numeric:tabular-nums;}
+  .tabs-bar{position:sticky; top:var(--k-appbar-h); z-index:19; display:flex; align-items:center; gap:12px; margin:0 0 20px; padding:8px 0;
+    background:var(--k-page); box-shadow:0 0 0 100vmax var(--k-page), 0 1px 0 100vmax var(--k-border); clip-path:inset(0 -100vmax -1px -100vmax);}
+  .tabs-bar .k-tabs{scrollbar-width:none;}
+  .tabs-status{margin-left:auto; font-size:12px; color:var(--k-muted); white-space:nowrap;}
+  @media (max-width:640px){ .tabs-status{display:none;} }
+  #main{display:flex; flex-direction:column; gap:18px; min-width:0; padding-bottom:48px;}
+  .head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
+  .head .desc{font-size:13px; color:var(--k-muted); margin-top:4px; max-width:70ch;}
+  .kpis{display:grid; grid-template-columns:repeat(4,1fr); gap:12px;}
+  @media (max-width:860px){ .kpis{grid-template-columns:repeat(2,1fr);} }
+  .kpi{background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:14px 16px; display:flex; flex-direction:column; gap:4px;}
+  .kpi .label{font-size:13px; color:var(--k-muted); font-weight:600;}
+  .kpi .value{font-family:var(--k-font-mono); font-size:24px; font-weight:600; font-variant-numeric:tabular-nums;}
+  .kpi .foot{font-size:12px; color:var(--k-muted);}
+  .kpi.alert .value{color:var(--k-critical);} .kpi.warn .value{color:var(--k-warning);}
+  .section-title{font-size:15px; font-weight:700; margin-bottom:10px;}
+  .list{display:flex; flex-direction:column; gap:10px;}
+  .item{display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.45;}
+  .item .dot{width:8px; height:8px; border-radius:50%; margin-top:7px; flex:none; background:var(--k-warning);}
+  .item .dot.crit{background:var(--k-critical);} .item .dot.info{background:var(--k-info);}
+  .item .sub{color:var(--k-muted); font-size:13px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  @media (max-width:860px){ .grid2{grid-template-columns:1fr;} }
+  .filters{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  .filters .k-input{max-width:260px;}
+  .table-wrap{overflow-x:auto; border:1px solid var(--k-border); border-radius:12px; background:var(--k-surface);}
+  table{width:100%; border-collapse:collapse; min-width:640px;}
+  thead th{position:sticky; top:0; background:var(--k-raised); text-align:left; font-size:12px; color:var(--k-muted); font-weight:700; padding:10px 12px; border-bottom:1px solid var(--k-border); white-space:nowrap;}
+  tbody td{padding:9px 12px; border-bottom:1px solid var(--k-border); font-size:13.5px; vertical-align:top;}
+  tbody tr:last-child td{border-bottom:none;}
+  td.num, th.num{text-align:right;}
+  td .sub{display:block; color:var(--k-muted); font-size:12px;}
+  .note{font-size:13px; color:var(--k-muted);}
+  .count{font-size:13px; color:var(--k-muted);}
+  #authGate .bg{position:fixed; inset:0; background:var(--k-page); z-index:49;}
+  #authGate .card{position:fixed; z-index:50; left:50%; top:50%; transform:translate(-50%,-50%); width:min(420px, calc(100vw - 32px));
+    background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:24px; display:flex; flex-direction:column; gap:16px; text-align:center; align-items:center;}
+  .brand-word{font-family:"Fraunces",Georgia,serif; font-style:italic; font-size:var(--k-lockup-word); line-height:1; color:var(--k-display);}
+  .gate-lockup{display:flex; align-items:center; gap:12px;}
+  .gate-lockup img{width:var(--k-lockup-mark); height:auto;}
+</style>
+</head>
+<body>
+<div id="app">
+  <div data-k-appbar data-app="Finance" data-home="/ops"></div>
+  <h1 class="k-sr-only">Finance</h1>
+  <main class="k-page">
+    <div class="tabs-bar">
+      <div class="k-tabs" id="tabNav" role="tablist" aria-label="Sections"></div>
+      <div class="tabs-status" id="dataStatus"></div>
+    </div>
+    <div id="main" role="tabpanel" tabindex="-1"></div>
+  </main>
+</div>
+<input type="file" id="csvInput" accept=".csv,text/csv" hidden>
+<div id="authGate" hidden>
+  <div class="bg"></div>
+  <div class="card">
+    <div class="gate-lockup" aria-hidden="true"><img src="/img/iara-mark.png" alt="" width="240" height="72"><span class="brand-word">Finance</span></div>
+    <h2>Manager Sign-In Required</h2>
+    <p style="color:var(--k-muted); font-size:14px;">Finance holds invoices and business data, so it's manager-only. Sign in with your @iara.nyc Google account.</p>
+    <button class="k-btn k-btn-primary k-btn-lg k-btn-block" id="authGateBtn">Sign In with Google</button>
+    <div id="authGateMsg" class="k-alert" hidden></div>
+  </div>
+</div>
+<script>
+(function(){ var h=null; try{ h=localStorage.getItem("iara_mgr_auth_hint"); }catch(e){}
+  if(!h){ document.getElementById("authGate").hidden=false; var b=document.querySelector("[data-k-appbar]"); if(b) b.hidden=true; } })();
+</script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+"use strict";
+var FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE",
+  authDomain: "iara-lineup.firebaseapp.com",
+  projectId: "iara-lineup",
+  storageBucket: "iara-lineup.firebasestorage.app",
+  messagingSenderId: "840712867607",
+  appId: "1:840712867607:web:2003c145731aa85a13b152"
+};
+// Keep in step with MANAGERS in iara_staff_hub.html and firestore.rules (the rules are the real gate).
+var MANAGERS = ["ronald@iara.nyc","vitor@iara.nyc","jay@iara.nyc","eli@iara.nyc","contact@iara.nyc"];
+function isManagerEmail(e){ return !!e && MANAGERS.indexOf(String(e).toLowerCase()) !== -1; }
+
+var OPENING = "2026-10-02";
+// Vendors we buy from that should be sending bills into Ottimate (from the 2026-11-04 audit).
+// A vendor here with zero or one invoice since opening is a missing-invoice lead.
+var EXPECTED_VENDORS = [
+  {name:"Con Edison", match:/con ?ed/i, how:"Utility, billed monthly"},
+  {name:"Southern Glazer's", match:/southern glazer/i, how:"Wine and spirits"},
+  {name:"Polaner Selections", match:/polaner/i, how:"Wine"},
+  {name:"Greenpoint Fish", match:/greenpoint/i, how:"Seafood"},
+  {name:"Ice Air", match:/ice ?air/i, how:"Equipment service"},
+  {name:"Balter", match:/balter/i, how:"Beer"},
+  {name:"Doen Zhumir", match:/zhumir/i, how:"Spirits"},
+  {name:"Empire Merchants", match:/empire/i, how:"Spirits, bills live in the Empire360 portal"},
+  {name:"Winebow", match:/winebow/i, how:"Wine"},
+  {name:"Rosenthal", match:/rosenthal/i, how:"Wine"},
+  {name:"USA Wine West", match:/usa wine/i, how:"Wine"},
+  {name:"MHW", match:/\bmhw\b/i, how:"Spirits importer"}
+];
+// Bills that never go through Ottimate at all, so the bank feed is the only place to find them.
+var OUTSIDE_OTTIMATE = ["Rent","Insurance","Toast subscription and fees","Utilities paid by autopay","Payroll and payroll taxes"];
+
+var TABS = [
+  {id:"overview", label:"Overview"},
+  {id:"invoices", label:"Invoices"},
+  {id:"vendors", label:"Vendors"},
+  {id:"duplicates", label:"Duplicates"},
+  {id:"missing", label:"Missing"}
+];
+var state = { tab:"overview", data:null, loaded:false, q:"", f:"all" };
+var db=null, auth=null, user=null;
+
+function $(s){ return document.querySelector(s); }
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function money(n){ return (n<0?"-":"")+"$"+Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2}); }
+function money0(n){ return (n<0?"-":"")+"$"+Math.round(Math.abs(n)).toLocaleString("en-US"); }
+function dShort(iso){ if(!iso) return "No date"; var p=iso.slice(0,10).split("-"); return (+p[1])+"/"+(+p[2])+"/"+p[0].slice(2); }
+function title(s){ return String(s||"").toLowerCase().replace(/\b([a-z])/g,function(m){return m.toUpperCase();}).replace(/\bLlc\b/g,"LLC").replace(/\bInc\b/g,"Inc"); }
+function nyDay(add){ return new Date(Date.now()+add*864e5).toLocaleDateString("en-CA",{timeZone:"America/New_York"}); }
+function toast(m){ if(window.iaraToast) iaraToast(m); }
+
+/* ---------- data ---------- */
+// Live = a real bill. Merged/duplicate/deleted/temporary are Ottimate's own bookkeeping; statements carry totals only.
+var LIVE = {verified:1, digitized:1, incomplete:1, archived:1};
+function parseCSV(text){
+  var rows=[], row=[], f="", q=false;
+  for(var i=0;i<text.length;i++){
+    var c=text[i];
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){ f+='"'; i++; } else q=false; } else f+=c; }
+    else if(c==='"') q=true;
+    else if(c===","){ row.push(f); f=""; }
+    else if(c==="\n"){ row.push(f); rows.push(row); row=[]; f=""; }
+    else if(c!=="\r") f+=c;
+  }
+  if(f||row.length){ row.push(f); rows.push(row); }
+  var h=rows.shift().map(function(k){return k.replace(/^\uFEFF/,"");});
+  parseCSV.dropped = rows.filter(function(r){return r.length!==h.length && r.join("")!=="";}).length;
+  return rows.filter(function(r){return r.length===h.length;}).map(function(r){ var o={}; h.forEach(function(k,i){o[k]=r[i];}); return o; });
+}
+function compact(r){
+  var s=function(k){return r[k]==null?"":String(r[k]);};
+  return { id:s("id"), v:s("vendor"), n:s("invoice_no"), d:s("date"), t:parseFloat(s("total").replace(/[$,]/g,""))||0, due:s("due"), ty:s("type"), s:s("state"),
+           p:/^(true|yes|1)$/i.test(s("paid")), x:s("exported"), up:s("uploaded"), via:s("through"), f:s("file") };
+}
+function derive(rows){
+  var live = rows.filter(function(r){ return LIVE[r.s] && r.ty!=="statement"; });
+  var open = live.filter(function(r){ return r.d && r.d>=OPENING; });
+  var pre = live.filter(function(r){ return r.d && r.d<OPENING; });
+  var nodate = live.filter(function(r){ return !r.d; });
+  var dups = rows.filter(function(r){ return r.s==="duplicate"; });
+  var byKey = {}; live.forEach(function(r){ if(r.n) byKey[(r.v+"|"+r.n).toLowerCase()] = r; });
+  dups.forEach(function(r){
+    var o = r.n && byKey[(r.v+"|"+r.n).toLowerCase()];
+    r.orig = o || null;
+    r.gapH = (o && o.up && r.up) ? Math.round((new Date(r.up)-new Date(o.up))/36e5) : null;
+  });
+  var vend = {};
+  live.forEach(function(r){
+    var k = r.v || "(No vendor read yet)";
+    var v = vend[k] || (vend[k] = {name:k, n:0, total:0, sinceOpen:0, nOpen:0, unpaid:0, last:"", dups:0});
+    v.n++; v.total+=r.t; if(r.d>=OPENING){ v.sinceOpen+=r.t; v.nOpen++; } if(!r.p && r.ty!=="credit") v.unpaid+=r.t; if(r.d>v.last) v.last=r.d;
+  });
+  dups.forEach(function(r){ var k=r.v||"(No vendor read yet)"; (vend[k] || (vend[k]={name:k,n:0,total:0,sinceOpen:0,nOpen:0,unpaid:0,last:"",dups:0})).dups++; });
+  var today = nyDay(0), in7 = nyDay(7);
+  var unpaid = live.filter(function(r){ return !r.p && r.ty!=="credit"; });
+  return {
+    rows:rows, live:live, open:open, pre:pre, nodate:nodate, dups:dups,
+    vendors:Object.keys(vend).map(function(k){return vend[k];}).sort(function(a,b){return b.sinceOpen-a.sinceOpen;}),
+    sumOpen: open.reduce(function(s,r){return s+r.t;},0),
+    sumPre: pre.reduce(function(s,r){return s+r.t;},0),
+    unpaid: unpaid, sumUnpaid: unpaid.reduce(function(s,r){return s+r.t;},0),
+    overdue: unpaid.filter(function(r){return r.due && r.due<today;}),
+    dueWeek: unpaid.filter(function(r){return r.due && r.due>=today && r.due<=in7;}),
+    notExported: open.filter(function(r){return !r.x;}),
+    statements: rows.filter(function(r){return r.ty==="statement" && LIVE[r.s] && r.t>0;})
+  };
+}
+
+/* ---------- render ---------- */
+function renderNav(){
+  $("#tabNav").innerHTML = TABS.map(function(t){ var on=state.tab===t.id;
+    return '<button type="button" role="tab" class="k-tab" aria-selected="'+on+'" tabindex="'+(on?0:-1)+'" data-tab="'+t.id+'">'+t.label+'</button>'; }).join("");
+}
+function kpi(label, value, foot, cls){ return '<div class="kpi '+(cls||"")+'"><div class="label">'+label+'</div><div class="value">'+value+'</div><div class="foot">'+foot+'</div></div>'; }
+function importBtn(){ return '<button class="k-btn k-btn-sm" data-act="import">Import Ottimate CSV</button>'; }
+
+function render(){
+  renderNav();
+  var m = $("#main");
+  if(!state.loaded){ m.innerHTML = '<div class="k-card"><p class="note">Loading…</p></div>'; return; }
+  if(!state.data){
+    m.innerHTML = '<div class="k-empty"><h3>No Invoices Yet</h3><p>Invoices from Ottimate show up here once a CSV export is imported.</p>'+importBtn()+'</div>';
+    $("#dataStatus").textContent = ""; return;
+  }
+  var D = state.data;
+  $("#dataStatus").textContent = "Ottimate data from "+dShort(D.pulledAt)+" · "+D.rows.length+" documents";
+  m.innerHTML = ({overview:vOverview, invoices:vInvoices, vendors:vVendors, duplicates:vDups, missing:vMissing})[state.tab](D);
+}
+
+function vOverview(D){
+  var dupVend = {}; D.dups.forEach(function(r){ var k=title(r.v)||"Unknown"; dupVend[k]=(dupVend[k]||0)+1; });
+  var topDup = Object.keys(dupVend).sort(function(a,b){return dupVend[b]-dupVend[a];}).slice(0,3);
+  var leads = missingLeads(D).filter(function(l){return l.nOpen<=1;});
+  return '<div class="head"><div><h2>Overview</h2><p class="desc">Every bill Ottimate has collected for iara since we opened on 10/2. This is the first half of the audit: next we match it against the bank, card and the accountant\'s books.</p></div>'+importBtn()+'</div>'+
+    '<div class="kpis">'+
+      kpi("Invoiced Since 10/2", money0(D.sumOpen), D.open.length+" bills, plus "+money0(D.sumPre)+" pre-open")+
+      kpi("Unpaid", money0(D.sumUnpaid), D.unpaid.length+" bills, "+D.overdue.length+" past due", D.overdue.length?"alert":"")+
+      kpi("Duplicates Caught", String(D.dups.length), "Copies Ottimate threw out", D.dups.length?"warn":"")+
+      kpi("Not In QuickBooks Yet", String(D.notExported.length), "Since 10/2, not exported", D.notExported.length?"warn":"")+
+    '</div>'+
+    '<div class="grid2">'+
+      '<div class="k-card"><div class="section-title">Needs a Look</div><div class="list">'+
+        item("crit", leads.length+" vendors with 0 or 1 bill since opening", "Likely invoices that never reached Ottimate. See Missing.")+
+        item("", D.dups.length+" duplicate copies, mostly "+topDup.join(", "), "Find who sends twice and ask them to stop. See Duplicates.")+
+        item("", D.overdue.length+" bills past their due date ("+money0(D.overdue.reduce(function(s,r){return s+r.t;},0))+")", "Ottimate shows them unpaid. Some may be paid outside it, which QuickBooks will tell us.")+
+        (D.nodate.length? item("info", D.nodate.length+(D.nodate.length===1?" bill":" bills")+" Ottimate hasn't read yet", "No vendor or date yet, still being processed.") : "")+
+      '</div></div>'+
+      '<div class="k-card"><div class="section-title">Due in the Next 7 Days</div>'+
+        (D.dueWeek.length ? '<div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n:"")); }).join("")+'</div>' : '<p class="note">Nothing due this week.</p>')+
+      '</div>'+
+    '</div>'+
+    '<div class="k-card"><div class="section-title">What Comes Next</div><div class="list">'+
+      item("info","QuickBooks bank and card feed","Match every payment to a bill. A payment with no bill is a missing invoice.")+
+      item("info","Accountant\'s file","Reconcile month by month so these numbers equal the books.")+
+      item("info","Toast sales and payroll","Money in and labor, for a cash forecast.")+
+    '</div></div>';
+}
+function item(cls, t, s){ return '<div class="item"><span class="dot '+cls+'"></span><div><div>'+esc(t)+'</div><div class="sub">'+esc(s)+'</div></div></div>'; }
+
+function stateBadge(r){
+  if(r.ty==="credit") return '<span class="k-badge k-badge-info">Credit</span>';
+  if(r.p) return '<span class="k-badge k-badge-good">Paid</span>';
+  var today=nyDay(0);
+  if(r.due && r.due<today) return '<span class="k-badge k-badge-critical">Past Due</span>';
+  return '<span class="k-badge k-badge-warning">Unpaid</span>';
+}
+function vInvoices(D){
+  var F = [["all","All"],["unpaid","Unpaid"],["overdue","Past Due"],["notx","Not in QuickBooks"],["pre","Pre-Open"]];
+  var today=nyDay(0), q=state.q.toLowerCase();
+  var rows = D.live.filter(function(r){
+    if(q && (r.v+" "+r.n+" "+r.f).toLowerCase().indexOf(q)===-1) return false;
+    if(state.f==="unpaid") return !r.p && r.ty!=="credit";
+    if(state.f==="overdue") return !r.p && r.ty!=="credit" && r.due && r.due<today;
+    if(state.f==="notx") return !r.x && r.d>=OPENING;
+    if(state.f==="pre") return r.d && r.d<OPENING;
+    return true;
+  }).sort(function(a,b){ return (b.d||"9")<(a.d||"9")?-1:1; });
+  var sum = rows.reduce(function(s,r){return s+r.t;},0);
+  return '<div class="head"><div><h2>Invoices</h2><p class="desc">Every live bill in Ottimate. Duplicates and statements are left out and have their own views.</p></div></div>'+
+    '<div class="filters"><input class="k-input" id="q" type="search" placeholder="Search vendor or invoice #" value="'+esc(state.q)+'" aria-label="Search invoices">'+
+      F.map(function(f){ return '<button class="k-chip" data-f="'+f[0]+'" aria-pressed="'+(state.f===f[0])+'">'+f[1]+'</button>'; }).join("")+
+      '<span class="count">'+rows.length+' bills · '+money(sum)+'</span></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th>Invoice Date</th><th>Invoice #</th><th class="num">Total</th><th>Due</th><th>Status</th><th>QuickBooks</th></tr></thead><tbody>'+
+    (rows.length ? rows.map(function(r){
+      return '<tr><td>'+esc(title(r.v)||"Not read yet")+'<span class="sub">'+esc(r.f||"")+'</span></td><td>'+dShort(r.d)+'</td><td class="num" style="text-align:left">'+esc(r.n||"")+'</td><td class="num">'+money(r.t)+'</td><td>'+(r.due?dShort(r.due):"")+'</td><td>'+stateBadge(r)+'</td><td>'+(r.x?'<span class="k-badge k-badge-good">Exported</span>':'<span class="k-badge k-badge-muted">Not Yet</span>')+'</td></tr>';
+    }).join("") : '<tr><td colspan="7" class="note">No bills match this filter.</td></tr>')+
+    '</tbody></table></div>';
+}
+function vVendors(D){
+  return '<div class="head"><div><h2>Vendors</h2><p class="desc">Spend per vendor since 10/2, sorted by size. Last bill date shows who has gone quiet.</p></div></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th class="num">Since 10/2</th><th class="num">Bills</th><th class="num">Unpaid</th><th>Last Bill</th><th class="num">Duplicates</th></tr></thead><tbody>'+
+    D.vendors.map(function(v){
+      return '<tr><td>'+esc(title(v.name))+'</td><td class="num">'+money(v.sinceOpen)+'</td><td class="num">'+v.nOpen+(v.n>v.nOpen?'<span class="sub">+'+(v.n-v.nOpen)+' pre-open</span>':'')+'</td><td class="num">'+(v.unpaid?money(v.unpaid):"")+'</td><td>'+(v.last?dShort(v.last):"")+'</td><td class="num">'+(v.dups?'<span class="k-badge k-badge-warning">'+v.dups+'</span>':"")+'</td></tr>';
+    }).join("")+'</tbody></table></div>';
+}
+function vDups(D){
+  var g = {};
+  D.dups.forEach(function(r){ var k=title(r.v)||"Unknown"; (g[k]||(g[k]=[])).push(r); });
+  var names = Object.keys(g).sort(function(a,b){return g[b].length-g[a].length;});
+  function pattern(list){
+    var gaps = list.map(function(r){return r.gapH;}).filter(function(h){return h!=null;});
+    if(!gaps.length) return "Original not found, compare by hand";
+    var same = gaps.filter(function(h){return h>=0 && h<2;}).length, week = gaps.filter(function(h){return h>=140 && h<=200;}).length;
+    if(gaps.filter(function(h){return h<0;}).length===gaps.length) return "Copy arrived before the original, compare by hand";
+    if(same>=gaps.length/2) return "Arrives twice at once: likely two email addresses or two attachments";
+    if(week>=gaps.length/2) return "Re-sent about a week later: likely a weekly statement or reminder";
+    return "Re-sent later, gaps of "+gaps.map(function(h){return h<48?h+"h":Math.round(h/24)+"d";}).join(", ");
+  }
+  return '<div class="head"><div><h2>Duplicates</h2><p class="desc">Copies Ottimate caught and set aside. They don\'t count toward any total. The goal is to find who sends twice and get them to send once.</p></div></div>'+
+    names.map(function(n){
+      var list=g[n];
+      return '<div class="k-card"><div class="section-title">'+esc(n)+' · '+list.length+(list.length===1?' copy':' copies')+'</div><p class="note" style="margin-bottom:10px">'+esc(pattern(list))+'</p>'+
+        '<div class="table-wrap"><table><thead><tr><th>Invoice #</th><th>Invoice Date</th><th class="num">Total</th><th>Copy Arrived</th><th>Gap After Original</th></tr></thead><tbody>'+
+        list.map(function(r){ return '<tr><td>'+esc(r.n||"")+'</td><td>'+dShort(r.d)+'</td><td class="num">'+money(r.t)+'</td><td>'+dShort(r.up)+'</td><td>'+(r.gapH==null?"No match":r.gapH<0?"Arrived first":(r.gapH<48?r.gapH+" hours":Math.round(r.gapH/24)+" days"))+'</td></tr>'; }).join("")+
+        '</tbody></table></div></div>';
+    }).join("");
+}
+function missingLeads(D){
+  return EXPECTED_VENDORS.map(function(e){
+    var hits = D.live.filter(function(r){ return e.match.test(r.v||""); });
+    var open = hits.filter(function(r){return r.d>=OPENING;});
+    var last = hits.reduce(function(m,r){return r.d>m?r.d:m;},"");
+    return {name:e.name, how:e.how, nOpen:open.length, last:last};
+  }).sort(function(a,b){return a.nOpen-b.nOpen;});
+}
+function vMissing(D){
+  var L = missingLeads(D);
+  return '<div class="head"><div><h2>Missing Invoices</h2><p class="desc">Vendors we buy from that have sent few or no bills to Ottimate since opening. These are leads, not proof: the QuickBooks payment feed will confirm which bills are really missing.</p></div></div>'+
+    '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th>What We Buy</th><th class="num">Bills Since 10/2</th><th>Last Bill</th><th>Read</th></tr></thead><tbody>'+
+    L.map(function(l){ return '<tr><td>'+esc(l.name)+'</td><td>'+esc(l.how)+'</td><td class="num">'+l.nOpen+'</td><td>'+(l.last?dShort(l.last):"Never")+'</td><td>'+(l.nOpen===0?'<span class="k-badge k-badge-critical">None Since Opening</span>':l.nOpen===1?'<span class="k-badge k-badge-warning">Only One</span>':'<span class="k-badge k-badge-good">Coming In</span>')+'</td></tr>'; }).join("")+
+    '</tbody></table></div>'+
+    '<div class="grid2"><div class="k-card"><div class="section-title">Never Goes Through Ottimate</div><div class="list">'+OUTSIDE_OTTIMATE.map(function(s){return item("info",s,"Find it in the bank feed instead.");}).join("")+'</div></div>'+
+    '<div class="k-card"><div class="section-title">Vendor Statements</div><p class="note" style="margin-bottom:10px">Statements list balances only, no line items, so they can\'t prove a bill is missing on their own.</p><div class="list">'+
+      (D.statements.length? D.statements.map(function(r){return item("info", title(r.v)||"Unknown", dShort(r.d)+" · "+money(r.t));}).join("") : '<p class="note">None.</p>')+'</div></div></div>';
+}
+
+/* ---------- events ---------- */
+document.addEventListener("click", function(e){
+  var t = e.target.closest("[data-tab],[data-f],[data-act]"); if(!t) return;
+  if(t.dataset.tab){ state.tab=t.dataset.tab; render(); window.scrollTo(0,0); }
+  else if(t.dataset.f){ state.f=t.dataset.f; render(); }
+  else if(t.dataset.act==="import") $("#csvInput").click();
+});
+document.addEventListener("input", function(e){
+  if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
+});
+$("#csvInput").addEventListener("change", async function(){
+  var file=this.files[0]; this.value=""; if(!file||!db) return;
+  try{
+    var rows = parseCSV(await file.text());
+    if(!rows.length || !("vendor" in rows[0]) || !("state" in rows[0])) throw new Error("This doesn't look like an Ottimate export.");
+    rows = rows.filter(function(r){ return r.state!=="deleted" && r.state!=="temporary"; }).map(compact);
+    await db.collection("meta").doc("ottimate").set({ pulledAt:new Date().toISOString(), source:file.name, by:user.email, rows:rows });
+    toast("Imported "+rows.length+" Ottimate documents."+(parseCSV.dropped?" "+parseCSV.dropped+" unreadable rows skipped.":""));
+  }catch(err){ console.error(err); toast("Import failed: "+(err.message||err)); }
+});
+
+/* ---------- auth + sync ---------- */
+function showGate(){ var b=$("[data-k-appbar]"); if(b) b.hidden=true; $("#authGate").hidden=false; }
+function hideGate(){ $("#authGate").hidden=true; var b=$("[data-k-appbar]"); if(b) b.hidden=false;
+  if(window.iaraNav) iaraNav.setAccount({email:user.email, signOut:function(){auth.signOut();}}); }
+firebase.apps.length || firebase.initializeApp(FIREBASE_CONFIG);
+var app = firebase.apps.filter(function(a){return a.name==="manager";})[0] || firebase.initializeApp(FIREBASE_CONFIG,"manager");
+auth = app.auth();
+var unsub = null;
+auth.onAuthStateChanged(function(u){
+  try{ if(u && isManagerEmail(u.email)) localStorage.setItem("iara_mgr_auth_hint","1"); else localStorage.removeItem("iara_mgr_auth_hint"); }catch(e){}
+  if(unsub){ unsub(); unsub=null; }
+  if(u && isManagerEmail(u.email)){
+    user=u; db=app.firestore(); hideGate();
+    unsub = db.collection("meta").doc("ottimate").onSnapshot(function(s){
+      state.loaded=true; var d=s.exists?s.data():null;
+      state.data = d ? Object.assign(derive(d.rows||[]), {pulledAt:d.pulledAt}) : null; render();
+    }, function(err){ console.error(err); state.loaded=true; toast("Couldn't load Finance data. Refresh to try again."); render(); });
+  } else { user=null; db=null; showGate(); }
+});
+$("#authGateBtn").addEventListener("click", async function(){
+  var msg=$("#authGateMsg"); msg.hidden=true;
+  try{
+    var p=new firebase.auth.GoogleAuthProvider(); p.setCustomParameters({prompt:"select_account", hd:"iara.nyc"});
+    var r=await auth.signInWithPopup(p);
+    if(!r.user || !isManagerEmail(r.user.email)){ var bad=r.user&&r.user.email; await auth.signOut(); msg.textContent=(bad||"That account")+" isn't on the manager list."; msg.hidden=false; }
+  }catch(err){ if(err.code!=="auth/popup-closed-by-user"){ msg.textContent="Sign-in didn't finish. Try again."; msg.hidden=false; } }
+});
+render();
+});
+</script>
+</body>
+</html>

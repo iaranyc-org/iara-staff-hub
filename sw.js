@@ -40,6 +40,7 @@ const CORE = [
   './supplies',
   './supplies-manifest.json',
   './iara_kitchen_ops.html',
+  './iara_finance.html',
   './manifest.json',
   './ops-manifest.json',
   './icon-512.png',
