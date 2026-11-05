@@ -646,17 +646,6 @@ var QUIZ_BEV_STORY = [
   { q:"What is Brahma Duplo Malte?", a:["A pure malt lager from Brazil","A wheat ale from Brooklyn","A black lager from Brazil","A Portuguese lager in a 6.8 oz bottle"], c:0, w:"$8." },
   { q:"How cold does iara serve its beer?", a:["−5°C, just below freezing, the way Brazilians drink it","Cellar temperature","Room temperature","Over ice"], c:0, w:"\"Estupidamente gelada,\" stupidly cold." },
   { q:"What is the price of the Super Bock Mini?", a:["$6","$8","$10","$12"], c:0 },
-  { q:"What is the glass price of the Susana Esteban Aventura Tinto?", a:["$18","$15","$22","$24"], c:0 },
-  { q:"How is wine sold on iara's dinner menu?", a:["By the glass","By the bottle only","By the carafe only","Glass and bottle, same list"], c:0, w:"The Oct 16 menu lists wine by the glass only." },
-  { q:"Which wine by the glass is served chilled?", a:["Martha Stoumen Post Flirtation Red","David Moreau Bourgogne Rouge","Zuccardi Polígonos Malbec","Susana Esteban Aventura Tinto"], c:0 },
-  { q:"Which sparkling wine is from Brazil?", a:["Cave Geisse Brut Nature","Luís Pato Vinha Formal Espumante","Garzón Reserva","El Enemigo"], c:0, w:"Pinto Bandeira, Serra Gaúcha. Traditional method, no added sugar." },
-  { q:"What does \"Brut Nature\" on the Cave Geisse mean, per the story?", a:["No added sugar, so it drinks dry","It is a still wine","It is aged in oak","It is a rosé"], c:0 },
-  { q:"Which wine is made by Portugal's 2012 winemaker of the year, the first woman to win it?", a:["Susana Esteban Aventura Tinto","Luís Pato Vinha Formal","De Fermo Rosato","Brij Chardonnay"], c:0 },
-  { q:"Which white is Palomino Fino, the sherry grape, made as a dry still wine?", a:["Alberto Orte Vara y Pulgar Blanco","El Enemigo","Garzón Reserva","Brij Chardonnay"], c:0 },
-  { q:"Which wine is from Uruguay?", a:["Garzón Reserva (Albariño)","El Enemigo (Semillón)","Zuccardi Polígonos (Malbec)","Cave Geisse (Brut Nature)"], c:0 },
-  { q:"Which red sees no oak, aging only in concrete?", a:["Zuccardi Polígonos Altamira Malbec","David Moreau Bourgogne Rouge","Martha Stoumen Post Flirtation","None of them"], c:0 },
-  { q:"Which wine is skin-fermented (an orange wine)?", a:["Day Wines Vin de Days L'Orange","De Fermo Concrete Rosato","Brij Chardonnay","Garzón Reserva"], c:0 },
-  { q:"Who built iara's wine and beer list?", a:["GM Ronald Rufino, a Certified Sommelier","Head Bartender Calvin Czypinski","Chef Vitor Mendes","Exec Sous Chef Eli Gitelman"], c:0 },
   { q:"Why does the Caipirinha use an oleo saccharum instead of muddled sugar?", a:["The lime peel oil gives its bright, candy-like fruitiness","It is cheaper","It is sugar-free","It keeps the drink clear"], c:0 },
   { q:"How is the Batida de Coco served?", a:["Without ice, so it warms and opens up","Over crushed ice","Frozen, blended","Hot"], c:0 },
   { q:"How is the iara cocktail made clear?", a:["Milk-punched with coconut milk, then strained","Filtered through charcoal","Centrifuged","It is not clear"], c:0 },
@@ -7828,11 +7817,13 @@ var QUIZ_BEVERAGE = [
 
 function buildFbQuestions(categories){
   var pool = [];
-  fbItems.filter(function(it){ return categories.indexOf(it.category) !== -1; }).forEach(function(it){
+  // Wine stays out of the quiz: the sommelier covers wine, bottles and glasses (Jay, 2026-11-05).
+  var quizzable = function(it){ return categories.indexOf(it.category) !== -1 && !(it.category === "Wine & Beer" && it.group !== "Beer"); };
+  fbItems.filter(quizzable).forEach(function(it){
     if (!it.allergens) return;
     // Name the item from its menu line. "Which category" was trivia nobody
     // needs on the floor; matching the description to the name is the menu.
-    var sibs = fbItems.filter(function(o){ return o.id !== it.id && categories.indexOf(o.category) !== -1; });
+    var sibs = fbItems.filter(function(o){ return o.id !== it.id && quizzable(o); });
     if (it.desc && sibs.length >= 3) {
       pool.push({
         q: "Which " + (BEVERAGE_CATEGORIES.indexOf(it.category) !== -1 ? "drink" : "dish") + " is this? \u201c" + it.desc.replace(/ Secret vegan option available\.| Dairy-free sub available.*$/,"") + "\u201d",
@@ -7899,7 +7890,7 @@ function buildFaceQuestions(){
 var QUIZ_META = {
   general:  { name:"Service", desc:"Service standards, team, and private dining.", pool: function(){ return QUIZ_MANUAL.concat(QUIZ_GENERAL).concat(QUIZ_GENERAL_EXTRA).concat(QUIZ_GENERAL_MORE).concat(QUIZ_SERVICE_PDR); } },
   food:     { name:"Food", desc:"Dishes, the Menu Story, ingredients, and allergens.", pool: function(){ return buildFbQuestions(FOOD_CATEGORIES).concat(QUIZ_GLOSSARY).concat(QUIZ_FOOD_EXTRA).concat(QUIZ_FOOD_STORY); } },
-  beverage: { name:"Beverage", desc:"Cocktails, wine, beer, and their stories.", pool: function(){ return buildFbQuestions(BEVERAGE_CATEGORIES).concat(QUIZ_BEVERAGE).concat(QUIZ_BEVERAGE_MORE).concat(QUIZ_BEV_STORY); } },
+  beverage: { name:"Beverage", desc:"Cocktails, beer, and their stories.", pool: function(){ return buildFbQuestions(BEVERAGE_CATEGORIES).concat(QUIZ_BEVERAGE).concat(QUIZ_BEVERAGE_MORE).concat(QUIZ_BEV_STORY); } },
   faces:    { name:"Who's at the Table", desc:"Need to Know critics: faces, booking aliases, and outlets.", pool: buildFaceQuestions }
 };
 
