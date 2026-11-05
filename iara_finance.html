@@ -57,7 +57,7 @@
   .item .dot{width:8px; height:8px; border-radius:50%; margin-top:7px; flex:none; background:var(--k-warning);}
   .item .dot.crit{background:var(--k-critical);} .item .dot.info{background:var(--k-info);}
   .item .sub{color:var(--k-muted); font-size:13px;}
-  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px;}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start;}
   @media (max-width:860px){ .grid2{grid-template-columns:1fr;} }
   .filters{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
   .filters .k-input{max-width:260px;}
@@ -69,6 +69,8 @@
   td.num, th.num{text-align:right;}
   td .sub{display:block; color:var(--k-muted); font-size:12px;}
   .note{font-size:13px; color:var(--k-muted);}
+  .pending{color:var(--k-muted); font-style:italic;}
+  .muted{color:var(--k-muted);}
   .count{font-size:13px; color:var(--k-muted);}
   #authGate .bg{position:fixed; inset:0; background:var(--k-page); z-index:49;}
   #authGate .card{position:fixed; z-index:50; left:50%; top:50%; transform:translate(-50%,-50%); width:min(420px, calc(100vw - 32px));
@@ -240,32 +242,61 @@ function render(){
   m.innerHTML = ({overview:vOverview, invoices:vInvoices, vendors:vVendors, duplicates:vDups, missing:vMissing})[state.tab](D);
 }
 
+// Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
+// When a source lands, fill it here and the Overview picks it up; null means "not connected".
+var SOURCES = { revenue:null, labor:null, cash:null, fixed:null };
+function pending(src){ return '<span class="pending">Connects to '+src+'</span>'; }
+function monthKey(d){ return d ? d.slice(0,7) : ""; }
+function monthName(k){ var p=k.split("-"); return ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][+p[1]-1]+" "+p[0]; }
 function vOverview(D){
   var dupVend = {}; D.dups.forEach(function(r){ var k=title(r.v)||"Unknown"; dupVend[k]=(dupVend[k]||0)+1; });
   var topDup = Object.keys(dupVend).sort(function(a,b){return dupVend[b]-dupVend[a];}).slice(0,3);
   var leads = missingLeads(D).filter(function(l){return l.nOpen<=1;});
-  return '<div class="head"><div><h2>Overview</h2><p class="desc">Every bill Ottimate has collected for iara since we opened on 10/2. This is the first half of the audit: next we match it against the bank, card and the accountant\'s books.</p></div>'+importBtn()+'</div>'+
+  var in30 = nyDay(30), today = nyDay(0);
+  var due30 = D.unpaid.filter(function(r){ return !r.due || r.due<=in30; });
+  var sumDue30 = due30.reduce(function(s,r){return s+r.t;},0);
+  var sumOver = D.overdue.reduce(function(s,r){return s+r.t;},0);
+  var months = {}; D.open.forEach(function(r){ var k=monthKey(r.d); months[k]=(months[k]||0)+r.t; });
+  var mk = Object.keys(months).sort();
+  var R = SOURCES.revenue, L = SOURCES.labor;
+  var profit = (R!=null && L!=null) ? R - D.sumOpen - L : null;
+  return '<div class="head"><div><h2>Overview</h2><p class="desc">Money in, money out and what we owe, since we opened on 10/2. Supplier bills come from Ottimate today. Sales and labor connect from Toast, and cash, rent and loans from QuickBooks.</p></div>'+importBtn()+'</div>'+
+
+    '<div class="section-title" style="margin:4px 0 -6px">Revenue and Profit Since 10/2</div>'+
     '<div class="kpis">'+
-      kpi("Invoiced Since 10/2", money0(D.sumOpen), D.open.length+" bills, plus "+money0(D.sumPre)+" pre-open")+
-      kpi("Unpaid", money0(D.sumUnpaid), D.unpaid.length+" bills, "+D.overdue.length+" past due", D.overdue.length?"alert":"")+
-      kpi("Duplicates Caught", String(D.dups.length), "Copies Ottimate threw out", D.dups.length?"warn":"")+
-      kpi("Not In QuickBooks Yet", String(D.notExported.length), "Since 10/2, not exported", D.notExported.length?"warn":"")+
+      kpi("Revenue", R!=null?money0(R):"—", R!=null?"Toast sales":pending("Toast"))+
+      kpi("Supplier Bills", money0(D.sumOpen), D.open.length+" bills from Ottimate")+
+      kpi("Labor", L!=null?money0(L):"—", L!=null?"Toast payroll":pending("Toast payroll"))+
+      kpi("Profit", profit!=null?money0(profit):"—", profit!=null?"Before rent and loans":"Needs revenue and labor", profit!=null&&profit<0?"alert":"")+
     '</div>'+
+
+    '<div class="section-title" style="margin:4px 0 -6px">Cash and What We Owe</div>'+
+    '<div class="kpis">'+
+      kpi("Cash in Bank", SOURCES.cash!=null?money0(SOURCES.cash):"—", SOURCES.cash!=null?"QuickBooks bank feed":pending("QuickBooks"))+
+      kpi("Bills Due in 30 Days", money0(sumDue30), due30.length+" unpaid supplier bills", D.overdue.length?"warn":"")+
+      kpi("Past Due Now", money0(sumOver), D.overdue.length+" bills past their due date", D.overdue.length?"alert":"")+
+      kpi("Rent, Loans and Fixed Costs", SOURCES.fixed!=null?money0(SOURCES.fixed):"—", SOURCES.fixed!=null?"Next 30 days":pending("QuickBooks"))+
+    '</div>'+
+    '<div class="k-card"><p class="note"><b style="color:var(--k-ink)">Can we cover what we owe?</b> '+
+      (SOURCES.cash!=null ? (SOURCES.cash >= sumDue30+(SOURCES.fixed||0) ? 'Yes. Cash covers the next 30 days of bills and fixed costs with '+money0(SOURCES.cash-sumDue30-(SOURCES.fixed||0))+' left.' : 'No. The next 30 days need '+money0(sumDue30+(SOURCES.fixed||0)-SOURCES.cash)+' more than is in the bank.')
+        : 'This answer appears once the bank balance connects from QuickBooks. For now: '+money0(sumDue30)+' in supplier bills is due within 30 days, not counting rent, loans or payroll.')+
+    '</p></div>'+
+
     '<div class="grid2">'+
-      '<div class="k-card"><div class="section-title">Needs a Look</div><div class="list">'+
-        item("crit", leads.length+" vendors with 0 or 1 bill since opening", "Likely invoices that never reached Ottimate. See Missing.")+
-        item("", D.dups.length+" duplicate copies, mostly "+topDup.join(", "), "Find who sends twice and ask them to stop. See Duplicates.")+
-        item("", D.overdue.length+" bills past their due date ("+money0(D.overdue.reduce(function(s,r){return s+r.t;},0))+")", "Ottimate shows them unpaid. Some may be paid outside it, which QuickBooks will tell us.")+
-        (D.nodate.length? item("info", D.nodate.length+(D.nodate.length===1?" bill":" bills")+" Ottimate hasn't read yet", "No vendor or date yet, still being processed.") : "")+
-      '</div></div>'+
-      '<div class="k-card"><div class="section-title">Due in the Next 7 Days</div>'+
-        (D.dueWeek.length ? '<div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n.replace(/^#/,""):"")); }).join("")+'</div>' : '<p class="note">Nothing due this week.</p>')+
+      '<div class="k-card"><div class="section-title">By Month</div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>Month</th><th class="num">Revenue</th><th class="num">Supplier Bills</th><th class="num">Labor</th><th class="num">Profit</th></tr></thead><tbody>'+
+        mk.map(function(k){ return '<tr><td>'+monthName(k)+'</td><td class="num muted">—</td><td class="num">'+money0(months[k])+'</td><td class="num muted">—</td><td class="num muted">—</td></tr>'; }).join("")+
+      '</tbody></table></div><p class="note" style="margin-top:8px">October starts on opening day, 10/2. Revenue, labor and profit fill in when Toast connects.</p></div>'+
+      '<div class="k-card"><div class="section-title">What We Have to Pay, Next 7 Days</div>'+
+        (D.dueWeek.length ? '<p class="note" style="margin:-4px 0 10px">'+D.dueWeek.length+' bills · '+money0(D.dueWeek.reduce(function(s,r){return s+r.t;},0))+'</p><div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).slice(0,8).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n.replace(/^#/,""):"")); }).join("")+(D.dueWeek.length>8?'<button class="k-btn k-btn-sm k-btn-ghost" data-tab="invoices" style="align-self:flex-start">See All '+D.dueWeek.length+' in Invoices</button>':'')+'</div>' : '<p class="note">Nothing due this week.</p>')+
       '</div>'+
     '</div>'+
-    '<div class="k-card"><div class="section-title">What Comes Next</div><div class="list">'+
-      item("info","QuickBooks bank and card feed","Match every payment to a bill. A payment with no bill is a missing invoice.")+
-      item("info","Accountant\'s file","Reconcile month by month so these numbers equal the books.")+
-      item("info","Toast sales and payroll","Money in and labor, for a cash forecast.")+
+
+    '<div class="k-card"><div class="section-title">Needs a Look</div><div class="list">'+
+      item("crit", leads.length+" vendors with 0 or 1 bill since opening", "Likely invoices that never reached Ottimate. See Missing.")+
+      item("", D.dups.length+" duplicate copies, mostly "+topDup.join(", "), "Find who sends twice and ask them to stop. See Duplicates.")+
+      item("", D.overdue.length+" bills past their due date ("+money0(sumOver)+")", "Ottimate shows them unpaid. Some may be paid outside it, which QuickBooks will tell us.")+
+      item("", D.notExported.length+" bills since 10/2 not in QuickBooks yet", "The accounting firm exports them from Ottimate.")+
+      (D.nodate.length? item("info", D.nodate.length+(D.nodate.length===1?" bill":" bills")+" Ottimate hasn\'t read yet", "No vendor or date yet, still being processed.") : "")+
     '</div></div>';
 }
 function item(cls, t, s){ return '<div class="item"><span class="dot '+cls+'"></span><div><div>'+esc(t)+'</div><div class="sub">'+esc(s)+'</div></div></div>'; }
