@@ -1365,6 +1365,7 @@ function showView(name, opts){
   if (name === "home") refreshHomeStats();
 
   track("view_" + name);
+  setTimeout(function(){ pgStat(name); }, 0);
 
   var want = pathFor(name, opts.section);
   if (location.pathname !== want || location.hash) {
@@ -1502,6 +1503,7 @@ function updateReadCount(){
   document.querySelectorAll("#manual-accordions .accordion").forEach(function(c){
     c.classList.toggle("is-read", loadRead().indexOf(c.dataset.sec) !== -1);
   });
+  if (typeof pgStat === "function") pgStat("manual");
 }
 
 var manualAllOpen = false;
@@ -7548,6 +7550,29 @@ function tnEntry(e, isNext, isPast){
     full.slice(rowEnd);
 }
 
+// Departures system (Jay 2026-11-06): each screen gets one big number under
+// its small caps label. Read from what the screen already shows, so it can't
+// drift from it; anything missing just hides the number.
+function pgStat(name){
+  if (name === "home") return;
+  var view = document.getElementById("view-" + name), h = view && view.querySelector(":scope > h1");
+  if (!h) return;
+  var el = view.querySelector(":scope > .pg-stat");
+  if (!el) { el = document.createElement("div"); el.className = "pg-stat"; el.innerHTML = '<span class="pg-big"></span><span class="pg-unit"></span>'; h.insertAdjacentElement("afterend", el); }
+  var big = null, unit = "", m;
+  try {
+    if (name === "fnb") { big = fbItems.filter(function(i){ return !i.example; }).length; unit = "dishes and drinks to know"; }
+    else if (name === "manual") { big = loadRead().length + "<small>/" + MANUAL.length + "</small>"; unit = "sections read"; }
+    else if (name === "cleaning") { big = view.querySelectorAll(".accordion").length; unit = "areas to clean"; }
+    else if (name === "study") { m = /(\d+) cards/.exec((view.querySelector(".deck .deck-meta") || {}).textContent || ""); if (m) { big = m[1]; unit = "cards to learn"; } }
+    else if (name === "quiz") { var rows = view.querySelectorAll(".drill-list li"), done = view.querySelectorAll(".drill-state:not(.is-new)").length; if (rows.length) { big = done + "<small>/" + rows.length + "</small>"; unit = "exams run"; } }
+    else if (name === "watch") { big = wlNeed().length; unit = "critics to know by face"; }
+    else if (name === "team") { var n = view.querySelectorAll(".card.bio").length; if (n) { big = n; unit = "people to know"; } }
+  } catch(e){ big = null; }
+  el.hidden = big == null || big === 0;
+  if (!el.hidden) { el.firstChild.innerHTML = String(big); el.lastChild.textContent = unit; }
+}
+
 // Usage counts (Jay 2026-11-05): which screens and home links staff open, per
 // person and per day, on the staff doc they can already write. No content.
 function track(key){
@@ -8048,7 +8073,7 @@ async function renderQuizPicker(){
     var st = statsFor(m.name);
     var right;
     if (!st) {
-      right = '<span class="drill-state is-new">Not run yet</span>';
+      right = '<span class="drill-state is-new mono" aria-label="Not run yet">New</span>';
     } else if (st.best >= 80) {
       right = '<span class="drill-state is-good mono">'+st.best+'%</span>';
     } else {
@@ -8068,7 +8093,7 @@ async function renderQuizPicker(){
   area.innerHTML = html;
   area.querySelectorAll(".drill-list button").forEach(function(b){
     b.addEventListener("click", function(){ startQuiz(b.getAttribute("data-key")); });
-  });
+  });  pgStat("quiz");
 }
 
 // A few questions carry "&amp;" in their text (written for innerHTML). esc()
