@@ -247,26 +247,33 @@
      see feedback_iara_205_allen note); this card is for staff wayfinding,
      not paperwork. */
   /* One tight line: eyebrow + date, no big display type (Jay 2026-10-20). */
-  /* Tonight header (Jay 2026-11-05): big day, one sentence about tonight, the week. */
-  .tn{ margin:6px 0 26px; max-width:var(--measure); }
-  .tn-day{ margin:0; font-family:var(--font-display); font-weight:400; font-size:clamp(46px, 12vw, 68px); line-height:.95; letter-spacing:-.015em; color:var(--display); }
-  .tn-date{ display:block; margin-top:10px; font-family:var(--k-font-sans); font-size:15px; font-weight:600; line-height:1.3; letter-spacing:.02em; color:var(--ink-soft); }
-  .tn-line{ margin:18px 0 0; font-family:var(--font-display); font-size:clamp(23px, 6vw, 30px); line-height:1.22; color:var(--ink); text-wrap:balance; }
-  .tn-line b{ font-weight:400; color:var(--sun); }
-  .tn-week{ list-style:none; display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; margin:24px 0 0; padding:0; }
-  .tn-week button{ width:100%; min-height:60px; display:grid; justify-items:center; align-content:center; gap:3px; padding:8px 0; border:0; border-radius:var(--k-radius-lg); background:transparent; color:var(--ink); font:inherit; cursor:pointer; transition:background-color .15s var(--k-ease, ease); }
-  .tn-week button:hover{ background:var(--k-surface); }
-  .tn-week button:active{ transform:scale(.97); }
-  .tn-week button:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
-  .tn-week button[disabled]{ cursor:default; background:transparent; transform:none; }
-  .tn-wd{ font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
-  .tn-n{ font-size:19px; font-weight:600; font-variant-numeric:tabular-nums; }
-  .tn-dot{ width:6px; height:6px; border-radius:50%; background:var(--sun); }
-  .tn-dot.none{ background:transparent; }
-  .tn-week .is-today button{ background:var(--k-primary); color:var(--k-primary-ink); }
-  .tn-week .is-today .tn-wd{ color:var(--k-primary-ink); }
-  .tn-week .is-today .tn-dot{ background:var(--k-primary-ink); }
-  .tn-week .is-closed .tn-n{ color:var(--ink-soft); }
+  /* Tonight header, "Departures" (Jay 2026-11-05, picked A from 3 Refero
+     directions: Flighty + Plane Finder). Countdown, one line, then tonight as
+     a time-led board. Who's Coming below holds the rest of the week. */
+  .tn{ margin:6px 0 30px; max-width:var(--measure); }
+  .view h1.tn-eyebrow{ font-size:12.5px; line-height:1.3; }
+  .tn-eyebrow{ margin:0; font:700 12.5px/1.3 var(--k-font-sans); letter-spacing:.14em; text-transform:uppercase; color:var(--ink-soft); }
+  .tn-count{ display:flex; align-items:flex-end; gap:12px; margin-top:8px; }
+  .tn-count[hidden]{ display:none; }
+  .tn-big{ font-family:var(--font-display); font-size:clamp(84px, 24vw, 112px); line-height:.82; color:var(--display); font-variant-numeric:tabular-nums; }
+  .tn-unit{ font:700 14px/1.25 var(--k-font-sans); letter-spacing:.1em; text-transform:uppercase; color:var(--ink-soft); padding-bottom:6px; max-width:9em; }
+  .tn-line{ margin:16px 0 0; font-size:18px; line-height:1.45; color:var(--ink); text-wrap:balance; }
+  .tn-line b{ font-weight:600; color:var(--sun); }
+  .tn-board{ margin-top:26px; }
+  .tn-board-h{ display:flex; justify-content:space-between; gap:12px; padding:0 0 8px; border-bottom:2px solid var(--k-primary);
+    font:700 12px/1.3 var(--k-font-sans); letter-spacing:.12em; text-transform:uppercase; color:var(--ink-soft); }
+  .tn-board .wc-list{ margin:0; }
+  .tn-board .wc-item, .tn-board .wc-item:first-child{ padding:14px 0; border-top:0; border-bottom:1px solid var(--rule); }
+  .tn-row{ display:grid; grid-template-columns:78px 1fr; gap:12px; align-items:start; }
+  .tn-row .wc-time{ font-size:21px; font-weight:500; line-height:1.15; color:var(--sun); min-width:0; }
+  .tn-row .wc-name{ display:block; font-size:18px; line-height:1.3; }
+  .tn-tags{ display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin-top:6px; }
+  .tn-board .wc-note, .tn-board .wc-face{ margin-left:90px; }
+  .tn-board .is-next .wc-time{ justify-self:start; padding:4px 7px; border-radius:6px; background:var(--k-primary); color:var(--k-primary-ink); font-size:19px; }
+  .tn-board .is-next .wc-time::after{ content:"Next"; display:block; font:700 10.5px/1.2 var(--k-font-sans); letter-spacing:.1em; text-transform:uppercase; margin-top:2px; }
+  .tn-board .is-past .wc-time{ color:var(--ink-soft); }
+  @media (max-width:420px){ .tn-board .wc-face{ margin-left:0; } }
+  .tn-quiet{ margin:12px 0 0; font-size:15px; color:var(--ink-soft); }
   .fastfacts{ padding:28px 0 14px; max-width:var(--measure); }
   .ff-card{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
@@ -1665,9 +1672,10 @@
       <!-- Tonight first (Jay 2026-11-05, after Refero refs): the day, one plain
            sentence about tonight, then the week. Fast Facts moved to the bottom. -->
       <header class="tn">
-        <h1 class="tn-day"><span id="tn-weekday"></span> <span class="tn-date" id="home-date"></span></h1>
+        <h1 class="tn-eyebrow"><span id="tn-weekday"></span> · <span id="home-date"></span></h1>
+        <div class="tn-count" id="tn-count" hidden><span class="tn-big" id="tn-big"></span><span class="tn-unit" id="tn-unit"></span></div>
         <p class="tn-line" id="tn-line">Good evening.</p>
-        <ol class="tn-week" id="tn-week" aria-label="This week"></ol>
+        <section class="tn-board" id="tn-board" aria-label="Tonight" hidden></section>
       </header>
       <div id="home-firstweek"></div>
       <section class="wc" id="home-coming" aria-labelledby="wc-title" hidden></section>
@@ -1910,7 +1918,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=17a36cca34" defer></script>
+<script src="/lineup.js?v=4cdbc94670" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([

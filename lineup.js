@@ -7491,27 +7491,61 @@ function paintTonight(data){
   }
   var ln = document.getElementById("tn-line");
   if (ln) ln.innerHTML = line;
-  var wk = document.getElementById("tn-week");
-  if (!wk) return;
-  wk.innerHTML = days.map(function(x, i){
-    var open = TN_OPEN.indexOf(x.dow) !== -1, n = (byIso[x.iso] || []).length;
-    var name = x.d.toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", timeZone:"UTC" });
-    var label = name + (open ? (n ? ", " + tnPlural(n, "guest to know", "guests to know") : "") : ", closed");
-    return '<li class="' + (i === 0 ? "is-today " : "") + (open ? "" : "is-closed") + '"><button type="button" data-tn="' + x.iso + '"' +
-      (open && n ? "" : " disabled") + ' aria-label="' + esc(label) + '">' +
-      '<span class="tn-wd" aria-hidden="true">' + esc(x.d.toLocaleDateString("en-US", { weekday:"short", timeZone:"UTC" })) + '</span>' +
-      '<span class="tn-n" aria-hidden="true">' + x.d.getUTCDate() + '</span>' +
-      '<span class="tn-dot' + (open && n ? "" : " none") + '" aria-hidden="true"></span></button></li>';
-  }).join("");
-  wk.querySelectorAll("button[data-tn]:not([disabled])").forEach(function(b){
-    b.addEventListener("click", function(){
-      track("home_week");
-      var idx = (data.days || []).filter(function(d){ return d.iso >= today.iso && d.entries && d.entries.length; })
-        .map(function(d){ return d.iso; }).indexOf(b.getAttribute("data-tn"));
-      var det = document.querySelectorAll("#home-coming .wc-day")[idx];
-      if (det) { det.open = true; det.scrollIntoView({ behavior:"smooth", block:"start" }); }
-    });
+  var open = TN_OPEN.indexOf(today.dow) !== -1, tonight = byIso[today.iso] || [];
+  var nowMin = Number(new Date().toLocaleString("en-US", { hour:"numeric", hour12:false, timeZone:"America/New_York" })) * 60 +
+    Number(new Date().toLocaleString("en-US", { minute:"numeric", timeZone:"America/New_York" }));
+  // Countdown: to doors (5 PM) before service, then to the next guest to know.
+  var nextMin = null;
+  tonight.forEach(function(e){ var m = tnMins(e.time); if (m != null && m >= nowMin && (nextMin == null || m < nextMin)) nextMin = m; });
+  var target = !open ? null : nowMin < 17 * 60 ? (17 * 60 - nowMin <= 180 ? { at: 17 * 60, what: "to doors" } : null) : nextMin != null ? { at: nextMin, what: "to the next guest to know" } : null;
+  var cnt = document.getElementById("tn-count");
+  if (cnt) {
+    cnt.hidden = !target;
+    if (target) {
+      var left = target.at - nowMin, h = Math.floor(left / 60), mm = left % 60;
+      var now = left <= 1;
+      document.getElementById("tn-big").textContent = now ? "Now" : h ? h + "h" : String(mm);
+      document.getElementById("tn-unit").textContent = now ? (target.at === 17 * 60 ? "doors are open" : "next guest to know is due") : (h ? mm + " min " : "min ") + target.what;
+    }
+  }
+  var bd = document.getElementById("tn-board");
+  if (!bd) return;
+  if (!open || !data) { bd.hidden = true; return; }
+  bd.hidden = false;
+  if (!tonight.length) { bd.innerHTML = '<p class="tn-quiet">Nobody flagged on the book tonight.</p>'; return; }
+  var sorted = tonight.slice().sort(function(x, y){ return (tnMins(x.time) || 0) - (tnMins(y.time) || 0); });
+  bd.innerHTML = '<div class="tn-board-h"><span>Time</span><span>Guests to know · ' + sorted.length + '</span></div>' +
+    '<ul class="wc-list">' + sorted.map(function(e){ var m = tnMins(e.time); return tnEntry(e, nextMin != null && m === nextMin, m != null && m < nowMin); }).join("") + '</ul>';
+  bd.querySelectorAll("[data-wc-watch]").forEach(function(b){
+    b.addEventListener("click", function(){ showView("watch"); openWatchProfile(b.getAttribute("data-wc-watch"), b); });
   });
+}
+// Keep the countdown and the Next marker current while Home is open.
+setInterval(function(){
+  if (!document.documentElement.classList.contains("on-home") || document.hidden) return;
+  var c = wcCache(); paintTonight(c && c.data);
+}, 60e3);
+function tnMins(t){
+  var m = /^(\d{1,2}):(\d{2})\s*([AP]M)?/i.exec(String(t || "").trim());
+  if (!m) return null;
+  var h = Number(m[1]) % 12;
+  if (!m[3] || m[3].toUpperCase() === "PM") h += 12;
+  return h * 60 + Number(m[2]);
+}
+// One board row: time column, then name, tags and party/table. Notes and the
+// critic face card come straight from wcEntry so nothing Who's Coming showed is lost.
+function tnEntry(e, isNext, isPast){
+  var full = wcEntry(e), rowEnd = full.indexOf("</div>") + 6;
+  var meta = [];
+  if (e.party) meta.push("Party of " + e.party);
+  if (e.table) meta.push("Table " + e.table);
+  var pills = (e.status ? '<span class="wc-pill wc-pill-' + (WC_PILL[e.status] || "tag") + '">' + esc(e.status) + '</span>' : "") +
+    (e.who || []).map(function(t){ return '<span class="wc-pill wc-pill-tag">' + esc(t) + '</span>'; }).join("");
+  var time = String(e.time || "").replace(/\s*[AP]M$/i, "");
+  return '<li class="wc-item' + (isNext ? " is-next" : isPast ? " is-past" : "") + '"><div class="tn-row"><span class="wc-time">' + esc(time) + '</span><div>' +
+    '<span class="wc-name">' + esc(e.name) + '</span><div class="tn-tags">' + pills +
+    (meta.length ? '<span class="wc-meta">' + esc(meta.join(" · ")) + '</span>' : "") + '</div></div></div>' +
+    full.slice(rowEnd);
 }
 
 // Usage counts (Jay 2026-11-05): which screens and home links staff open, per
@@ -7541,16 +7575,17 @@ function wcPaint(box, data, savedAt, problem){
   box.hidden = false;
   paintTonight(data);
   var today = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
-  var days = data && Array.isArray(data.days) ? data.days.filter(function(d){ return d.iso >= today && d.entries && d.entries.length; }) : [];
-  var head = '<div class="wc-head"><h2 class="wc-title" id="wc-title">Who’s Coming</h2>';
+  // Tonight lives in the Departures board up top; this list is the rest of the week.
+  var days = data && Array.isArray(data.days) ? data.days.filter(function(d){ return d.iso > today && d.entries && d.entries.length; }) : [];
+  var head = '<div class="wc-head"><h2 class="wc-title" id="wc-title">Coming Up</h2>';
   var asof = savedAt ? "As of " + wcWhen(savedAt) : (data && data.at ? "Updated " + wcWhen(data.at) : "");
   head += asof ? '<p class="wc-asof">' + esc(asof) + '</p></div>' : '</div>';
   var body = "";
   if (problem && !data) body = '<p class="wc-quiet">' + (problem === "offline" ? "You’re offline. Who’s Coming shows once you’re back online." : "Couldn’t load reservations. Try again in a few minutes.") + '</p>';
-  else if (!days.length) body = '<p class="wc-quiet">No VIPs or press on the book this week.</p>';
+  else if (!days.length) body = '<p class="wc-quiet">No VIPs or press on the book the rest of the week.</p>';
   else body = days.map(function(d, i){
     // Tonight opens; on a closed night (Sun, Mon) the next open night with guests opens instead.
-    var n = d.entries.length, open = i === 0;
+    var n = d.entries.length, open = false;
     return '<details class="wc-day"' + (open ? " open" : "") + '><summary>' +
       (d.iso === today ? "Tonight" : esc(wcDayName(d))) + ' <span class="wc-n">· ' + n + (n === 1 ? " guest" : " guests") + '</span></summary>' +
       '<ul class="wc-list">' + d.entries.map(wcEntry).join("") + '</ul></details>';
