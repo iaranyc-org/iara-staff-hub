@@ -7555,7 +7555,7 @@ function tnEntry(e, isNext, isPast){
 // drift from it; anything missing just hides the number.
 function pgStat(name){
   // Only progress the person can move earns a header number; fixed counts are noise.
-  if (name !== "manual" && name !== "quiz") return;
+  if (name !== "manual" && name !== "quiz" && name !== "checklist") return;
   var view = document.getElementById("view-" + name), h = view && view.querySelector(":scope > h1");
   if (!h) return;
   var el = view.querySelector(":scope > .pg-stat");
@@ -7564,6 +7564,7 @@ function pgStat(name){
   try {
     if (name === "fnb") { big = fbItems.filter(function(i){ return !i.example; }).length; unit = "dishes and drinks to know"; }
     else if (name === "manual") { big = loadRead().length + "<small>/" + MANUAL.length + "</small>"; unit = "sections read"; }
+    else if (name === "checklist") { var all = view.querySelectorAll(".cl-item"), ok = view.querySelectorAll(".cl-item.is-done").length; if (all.length) { big = ok + "<small>/" + all.length + "</small>"; unit = "steps done"; } }
     else if (name === "cleaning") { big = view.querySelectorAll(".accordion").length; unit = "areas to clean"; }
     else if (name === "study") { m = /(\d+) cards/.exec((view.querySelector(".deck .deck-meta") || {}).textContent || ""); if (m) { big = m[1]; unit = "cards to learn"; } }
     else if (name === "quiz") { var rows = view.querySelectorAll(".drill-list li"), done = view.querySelectorAll(".drill-state:not(.is-new)").length; if (rows.length) { big = done + "<small>/" + rows.length + "</small>"; unit = "exams run"; } }
@@ -7755,6 +7756,7 @@ async function renderChecklist(){
     html += '</div>';
   });
   area.innerHTML = html;
+  pgStat("checklist");
 
   applyGlossary(area);
   area.querySelectorAll('input[type="checkbox"]:not([disabled])').forEach(function(box){
