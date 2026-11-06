@@ -38,6 +38,8 @@
     { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", more: true },
     // Own tab (Jay, 2026-10-20). Page lives in the Inbox app.
     { label: "Guest Reviews", title: "Guest Reviews", href: "/inbox/guest-reviews", sub: "See every low Resy rating, plus 5-star notes from VIPs and regulars worth answering.", more: true },
+    // Own tab (Jay, 2026-11-06): guest feedback from every channel, right of Guest Reviews. Manager login only.
+    { label: "Feedback", title: "Feedback", href: "/inbox/feedback", sub: "Every guest complaint in one list, with patterns, fixes and staff training.", more: true },
     // Own tab (Jay, 2026-11-04): Kitchen Ops becomes Finance, between Guest Reviews and Lineup. Manager login only.
     { label: "Finance", title: "Finance", href: "/ops", sub: "Invoices, costs and margins, checked against the accountant's books.", more: true },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
