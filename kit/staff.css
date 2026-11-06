@@ -172,7 +172,7 @@
    <div class="k-empty"><svg aria-hidden="true">…</svg><h3>No messages match "tony"</h3><p>Try a name, phone number or handle.</p>
      <div class="k-empty-actions"><button class="k-btn k-btn-outline">Clear Search</button></div></div> */
 .k-empty { max-width: 560px; margin: 32px 0; text-align: left; display: grid; justify-items: start; gap: 8px; }
-.k-empty h3 { margin: 0; font: 600 16px/1.3 var(--k-font-sans); color: var(--k-ink); }
+.k-empty h2, .k-empty h3 { margin: 0; font: 600 16px/1.3 var(--k-font-sans); color: var(--k-ink); }
 .k-empty p { margin: 0 0 8px; color: var(--k-muted); font-size: 14px; }
 .k-empty-actions { display: flex; flex-wrap: wrap; gap: 8px; }
 /* One error box per failed load, with Try Again:
