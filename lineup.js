@@ -7554,7 +7554,8 @@ function tnEntry(e, isNext, isPast){
 // its small caps label. Read from what the screen already shows, so it can't
 // drift from it; anything missing just hides the number.
 function pgStat(name){
-  if (name === "home") return;
+  // Only progress the person can move earns a header number; fixed counts are noise.
+  if (name !== "manual" && name !== "quiz") return;
   var view = document.getElementById("view-" + name), h = view && view.querySelector(":scope > h1");
   if (!h) return;
   var el = view.querySelector(":scope > .pg-stat");
