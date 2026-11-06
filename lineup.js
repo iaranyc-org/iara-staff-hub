@@ -8887,6 +8887,14 @@ async function boot(data){
   // progress both need a session before they can read anything.
   await restoreSession();
   lineupOptimistic = false;
+  // The optimistic shell ran enterShell before auth, so its visit log and
+  // usage counts were dropped. Send them now that writes can land.
+  if (optimistic && profile) {
+    touchStaffDoc();
+    track("app_open");
+    var firstView = document.querySelector(".view.active");
+    if (firstView) track(firstView.id.replace("view-", "view_"));
+  }
   if (!optimistic) {
     renderManual();
     renderCleaning();
