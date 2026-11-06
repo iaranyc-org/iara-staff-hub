@@ -31,7 +31,7 @@ const CORE = [
   './analytics',
   './iara_analytics.html',
   './kit/tokens.css?v=5ac7b7c914',
-  './kit/staff.css?v=0251e1b9d6',
+  './kit/staff.css?v=ffdd78db2a',
   './kit/dialog.js?v=cb70755f73',
   './kit/toast.js?v=0085d82749',
   './kit/confirm.js?v=7db7e84d1a',

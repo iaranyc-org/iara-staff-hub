@@ -56,7 +56,7 @@
   #boot-loader .k-bigload-line{ display:grid; justify-items:center; min-height:1.25em; margin:0; font:400 23px/1.25 forevs, Fraunces, Georgia, serif; color:#faf6f0; }
   #boot-loader .k-bigload-pop{ animation:boot-pop 220ms ease-out both; }
   #boot-loader .k-bigload-bar{ position:relative; width:120px; height:4px; border-radius:999px; background:#55292f; overflow:hidden; }
-  #boot-loader .k-bigload-bar::before{ content:""; position:absolute; inset:0 auto 0 0; width:40%; border-radius:inherit; background:#e0633f; animation:boot-sweep 1.2s ease-in-out infinite; }
+  #boot-loader .k-bigload-bar::before{ content:""; position:absolute; inset:0 auto 0 0; width:40%; border-radius:inherit; background:#e0633f; animation:boot-sweep 2.4s cubic-bezier(0.4,0,0.2,1) infinite; }
   @keyframes boot-show{ from{ visibility:hidden; } to{ visibility:visible; } }
   @keyframes boot-pop{ from{ transform:scale(.9); } to{ transform:scale(1); } }
   @keyframes boot-sweep{ from{ transform:translateX(-100%); } to{ transform:translateX(250%); } }
@@ -68,7 +68,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css"></noscript>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap"></noscript>
 <link rel="stylesheet" href="/kit/tokens.css?v=5ac7b7c914">
-<link rel="stylesheet" href="/kit/staff.css?v=0251e1b9d6">
+<link rel="stylesheet" href="/kit/staff.css?v=ffdd78db2a">
 <script src="/kit/palette.js?v=9ff8de66f7" defer></script>
 <script src="/kit/nav.js?v=38f8766038" defer></script>
 <script src="/kit/tabs.js?v=1d2aae8497" defer></script>
@@ -1106,8 +1106,7 @@
   #more-sheet .more-vibes span{ display:block; margin-top:2px; font-size:12.5px; font-weight:400; color:var(--k-primary-ink); }
   #more-sheet .more-vibes::before{ display:none; }
   #more-sheet .more-vibes:focus-visible{ outline:2px solid #fbbf56; outline-offset:2px; }
-  .vb-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--k-primary-ink); margin-right:5px; animation:vb-pulse 1.6s infinite; }
-  @keyframes vb-pulse{ 50%{ opacity:.3; } }
+  .vb-dot{ display:inline-block; width:7px; height:7px; border-radius:50%; background:var(--k-primary-ink); margin-right:5px; }
   .home-vibes{ display:block; width:100%; text-align:left; margin:0 0 18px; padding:16px 18px; border-radius:12px; border:none; cursor:pointer;
     background:linear-gradient(135deg,#e0633f,#fbbf56); color:#2a1206; font:inherit; }
   .home-vibes b{ font-family:var(--font-display); font-size:20px; font-weight:400; display:block; color:#2a1206; }
