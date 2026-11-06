@@ -58,6 +58,7 @@
   .item .dot.crit{background:var(--k-critical);} .item .dot.info{background:var(--k-info);}
   .item .sub{color:var(--k-muted); font-size:13px;}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start;}
+  .grid2>*{min-width:0;}
   @media (max-width:860px){ .grid2{grid-template-columns:1fr;} }
   .filters{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
   .filters .k-input{max-width:260px;}
