@@ -1252,9 +1252,8 @@ function enterShell(){
   var hFirst = (profile.name || "").trim().split(" ")[0];
   var gEl = document.getElementById("home-greet");
   if (gEl) gEl.textContent = hFirst ? "Evening, " + hFirst + "." : "Good evening.";
-  var dEl = document.getElementById("home-date");
-  if (dEl) dEl.textContent = new Date().toLocaleDateString(undefined,
-    { weekday:"long", month:"long", day:"numeric" });
+  var cachedComing = wcCache();
+  paintTonight(cachedComing && cachedComing.data);
   // Edit Menu is a manager tool; servers never see a button that dead-ends.
   var eb = document.getElementById("fb-admin-btn");
   if (eb) eb.style.display = (profile.role === "General Manager" || isManagerSignedIn()) ? "" : "none";
@@ -1364,6 +1363,8 @@ function showView(name, opts){
   if (name === "progress") renderProgress();
   if (name === "home") refreshHomeStats();
 
+  track("view_" + name);
+
   var want = pathFor(name, opts.section);
   if (location.pathname !== want || location.hash) {
     // Arriving from a route (load, back, old #/ link) rewrites in place;
@@ -1418,7 +1419,10 @@ document.addEventListener("click", function(e){
 window.addEventListener("hashchange", routeFromHash);
 
 document.querySelectorAll(".nav-btn[data-view], .jump, .jump-link").forEach(function(btn){
-  btn.addEventListener("click", function(){ showView(btn.getAttribute("data-view")); });
+  btn.addEventListener("click", function(){
+    if (btn.closest("#view-home")) track("home_" + btn.getAttribute("data-view"));
+    showView(btn.getAttribute("data-view"));
+  });
 });
 (function(){
   var sheet = document.getElementById("more-sheet"), btn = document.querySelector(".bottom-nav .more-btn");
@@ -7437,6 +7441,86 @@ async function renderHomeComing(force){
   if (problem === "signin" && !cached) { box.hidden = true; return; }
   wcPaint(box, cached && cached.data, cached && cached.savedAt, problem);
 }
+// Home header (Jay 2026-11-05): the day big, one plain sentence about tonight
+// from the Who's Coming feed, then this week. iara is open Tue to Sat.
+var TN_OPEN = [2,3,4,5,6];
+function tnDays(){
+  var out = [], base = new Date(new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" }) + "T12:00:00Z");
+  for (var i = 0; i < 7; i++) {
+    var d = new Date(base.getTime() + i * 864e5);
+    out.push({ iso: d.toISOString().slice(0,10), dow: d.getUTCDay(), d: d });
+  }
+  return out;
+}
+function tnCount(entries){
+  var c = { VIP:0, Press:0, Industry:0, other:0 };
+  (entries || []).forEach(function(e){ if (c[e.status] != null) c[e.status]++; else c.other++; });
+  return c;
+}
+function tnPlural(n, one, many){ return n + " " + (n === 1 ? one : many); }
+function paintTonight(data){
+  var days = tnDays(), today = days[0];
+  var wd = document.getElementById("tn-weekday"), dt = document.getElementById("home-date");
+  if (wd) wd.textContent = today.d.toLocaleDateString("en-US", { weekday:"long", timeZone:"UTC" });
+  if (dt) dt.textContent = today.d.toLocaleDateString("en-US", { month:"long", day:"numeric", timeZone:"UTC" });
+  var byIso = {};
+  (data && Array.isArray(data.days) ? data.days : []).forEach(function(d){ byIso[d.iso] = d.entries || []; });
+  var hr = Number(new Date().toLocaleString("en-US", { hour:"numeric", hour12:false, timeZone:"America/New_York" }));
+  var hi = hr < 12 ? "Good morning" : hr < 17 ? "Good afternoon" : "Good evening";
+  var first = profile && profile.name ? (profile.name || "").trim().split(" ")[0] : "";
+  var line = esc(hi + (first ? ", " + first : "") + ".") + " ";
+  if (TN_OPEN.indexOf(today.dow) === -1) {
+    var next = days.filter(function(x){ return TN_OPEN.indexOf(x.dow) !== -1; })[0];
+    line += "We’re closed tonight. Next service is <b>" + esc(next.d.toLocaleDateString("en-US", { weekday:"long", timeZone:"UTC" })) + "</b>.";
+  } else if (!data) {
+    line += "Doors open at <b>5</b>.";
+  } else {
+    var c = tnCount(byIso[today.iso]), parts = [];
+    if (c.VIP) parts.push(tnPlural(c.VIP, "VIP", "VIPs"));
+    if (c.Press) parts.push(tnPlural(c.Press, "press guest", "press guests"));
+    if (c.Industry) parts.push(tnPlural(c.Industry, "industry guest", "industry guests"));
+    if (c.other) parts.push(tnPlural(c.other, "investor", "investors"));
+    line += parts.length
+      ? "Tonight: <b>" + esc(parts.length > 1 ? parts.slice(0,-1).join(", ") + " and " + parts[parts.length-1] : parts[0]) + "</b> on the book."
+      : "No VIPs or press on the book tonight.";
+  }
+  var ln = document.getElementById("tn-line");
+  if (ln) ln.innerHTML = line;
+  var wk = document.getElementById("tn-week");
+  if (!wk) return;
+  wk.innerHTML = days.map(function(x, i){
+    var open = TN_OPEN.indexOf(x.dow) !== -1, n = (byIso[x.iso] || []).length;
+    var name = x.d.toLocaleDateString("en-US", { weekday:"long", month:"long", day:"numeric", timeZone:"UTC" });
+    var label = name + (open ? (n ? ", " + tnPlural(n, "guest to know", "guests to know") : "") : ", closed");
+    return '<li class="' + (i === 0 ? "is-today " : "") + (open ? "" : "is-closed") + '"><button type="button" data-tn="' + x.iso + '"' +
+      (open && n ? "" : " disabled") + ' aria-label="' + esc(label) + '">' +
+      '<span class="tn-wd" aria-hidden="true">' + esc(x.d.toLocaleDateString("en-US", { weekday:"short", timeZone:"UTC" })) + '</span>' +
+      '<span class="tn-n" aria-hidden="true">' + x.d.getUTCDate() + '</span>' +
+      '<span class="tn-dot' + (open && n ? "" : " none") + '" aria-hidden="true"></span></button></li>';
+  }).join("");
+  wk.querySelectorAll("button[data-tn]:not([disabled])").forEach(function(b){
+    b.addEventListener("click", function(){
+      track("home_week");
+      var idx = (data.days || []).filter(function(d){ return d.iso >= today.iso && d.entries && d.entries.length; })
+        .map(function(d){ return d.iso; }).indexOf(b.getAttribute("data-tn"));
+      var det = document.querySelectorAll("#home-coming .wc-day")[idx];
+      if (det) { det.open = true; det.scrollIntoView({ behavior:"smooth", block:"start" }); }
+    });
+  });
+}
+
+// Usage counts (Jay 2026-11-05): which screens and home links staff open, per
+// person and per day, on the staff doc they can already write. No content.
+function track(key){
+  if (!db || !profile || lineupOptimistic || !key) return;
+  var day = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
+  var inc = firebase.firestore.FieldValue.increment(1), u = {};
+  key = String(key).replace(/[^a-z0-9_]/gi, "_");
+  u["usage." + key] = inc;
+  u["usageByDay." + day + "." + key] = inc;
+  db.doc("staff/" + profile.id).update(u).catch(function(){});
+}
+
 function wcWhen(iso){
   var d = new Date(iso);
   if (isNaN(d)) return "";
@@ -7450,6 +7534,7 @@ function wcDayName(day){
 }
 function wcPaint(box, data, savedAt, problem){
   box.hidden = false;
+  paintTonight(data);
   var today = new Date().toLocaleDateString("en-CA", { timeZone:"America/New_York" });
   var days = data && Array.isArray(data.days) ? data.days.filter(function(d){ return d.iso >= today && d.entries && d.entries.length; }) : [];
   var head = '<div class="wc-head"><h2 class="wc-title" id="wc-title">Who’s Coming</h2>';

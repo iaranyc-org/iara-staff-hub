@@ -247,10 +247,27 @@
      see feedback_iara_205_allen note); this card is for staff wayfinding,
      not paperwork. */
   /* One tight line: eyebrow + date, no big display type (Jay 2026-10-20). */
-  .svc-head{ margin:0 0 10px; display:flex; align-items:baseline; flex-wrap:wrap; gap:4px 10px; font-size:inherit; font-weight:inherit; }
-  .svc-eyebrow{ font:700 11.5px/1.3 var(--font-mono, ui-monospace, monospace); letter-spacing:.12em; text-transform:uppercase; color:var(--sun); }
-  .svc-date{ font-family:var(--k-font-sans); font-size:15px; line-height:1.3; font-weight:600; letter-spacing:0; color:var(--ink); }
-  .fastfacts{ padding:0 0 14px; max-width:var(--measure); }
+  /* Tonight header (Jay 2026-11-05): big day, one sentence about tonight, the week. */
+  .tn{ margin:6px 0 26px; max-width:var(--measure); }
+  .tn-day{ margin:0; font-family:var(--font-display); font-weight:400; font-size:clamp(46px, 12vw, 68px); line-height:.95; letter-spacing:-.015em; color:var(--display); }
+  .tn-date{ display:block; margin-top:10px; font-family:var(--k-font-sans); font-size:15px; font-weight:600; line-height:1.3; letter-spacing:.02em; color:var(--ink-soft); }
+  .tn-line{ margin:18px 0 0; font-family:var(--font-display); font-size:clamp(23px, 6vw, 30px); line-height:1.22; color:var(--ink); text-wrap:balance; }
+  .tn-line b{ font-weight:400; color:var(--sun); }
+  .tn-week{ list-style:none; display:grid; grid-template-columns:repeat(7, minmax(0,1fr)); gap:4px; margin:24px 0 0; padding:0; }
+  .tn-week button{ width:100%; min-height:60px; display:grid; justify-items:center; align-content:center; gap:3px; padding:8px 0; border:0; border-radius:var(--k-radius-lg); background:transparent; color:var(--ink); font:inherit; cursor:pointer; transition:background-color .15s var(--k-ease, ease); }
+  .tn-week button:hover{ background:var(--k-surface); }
+  .tn-week button:active{ transform:scale(.97); }
+  .tn-week button:focus-visible{ outline:2px solid var(--sun); outline-offset:2px; }
+  .tn-week button[disabled]{ cursor:default; background:transparent; transform:none; }
+  .tn-wd{ font-size:11.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--ink-soft); }
+  .tn-n{ font-size:19px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .tn-dot{ width:6px; height:6px; border-radius:50%; background:var(--sun); }
+  .tn-dot.none{ background:transparent; }
+  .tn-week .is-today button{ background:var(--k-primary); color:var(--k-primary-ink); }
+  .tn-week .is-today .tn-wd{ color:var(--k-primary-ink); }
+  .tn-week .is-today .tn-dot{ background:var(--k-primary-ink); }
+  .tn-week .is-closed .tn-n{ color:var(--ink-soft); }
+  .fastfacts{ padding:28px 0 14px; max-width:var(--measure); }
   .ff-card{
     background:var(--paper-raised); border:1px solid var(--line); border-radius:14px;
     padding:22px 24px;
@@ -680,7 +697,7 @@
   .wc-title{ font-family:var(--font-display); font-size:20px; font-weight:400; color:var(--display); margin:0; }
   .wc-asof{ font-size:12px; color:var(--ink-soft); margin:0; }
   .wc-quiet{ margin:6px 0 0; font-size:14px; color:var(--ink-soft); line-height:1.5; }
-  .wc-day{ border-top:1px solid var(--rule); }
+  .wc-day{ border-top:1px solid var(--rule); scroll-margin-top:80px; }
   .wc-day:first-of-type{ border-top:none; }
   .wc-day > summary{ list-style:none; display:flex; align-items:center; gap:10px; min-height:48px; cursor:pointer; font-size:15px; font-weight:600; color:var(--ink); border-radius:var(--k-radius-sm); }
   .wc-day > summary::-webkit-details-marker{ display:none; }
@@ -1595,9 +1612,31 @@
 
     <!-- HOME -->
     <section class="view active" id="view-home">
-      <!-- Home is a daily service-prep page (Jay 2026-10-20): date, the facts staff
-           reach for, then who is coming tonight. -->
-      <h1 class="svc-head"><span class="svc-eyebrow">Service Prep</span><span class="svc-date" id="home-date"></span></h1>
+      <!-- Tonight first (Jay 2026-11-05, after Refero refs): the day, one plain
+           sentence about tonight, then the week. Fast Facts moved to the bottom. -->
+      <header class="tn">
+        <h1 class="tn-day"><span id="tn-weekday"></span> <span class="tn-date" id="home-date"></span></h1>
+        <p class="tn-line" id="tn-line">Good evening.</p>
+        <ol class="tn-week" id="tn-week" aria-label="This week"></ol>
+      </header>
+      <div id="home-firstweek"></div>
+      <section class="wc" id="home-coming" aria-labelledby="wc-title" hidden></section>
+
+      <ol class="startlist">
+        <li><button class="jump" data-view="manual"><span class="sl-n mono">01</span>
+          <span class="sl-t">Read the Manual</span>
+          <span class="sl-d">How a shift runs, in 10 sections.</span></button></li>
+        <li><button class="jump" data-view="fnb"><span class="sl-n mono">02</span>
+          <span class="sl-t">Learn the Menu</span>
+          <span class="sl-d">Every dish, how to say it, what it sets off.</span></button></li>
+        <li><button class="jump" data-view="study"><span class="sl-n mono">03</span>
+          <span class="sl-t">Study</span>
+          <span class="sl-d">Flashcards and a daily lineup, a few minutes at a time.</span></button></li>
+        <li><button class="jump" data-view="quiz"><span class="sl-n mono">04</span>
+          <span class="sl-t">Take the Final Exam</span>
+          <span class="sl-d">Find out what you actually know.</span></button></li>
+      </ol>
+      <p class="home-fw-restore" id="home-fw-restore" hidden><button type="button" class="jump-link" id="home-fw-show">Show First Week</button></p>
       <section class="fastfacts" aria-label="Fast facts">
         <div class="ff-card">
           <p class="ff-title">Fast Facts</p>
@@ -1643,28 +1682,6 @@
           </nav>
         </div>
       </section>
-
-      <section class="wc" id="home-coming" aria-labelledby="wc-title" hidden></section>
-
-      <div id="home-firstweek"></div>
-
-
-
-      <ol class="startlist">
-        <li><button class="jump" data-view="manual"><span class="sl-n mono">01</span>
-          <span class="sl-t">Read the Manual</span>
-          <span class="sl-d">How a shift runs, in 10 sections.</span></button></li>
-        <li><button class="jump" data-view="fnb"><span class="sl-n mono">02</span>
-          <span class="sl-t">Learn the Menu</span>
-          <span class="sl-d">Every dish, how to say it, what it sets off.</span></button></li>
-        <li><button class="jump" data-view="study"><span class="sl-n mono">03</span>
-          <span class="sl-t">Study</span>
-          <span class="sl-d">Flashcards and a daily lineup, a few minutes at a time.</span></button></li>
-        <li><button class="jump" data-view="quiz"><span class="sl-n mono">04</span>
-          <span class="sl-t">Take the Final Exam</span>
-          <span class="sl-d">Find out what you actually know.</span></button></li>
-      </ol>
-      <p class="home-fw-restore" id="home-fw-restore" hidden><button type="button" class="jump-link" id="home-fw-show">Show First Week</button></p>
     </section>
 
     <section class="view" id="view-manual">
@@ -1843,7 +1860,7 @@
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script defer src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
-<script src="/lineup.js?v=8818166f37" defer></script>
+<script src="/lineup.js?v=ec4d9ac97c" defer></script>
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){ if (!window.iaraPalette) return; iaraPalette.register([

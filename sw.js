@@ -27,7 +27,7 @@ const CORE = [
   './iara_home.html',
   './lineup',
   './iara_staff_hub.html',
-  './lineup.js?v=8818166f37',
+  './lineup.js?v=ec4d9ac97c',
   './analytics',
   './iara_analytics.html',
   './kit/tokens.css?v=5ac7b7c914',
