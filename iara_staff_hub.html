@@ -1529,6 +1529,56 @@
     /* Two lines beat a squeezed row: label and level move under the count. */
     .qprog-r{ margin-left:0; flex-basis:100%; }
   }
+
+  /* ==========================================================================
+     Editorial pass (Jay 2026-11-05). Shared parts follow the new Home and the
+     Refero refs (Medium, Substack, Reeder): fewer boxes, hairline rules, text
+     tabs with an underline. Brand tokens only. One block so it reads (and
+     reverts) as a unit. Good Vibes cards and the Admin PIN card keep theirs.
+     ========================================================================== */
+  /* Cards become ruled sections */
+  .view .card:not(.pin-gate), .ff-card, .wc{
+    background:transparent; border:0; border-top:1px solid var(--rule); border-radius:0;
+    box-shadow:none; padding-left:0; padding-right:0; }
+  .view .card:not(.pin-gate)::before{ display:none; }
+  .fw-card, .lineup-card, .wc, .ff-card{ padding-top:22px; padding-bottom:6px; }
+  .accordion{ margin-bottom:0; overflow:visible; }
+  .accordion:last-of-type{ border-bottom:1px solid var(--rule); }
+  .acc-head{ padding:18px 0; min-height:60px; }
+  .acc-head h2, .acc-head h3{ font-size:21px; }
+  .acc-body{ padding:0 0 24px; }
+  .acc-head:focus-visible{ outline-offset:2px; }
+  .ff-grid{ margin-top:4px; }
+
+  /* Study decks read like the Final Exam list */
+  #study-area .deck, #watch-area .deck{
+    background:transparent; border:0; border-top:1px solid var(--rule); border-radius:0;
+    padding:16px 0 14px; margin:0; }
+  #study-area .deck:last-of-type, #watch-area .deck:last-of-type{ border-bottom:1px solid var(--rule); }
+  #study-area .deck:hover, #watch-area .deck:hover{ background:transparent; padding-left:8px; }
+
+  /* Tabs: text with an orange underline, no pill box */
+  .fb-tabs, .fb-lens{ background:transparent; border:0; border-radius:0; padding:0; gap:22px;
+    box-shadow:inset 0 -1px 0 var(--rule); width:100%; }
+  .fb-tab, .fb-lens-btn{ background:transparent; border-radius:0; padding:0 2px; min-height:44px;
+    color:var(--ink-soft); font-weight:600; box-shadow:inset 0 -2px 0 transparent; }
+  .fb-tab:hover, .fb-lens-btn:hover{ background:transparent; color:var(--ink); }
+  .fb-tab.active, .fb-lens-btn.active, .fb-tab.active:hover{
+    background:transparent; color:var(--ink); box-shadow:inset 0 -2px 0 var(--k-primary); }
+  .fb-tab:active, .fb-lens-btn:active{ transform:none; }
+
+  /* Filter chips: one selected style across the app (orange, like Home's today) */
+  .view .k-chip[aria-pressed="true"]{ background:var(--k-primary); color:var(--k-primary-ink); border-color:var(--k-primary); }
+
+  /* Search: a quiet filled field instead of an outlined box */
+  .manual-search input, .view .field input[type="search"], .view input[type="search"]{
+    background:var(--k-surface); border:1px solid transparent; border-radius:var(--k-radius-lg); }
+  .manual-search input:focus, .view input[type="search"]:focus{ border-color:var(--sun); }
+
+  /* Page heads share Home's display voice */
+  .view h1{ font-weight:400; color:var(--display); }
+  .acc-head h2, .acc-head h3, .wl-sec-h{ font-weight:400; }
+
 </style>
 
 <div id="gate" hidden>
