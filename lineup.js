@@ -1258,6 +1258,7 @@ function enterShell(){
   var eb = document.getElementById("fb-admin-btn");
   if (eb) eb.style.display = (profile.role === "General Manager" || isManagerSignedIn()) ? "" : "none";
   touchStaffDoc();
+  track("app_open");
   refreshHomeStats();
   routeFromHash();
 }
@@ -7453,8 +7454,11 @@ function tnDays(){
   return out;
 }
 function tnCount(entries){
-  var c = { VIP:0, Press:0, Industry:0, other:0 };
-  (entries || []).forEach(function(e){ if (c[e.status] != null) c[e.status]++; else c.other++; });
+  var c = { VIP:0, PX:0, Press:0, Industry:0, other:0 };
+  (entries || []).forEach(function(e){
+    if (c[e.status] != null) c[e.status]++;
+    else if (!e.status && (e.who || []).some(function(t){ return /investor/i.test(t); })) c.other++;
+  });
   return c;
 }
 function tnPlural(n, one, many){ return n + " " + (n === 1 ? one : many); }
@@ -7477,6 +7481,7 @@ function paintTonight(data){
   } else {
     var c = tnCount(byIso[today.iso]), parts = [];
     if (c.VIP) parts.push(tnPlural(c.VIP, "VIP", "VIPs"));
+    if (c.PX) parts.push(tnPlural(c.PX, "PX guest", "PX guests"));
     if (c.Press) parts.push(tnPlural(c.Press, "press guest", "press guests"));
     if (c.Industry) parts.push(tnPlural(c.Industry, "industry guest", "industry guests"));
     if (c.other) parts.push(tnPlural(c.other, "investor", "investors"));
