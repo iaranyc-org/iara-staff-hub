@@ -1247,6 +1247,9 @@ function barChartSvg(data, opts){
 }
 function truncateLabel(s){ s = String(s); return s.length>14 ? esc(s.slice(0,13))+'…' : esc(s); }
 
+/* Remember the open tab in the URL (#t=counts) so a refresh lands on the same tab. */
+(function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
+function saveTab(){ history.replaceState(null,'',location.pathname+location.search+'#t='+state.tab); }
 /* ---------------- render: shell ---------------- */
 function renderNav(){
   var nav = $('#tabNav');
@@ -2337,8 +2340,8 @@ document.addEventListener('click', function(e){
   if(!t) return;
   var action = t.dataset.action;
   switch(action){
-    case 'setTab': state.tab = t.dataset.tab; render(); break;
-    case 'resetApp': state.tab = 'dashboard'; render(); window.scrollTo(0,0); break;
+    case 'setTab': state.tab = t.dataset.tab; saveTab(); render(); break;
+    case 'resetApp': state.tab = 'dashboard'; saveTab(); render(); window.scrollTo(0,0); break;
     case 'closeModal': closeModal(); break;
     case 'newIngredient': openIngredientModal(null); break;
     case 'editIngredient': openIngredientModal(byId(state.ingredients, t.dataset.id)); break;

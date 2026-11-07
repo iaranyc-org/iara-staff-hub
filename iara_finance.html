@@ -154,6 +154,9 @@ var TABS = [
   {id:"missing", label:"Missing"}
 ];
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all" };
+// Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
+(function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
+function saveTab(){ history.replaceState(null,"",location.pathname+location.search+"#t="+state.tab); }
 var db=null, auth=null, user=null;
 
 function $(s){ return document.querySelector(s); }
@@ -382,7 +385,7 @@ function vMissing(D){
 /* ---------- events ---------- */
 document.addEventListener("click", function(e){
   var t = e.target.closest("[data-tab],[data-f],[data-act]"); if(!t) return;
-  if(t.dataset.tab){ state.tab=t.dataset.tab; render(); window.scrollTo(0,0); }
+  if(t.dataset.tab){ state.tab=t.dataset.tab; saveTab(); render(); window.scrollTo(0,0); }
   else if(t.dataset.f){ state.f=t.dataset.f; render(); }
   else if(t.dataset.act==="import") $("#csvInput").click();
 });
