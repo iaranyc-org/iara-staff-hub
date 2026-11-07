@@ -1,7 +1,7 @@
 {
   "name": "iara Kitchen Ops",
   "short_name": "iara Kitchen Ops",
-  "start_url": "/ops",
+  "start_url": "/finance",
   "display": "standalone",
   "background_color": "#391d1f",
   "theme_color": "#391d1f",

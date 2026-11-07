@@ -41,7 +41,7 @@
     // Own tab (Jay, 2026-11-06): guest feedback from every channel, right of Guest Reviews. Manager login only.
     { label: "Feedback", title: "Feedback", href: "/inbox/feedback", sub: "Every guest complaint in one list, with patterns, fixes and staff training.", more: true },
     // Own tab (Jay, 2026-11-04): Kitchen Ops becomes Finance, between Guest Reviews and Lineup. Manager login only.
-    { label: "Finance", title: "Finance", href: "/ops", sub: "Invoices, costs and margins, checked against the accountant's books.", more: true },
+    { label: "Finance", title: "Finance", href: "/finance", sub: "Invoices, costs and margins, checked against the accountant's books.", more: true },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
   ];
   var P = 'aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';

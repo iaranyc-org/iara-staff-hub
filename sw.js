@@ -36,7 +36,7 @@ const CORE = [
   './kit/toast.js?v=0085d82749',
   './kit/confirm.js?v=7db7e84d1a',
   './kit/loading.js?v=488aec5b9c',
-  './ops',
+  './finance',
   './supplies',
   './supplies-manifest.json',
   './iara_kitchen_ops.html',

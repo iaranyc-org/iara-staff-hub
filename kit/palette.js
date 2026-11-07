@@ -37,7 +37,7 @@
     { label: "Watch List", href: "/inbox/watch", keywords: "press critics media hall pr watch" },
     { label: "Guest Reviews", href: "/inbox/guest-reviews", keywords: "negative reviews low reviews praise ratings resy guests check in complaints thank you" },
     { label: "Feedback", href: "/inbox/feedback", keywords: "complaints guest feedback service training staff themes fixes" },
-    { label: "Finance", href: "/ops", keywords: "kitchen ops invoices ottimate costs margins money accounting" },
+    { label: "Finance", href: "/finance", keywords: "kitchen ops invoices ottimate costs margins money accounting" },
     { label: "Lineup", href: "/lineup", keywords: "manual menu study quiz training" }
   ];
   window.IARA_APPS = APPS;
