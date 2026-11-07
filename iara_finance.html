@@ -460,7 +460,7 @@ function upVerdict(D, M, U){
   if(U.stage==="reading") return {txt:"Reading…"};
   if(U.stage==="error") return {cls:"bad", txt:U.error};
   if(U.stage==="sending") return {txt:"Sending to invoices@…"};
-  if(U.stage==="sent") return {cls:"ok", txt:"Sent to invoices@. The accountant has it."};
+  if(U.stage==="sent") return {cls:"ok", txt:(U.auto==="sent"||U.autoSending?"Wasn't in Ottimate, so it was sent to invoices@ automatically.":"Sent to invoices@. The accountant has it.")};
   if(f.kind && f.kind!=="invoice" && f.kind!=="credit") return {txt:"Looks like a "+(f.kind==="other"?"document that isn't a bill":f.kind)+".", send:"Send Anyway"};
   if(t && t.where==="ottimate") return {cls:"ok", txt:"Already with the accountant. Nothing to do.", sub:"In Ottimate as "+(title(t.r.v)||"")+" #"+String(t.r.n).replace(/^#/,"")+(t.r.t?" · "+money(t.r.t):"")};
   if(t && t.where==="sent" && t.r.status!=="missing") return {cls:"ok", txt:"Already sent to invoices@ on "+dShort(t.r.received)+". Waiting for Ottimate."};
@@ -529,9 +529,21 @@ async function upRead(files){
         U.fields = j.fields||{}; U.stage = "result";
       }catch(e){ U.stage = "error"; U.error = e.message||String(e); }
       render();
+      if(U.stage==="result") await upAuto(U);
     }
   }
   await Promise.all([worker(), worker()]);
+  // Pull the sent ones back in (with their files) so the list and the count update right away.
+  if(state.up.some(function(U){ return U.auto==="sent"; })){ await new Promise(function(r){ setTimeout(r, 5000); }); loadInbox(true); }
+}
+// Automatic (Jay 2026-11-07): not in Ottimate and never sent → send it to invoices@ now. Anything else is logged so the
+// list shows every upload. Already sent to invoices@ is left alone (no duplicates).
+async function upAuto(U){
+  var D = state.data, M = state.inbox.items ? matchInbox(D, state.inbox.items) : null, v = upVerdict(D, M, U), f = U.fields||{};
+  var t = findTracked(D, M, f);
+  if(v.need && f.number && (!t || t.where!=="sent")){ U.autoSending = true; await upSend(state.up.indexOf(U)); if(U.stage==="sent") U.auto = "sent"; return; }
+  if(t && t.where==="sent") return;
+  try{ var j = await upPost({action:"log", name:U.file.name, mime:U.file.mime, kind:f.kind||"", vendor:f.vendor||"", number:f.number||"", date:f.date||"", total:f.total||"", note:f.note||""}); if(j.items) state.inbox.items = j.items; U.logged = true; render(); }catch(e){}
 }
 async function upSend(i){
   var U = state.up && state.up[i]; if(!U || !U.file || U.stage==="sending" || U.stage==="sent") return;
