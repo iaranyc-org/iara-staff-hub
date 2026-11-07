@@ -466,6 +466,8 @@ function findTracked(D, M, f){
 function upVerdict(D, M, U){
   var f = U.fields||{}, t = (U.stage==="result") ? findTracked(D, M, f) : null;
   if(U.stage==="queued") return {txt:"Waiting…"};
+  if(U.stage==="splitting") return {txt:"Reading a "+U.pages+"-page PDF: page "+U.done+" of "+U.pages+"…", sub:"Each invoice in it will show up below as it's found."};
+  if(U.stage==="split") return {cls:"ok", txt:U.pages+"-page PDF: found "+U.found+" invoice"+(U.found===1?"":"s")+(U.skipped?", "+U.skipped+" other pages":"")+"."};
   if(U.stage==="reading") return {txt:"Reading…"};
   if(U.stage==="error") return {cls:"bad", txt:U.error};
   if(U.stage==="sending") return {txt:"Sending to invoices@…"};
@@ -483,7 +485,7 @@ function vUpload(D, M){
   var rows = L.map(function(U, i){
     var v = upVerdict(D, M, U), f = U.fields||{};
     if(v.need) need.push(i);
-    if(/queued|reading|sending/.test(U.stage)) busy++;
+    if(/queued|reading|sending|splitting/.test(U.stage)) busy++;
     var what = U.stage==="result"||U.stage==="sent"||U.stage==="sending" ? [f.vendor||"Vendor not read", f.number?"#"+f.number:"", f.date?dShort(f.date):"", f.total?money(+f.total):""].filter(Boolean).join(" · ") : (U.name||"");
     return '<div class="upload">'+(U.preview?'<img src="'+U.preview+'" alt="">':'<div class="pdf" aria-hidden="true">PDF</div>')+
       '<div class="body"><div class="verdict '+(v.cls||"")+'">'+esc(v.txt)+'</div><p class="note">'+esc(what)+(v.sub?'<br>'+esc(v.sub):'')+'</p>'+
@@ -533,6 +535,7 @@ async function upRead(files){
     var U; while((U = q.shift())){
       U.stage = "reading"; render();
       try{
+        if(/pdf/i.test(U.raw.type||U.raw.name) && await splitIfBig(U)) continue;
         var f = await prepFile(U.raw); U.file = f; U.preview = f.preview; render();
         var j = await upPost({action:"read", mime:f.mime, data:f.data, name:f.name});
         U.fields = j.fields||{}; U.id = j.id; U.stage = "result";
@@ -545,6 +548,44 @@ async function upRead(files){
   // Pull the sent ones back in (with their files) so the list and the count update right away.
   if(state.up.some(function(U){ return U.auto==="sent"; })){ await new Promise(function(r){ setTimeout(r, 5000); }); loadInbox(true); }
 }
+// Big PDFs (Jay 2026-11-07: a 70-page scan). Split into single pages here in the browser, read each page, group pages
+// into invoices, then save, check and (if needed) send each invoice as its own PDF. Nothing big ever uploads at once.
+var pdfLibP = null;
+function pdfLib(){ return pdfLibP || (pdfLibP = new Promise(function(res, rej){ var s=document.createElement("script"); s.src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"; s.onload=function(){ res(window.PDFLib); }; s.onerror=function(){ pdfLibP=null; rej(new Error("Couldn't load the PDF splitter. Check the connection and try again.")); }; document.head.appendChild(s); })); }
+function b64(bytes){ var s="", c=0x8000; for(var i=0;i<bytes.length;i+=c) s+=String.fromCharCode.apply(null, bytes.subarray(i,i+c)); return btoa(s); }
+async function pagesPdf(L, src, idx){ var d = await L.PDFDocument.create(); (await d.copyPages(src, idx)).forEach(function(pg){ d.addPage(pg); }); return b64(await d.save()); }
+async function splitIfBig(U){
+  var L = await pdfLib(), src = await L.PDFDocument.load(await U.raw.arrayBuffer(), {ignoreEncryption:true}), n = src.getPageCount();
+  if(n <= 2) return false;   // a normal invoice, read it whole
+  U.stage = "splitting"; U.pages = n; U.done = 0; render();
+  var pages = new Array(n), next = 0;
+  async function w(){ var i; while((i = next++) < n){
+    try{ var j = await upPost({action:"page", data: await pagesPdf(L, src, [i])}); pages[i] = j.fields||{}; }
+    catch(e){ pages[i] = {kind:"unread", note:"Couldn't read page "+(i+1)}; }
+    U.done++; render(); } }
+  await Promise.all([w(), w(), w(), w()]);
+  // Group: a page that continues, or repeats the same invoice #, joins the invoice before it.
+  var groups = [], cur = null, skipped = 0;
+  pages.forEach(function(f, i){
+    if(f.kind==="blank"){ skipped++; return; }
+    var same = cur && (f.continued || (f.number && cur.f.number && numKeys(f.number)[0]===numKeys(cur.f.number)[0]) || (!f.number && !f.vendor && f.kind!=="statement"));
+    if(same){ cur.idx.push(i); if(f.total) cur.f.total = f.total; if(!cur.f.number && f.number) cur.f.number = f.number; return; }
+    cur = {idx:[i], f:Object.assign({}, f)}; groups.push(cur);
+  });
+  var base = (U.raw.name||"scan").replace(/\.pdf$/i,"");
+  U.stage = "split"; U.found = groups.filter(function(g){ return g.f.kind==="invoice"||g.f.kind==="credit"; }).length; U.skipped = skipped + groups.length - U.found; render();
+  for(var k=0; k<groups.length; k++){
+    var g = groups[k], a = g.idx[0]+1, z = g.idx[g.idx.length-1]+1;
+    var name = base+" p"+(a===z?a:a+"-"+z)+".pdf", data = await pagesPdf(L, src, g.idx);
+    var V = {stage:"result", name:name, fields:g.f, file:{mime:"application/pdf", data:data, name:name, preview:""}, preview:""};
+    state.up.push(V); render();
+    try{ var r = await upPost({action:"save", data:data, name:name, kind:g.f.kind||"", vendor:g.f.vendor||"", number:g.f.number||"", date:g.f.date||"", total:g.f.total||"", note:"Pages "+(a===z?a:a+"-"+z)+" of "+(U.raw.name||"a scan")}); V.id = r.id; }catch(e){}
+    await upAuto(V);
+  }
+  render();
+  return true;
+}
+
 // Automatic (Jay 2026-11-07): not in Ottimate and never sent → send it to invoices@ now. Anything else is logged so the
 // list shows every upload. Already sent to invoices@ is left alone (no duplicates).
 async function upAuto(U){
