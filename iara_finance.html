@@ -262,7 +262,7 @@ function matchInbox(D, items){
     if(it.kind!=="invoice" && it.kind!=="credit" && it.kind!=="unread"){ other.push(it); return; }
     var hit = null; numKeys(it.number).some(function(k){ if(idx[k]){ hit = idx[k].filter(function(r){return r.s!=="duplicate";})[0] || idx[k][0]; return true; } });
     it.ott = hit;
-    it.status = hit ? "in" : !it.number ? "check" : (pulled && (it.received||"").slice(0,10) > pulled) ? "wait" : "missing";
+    it.status = hit ? "in" : !it.number ? "check" : (pulled && (it.received||"").slice(0,10) >= pulled) ? "wait" : "missing";
     bills.push(it);
   });
   var byOtt = {}; bills.forEach(function(it){ if(it.ott && it.msg_id) byOtt[it.ott.id || (it.ott.v+"|"+it.ott.n)] = it; });
