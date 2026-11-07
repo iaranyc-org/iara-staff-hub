@@ -73,6 +73,24 @@
   .pending{color:var(--k-muted); font-style:italic;}
   .muted{color:var(--k-muted);}
   .count{font-size:13px; color:var(--k-muted);}
+  .match-head{display:flex; gap:12px; align-items:flex-start; justify-content:space-between; flex-wrap:wrap;}
+  .match-big{font-size:20px; font-weight:600; line-height:1.3;}
+  .match-big.ok{color:var(--k-good, var(--k-ink));} .match-big.bad{color:var(--k-critical);}
+  .dl{display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:36px; padding:0 12px; border-radius:999px; border:1px solid var(--k-border); background:var(--k-surface); color:var(--k-ink); font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap;}
+  .dl:hover{background:var(--k-raised);}
+  @media (pointer:coarse){ .dl{min-height:44px;} }
+  details.more summary{cursor:pointer; font-size:14px; color:var(--k-muted); min-height:44px; display:flex; align-items:center;}
+  /* Phones: each table row becomes a card, labels come from data-label. */
+  @media (max-width:640px){
+    table.stack{min-width:0;} table.stack thead{display:none;}
+    table.stack tr{display:block; padding:10px 12px; border-bottom:1px solid var(--k-border);}
+    table.stack tbody tr:last-child{border-bottom:none;}
+    table.stack td{display:flex; justify-content:space-between; gap:12px; padding:3px 0; border:none; text-align:right;}
+    table.stack td::before{content:attr(data-label); color:var(--k-muted); font-size:12px; text-align:left; flex:none;}
+    table.stack td.first{display:block; text-align:left; font-weight:600; font-size:15px; padding-bottom:6px;}
+    table.stack td.first::before{content:none;}
+    table.stack td:empty{display:none;}
+  }
   #authGate .bg{position:fixed; inset:0; background:var(--k-page); z-index:49;}
   #authGate .card{position:fixed; z-index:50; left:50%; top:50%; transform:translate(-50%,-50%); width:min(420px, calc(100vw - 32px));
     background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:24px; display:flex; flex-direction:column; gap:16px; text-align:center; align-items:center;}
@@ -153,7 +171,7 @@ var TABS = [
   {id:"duplicates", label:"Duplicates"},
   {id:"missing", label:"Missing"}
 ];
-var state = { tab:"overview", data:null, loaded:false, q:"", f:"all" };
+var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false} };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
 (function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
 function saveTab(){ history.replaceState(null,"",location.pathname+location.search+"#t="+state.tab); }
@@ -223,6 +241,49 @@ function derive(rows){
     notExported: open.filter(function(r){return !r.x;}),
     statements: rows.filter(function(r){return r.ty==="statement" && LIVE[r.s] && r.t>0;})
   };
+}
+
+/* ---------- invoices@ vs Ottimate (Jay 2026-11-07) ---------- */
+// Every PDF or photo sent to invoices@ is read on the server (iara-inbox /api/invoices). Here each bill is matched to
+// Ottimate by invoice number, so we can see anything the accountant never got.
+var INBOX_API = "/inbox/api/invoices";
+function numKeys(n){
+  var a = String(n||"").toUpperCase().replace(/[^A-Z0-9]/g,""); if(!a) return [];
+  var k = [a, a.replace(/^0+/,"")], digits = a.replace(/^[A-Z]+/,"").replace(/^0+/,"");
+  if(digits.length>=5) k.push(digits);
+  return k;
+}
+function matchInbox(D, items){
+  var idx = {};
+  (D ? D.rows : []).forEach(function(r){ numKeys(r.n).forEach(function(k){ (idx[k] = idx[k] || []).push(r); }); });
+  var pulled = D && D.pulledAt ? D.pulledAt.slice(0,10) : "";
+  var bills = [], other = [];
+  items.forEach(function(it){
+    if(it.kind!=="invoice" && it.kind!=="credit" && it.kind!=="unread"){ other.push(it); return; }
+    var hit = null; numKeys(it.number).some(function(k){ if(idx[k]){ hit = idx[k].filter(function(r){return r.s!=="duplicate";})[0] || idx[k][0]; return true; } });
+    it.ott = hit;
+    it.status = hit ? "in" : !it.number ? "check" : (pulled && (it.received||"").slice(0,10) > pulled) ? "wait" : "missing";
+    bills.push(it);
+  });
+  var byOtt = {}; bills.forEach(function(it){ if(it.ott && it.msg_id) byOtt[it.ott.id || (it.ott.v+"|"+it.ott.n)] = it; });
+  return { bills:bills, other:other, byOtt:byOtt,
+    in: bills.filter(function(b){return b.status==="in";}), missing: bills.filter(function(b){return b.status==="missing";}),
+    check: bills.filter(function(b){return b.status==="check";}), wait: bills.filter(function(b){return b.status==="wait";}),
+    last: items.reduce(function(m,i){ return (i.received||"")>m ? i.received : m; }, "") };
+}
+function fileUrl(it, dl){ return it && it.msg_id ? INBOX_API+"/file?m="+encodeURIComponent(it.msg_id)+"&p="+encodeURIComponent(it.part_id)+(dl?"&dl=1":"") : ""; }
+function dlBtn(it){ var u=fileUrl(it); return u ? '<a class="dl" href="'+u+'" target="_blank" rel="noopener" aria-label="Open '+esc(it.file)+'">Open File</a>' : ""; }
+async function loadInbox(refresh){
+  state.inbox.busy = !!refresh; if(refresh) render();
+  try{
+    var r = refresh ? await fetch(INBOX_API,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({action:"refresh"})})
+                    : await fetch(INBOX_API,{credentials:"include"});
+    var j = await r.json().catch(function(){return {};});
+    if(r.status===401){ state.inbox.err="signin"; }
+    else { if(j.items) state.inbox.items=j.items; state.inbox.err = j.error==="not-connected" ? "connect" : j.error ? "fail" : "";
+      if(refresh && j.ok) toast(j.added ? "Found "+j.added+" new file"+(j.added===1?"":"s")+" in invoices@." : "No new invoices@ mail."); }
+  }catch(e){ state.inbox.err="fail"; }
+  state.inbox.busy=false; render();
 }
 
 /* ---------- render ---------- */
@@ -324,15 +385,40 @@ function vInvoices(D){
     return true;
   }).sort(function(a,b){ return (b.d||"9")<(a.d||"9")?-1:1; });
   var sum = rows.reduce(function(s,r){return s+r.t;},0);
-  return '<div class="head"><div><h2>Invoices</h2><p class="desc">Every live bill in Ottimate. Duplicates and statements are left out and have their own views.</p></div></div>'+
+  var M = state.inbox.items ? matchInbox(D, state.inbox.items) : null;
+  return '<div class="head"><div><h2>Invoices</h2><p class="desc">Every bill the accountant has in Ottimate, checked against what was sent to invoices@.</p></div></div>'+
+    vMatch(D, M)+
+    '<div class="section-title" style="margin:8px 0 -6px">All Bills in Ottimate</div>'+
     '<div class="filters"><input class="k-input" id="q" type="search" placeholder="Search vendor or invoice #" value="'+esc(state.q)+'" aria-label="Search invoices">'+
       F.map(function(f){ return '<button class="k-chip" data-f="'+f[0]+'" aria-pressed="'+(state.f===f[0])+'">'+f[1]+'</button>'; }).join("")+
       '<span class="count">'+rows.length+' bills · '+money(sum)+'</span></div>'+
-    '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th>Invoice Date</th><th>Invoice #</th><th class="num">Total</th><th>Due</th><th>Status</th><th>QuickBooks</th></tr></thead><tbody>'+
+    '<div class="table-wrap"><table class="stack"><thead><tr><th>Vendor</th><th>Invoice Date</th><th>Invoice #</th><th class="num">Total</th><th>Due</th><th>Status</th><th>QuickBooks</th><th><span class="k-sr-only">File</span></th></tr></thead><tbody>'+
     (rows.length ? rows.map(function(r){
-      return '<tr><td>'+esc(title(r.v)||"Not read yet")+'<span class="sub">'+esc(r.f||"")+'</span></td><td>'+dShort(r.d)+'</td><td class="num" style="text-align:left">'+esc(r.n||"")+'</td><td class="num">'+money(r.t)+'</td><td>'+(r.due?dShort(r.due):"")+'</td><td>'+stateBadge(r)+'</td><td>'+(r.x?'<span class="k-badge k-badge-good">Exported</span>':'<span class="k-badge k-badge-muted">Not Yet</span>')+'</td></tr>';
-    }).join("") : '<tr><td colspan="7" class="note">No bills match this filter.</td></tr>')+
+      var it = M && M.byOtt[r.id || (r.v+"|"+r.n)];
+      return '<tr><td class="first">'+esc(title(r.v)||"Not read yet")+'</td><td data-label="Invoice Date">'+dShort(r.d)+'</td><td data-label="Invoice #">'+esc(String(r.n||"").replace(/^#/,""))+'</td><td class="num" data-label="Total">'+money(r.t)+'</td><td data-label="Due">'+(r.due?dShort(r.due):"")+'</td><td data-label="Status">'+stateBadge(r)+'</td><td data-label="QuickBooks">'+(r.x?'<span class="k-badge k-badge-good">Sent</span>':'<span class="k-badge k-badge-muted">Not Yet</span>')+'</td><td data-label="File">'+dlBtn(it)+'</td></tr>';
+    }).join("") : '<tr><td colspan="8" class="note">No bills match this filter.</td></tr>')+
     '</tbody></table></div>';
+}
+function vMatch(D, M){
+  var I = state.inbox, refresh = '<button class="k-btn k-btn-sm" data-act="inboxRefresh"'+(I.busy?' disabled':'')+'>'+(I.busy?'Checking…':'Check invoices@ Now')+'</button>';
+  if(I.err==="signin") return '<div class="k-card"><div class="section-title">Sent to invoices@ vs Ottimate</div><p class="note">Sign in to iara Inbox once on this device to see this check. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a>, then come back and refresh.</p></div>';
+  if(!M) return '<div class="k-card"><p class="note">'+(I.err? "Couldn't load invoices@ mail. Refresh to try again." : "Checking invoices@…")+'</p></div>';
+  var nb = M.bills.length, nin = M.in.length, bad = M.missing.length;
+  var head = bad ? nin+' of '+(nb-M.wait.length-M.check.length)+' bills reached the accountant' : 'All '+nin+' bills sent to invoices@ reached the accountant';
+  function row(it, why){
+    return '<tr><td class="first">'+esc(it.vendor||it.sender||"Unknown sender")+'</td><td data-label="Invoice #">'+esc(it.number||"Not readable")+'</td><td data-label="Sent">'+dShort(it.received)+'</td><td class="num" data-label="Total">'+(it.total?money(+it.total):"")+'</td><td data-label="What To Do">'+esc(why)+'</td><td data-label="File">'+dlBtn(it)+'</td></tr>';
+  }
+  function table(list, why){ return '<div class="table-wrap" style="margin-top:10px"><table class="stack"><thead><tr><th>Vendor</th><th>Invoice #</th><th>Sent</th><th class="num">Total</th><th>What To Do</th><th><span class="k-sr-only">File</span></th></tr></thead><tbody>'+list.map(function(it){return row(it, typeof why==="function"?why(it):why);}).join("")+'</tbody></table></div>'; }
+  return '<div class="k-card">'+
+    '<div class="match-head"><div><div class="section-title">Sent to invoices@ vs Ottimate</div>'+
+      '<div class="match-big '+(bad?'bad':'ok')+'">'+head+'</div>'+
+      '<p class="note" style="margin-top:4px">Since 10/1. invoices@ is checked every morning'+(M.last?', newest email '+dShort(M.last):'')+'. Ottimate data from '+dShort(D.pulledAt)+'.</p></div>'+refresh+'</div>'+
+    (I.err==="connect" ? '<div class="k-alert" style="margin-top:12px">New invoices@ mail isn\'t being read yet. <a href="/inbox/api/connect/invoices">Connect jay@ Gmail</a> (read-only) to turn it on.</div>' : '')+
+    (bad ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Not in Ottimate · '+bad+'</div>'+table(M.missing, "Forward it to iaranyc@smgaba.com") : '')+
+    (M.check.length ? '<div class="section-title" style="margin-top:16px">Check by Hand · '+M.check.length+'</div><p class="note">The invoice number couldn\'t be read, often a photo or a file with no number in its name.</p>'+table(M.check, function(it){ return it.note || "Open it and look for it in Ottimate"; }) : '')+
+    (M.wait.length ? '<div class="section-title" style="margin-top:16px">Waiting for the Next Ottimate Import · '+M.wait.length+'</div><p class="note">Sent after the Ottimate data above was pulled, so they can\'t be checked yet.</p>'+table(M.wait, "Import a fresh Ottimate CSV") : '')+
+    (M.other.length ? '<details class="more" style="margin-top:12px"><summary>'+M.other.length+' other files: statements, receipts and order notices (not bills)</summary>'+table(M.other, function(it){ return ({statement:"Statement, no action",receipt:"Payment receipt, no action",order:"Order notice, no action"})[it.kind] || it.note || "Not a bill"; })+'</details>' : '')+
+  '</div>';
 }
 function vVendors(D){
   return '<div class="head"><div><h2>Vendors</h2><p class="desc">Spend per vendor since 10/2, sorted by size. Last bill date shows who has gone quiet.</p></div></div>'+
@@ -388,6 +474,7 @@ document.addEventListener("click", function(e){
   if(t.dataset.tab){ state.tab=t.dataset.tab; saveTab(); render(); window.scrollTo(0,0); }
   else if(t.dataset.f){ state.f=t.dataset.f; render(); }
   else if(t.dataset.act==="import") $("#csvInput").click();
+  else if(t.dataset.act==="inboxRefresh") loadInbox(true);
 });
 document.addEventListener("input", function(e){
   if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
@@ -415,7 +502,7 @@ auth.onAuthStateChanged(function(u){
   try{ if(u && isManagerEmail(u.email)) localStorage.setItem("iara_mgr_auth_hint","1"); else localStorage.removeItem("iara_mgr_auth_hint"); }catch(e){}
   if(unsub){ unsub(); unsub=null; }
   if(u && isManagerEmail(u.email)){
-    user=u; db=app.firestore(); hideGate();
+    user=u; db=app.firestore(); hideGate(); if(!state.inbox.items) loadInbox(false);
     unsub = db.collection("meta").doc("ottimate").onSnapshot(function(s){
       state.loaded=true; var d=s.exists?s.data():null;
       state.data = d ? Object.assign(derive(d.rows||[]), {pulledAt:d.pulledAt}) : null; render();
