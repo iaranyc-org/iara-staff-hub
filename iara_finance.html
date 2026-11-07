@@ -57,6 +57,9 @@
   .item .dot{width:8px; height:8px; border-radius:50%; margin-top:7px; flex:none; background:var(--k-warning);}
   .item .dot.crit{background:var(--k-critical);} .item .dot.info{background:var(--k-info);}
   .item .sub{color:var(--k-muted); font-size:13px;}
+  .item-go{width:100%; text-align:left; background:none; border:0; border-radius:10px; padding:8px; margin:-8px; color:inherit; font:inherit; cursor:pointer; align-items:center;}
+  .item-go:hover{background:var(--k-raised);} .item-go .go-arrow{margin-left:auto; color:var(--k-muted); font-size:20px; padding-left:8px;}
+  .item-go:focus-visible{outline:2px solid var(--k-accent, var(--k-ink)); outline-offset:2px;}
   .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:start;}
   .grid2>*{min-width:0;}
   @media (max-width:860px){ .grid2{grid-template-columns:1fr;} }
@@ -188,13 +191,11 @@ var OUTSIDE_OTTIMATE = ["Rent","Insurance","Toast subscription and fees","Utilit
 var TABS = [
   {id:"overview", label:"Overview"},
   {id:"invoices", label:"Invoices"},
-  {id:"vendors", label:"Vendors"},
-  {id:"duplicates", label:"Duplicates"},
-  {id:"missing", label:"Missing"}
+  {id:"vendors", label:"Vendors"}
 ];
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
-(function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
+(function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && (m[1]==="duplicates"||m[1]==="missing")) m[1]="vendors"; if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
 function saveTab(){ history.replaceState(null,"",location.pathname+location.search+"#t="+state.tab); }
 var db=null, auth=null, user=null;
 
@@ -203,7 +204,7 @@ function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){retu
 function money(n){ return (n<0?"-":"")+"$"+Math.abs(n).toLocaleString("en-US",{minimumFractionDigits:2, maximumFractionDigits:2}); }
 function money0(n){ return (n<0?"-":"")+"$"+Math.round(Math.abs(n)).toLocaleString("en-US"); }
 function dShort(iso){ if(!iso) return "No date"; var p=iso.slice(0,10).split("-"); return (+p[1])+"/"+(+p[2])+"/"+p[0].slice(2); }
-function title(s){ return String(s||"").toLowerCase().replace(/\b([a-z])/g,function(m){return m.toUpperCase();}).replace(/\bLlc\b/g,"LLC").replace(/\bInc\b/g,"Inc"); }
+function title(s){ return String(s||"").toLowerCase().replace(/\b([a-z])/g,function(m){return m.toUpperCase();}).replace(/\bLlc\b/g,"LLC").replace(/\bInc\b/g,"Inc").replace(/\b(Usa|Lp|Nyc|Ny|Nj|Eb|Ole)\b/g,function(m){ return m==="Ole"?m:m.toUpperCase(); }); }
 function nyDay(add){ return new Date(Date.now()+add*864e5).toLocaleDateString("en-CA",{timeZone:"America/New_York"}); }
 function toast(m){ if(window.iaraToast) iaraToast(m); }
 
@@ -330,7 +331,7 @@ function render(){
   // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
   var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
   var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Import a fresh Ottimate CSV.</span>'+importBtn()+'</div>' : '';
-  m.innerHTML = nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, duplicates:vDups, missing:vMissing})[state.tab](D);
+  m.innerHTML = nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors})[state.tab](D);
 }
 
 // Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
@@ -342,54 +343,44 @@ function monthName(k){ var p=k.split("-"); return ["Jan","Feb","Mar","Apr","May"
 function vOverview(D){
   var dupVend = {}; D.dups.forEach(function(r){ var k=title(r.v)||"Unknown"; dupVend[k]=(dupVend[k]||0)+1; });
   var topDup = Object.keys(dupVend).sort(function(a,b){return dupVend[b]-dupVend[a];}).slice(0,3);
-  var leads = missingLeads(D).filter(function(l){return l.nOpen<=1;});
-  var in30 = nyDay(30), today = nyDay(0);
+  var quiet = missingLeads(D).filter(function(l){return l.nOpen<=1;});
+  var in30 = nyDay(30);
   var due30 = D.unpaid.filter(function(r){ return !r.due || r.due<=in30; });
   var sumDue30 = due30.reduce(function(s,r){return s+r.t;},0);
   var sumOver = D.overdue.reduce(function(s,r){return s+r.t;},0);
   var months = {}; D.open.forEach(function(r){ var k=monthKey(r.d); months[k]=(months[k]||0)+r.t; });
   var mk = Object.keys(months).sort();
-  var R = SOURCES.revenue, L = SOURCES.labor;
-  var profit = (R!=null && L!=null) ? R - D.sumOpen - L : null;
-  return '<div class="head"><div><h2>Overview</h2><p class="desc">Money in, money out and what we owe, since we opened on 10/2. Supplier bills come from Ottimate today. Sales and labor connect from Toast, and cash, rent and loans from QuickBooks.</p></div>'+importBtn()+'</div>'+
-
-    '<div class="section-title" style="margin:4px 0 -6px">'+(R!=null?'Revenue and Profit Since 10/2':'Spend Since 10/2')+'</div>'+
+  var R = SOURCES.revenue, L = SOURCES.labor, profit = (R!=null && L!=null) ? R - D.sumOpen - L : null;
+  var M = state.inbox.items ? matchInbox(D, state.inbox.items) : null;
+  var upNeed = M ? M.uploads.filter(function(u){ return /fail|check by hand|Couldn/i.test(u.note||""); }).length : 0;
+  var look = [];
+  if(M && M.missing.length) look.push(go("crit", M.missing.length+" invoice"+(M.missing.length===1?"":"s")+" sent to invoices@ never reached Ottimate", "Forward to the accountant. See Invoices.", "invoices"));
+  if(upNeed) look.push(go("crit", upNeed+" photo upload"+(upNeed===1?"":"s")+" need a look", "The invoice number couldn't be read or sending failed. See Invoices.", "invoices"));
+  if(D.overdue.length) look.push(go("", D.overdue.length+" bills past their due date ("+money0(sumOver)+")", "Unpaid in Ottimate. Some may be paid outside it.", "invoices", "overdue"));
+  if(quiet.length) look.push(go("", quiet.length+" vendors sent 0 or 1 bill since opening", "Bills that may never have reached the accountant. See Vendors.", "vendors"));
+  if(D.dups.length) look.push(go("", D.dups.length+" duplicate copies, mostly "+topDup.join(", "), "Ottimate set them aside. Ask these vendors to send once. See Vendors.", "vendors"));
+  if(D.notExported.length) look.push(go("info", D.notExported.length+" bills since 10/2 not in QuickBooks yet", "The accounting firm exports them from Ottimate.", "invoices", "notx"));
+  return '<div class="head"><div><h2>Overview</h2><p class="desc">What we\'ve spent since opening on 10/2, what we owe, and what needs attention.</p></div></div>'+
     '<div class="kpis">'+
-      kpi("Revenue", R!=null?money0(R):"—", R!=null?"Toast sales":pending("Toast"))+
-      kpi("Supplier Bills", money0(D.sumOpen), D.open.length+" bills from Ottimate")+
-      kpi("Labor", L!=null?money0(L):"—", L!=null?"Toast payroll":pending("Toast payroll"))+
-      kpi("Profit", profit!=null?money0(profit):"—", profit!=null?"Before rent and loans":"Needs revenue and labor", profit!=null&&profit<0?"alert":"")+
+      kpi("Revenue", R!=null?money0(R):"—", "Toast sales")+
+      kpi("Supplier Bills Since 10/2", money0(D.sumOpen), D.open.length+" bills in Ottimate")+
+      kpi("Due in 30 Days", money0(sumDue30), due30.length+" unpaid bills", D.overdue.length?"warn":"")+
+      kpi("Past Due Now", money0(sumOver), D.overdue.length+" bills", D.overdue.length?"alert":"")+
+      kpi("Cash in Bank", SOURCES.cash!=null?money0(SOURCES.cash):"—", "QuickBooks")+
+      kpi("Profit", profit!=null?money0(profit):"—", "Before rent and loans", profit!=null&&profit<0?"alert":"")+
     '</div>'+
-
-    '<div class="section-title" style="margin:4px 0 -6px">Cash and What We Owe</div>'+
-    '<div class="kpis">'+
-      kpi("Cash in Bank", SOURCES.cash!=null?money0(SOURCES.cash):"—", SOURCES.cash!=null?"QuickBooks bank feed":pending("QuickBooks"))+
-      kpi("Bills Due in 30 Days", money0(sumDue30), due30.length+" unpaid supplier bills", D.overdue.length?"warn":"")+
-      kpi("Past Due Now", money0(sumOver), D.overdue.length+" bills past their due date", D.overdue.length?"alert":"")+
-      kpi("Rent, Loans and Fixed Costs", SOURCES.fixed!=null?money0(SOURCES.fixed):"—", SOURCES.fixed!=null?"Next 30 days":pending("QuickBooks"))+
-    '</div>'+
-    '<div class="k-card"><p class="note"><b style="color:var(--k-ink)">Can we cover what we owe?</b> '+
-      (SOURCES.cash!=null ? (SOURCES.cash >= sumDue30+(SOURCES.fixed||0) ? 'Yes. Cash covers the next 30 days of bills and fixed costs with '+money0(SOURCES.cash-sumDue30-(SOURCES.fixed||0))+' left.' : 'No. The next 30 days need '+money0(sumDue30+(SOURCES.fixed||0)-SOURCES.cash)+' more than is in the bank.')
-        : 'This answer appears once the bank balance connects from QuickBooks. For now: '+money0(sumDue30)+' in supplier bills is due within 30 days, not counting rent, loans or payroll.')+
-    '</p></div>'+
-
+    '<div class="k-card"><div class="section-title">Needs a Look</div>'+(look.length?'<div class="list">'+look.join("")+'</div>':'<p class="note">Nothing right now.</p>')+'</div>'+
     '<div class="grid2">'+
-      '<div class="k-card"><div class="section-title">By Month</div><div class="table-wrap"><table style="min-width:0"><thead><tr><th>Month</th><th class="num">Revenue</th><th class="num">Supplier Bills</th><th class="num">Labor</th><th class="num">Profit</th></tr></thead><tbody>'+
-        mk.map(function(k){ return '<tr><td>'+monthName(k)+'</td><td class="num muted">—</td><td class="num">'+money0(months[k])+'</td><td class="num muted">—</td><td class="num muted">—</td></tr>'; }).join("")+
-      '</tbody></table></div><p class="note" style="margin-top:8px">October starts on opening day, 10/2. Revenue, labor and profit fill in when Toast connects.</p></div>'+
       '<div class="k-card"><div class="section-title">What We Have to Pay, Next 7 Days</div>'+
-        (D.dueWeek.length ? '<p class="note" style="margin:-4px 0 10px">'+D.dueWeek.length+' bills · '+money0(D.dueWeek.reduce(function(s,r){return s+r.t;},0))+'</p><div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).slice(0,8).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n.replace(/^#/,""):"")); }).join("")+(D.dueWeek.length>8?'<button class="k-btn k-btn-sm k-btn-ghost" data-tab="invoices" style="align-self:flex-start">See All '+D.dueWeek.length+' in Invoices</button>':'')+'</div>' : '<p class="note">Nothing due this week.</p>')+
+        (D.dueWeek.length ? '<p class="note" style="margin:-4px 0 10px">'+D.dueWeek.length+' bills · '+money0(D.dueWeek.reduce(function(s,r){return s+r.t;},0))+'</p><div class="list">'+D.dueWeek.sort(function(a,b){return a.due<b.due?-1:1;}).slice(0,8).map(function(r){ return item("info", title(r.v)+" · "+money(r.t), "Due "+dShort(r.due)+(r.n?" · #"+r.n.replace(/^#/,""):"")); }).join("")+(D.dueWeek.length>8?'<button class="k-btn k-btn-sm k-btn-ghost" data-tab="invoices" data-f="unpaid" style="align-self:flex-start">See All Unpaid Bills</button>':'')+'</div>' : '<p class="note">Nothing due this week.</p>')+
       '</div>'+
-    '</div>'+
-
-    '<div class="k-card"><div class="section-title">Needs a Look</div><div class="list">'+
-      item("crit", leads.length+" vendors with 0 or 1 bill since opening", "Likely invoices that never reached Ottimate. See Missing.")+
-      item("", D.dups.length+" duplicate copies, mostly "+topDup.join(", "), "Find who sends twice and ask them to stop. See Duplicates.")+
-      item("", D.overdue.length+" bills past their due date ("+money0(sumOver)+")", "Ottimate shows them unpaid. Some may be paid outside it, which QuickBooks will tell us.")+
-      item("", D.notExported.length+" bills since 10/2 not in QuickBooks yet", "The accounting firm exports them from Ottimate.")+
-      (D.nodate.length? item("info", D.nodate.length+(D.nodate.length===1?" bill":" bills")+" Ottimate hasn\'t read yet", "No vendor or date yet, still being processed.") : "")+
-    '</div></div>';
+      '<div class="k-card"><div class="section-title">Supplier Bills by Month</div><div class="list">'+
+        mk.map(function(k){ return '<div class="item" style="justify-content:space-between"><span>'+monthName(k)+(k===OPENING.slice(0,7)?' <span class="sub" style="display:inline">from 10/2</span>':'')+'</span><span class="num">'+money0(months[k])+'</span></div>'; }).join("")+
+      '</div><p class="note" style="margin-top:10px">Revenue, labor and profit show up here once Toast and QuickBooks connect.</p></div>'+
+    '</div>';
 }
+// A "Needs a Look" row that takes you to the tab (and filter) that has the detail.
+function go(cls, t, s, tab, f){ return '<button type="button" class="item item-go" data-tab="'+tab+'"'+(f?' data-f="'+f+'"':'')+'><span class="dot '+cls+'"></span><span><span style="display:block">'+esc(t)+'</span><span class="sub" style="display:block">'+esc(s)+'</span></span><span class="go-arrow" aria-hidden="true">›</span></button>'; }
 function item(cls, t, s){ return '<div class="item"><span class="dot '+cls+'"></span><div><div>'+esc(t)+'</div><div class="sub">'+esc(s)+'</div></div></div>'; }
 
 function stateBadge(r){
@@ -617,34 +608,36 @@ async function upSendAll(){
   toast("Sent "+idx.length+" to invoices@.");
 }
 
-function vVendors(D){
-  return '<div class="head"><div><h2>Vendors</h2><p class="desc">Spend per vendor since 10/2, sorted by size. Last bill date shows who has gone quiet.</p></div></div>'+
-    '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th class="num">Since 10/2</th><th class="num">Bills</th><th class="num">Unpaid</th><th>Last Bill</th><th class="num">Duplicates</th></tr></thead><tbody>'+
-    D.vendors.map(function(v){
-      return '<tr><td>'+esc(title(v.name))+'</td><td class="num">'+money(v.sinceOpen)+'</td><td class="num">'+v.nOpen+(v.n>v.nOpen?'<span class="sub">+'+(v.n-v.nOpen)+' pre-open</span>':'')+'</td><td class="num">'+(v.unpaid?money(v.unpaid):"")+'</td><td>'+(v.last?dShort(v.last):"")+'</td><td class="num">'+(v.dups?'<span class="k-badge k-badge-warning">'+v.dups+'</span>':"")+'</td></tr>';
-    }).join("")+'</tbody></table></div>';
+function dupPattern(list){
+  var gaps = list.map(function(r){return r.gapH;}).filter(function(h){return h!=null;});
+  if(!gaps.length) return "Original not found, compare by hand";
+  var same = gaps.filter(function(h){return h>=0 && h<2;}).length, week = gaps.filter(function(h){return h>=140 && h<=200;}).length;
+  if(gaps.filter(function(h){return h<0;}).length===gaps.length) return "Copy arrived before the original, compare by hand";
+  if(same>=gaps.length/2) return "Sends each bill twice at once: likely two email addresses on file";
+  if(week>=gaps.length/2) return "Re-sends about a week later: likely a weekly statement or reminder";
+  return "Re-sent later, gaps of "+gaps.map(function(h){return h<48?h+"h":Math.round(h/24)+"d";}).join(", ");
 }
-function vDups(D){
-  var g = {};
-  D.dups.forEach(function(r){ var k=title(r.v)||"Unknown"; (g[k]||(g[k]=[])).push(r); });
-  var names = Object.keys(g).sort(function(a,b){return g[b].length-g[a].length;});
-  function pattern(list){
-    var gaps = list.map(function(r){return r.gapH;}).filter(function(h){return h!=null;});
-    if(!gaps.length) return "Original not found, compare by hand";
-    var same = gaps.filter(function(h){return h>=0 && h<2;}).length, week = gaps.filter(function(h){return h>=140 && h<=200;}).length;
-    if(gaps.filter(function(h){return h<0;}).length===gaps.length) return "Copy arrived before the original, compare by hand";
-    if(same>=gaps.length/2) return "Arrives twice at once: likely two email addresses or two attachments";
-    if(week>=gaps.length/2) return "Re-sent about a week later: likely a weekly statement or reminder";
-    return "Re-sent later, gaps of "+gaps.map(function(h){return h<48?h+"h":Math.round(h/24)+"d";}).join(", ");
-  }
-  return '<div class="head"><div><h2>Duplicates</h2><p class="desc">Copies Ottimate caught and set aside. They don\'t count toward any total. The goal is to find who sends twice and get them to send once.</p></div></div>'+
-    names.map(function(n){
-      var list=g[n];
-      return '<div class="k-card"><div class="section-title">'+esc(n)+' · '+list.length+(list.length===1?' copy':' copies')+'</div><p class="note" style="margin-bottom:10px">'+esc(pattern(list))+'</p>'+
-        '<div class="table-wrap"><table><thead><tr><th>Invoice #</th><th>Invoice Date</th><th class="num">Total</th><th>Copy Arrived</th><th>Gap After Original</th></tr></thead><tbody>'+
-        list.map(function(r){ return '<tr><td>'+esc(r.n||"")+'</td><td>'+dShort(r.d)+'</td><td class="num">'+money(r.t)+'</td><td>'+dShort(r.up)+'</td><td>'+(r.gapH==null?"No match":r.gapH<0?"Arrived first":(r.gapH<48?r.gapH+" hours":Math.round(r.gapH/24)+" days"))+'</td></tr>'; }).join("")+
-        '</tbody></table></div></div>';
-    }).join("");
+function vVendors(D){
+  var quiet = missingLeads(D).filter(function(l){return l.nOpen<=1;});
+  var dupsBy = {}; D.dups.forEach(function(r){ (dupsBy[r.v||"(No vendor read yet)"]=dupsBy[r.v||"(No vendor read yet)"]||[]).push(r); });
+  return '<div class="head"><div><h2>Vendors</h2><p class="desc">Who we buy from, what we\'ve spent, who sends bills twice and who has gone quiet.</p></div></div>'+
+    (quiet.length ? '<div class="k-card"><div class="section-title">Quiet Vendors · '+quiet.length+'</div><p class="note" style="margin-bottom:10px">We buy from them but they sent 0 or 1 bill to the accountant since opening. Ask them for statements, or check their portal.</p>'+
+      '<div class="table-wrap"><table class="stack"><thead><tr><th>Vendor</th><th>What We Buy</th><th class="num">Bills Since 10/2</th><th>Last Bill</th></tr></thead><tbody>'+
+      quiet.map(function(l){ return '<tr><td class="first">'+esc(l.name)+'</td><td data-label="What We Buy">'+esc(l.how)+'</td><td class="num" data-label="Bills Since 10/2">'+(l.nOpen===0?'<span class="k-badge k-badge-critical">None</span>':'<span class="k-badge k-badge-warning">1</span>')+'</td><td data-label="Last Bill">'+(l.last?dShort(l.last):"Never")+'</td></tr>'; }).join("")+
+      '</tbody></table></div></div>' : '')+
+    '<div class="section-title" style="margin:8px 0 -6px">Spend by Vendor</div>'+
+    '<div class="table-wrap"><table class="stack"><thead><tr><th>Vendor</th><th class="num">Since 10/2</th><th class="num">Bills</th><th class="num">Unpaid</th><th>Last Bill</th><th class="num">Duplicates</th></tr></thead><tbody>'+
+    D.vendors.map(function(v){
+      var dl = dupsBy[v.name]||[], open = state.openVendor===v.name;
+      var row = '<tr><td class="first">'+esc(title(v.name))+'</td><td class="num" data-label="Since 10/2">'+money(v.sinceOpen)+'</td><td class="num" data-label="Bills">'+v.nOpen+(v.n>v.nOpen?'<span class="sub">+'+(v.n-v.nOpen)+' pre-open</span>':'')+'</td><td class="num" data-label="Unpaid">'+(v.unpaid?money(v.unpaid):"")+'</td><td data-label="Last Bill">'+(v.last?dShort(v.last):"")+'</td><td class="num" data-label="Duplicates">'+
+        (dl.length?'<button class="k-btn k-btn-sm" data-act="vdup" data-v="'+esc(v.name)+'" aria-expanded="'+open+'">'+dl.length+(open?' ▴':' ▾')+'</button>':"")+'</td></tr>';
+      if(open && dl.length) row += '<tr><td colspan="6" style="background:var(--k-raised)"><p class="note" style="margin-bottom:8px"><b style="color:var(--k-ink)">'+esc(dupPattern(dl))+'.</b> Ottimate set these copies aside, so they don\'t count toward any total.</p>'+
+        dl.map(function(r){ return '<div class="sub" style="font-size:13px">#'+esc(String(r.n||"").replace(/^#/,""))+' · '+dShort(r.d)+' · '+money(r.t)+' · copy came '+(r.gapH==null?"with no original found":r.gapH<0?"before the original":r.gapH<2?"at the same time":r.gapH<48?r.gapH+" hours later":Math.round(r.gapH/24)+" days later")+'</div>'; }).join("")+'</td></tr>';
+      return row;
+    }).join("")+'</tbody></table></div>'+
+    '<div class="grid2"><div class="k-card"><div class="section-title">Never Goes Through Ottimate</div><p class="note" style="margin-bottom:10px">Find these in the bank feed instead.</p><div class="list">'+OUTSIDE_OTTIMATE.map(function(x){return item("info",x,"");}).join("")+'</div></div>'+
+    '<div class="k-card"><div class="section-title">Vendor Statements</div><p class="note" style="margin-bottom:10px">Balances only, no line items.</p><div class="list">'+
+      (D.statements.length? D.statements.map(function(r){return item("info", title(r.v)||"Unknown", dShort(r.d)+" · "+money(r.t));}).join("") : '<p class="note">None.</p>')+'</div></div></div>';
 }
 function missingLeads(D){
   return EXPECTED_VENDORS.map(function(e){
@@ -654,24 +647,15 @@ function missingLeads(D){
     return {name:e.name, how:e.how, nOpen:open.length, last:last};
   }).sort(function(a,b){return a.nOpen-b.nOpen;});
 }
-function vMissing(D){
-  var L = missingLeads(D);
-  return '<div class="head"><div><h2>Missing Invoices</h2><p class="desc">Vendors we buy from that have sent few or no bills to Ottimate since opening. These are leads, not proof: the QuickBooks payment feed will confirm which bills are really missing.</p></div></div>'+
-    '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th>What We Buy</th><th class="num">Bills Since 10/2</th><th>Last Bill</th><th>Read</th></tr></thead><tbody>'+
-    L.map(function(l){ return '<tr><td>'+esc(l.name)+'</td><td>'+esc(l.how)+'</td><td class="num">'+l.nOpen+'</td><td>'+(l.last?dShort(l.last):"Never")+'</td><td>'+(l.nOpen===0?'<span class="k-badge k-badge-critical">None Since Opening</span>':l.nOpen===1?'<span class="k-badge k-badge-warning">Only One</span>':'<span class="k-badge k-badge-good">Coming In</span>')+'</td></tr>'; }).join("")+
-    '</tbody></table></div>'+
-    '<div class="grid2"><div class="k-card"><div class="section-title">Never Goes Through Ottimate</div><div class="list">'+OUTSIDE_OTTIMATE.map(function(s){return item("info",s,"Find it in the bank feed instead.");}).join("")+'</div></div>'+
-    '<div class="k-card"><div class="section-title">Vendor Statements</div><p class="note" style="margin-bottom:10px">Statements list balances only, no line items, so they can\'t prove a bill is missing on their own.</p><div class="list">'+
-      (D.statements.length? D.statements.map(function(r){return item("info", title(r.v)||"Unknown", dShort(r.d)+" · "+money(r.t));}).join("") : '<p class="note">None.</p>')+'</div></div></div>';
-}
 
 /* ---------- events ---------- */
 document.addEventListener("click", function(e){
   var t = e.target.closest("[data-tab],[data-f],[data-act]"); if(!t) return;
-  if(t.dataset.tab){ state.tab=t.dataset.tab; saveTab(); render(); window.scrollTo(0,0); }
+  if(t.dataset.tab){ state.tab=t.dataset.tab; if(t.dataset.f) state.f=t.dataset.f; saveTab(); render(); window.scrollTo(0,0); }
   else if(t.dataset.f){ state.f=t.dataset.f; render(); }
   else if(t.dataset.act==="import") $("#csvInput").click();
   else if(t.dataset.act==="inboxRefresh") loadInbox(true);
+  else if(t.dataset.act==="vdup"){ state.openVendor = state.openVendor===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="addPhoto") $("#photoInput").click();
   else if(t.dataset.act==="upSend") upSend(+t.dataset.i);
   else if(t.dataset.act==="upSendAll") upSendAll();
