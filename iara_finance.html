@@ -279,7 +279,9 @@ function matchInbox(D, items){
   (D ? D.rows : []).forEach(function(r){ numKeys(r.n).forEach(function(k){ (idx[k] = idx[k] || []).push(r); }); });
   var pulled = D && D.pulledAt ? D.pulledAt.slice(0,10) : "";
   var bills = [], other = [];
+  var uploads = [];
   items.forEach(function(it){
+    if(/^upload:/.test(it.id)){ uploads.push(it); return; }   // photo uploads have their own list; sent ones come back as mail
     if(it.kind!=="invoice" && it.kind!=="credit" && it.kind!=="unread"){ other.push(it); return; }
     var hit = null; numKeys(it.number).some(function(k){ if(idx[k]){ hit = idx[k].filter(function(r){return r.s!=="duplicate";})[0] || idx[k][0]; return true; } });
     it.ott = hit;
@@ -287,12 +289,12 @@ function matchInbox(D, items){
     bills.push(it);
   });
   var byOtt = {}; bills.forEach(function(it){ if(it.ott && it.msg_id) byOtt[it.ott.id || (it.ott.v+"|"+it.ott.n)] = it; });
-  return { bills:bills, other:other, byOtt:byOtt,
+  return { bills:bills, other:other, byOtt:byOtt, uploads:uploads.sort(function(a,b){ return a.received<b.received?1:-1; }),
     in: bills.filter(function(b){return b.status==="in";}), missing: bills.filter(function(b){return b.status==="missing";}),
     check: bills.filter(function(b){return b.status==="check";}), wait: bills.filter(function(b){return b.status==="wait";}),
     last: items.reduce(function(m,i){ return (i.received||"")>m ? i.received : m; }, "") };
 }
-function fileUrl(it, dl){ return it && it.msg_id ? INBOX_API+"/file?m="+encodeURIComponent(it.msg_id)+"&p="+encodeURIComponent(it.part_id)+(dl?"&dl=1":"") : ""; }
+function fileUrl(it, dl){ if(it && /^invoice-uploads\//.test(it.part_id||"")) return INBOX_API+"/file?b="+encodeURIComponent(it.part_id); return it && it.msg_id ? INBOX_API+"/file?m="+encodeURIComponent(it.msg_id)+"&p="+encodeURIComponent(it.part_id)+(dl?"&dl=1":"") : ""; }
 function dlBtn(it){ var u=fileUrl(it); return u ? '<a class="dl" href="'+u+'" target="_blank" rel="noopener" aria-label="Open '+esc(it.file)+'">Open File</a>' : ""; }
 async function loadInbox(refresh){
   state.inbox.busy = !!refresh; if(refresh) render();
@@ -443,6 +445,10 @@ function vMatch(D, M){
     (bad ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Not in Ottimate · '+bad+'</div>'+table(M.missing, "Forward it to iaranyc@smgaba.com") : '')+
     (M.check.length ? '<div class="section-title" style="margin-top:16px">Check by Hand · '+M.check.length+'</div><p class="note">The invoice number couldn\'t be read, often a photo or a file with no number in its name.</p>'+table(M.check, function(it){ return it.note || "Open it and look for it in Ottimate"; }) : '')+
     (M.wait.length ? '<div class="section-title" style="margin-top:16px">Waiting for the Next Ottimate Import · '+M.wait.length+'</div><p class="note">Sent after the Ottimate data above was pulled, so they can\'t be checked yet.</p>'+table(M.wait, "Import a fresh Ottimate CSV") : '')+
+    (M.uploads.length ? '<details class="more" style="margin-top:12px"'+(M.uploads.some(function(u){return /fail|check by hand|Checking|Couldn/i.test(u.note);})?' open':'')+'><summary>Recent photo uploads · '+M.uploads.length+'</summary>'+
+      '<div class="table-wrap" style="margin-top:10px"><table class="stack"><thead><tr><th>Uploaded</th><th>By</th><th>Vendor</th><th>Invoice #</th><th class="num">Total</th><th>What Happened</th><th><span class="k-sr-only">File</span></th></tr></thead><tbody>'+
+      M.uploads.slice(0,25).map(function(u){ return '<tr><td class="first">'+dShort(u.received)+' '+new Date(u.received).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"})+'</td><td data-label="By">'+esc(String(u.sender||"").replace(/@iara\.nyc$/,""))+'</td><td data-label="Vendor">'+esc(u.vendor||"")+'</td><td data-label="Invoice #">'+esc(u.number||"")+'</td><td class="num" data-label="Total">'+(u.total?money(+u.total):"")+'</td><td data-label="What Happened">'+esc(u.note||"")+'</td><td data-label="File">'+dlBtn(u)+'</td></tr>'; }).join("")+
+      '</tbody></table></div></details>' : '')+
     (M.other.length ? '<details class="more" style="margin-top:12px"><summary>'+M.other.length+' other files: statements, receipts and order notices (not bills)</summary>'+table(M.other, function(it){ return ({statement:"Statement, no action",receipt:"Payment receipt, no action",order:"Order notice, no action"})[it.kind] || it.note || "Not a bill"; })+'</details>' : '')+
   '</div>';
 }
@@ -529,7 +535,7 @@ async function upRead(files){
       try{
         var f = await prepFile(U.raw); U.file = f; U.preview = f.preview; render();
         var j = await upPost({action:"read", mime:f.mime, data:f.data, name:f.name});
-        U.fields = j.fields||{}; U.stage = "result";
+        U.fields = j.fields||{}; U.id = j.id; U.stage = "result";
       }catch(e){ U.stage = "error"; U.error = e.message||String(e); }
       render();
       if(U.stage==="result") await upAuto(U);
@@ -545,8 +551,13 @@ async function upAuto(U){
   var D = state.data, M = state.inbox.items ? matchInbox(D, state.inbox.items) : null, v = upVerdict(D, M, U), f = U.fields||{};
   var t = findTracked(D, M, f);
   if(v.need && f.number && (!t || t.where!=="sent")){ U.autoSending = true; await upSend(state.up.indexOf(U)); if(U.stage==="sent") U.auto = "sent"; return; }
-  if(t && t.where==="sent") return;
-  try{ var j = await upPost({action:"log", name:U.file.name, mime:U.file.mime, kind:f.kind||"", vendor:f.vendor||"", number:f.number||"", date:f.date||"", total:f.total||"", note:f.note||""}); if(j.items) state.inbox.items = j.items; U.logged = true; render(); }catch(e){}
+  upMark(U, t && t.where==="ottimate" ? "In Ottimate already" : t && t.where==="sent" ? "Already sent to invoices@ on "+dShort(t.r.received) : (f.kind && f.kind!=="invoice" && f.kind!=="credit") ? "Not a bill ("+f.kind+"), not sent" : "Not sent: no invoice # read, check by hand");
+}
+// Record what happened to an upload on its saved row, then reload the list so Recent Uploads shows it.
+async function upMark(U, note){
+  if(!U.id) return;
+  try{ await upPost({action:"mark", id:U.id, note:note}); }catch(e){}
+  loadInbox(false);
 }
 async function upSend(i){
   var U = state.up && state.up[i]; if(!U || !U.file || U.stage==="sending" || U.stage==="sent") return;
@@ -554,8 +565,8 @@ async function upSend(i){
   try{
     var f = U.fields||{};
     await upPost({action:"send", mime:U.file.mime, data:U.file.data, name:U.file.name, vendor:f.vendor||"", number:f.number||"", total:f.total||""});
-    U.stage = "sent";
-  }catch(e){ U.stage = "error"; U.error = e.message||String(e); }
+    U.stage = "sent"; upMark(U, "Sent to invoices@");
+  }catch(e){ U.stage = "error"; U.error = e.message||String(e); upMark(U, "Send failed: "+U.error); }
   render();
 }
 async function upSendAll(){
