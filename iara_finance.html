@@ -40,7 +40,7 @@
     background:var(--k-page); box-shadow:0 0 0 100vmax var(--k-page), 0 1px 0 100vmax var(--k-border); clip-path:inset(0 -100vmax -1px -100vmax);}
   .tabs-bar .k-tabs{scrollbar-width:none;}
   .tabs-status{margin-left:auto; font-size:12px; color:var(--k-muted); white-space:nowrap;}
-  @media (max-width:640px){ .tabs-status{font-size:0;} .tabs-status .k-btn{font-size:13px;} }
+  @media (max-width:640px){ .tabs-bar{flex-wrap:wrap;} .tabs-status{font-size:0; margin-left:0;} .tabs-status .k-btn{font-size:13px;} }
   #main{display:flex; flex-direction:column; gap:18px; min-width:0; padding-bottom:48px;}
   .head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   .head .desc{font-size:13px; color:var(--k-muted); margin-top:4px; max-width:70ch;}
@@ -289,6 +289,9 @@ function matchInbox(D, items){
     it.status = hit ? "in" : !it.number ? "check" : (pulled && (it.received||"").slice(0,10) >= pulled) ? "wait" : "missing";
     bills.push(it);
   });
+  // A bill re-sent later (same invoice #) isn't missing any more: it's waiting on the newer copy.
+  bills.forEach(function(it){ if(it.status!=="missing") return; var k=numKeys(it.number)[0];
+    if(bills.some(function(o){ return o!==it && o.status!=="missing" && numKeys(o.number)[0]===k; })) it.status="resent"; });
   var byOtt = {}; bills.forEach(function(it){ if(it.ott && it.msg_id) byOtt[it.ott.id || (it.ott.v+"|"+it.ott.n)] = it; });
   return { bills:bills, other:other, byOtt:byOtt, uploads:uploads.sort(function(a,b){ return a.received<b.received?1:-1; }),
     in: bills.filter(function(b){return b.status==="in";}), missing: bills.filter(function(b){return b.status==="missing";}),
