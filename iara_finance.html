@@ -325,7 +325,10 @@ function render(){
   }
   var D = state.data;
   $("#dataStatus").textContent = "Ottimate data from "+dShort(D.pulledAt)+" · "+D.rows.length+" documents";
-  m.innerHTML = ({overview:vOverview, invoices:vInvoices, vendors:vVendors, duplicates:vDups, missing:vMissing})[state.tab](D);
+  // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
+  var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
+  var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Import a fresh Ottimate CSV.</span>'+importBtn()+'</div>' : '';
+  m.innerHTML = nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, duplicates:vDups, missing:vMissing})[state.tab](D);
 }
 
 // Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
