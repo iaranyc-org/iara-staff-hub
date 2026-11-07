@@ -227,7 +227,7 @@ function renderNav(){
   $("#tabNav").innerHTML = TABS.map(function(t){ var on=state.tab===t.id;
     return '<button type="button" role="tab" class="k-tab" aria-selected="'+on+'" tabindex="'+(on?0:-1)+'" data-tab="'+t.id+'">'+t.label+'</button>'; }).join("");
 }
-function kpi(label, value, foot, cls){ return '<div class="kpi '+(cls||"")+'"><div class="label">'+label+'</div><div class="value">'+value+'</div><div class="foot">'+foot+'</div></div>'; }
+function kpi(label, value, foot, cls){ if(value==="\u2014"||value==="—") return ""; return '<div class="kpi '+(cls||"")+'"><div class="label">'+label+'</div><div class="value">'+value+'</div><div class="foot">'+foot+'</div></div>'; }
 function importBtn(){ return '<button class="k-btn k-btn-sm" data-act="import">Import Ottimate CSV</button>'; }
 
 function render(){
@@ -263,7 +263,7 @@ function vOverview(D){
   var profit = (R!=null && L!=null) ? R - D.sumOpen - L : null;
   return '<div class="head"><div><h2>Overview</h2><p class="desc">Money in, money out and what we owe, since we opened on 10/2. Supplier bills come from Ottimate today. Sales and labor connect from Toast, and cash, rent and loans from QuickBooks.</p></div>'+importBtn()+'</div>'+
 
-    '<div class="section-title" style="margin:4px 0 -6px">Revenue and Profit Since 10/2</div>'+
+    '<div class="section-title" style="margin:4px 0 -6px">'+(R!=null?'Revenue and Profit Since 10/2':'Spend Since 10/2')+'</div>'+
     '<div class="kpis">'+
       kpi("Revenue", R!=null?money0(R):"—", R!=null?"Toast sales":pending("Toast"))+
       kpi("Supplier Bills", money0(D.sumOpen), D.open.length+" bills from Ottimate")+
