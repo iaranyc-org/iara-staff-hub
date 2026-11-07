@@ -85,7 +85,20 @@
   .upload .verdict{font-weight:600; font-size:15px;}
   .upload .verdict.ok{color:var(--k-good, var(--k-ink));} .upload .verdict.bad{color:var(--k-critical);}
   .upload .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
-  .match-acts{display:flex; gap:8px; flex-wrap:wrap;}
+  .match-acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
+  .icon-btn{width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; border:1px solid var(--k-border); background:var(--k-surface); color:var(--k-ink); cursor:pointer;}
+  .icon-btn:hover{background:var(--k-raised);} .icon-btn:disabled{opacity:.7; cursor:default;}
+  @media (pointer:coarse){ .icon-btn{width:44px; height:44px;} }
+  .icon-btn.spin svg{animation:spin 0.9s linear infinite;} @keyframes spin{to{transform:rotate(360deg);}}
+  @media (prefers-reduced-motion:reduce){ .icon-btn.spin svg{animation:none;} }
+  .dropzone{margin-top:14px; padding:18px; border:1.5px dashed var(--k-border); border-radius:12px; text-align:center; font-size:14px; color:var(--k-muted); cursor:pointer;}
+  .dropzone:hover, body.dragging .dropzone{border-color:var(--k-accent, var(--k-ink)); color:var(--k-ink);}
+  body.dragging #main .k-card:first-of-type{outline:2px dashed var(--k-accent, var(--k-ink)); outline-offset:4px;}
+  .up-list{margin-top:14px; display:flex; flex-direction:column; gap:8px;}
+  .up-list .upload{margin-top:0; position:relative;}
+  .up-bar{display:flex; justify-content:space-between; align-items:center; gap:8px; flex-wrap:wrap;}
+  .upload .pdf{width:72px; height:96px; border-radius:8px; flex:none; background:var(--k-surface); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; color:var(--k-muted);}
+  .up-x{flex:none;}
   details.more summary{cursor:pointer; font-size:14px; color:var(--k-muted); min-height:44px; display:flex; align-items:center;}
   /* Phones: each table row becomes a card, labels come from data-label. */
   @media (max-width:640px){
@@ -119,7 +132,7 @@
   </main>
 </div>
 <input type="file" id="csvInput" accept=".csv,text/csv" hidden>
-<input type="file" id="photoInput" accept="image/*,application/pdf" hidden>
+<input type="file" id="photoInput" accept="image/*,application/pdf" multiple hidden>
 <div id="authGate" hidden>
   <div class="bg"></div>
   <div class="card">
@@ -408,7 +421,8 @@ function vInvoices(D){
     '</tbody></table></div>';
 }
 function vMatch(D, M){
-  var I = state.inbox, refresh = '<div class="match-acts"><button class="k-btn k-btn-primary k-btn-sm" data-act="addPhoto">Add Invoice Photo</button><button class="k-btn k-btn-sm" data-act="inboxRefresh"'+(I.busy?' disabled':'')+'>'+(I.busy?'Checking…':'Check invoices@ Now')+'</button></div>';
+  var I = state.inbox, refresh = '<div class="match-acts"><button class="k-btn k-btn-primary k-btn-sm" data-act="addPhoto">Add Invoice Photos</button>'+
+    '<button class="icon-btn'+(I.busy?' spin':'')+'" data-act="inboxRefresh" title="Check invoices@ for new mail" aria-label="Check invoices@ for new mail"'+(I.busy?' disabled':'')+'><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button></div>';
   if(I.err==="signin") return '<div class="k-card"><div class="section-title">Sent to invoices@ vs Ottimate</div><p class="note">Sign in to iara Inbox once on this device to see this check. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a>, then come back and refresh.</p></div>';
   if(!M) return '<div class="k-card"><p class="note">'+(I.err? "Couldn't load invoices@ mail. Refresh to try again." : "Checking invoices@…")+'</p></div>';
   var nb = M.bills.length, nin = M.in.length, bad = M.missing.length;
@@ -420,7 +434,8 @@ function vMatch(D, M){
   return '<div class="k-card">'+
     '<div class="match-head"><div><div class="section-title">Sent to invoices@ vs Ottimate</div>'+
       '<div class="match-big '+(bad?'bad':'ok')+'">'+head+'</div>'+
-      '<p class="note" style="margin-top:4px">Since 10/1. invoices@ is checked every morning'+(M.last?', newest email '+dShort(M.last):'')+'. Ottimate data from '+dShort(D.pulledAt)+'.</p></div>'+refresh+'</div>'+vUpload(D, M)+
+      '<p class="note" style="margin-top:4px">Since 10/1. invoices@ is checked every morning'+(M.last?', newest email '+dShort(M.last):'')+'. Ottimate data from '+dShort(D.pulledAt)+'.</p></div>'+refresh+'</div>'+
+    (state.up && state.up.length ? '' : '<div class="dropzone" data-act="addPhoto" role="button" tabindex="0">Drop invoice photos or PDFs here, or tap to pick. Several at once is fine.</div>')+vUpload(D, M)+
     (I.err==="connect" ? '<div class="k-alert" style="margin-top:12px">New invoices@ mail isn\'t being read yet. <a href="/inbox/api/connect/invoices">Connect jay@ Gmail</a> (read-only) to turn it on.</div>' : '')+
     (bad ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Not in Ottimate · '+bad+'</div>'+table(M.missing, "Forward it to iaranyc@smgaba.com") : '')+
     (M.check.length ? '<div class="section-title" style="margin-top:16px">Check by Hand · '+M.check.length+'</div><p class="note">The invoice number couldn\'t be read, often a photo or a file with no number in its name.</p>'+table(M.check, function(it){ return it.note || "Open it and look for it in Ottimate"; }) : '')+
@@ -438,22 +453,38 @@ function findTracked(D, M, f){
   var sent = null; (M ? M.bills : []).some(function(b){ if(numKeys(b.number).some(function(k){return keys.indexOf(k)!==-1;})){ sent=b; return true; } });
   return sent ? {where:"sent", r:sent} : null;
 }
+// Batch (Jay 2026-11-07): several files at once, picked or dropped. Each row says where that invoice stands.
+function upVerdict(D, M, U){
+  var f = U.fields||{}, t = (U.stage==="result") ? findTracked(D, M, f) : null;
+  if(U.stage==="queued") return {txt:"Waiting…"};
+  if(U.stage==="reading") return {txt:"Reading…"};
+  if(U.stage==="error") return {cls:"bad", txt:U.error};
+  if(U.stage==="sending") return {txt:"Sending to invoices@…"};
+  if(U.stage==="sent") return {cls:"ok", txt:"Sent to invoices@. The accountant has it."};
+  if(f.kind && f.kind!=="invoice" && f.kind!=="credit") return {txt:"Looks like a "+(f.kind==="other"?"document that isn't a bill":f.kind)+".", send:"Send Anyway"};
+  if(t && t.where==="ottimate") return {cls:"ok", txt:"Already with the accountant. Nothing to do.", sub:"In Ottimate as "+(title(t.r.v)||"")+" #"+String(t.r.n).replace(/^#/,"")+(t.r.t?" · "+money(t.r.t):"")};
+  if(t && t.where==="sent" && t.r.status!=="missing") return {cls:"ok", txt:"Already sent to invoices@ on "+dShort(t.r.received)+". Waiting for Ottimate."};
+  if(t && t.where==="sent") return {cls:"bad", txt:"Sent to invoices@ on "+dShort(t.r.received)+" but never reached Ottimate.", send:"Send Again", need:true};
+  if(!f.number) return {cls:"bad", txt:"Couldn't read an invoice number. Check the photo, or send it as is.", send:"Send Anyway"};
+  return {cls:"bad", txt:"Not in Ottimate yet.", send:"Send to invoices@", need:true};
+}
 function vUpload(D, M){
-  var U = state.up; if(!U) return "";
-  var img = U.preview ? '<img src="'+U.preview+'" alt="">' : "";
-  var close = '<button class="k-btn k-btn-sm k-btn-ghost" data-act="upClose">Done</button>';
-  if(U.stage==="reading") return '<div class="upload">'+img+'<div class="body"><div class="verdict">Reading the invoice…</div><p class="note">Takes about 10 seconds.</p></div></div>';
-  if(U.stage==="error") return '<div class="upload">'+img+'<div class="body"><div class="verdict bad">'+esc(U.error)+'</div><div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Try Another Photo</button>'+close+'</div></div></div>';
-  var f = U.fields||{}, t = findTracked(D, M, f);
-  var what = '<p class="note">'+esc([f.vendor||"Vendor not read", f.number?"#"+f.number:"No invoice # read", f.date?dShort(f.date):"", f.total?money(+f.total):""].filter(Boolean).join(" · "))+'</p>';
-  if(U.stage==="sent") return '<div class="upload">'+img+'<div class="body"><div class="verdict ok">Sent to invoices@. The accountant has it.</div>'+what+'<div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Add Another</button>'+close+'</div></div></div>';
-  if(U.stage==="sending") return '<div class="upload">'+img+'<div class="body"><div class="verdict">Sending to invoices@…</div>'+what+'</div></div>';
-  if(f.kind && f.kind!=="invoice" && f.kind!=="credit") return '<div class="upload">'+img+'<div class="body"><div class="verdict">This looks like a '+esc(f.kind==="other"?"document that isn't a bill":f.kind)+'.</div>'+what+'<div class="acts"><button class="k-btn k-btn-sm" data-act="upSend">Send to invoices@ Anyway</button>'+close+'</div></div></div>';
-  if(t && t.where==="ottimate") return '<div class="upload">'+img+'<div class="body"><div class="verdict ok">Already with the accountant. Nothing to do.</div>'+what+'<p class="note">In Ottimate as '+esc(title(t.r.v)||"")+' #'+esc(String(t.r.n).replace(/^#/,""))+(t.r.t?" · "+money(t.r.t):"")+'.</p><div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Add Another</button>'+close+'</div></div></div>';
-  if(t && t.where==="sent") return '<div class="upload">'+img+'<div class="body"><div class="verdict ok">Already sent to invoices@ on '+dShort(t.r.received)+'.</div>'+what+'<p class="note">'+(t.r.status==="missing"?"But it never made it into Ottimate. Send it again so the accountant has it.":"Waiting for Ottimate to show it. No need to send again.")+'</p><div class="acts">'+(t.r.status==="missing"?'<button class="k-btn k-btn-primary k-btn-sm" data-act="upSend">Send to invoices@ Again</button>':'<button class="k-btn k-btn-sm" data-act="addPhoto">Add Another</button>')+close+'</div></div></div>';
-  return '<div class="upload">'+img+'<div class="body"><div class="verdict bad">'+(f.number?"Not in Ottimate yet.":"Couldn't read an invoice number.")+'</div>'+what+
-    '<p class="note">'+(f.number?"Send it to invoices@ so the accountant gets it.":"Check the photo is sharp and the whole invoice is in frame, or send it as is.")+'</p>'+
-    '<div class="acts"><button class="k-btn k-btn-primary k-btn-sm" data-act="upSend">Send to invoices@</button>'+(f.number?"":'<button class="k-btn k-btn-sm" data-act="addPhoto">Retake</button>')+close+'</div></div></div>';
+  var L = state.up; if(!L || !L.length) return "";
+  var need = [], busy = 0;
+  var rows = L.map(function(U, i){
+    var v = upVerdict(D, M, U), f = U.fields||{};
+    if(v.need) need.push(i);
+    if(/queued|reading|sending/.test(U.stage)) busy++;
+    var what = U.stage==="result"||U.stage==="sent"||U.stage==="sending" ? [f.vendor||"Vendor not read", f.number?"#"+f.number:"", f.date?dShort(f.date):"", f.total?money(+f.total):""].filter(Boolean).join(" · ") : (U.name||"");
+    return '<div class="upload">'+(U.preview?'<img src="'+U.preview+'" alt="">':'<div class="pdf" aria-hidden="true">PDF</div>')+
+      '<div class="body"><div class="verdict '+(v.cls||"")+'">'+esc(v.txt)+'</div><p class="note">'+esc(what)+(v.sub?'<br>'+esc(v.sub):'')+'</p>'+
+      (v.send?'<div class="acts"><button class="k-btn k-btn-sm'+(v.need?' k-btn-primary':'')+'" data-act="upSend" data-i="'+i+'">'+v.send+'</button></div>':'')+
+      '</div><button class="k-btn k-btn-sm k-btn-ghost up-x" data-act="upRemove" data-i="'+i+'" aria-label="Remove">✕</button></div>';
+  }).join("");
+  var bar = '<div class="up-bar"><span class="note">'+L.length+' file'+(L.length===1?'':'s')+(busy?' · '+busy+' still working':'')+'</span><span class="match-acts">'+
+    (need.length>1 && !busy ? '<button class="k-btn k-btn-primary k-btn-sm" data-act="upSendAll">Send All '+need.length+' to invoices@</button>' : '')+
+    '<button class="k-btn k-btn-sm" data-act="addPhoto">Add More</button><button class="k-btn k-btn-sm k-btn-ghost" data-act="upClose">Clear</button></span></div>';
+  return '<div class="up-list">'+bar+rows+'</div>';
 }
 // Phone photos are big; shrink to 2000px JPEG so the upload stays small and fast. PDFs go as they are.
 function prepFile(file){
@@ -482,24 +513,41 @@ async function upPost(body){
   if(!r.ok || j.error) throw new Error(j.error || "Something went wrong. Try again.");
   return j;
 }
-async function upRead(file){
-  state.up = {stage:"reading"}; render();
-  try{
-    var f = await prepFile(file); state.up = {stage:"reading", file:f, preview:f.preview}; render();
-    var j = await upPost({action:"read", mime:f.mime, data:f.data, name:f.name});
-    state.up = {stage:"result", file:f, preview:f.preview, fields:j.fields||{}};
-  }catch(e){ state.up = {stage:"error", error:e.message||String(e), preview:state.up && state.up.preview}; }
+async function upRead(files){
+  var list = Array.prototype.filter.call(files, function(f){ return /^image\/|application\/pdf/.test(f.type) || /\.(heic|heif|pdf|jpe?g|png)$/i.test(f.name); });
+  if(!list.length){ toast("Add photos or PDFs."); return; }
+  state.up = (state.up||[]).concat(list.map(function(f){ return {stage:"queued", raw:f, name:f.name}; }));
   render();
+  // Two at a time keeps it quick without tripping the server.
+  var q = state.up.filter(function(U){ return U.stage==="queued"; });
+  async function worker(){
+    var U; while((U = q.shift())){
+      U.stage = "reading"; render();
+      try{
+        var f = await prepFile(U.raw); U.file = f; U.preview = f.preview; render();
+        var j = await upPost({action:"read", mime:f.mime, data:f.data, name:f.name});
+        U.fields = j.fields||{}; U.stage = "result";
+      }catch(e){ U.stage = "error"; U.error = e.message||String(e); }
+      render();
+    }
+  }
+  await Promise.all([worker(), worker()]);
 }
-async function upSend(){
-  var U = state.up; if(!U || !U.file) return;
+async function upSend(i){
+  var U = state.up && state.up[i]; if(!U || !U.file || U.stage==="sending" || U.stage==="sent") return;
   U.stage = "sending"; render();
   try{
     var f = U.fields||{};
     await upPost({action:"send", mime:U.file.mime, data:U.file.data, name:U.file.name, vendor:f.vendor||"", number:f.number||"", total:f.total||""});
-    U.stage = "sent"; toast("Sent to invoices@.");
+    U.stage = "sent";
   }catch(e){ U.stage = "error"; U.error = e.message||String(e); }
   render();
+}
+async function upSendAll(){
+  var D = state.data, M = state.inbox.items ? matchInbox(D, state.inbox.items) : null;
+  var idx = state.up.map(function(U, i){ return upVerdict(D, M, U).need ? i : -1; }).filter(function(i){ return i>=0; });
+  for(var k=0; k<idx.length; k++) await upSend(idx[k]);
+  toast("Sent "+idx.length+" to invoices@.");
 }
 
 function vVendors(D){
@@ -558,13 +606,23 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="import") $("#csvInput").click();
   else if(t.dataset.act==="inboxRefresh") loadInbox(true);
   else if(t.dataset.act==="addPhoto") $("#photoInput").click();
-  else if(t.dataset.act==="upSend") upSend();
+  else if(t.dataset.act==="upSend") upSend(+t.dataset.i);
+  else if(t.dataset.act==="upSendAll") upSendAll();
+  else if(t.dataset.act==="upRemove"){ state.up.splice(+t.dataset.i,1); render(); }
   else if(t.dataset.act==="upClose"){ state.up=null; render(); }
 });
 document.addEventListener("input", function(e){
   if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
 });
-$("#photoInput").addEventListener("change", function(){ var f=this.files[0]; this.value=""; if(f) upRead(f); });
+$("#photoInput").addEventListener("change", function(){ var f=Array.prototype.slice.call(this.files); this.value=""; if(f.length) upRead(f); });
+// Drag and drop anywhere on the page while on Invoices.
+var dragN = 0;
+function hasFiles(e){ return e.dataTransfer && Array.prototype.indexOf.call(e.dataTransfer.types||[], "Files")!==-1; }
+document.addEventListener("dragenter", function(e){ if(!hasFiles(e) || state.tab!=="invoices") return; dragN++; document.body.classList.add("dragging"); });
+document.addEventListener("dragleave", function(){ if(--dragN<=0){ dragN=0; document.body.classList.remove("dragging"); } });
+document.addEventListener("dragover", function(e){ if(hasFiles(e) && state.tab==="invoices") e.preventDefault(); });
+document.addEventListener("drop", function(e){ if(!hasFiles(e) || state.tab!=="invoices") return; e.preventDefault(); dragN=0; document.body.classList.remove("dragging"); upRead(e.dataTransfer.files); });
+document.addEventListener("keydown", function(e){ var z=e.target.closest && e.target.closest(".dropzone"); if(z && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); $("#photoInput").click(); } });
 $("#csvInput").addEventListener("change", async function(){
   var file=this.files[0]; this.value=""; if(!file||!db) return;
   try{
