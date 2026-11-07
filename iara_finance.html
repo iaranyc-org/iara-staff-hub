@@ -79,6 +79,13 @@
   .dl{display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:36px; padding:0 12px; border-radius:999px; border:1px solid var(--k-border); background:var(--k-surface); color:var(--k-ink); font-size:13px; font-weight:600; text-decoration:none; white-space:nowrap;}
   .dl:hover{background:var(--k-raised);}
   @media (pointer:coarse){ .dl{min-height:44px;} }
+  .upload{margin-top:14px; padding:14px; border:1px solid var(--k-border); border-radius:12px; background:var(--k-raised); display:flex; gap:14px; align-items:flex-start;}
+  .upload img{width:72px; height:96px; object-fit:cover; border-radius:8px; flex:none; background:var(--k-surface);}
+  .upload .body{flex:1; min-width:0; display:flex; flex-direction:column; gap:6px;}
+  .upload .verdict{font-weight:600; font-size:15px;}
+  .upload .verdict.ok{color:var(--k-good, var(--k-ink));} .upload .verdict.bad{color:var(--k-critical);}
+  .upload .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
+  .match-acts{display:flex; gap:8px; flex-wrap:wrap;}
   details.more summary{cursor:pointer; font-size:14px; color:var(--k-muted); min-height:44px; display:flex; align-items:center;}
   /* Phones: each table row becomes a card, labels come from data-label. */
   @media (max-width:640px){
@@ -112,6 +119,7 @@
   </main>
 </div>
 <input type="file" id="csvInput" accept=".csv,text/csv" hidden>
+<input type="file" id="photoInput" accept="image/*,application/pdf" hidden>
 <div id="authGate" hidden>
   <div class="bg"></div>
   <div class="card">
@@ -171,7 +179,7 @@ var TABS = [
   {id:"duplicates", label:"Duplicates"},
   {id:"missing", label:"Missing"}
 ];
-var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false} };
+var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
 (function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
 function saveTab(){ history.replaceState(null,"",location.pathname+location.search+"#t="+state.tab); }
@@ -400,7 +408,7 @@ function vInvoices(D){
     '</tbody></table></div>';
 }
 function vMatch(D, M){
-  var I = state.inbox, refresh = '<button class="k-btn k-btn-sm" data-act="inboxRefresh"'+(I.busy?' disabled':'')+'>'+(I.busy?'Checking…':'Check invoices@ Now')+'</button>';
+  var I = state.inbox, refresh = '<div class="match-acts"><button class="k-btn k-btn-primary k-btn-sm" data-act="addPhoto">Add Invoice Photo</button><button class="k-btn k-btn-sm" data-act="inboxRefresh"'+(I.busy?' disabled':'')+'>'+(I.busy?'Checking…':'Check invoices@ Now')+'</button></div>';
   if(I.err==="signin") return '<div class="k-card"><div class="section-title">Sent to invoices@ vs Ottimate</div><p class="note">Sign in to iara Inbox once on this device to see this check. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a>, then come back and refresh.</p></div>';
   if(!M) return '<div class="k-card"><p class="note">'+(I.err? "Couldn't load invoices@ mail. Refresh to try again." : "Checking invoices@…")+'</p></div>';
   var nb = M.bills.length, nin = M.in.length, bad = M.missing.length;
@@ -412,7 +420,7 @@ function vMatch(D, M){
   return '<div class="k-card">'+
     '<div class="match-head"><div><div class="section-title">Sent to invoices@ vs Ottimate</div>'+
       '<div class="match-big '+(bad?'bad':'ok')+'">'+head+'</div>'+
-      '<p class="note" style="margin-top:4px">Since 10/1. invoices@ is checked every morning'+(M.last?', newest email '+dShort(M.last):'')+'. Ottimate data from '+dShort(D.pulledAt)+'.</p></div>'+refresh+'</div>'+
+      '<p class="note" style="margin-top:4px">Since 10/1. invoices@ is checked every morning'+(M.last?', newest email '+dShort(M.last):'')+'. Ottimate data from '+dShort(D.pulledAt)+'.</p></div>'+refresh+'</div>'+vUpload(D, M)+
     (I.err==="connect" ? '<div class="k-alert" style="margin-top:12px">New invoices@ mail isn\'t being read yet. <a href="/inbox/api/connect/invoices">Connect jay@ Gmail</a> (read-only) to turn it on.</div>' : '')+
     (bad ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Not in Ottimate · '+bad+'</div>'+table(M.missing, "Forward it to iaranyc@smgaba.com") : '')+
     (M.check.length ? '<div class="section-title" style="margin-top:16px">Check by Hand · '+M.check.length+'</div><p class="note">The invoice number couldn\'t be read, often a photo or a file with no number in its name.</p>'+table(M.check, function(it){ return it.note || "Open it and look for it in Ottimate"; }) : '')+
@@ -420,6 +428,80 @@ function vMatch(D, M){
     (M.other.length ? '<details class="more" style="margin-top:12px"><summary>'+M.other.length+' other files: statements, receipts and order notices (not bills)</summary>'+table(M.other, function(it){ return ({statement:"Statement, no action",receipt:"Payment receipt, no action",order:"Order notice, no action"})[it.kind] || it.note || "Not a bill"; })+'</details>' : '')+
   '</div>';
 }
+/* ---------- Add Invoice Photo (Jay 2026-11-07) ----------
+   Snap or pick an invoice. The server reads vendor, # and total; we check Ottimate and invoices@ here.
+   Already tracked: nothing to do. Not in Ottimate: one tap emails it to invoices@ (the group copies the accountant). */
+function findTracked(D, M, f){
+  var keys = numKeys(f.number); if(!keys.length) return null;
+  var ott = null; D.rows.some(function(r){ if(r.s!=="duplicate" && numKeys(r.n).some(function(k){return keys.indexOf(k)!==-1;})){ ott=r; return true; } });
+  if(ott) return {where:"ottimate", r:ott};
+  var sent = null; (M ? M.bills : []).some(function(b){ if(numKeys(b.number).some(function(k){return keys.indexOf(k)!==-1;})){ sent=b; return true; } });
+  return sent ? {where:"sent", r:sent} : null;
+}
+function vUpload(D, M){
+  var U = state.up; if(!U) return "";
+  var img = U.preview ? '<img src="'+U.preview+'" alt="">' : "";
+  var close = '<button class="k-btn k-btn-sm k-btn-ghost" data-act="upClose">Done</button>';
+  if(U.stage==="reading") return '<div class="upload">'+img+'<div class="body"><div class="verdict">Reading the invoice…</div><p class="note">Takes about 10 seconds.</p></div></div>';
+  if(U.stage==="error") return '<div class="upload">'+img+'<div class="body"><div class="verdict bad">'+esc(U.error)+'</div><div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Try Another Photo</button>'+close+'</div></div></div>';
+  var f = U.fields||{}, t = findTracked(D, M, f);
+  var what = '<p class="note">'+esc([f.vendor||"Vendor not read", f.number?"#"+f.number:"No invoice # read", f.date?dShort(f.date):"", f.total?money(+f.total):""].filter(Boolean).join(" · "))+'</p>';
+  if(U.stage==="sent") return '<div class="upload">'+img+'<div class="body"><div class="verdict ok">Sent to invoices@. The accountant has it.</div>'+what+'<div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Add Another</button>'+close+'</div></div></div>';
+  if(U.stage==="sending") return '<div class="upload">'+img+'<div class="body"><div class="verdict">Sending to invoices@…</div>'+what+'</div></div>';
+  if(f.kind && f.kind!=="invoice" && f.kind!=="credit") return '<div class="upload">'+img+'<div class="body"><div class="verdict">This looks like a '+esc(f.kind==="other"?"document that isn't a bill":f.kind)+'.</div>'+what+'<div class="acts"><button class="k-btn k-btn-sm" data-act="upSend">Send to invoices@ Anyway</button>'+close+'</div></div></div>';
+  if(t && t.where==="ottimate") return '<div class="upload">'+img+'<div class="body"><div class="verdict ok">Already with the accountant. Nothing to do.</div>'+what+'<p class="note">In Ottimate as '+esc(title(t.r.v)||"")+' #'+esc(String(t.r.n).replace(/^#/,""))+(t.r.t?" · "+money(t.r.t):"")+'.</p><div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Add Another</button>'+close+'</div></div></div>';
+  if(t && t.where==="sent") return '<div class="upload">'+img+'<div class="body"><div class="verdict ok">Already sent to invoices@ on '+dShort(t.r.received)+'.</div>'+what+'<p class="note">'+(t.r.status==="missing"?"It still isn't in Ottimate. It's listed above under Not in Ottimate.":"Waiting for Ottimate to show it. No need to send again.")+'</p><div class="acts"><button class="k-btn k-btn-sm" data-act="addPhoto">Add Another</button>'+close+'</div></div></div>';
+  return '<div class="upload">'+img+'<div class="body"><div class="verdict bad">'+(f.number?"Not in Ottimate yet.":"Couldn't read an invoice number.")+'</div>'+what+
+    '<p class="note">'+(f.number?"Send it to invoices@ so the accountant gets it.":"Check the photo is sharp and the whole invoice is in frame, or send it as is.")+'</p>'+
+    '<div class="acts"><button class="k-btn k-btn-primary k-btn-sm" data-act="upSend">Send to invoices@</button>'+(f.number?"":'<button class="k-btn k-btn-sm" data-act="addPhoto">Retake</button>')+close+'</div></div></div>';
+}
+// Phone photos are big; shrink to 2000px JPEG so the upload stays small and fast. PDFs go as they are.
+function prepFile(file){
+  return new Promise(function(res, rej){
+    var rd = new FileReader();
+    rd.onerror = function(){ rej(new Error("Couldn't open that file.")); };
+    if(file.type==="application/pdf"){ rd.onload=function(){ res({mime:"application/pdf", data:String(rd.result).split(",")[1], name:file.name||"invoice.pdf", preview:""}); }; rd.readAsDataURL(file); return; }
+    rd.onload = function(){
+      var im = new Image();
+      im.onload = function(){
+        var k = Math.min(1, 2000/Math.max(im.width, im.height)), c = document.createElement("canvas");
+        c.width = Math.round(im.width*k); c.height = Math.round(im.height*k); c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        var url = c.toDataURL("image/jpeg", 0.85);
+        res({mime:"image/jpeg", data:url.split(",")[1], name:(file.name||"invoice").replace(/\.\w+$/,"")+".jpg", preview:url});
+      };
+      im.onerror = function(){ rej(new Error("That photo format didn't open. Try a JPEG or a screenshot.")); };
+      im.src = rd.result;
+    };
+    rd.readAsDataURL(file);
+  });
+}
+async function upPost(body){
+  var r = await fetch(INBOX_API, {method:"POST", credentials:"include", headers:{"Content-Type":"application/json"}, body:JSON.stringify(body)});
+  var j = await r.json().catch(function(){return {};});
+  if(r.status===401) throw new Error("Sign in to iara Inbox on this device first, then try again.");
+  if(!r.ok || j.error) throw new Error(j.error || "Something went wrong. Try again.");
+  return j;
+}
+async function upRead(file){
+  state.up = {stage:"reading"}; render();
+  try{
+    var f = await prepFile(file); state.up = {stage:"reading", file:f, preview:f.preview}; render();
+    var j = await upPost({action:"read", mime:f.mime, data:f.data, name:f.name});
+    state.up = {stage:"result", file:f, preview:f.preview, fields:j.fields||{}};
+  }catch(e){ state.up = {stage:"error", error:e.message||String(e), preview:state.up && state.up.preview}; }
+  render();
+}
+async function upSend(){
+  var U = state.up; if(!U || !U.file) return;
+  U.stage = "sending"; render();
+  try{
+    var f = U.fields||{};
+    await upPost({action:"send", mime:U.file.mime, data:U.file.data, name:U.file.name, vendor:f.vendor||"", number:f.number||"", total:f.total||""});
+    U.stage = "sent"; toast("Sent to invoices@.");
+  }catch(e){ U.stage = "error"; U.error = e.message||String(e); }
+  render();
+}
+
 function vVendors(D){
   return '<div class="head"><div><h2>Vendors</h2><p class="desc">Spend per vendor since 10/2, sorted by size. Last bill date shows who has gone quiet.</p></div></div>'+
     '<div class="table-wrap"><table><thead><tr><th>Vendor</th><th class="num">Since 10/2</th><th class="num">Bills</th><th class="num">Unpaid</th><th>Last Bill</th><th class="num">Duplicates</th></tr></thead><tbody>'+
@@ -475,10 +557,14 @@ document.addEventListener("click", function(e){
   else if(t.dataset.f){ state.f=t.dataset.f; render(); }
   else if(t.dataset.act==="import") $("#csvInput").click();
   else if(t.dataset.act==="inboxRefresh") loadInbox(true);
+  else if(t.dataset.act==="addPhoto") $("#photoInput").click();
+  else if(t.dataset.act==="upSend") upSend();
+  else if(t.dataset.act==="upClose"){ state.up=null; render(); }
 });
 document.addEventListener("input", function(e){
   if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
 });
+$("#photoInput").addEventListener("change", function(){ var f=this.files[0]; this.value=""; if(f) upRead(f); });
 $("#csvInput").addEventListener("change", async function(){
   var file=this.files[0]; this.value=""; if(!file||!db) return;
   try{
