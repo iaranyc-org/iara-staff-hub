@@ -17,7 +17,7 @@
       "destination": "/iara_staff_hub.html"
     },
     {
-      "source": "/ops",
+      "source": "/finance",
       "destination": "/iara_finance.html"
     },
     {
@@ -49,6 +49,11 @@
     {
       "source": "/phone",
       "destination": "/analytics#t=phone",
+      "permanent": false
+    },
+    {
+      "source": "/ops",
+      "destination": "/finance",
       "permanent": false
     }
   ],

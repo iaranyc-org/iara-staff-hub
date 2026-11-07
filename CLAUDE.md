@@ -11,7 +11,7 @@ Static site for iara staff (205 Allen St, NYC), live at staff.iara.nyc. No build
 
 ## Where things are
 - `/lineup` → `iara_staff_hub.html` + `lineup.js`: menu, stories, quizzes (`QUIZ_*` arrays), service manual, team bios.
-- `/ops` → `iara_finance.html` (finance, managers only).
+- `/finance` → `iara_finance.html` (`/ops` redirects here) (finance, managers only).
 - `/supplies` → `iara_kitchen_ops.html`. `/analytics` → `iara_analytics.html`.
 - Routes: `vercel.json`. Offline cache: `sw.js`. Shared styles: `kit/`.
 - Data lives in Firebase (project `iara-lineup`). Menu edits can also be made in the app itself (Edit Menu).
