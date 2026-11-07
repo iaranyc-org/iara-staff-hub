@@ -40,7 +40,7 @@
     background:var(--k-page); box-shadow:0 0 0 100vmax var(--k-page), 0 1px 0 100vmax var(--k-border); clip-path:inset(0 -100vmax -1px -100vmax);}
   .tabs-bar .k-tabs{scrollbar-width:none;}
   .tabs-status{margin-left:auto; font-size:12px; color:var(--k-muted); white-space:nowrap;}
-  @media (max-width:640px){ .tabs-status{display:none;} }
+  @media (max-width:640px){ .tabs-status{font-size:0;} .tabs-status .k-btn{font-size:13px;} }
   #main{display:flex; flex-direction:column; gap:18px; min-width:0; padding-bottom:48px;}
   .head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   .head .desc{font-size:13px; color:var(--k-muted); margin-top:4px; max-width:70ch;}
@@ -327,7 +327,8 @@ function render(){
     $("#dataStatus").textContent = ""; return;
   }
   var D = state.data;
-  $("#dataStatus").textContent = "Ottimate data from "+dShort(D.pulledAt)+" · "+D.rows.length+" documents";
+  // Import lives here so it is always one tap away, on every tab.
+  $("#dataStatus").innerHTML = "Ottimate data from "+dShort(D.pulledAt)+' <button class="k-btn k-btn-sm k-btn-ghost" data-act="import">Import New CSV</button>';
   // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
   var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
   var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Import a fresh Ottimate CSV.</span>'+importBtn()+'</div>' : '';
