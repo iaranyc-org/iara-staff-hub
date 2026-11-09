@@ -134,7 +134,7 @@
     <div id="main" role="tabpanel" tabindex="-1"></div>
   </main>
 </div>
-<input type="file" id="csvInput" accept=".csv,text/csv" hidden>
+<input type="file" id="csvInput" accept=".csv,text/csv" multiple hidden>
 <input type="file" id="photoInput" accept="image/*,application/pdf" multiple hidden>
 <div id="authGate" hidden>
   <div class="bg"></div>
@@ -191,7 +191,8 @@ var OUTSIDE_OTTIMATE = ["Rent","Insurance","Toast subscription and fees","Utilit
 var TABS = [
   {id:"overview", label:"Overview"},
   {id:"invoices", label:"Invoices"},
-  {id:"vendors", label:"Vendors"}
+  {id:"vendors", label:"Vendors"},
+  {id:"inventory", label:"Inventory"}
 ];
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
@@ -335,7 +336,7 @@ function render(){
   // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
   var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
   var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Import a fresh Ottimate CSV.</span>'+importBtn()+'</div>' : '';
-  m.innerHTML = nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors})[state.tab](D);
+  m.innerHTML = nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory})[state.tab](D);
 }
 
 // Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
@@ -621,6 +622,67 @@ function dupPattern(list){
   if(week>=gaps.length/2) return "Re-sends about a week later: likely a weekly statement or reminder";
   return "Re-sent later, gaps of "+gaps.map(function(h){return h<48?h+"h":Math.round(h/24)+"d";}).join(", ");
 }
+/* ---------- Inventory (Jay 2026-11-09) ----------
+   What we have right now, before usage: the last count plus everything delivered since (Ottimate line items).
+   Data: iara-inbox /api/inventory (count copied from the costing sheet, delivered lines from an Ottimate line export). */
+var INV_API = "/inbox/api/inventory";
+state.inv = null;
+async function loadInv(){
+  if(state.invLoading) return; state.invLoading = true;
+  try{ var r = await fetch(INV_API,{credentials:"include"}); state.inv = r.status===401 ? {err:"signin"} : await r.json(); }
+  catch(e){ state.inv = {err:"fail"}; }
+  state.invLoading = false; render();
+}
+function invModel(I){
+  var items = (I.count||[]).map(function(c){ var re=null; try{ re = c.match ? new RegExp(c.match,"i") : null; }catch(e){}
+    return {c:c, re:re, value:+c.value||0, got:0, lines:[], last:""}; });
+  var extra = {};
+  (I.received||[]).forEach(function(l){
+    var hit = items.filter(function(x){ return x.re && x.re.test(l.item); })[0];
+    var t = +l.total || 0;
+    if(hit){ hit.got += t; hit.lines.push(l); if(l.date>hit.last) hit.last=l.date; }
+    else { var k = l.item; (extra[k] = extra[k] || {item:k, vendor:l.vendor, got:0, n:0, last:""}); extra[k].got += t; extra[k].n++; if(l.date>extra[k].last) extra[k].last=l.date; }
+  });
+  var counted = items.reduce(function(s,x){return s+x.value;},0), got = items.reduce(function(s,x){return s+x.got;},0);
+  var ex = Object.keys(extra).map(function(k){return extra[k];}).sort(function(a,b){return b.got-a.got;});
+  return {items:items, counted:counted, got:got, extra:ex, extraGot:ex.reduce(function(s,x){return s+x.got;},0)};
+}
+function qtyList(lines){
+  var by = {}; lines.forEach(function(l){ var u = (l.unit||"").toLowerCase(); by[u] = (by[u]||0) + (+l.qty||0); });
+  return Object.keys(by).map(function(u){ var q = Math.round(by[u]*100)/100; return q+" "+u+(q===1||!u||/s$/.test(u)?"":"s"); }).join(", ");
+}
+function vInventory(D){
+  var I = state.inv;
+  if(!I){ loadInv(); return '<div class="k-card"><p class="note">Loading inventory…</p></div>'; }
+  if(I.err==="signin") return '<div class="k-card"><p class="note">Sign in to iara Inbox once on this device, then refresh. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a></p></div>';
+  if(I.err) return '<div class="k-card"><p class="note">Couldn\'t load inventory. Refresh to try again.</p></div>';
+  var M = invModel(I), q = (state.iq||"").toLowerCase(), cats = {};
+  M.items.forEach(function(x){ if(q && (x.c.item+" "+x.c.category).toLowerCase().indexOf(q)===-1) return; (cats[x.c.category] = cats[x.c.category] || []).push(x); });
+  var loaded = (I.received||[]).length || I.receivedAt;
+  var head = '<div class="head"><div><h2>Inventory</h2><p class="desc">What we should have right now: the last count ('+dShort(I.countDate)+') plus everything delivered since. Usage isn\'t taken out yet.</p></div></div>'+
+    '<div class="kpis">'+kpi("Counted "+dShort(I.countDate), money0(M.counted), M.items.length+" items")+
+      kpi("Delivered Since", loaded?money0(M.got+M.extraGot):"—", loaded?"from invoices in Ottimate":"")+
+      kpi("Should Have Now", loaded?money0(M.counted+M.got+M.extraGot):"—", "before what we\'ve used")+'</div>'+
+    (loaded ? '<p class="note" style="margin:-4px 0 4px">Deliveries loaded '+(I.receivedAt?dShort(I.receivedAt):"")+'. To refresh, import a new Ottimate line export with Import New CSV.</p>'
+            : '<div class="k-alert">Deliveries since the count aren\'t loaded yet. Import the Ottimate line export (ottimate-lines CSV) with Import New CSV.</div>');
+  var flag = function(st){ return st==="Check"?' <span class="k-badge k-badge-warning">Check</span>':st==="Needs price"?' <span class="k-badge k-badge-critical">No Price</span>':""; };
+  var body = Object.keys(cats).map(function(cat){
+    var L = cats[cat], cv = L.reduce(function(s,x){return s+x.value;},0), gv = L.reduce(function(s,x){return s+x.got;},0);
+    return '<div class="section-title" style="margin:10px 0 -6px">'+esc(cat)+' · '+money0(cv+gv)+'</div>'+
+      '<div class="table-wrap"><table class="stack"><thead><tr><th>Item</th><th>Counted</th><th class="num">Value</th><th>Delivered Since</th><th class="num">Delivered $</th><th class="num">Should Have $</th></tr></thead><tbody>'+
+      L.map(function(x){ var c = x.c;
+        return '<tr><td class="first">'+esc(c.item)+flag(c.status)+'</td><td data-label="Counted">'+esc((c.qty||"")+" "+(c.unit||""))+'</td><td class="num" data-label="Value">'+(x.value?money(x.value):'<span class="muted">No price</span>')+'</td>'+
+          '<td data-label="Delivered Since">'+(x.lines.length?esc(qtyList(x.lines))+'<span class="sub">last '+dShort(x.last)+'</span>':'<span class="muted">None</span>')+'</td>'+
+          '<td class="num" data-label="Delivered $">'+(x.got?money(x.got):"")+'</td><td class="num" data-label="Should Have $"><b>'+money(x.value+x.got)+'</b></td></tr>'; }).join("")+
+      '</tbody></table></div>';
+  }).join("");
+  var extra = M.extra.length ? '<details class="more" style="margin-top:14px"><summary>Delivered since the count but not on the count list · '+M.extra.length+' items · '+money0(M.extraGot)+'</summary>'+
+    '<p class="note" style="margin:6px 0 10px">Supplies, drinks and anything new. Included in Should Have Now.</p><div class="table-wrap"><table class="stack"><thead><tr><th>Item</th><th>Vendor</th><th class="num">Delivered $</th><th>Last</th></tr></thead><tbody>'+
+    M.extra.slice(0,150).map(function(e){ return '<tr><td class="first">'+esc(e.item)+'</td><td data-label="Vendor">'+esc(title(e.vendor))+'</td><td class="num" data-label="Delivered $">'+money(e.got)+'</td><td data-label="Last">'+dShort(e.last)+'</td></tr>'; }).join("")+
+    '</tbody></table></div></details>' : "";
+  return head+'<div class="filters" style="margin-top:6px"><input class="k-input" id="iq" type="search" placeholder="Search items" value="'+esc(state.iq||"")+'" aria-label="Search inventory"></div>'+body+extra;
+}
+
 function vVendors(D){
   var quiet = missingLeads(D).filter(function(l){return l.nOpen<=1;});
   var dupsBy = {}; D.dups.forEach(function(r){ (dupsBy[r.v||"(No vendor read yet)"]=dupsBy[r.v||"(No vendor read yet)"]||[]).push(r); });
@@ -667,6 +729,7 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="upClose"){ state.up=null; render(); }
 });
 document.addEventListener("input", function(e){
+  if(e.target.id==="iq" && !e.isComposing){ state.iq=e.target.value; var p2=e.target.selectionStart; render(); var iq=$("#iq"); iq.focus(); iq.setSelectionRange(p2,p2); return; }
   if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
 });
 $("#photoInput").addEventListener("change", function(){ var f=Array.prototype.slice.call(this.files); this.value=""; if(f.length) upRead(f); });
@@ -679,15 +742,29 @@ document.addEventListener("dragover", function(e){ if(hasFiles(e) && state.tab==
 document.addEventListener("drop", function(e){ if(!hasFiles(e) || state.tab!=="invoices") return; e.preventDefault(); dragN=0; document.body.classList.remove("dragging"); upRead(e.dataTransfer.files); });
 document.addEventListener("keydown", function(e){ var z=e.target.closest && e.target.closest(".dropzone"); if(z && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); $("#photoInput").click(); } });
 $("#csvInput").addEventListener("change", async function(){
-  var file=this.files[0]; this.value=""; if(!file||!db) return;
+  var files=Array.prototype.slice.call(this.files); this.value=""; if(!files.length||!db) return;
+  for(var fi=0; fi<files.length; fi++) await importOne(files[fi]);
+});
+async function importOne(file){
+  var text = await file.text();
+  // An Ottimate line export (date,vendor,item,qty,...) feeds the Inventory tab.
+  if(/^\W*date,vendor,item,qty/i.test(text)){
+    try{
+      var r = await fetch(INV_API,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify({csv:text})});
+      var j = await r.json().catch(function(){return {};});
+      if(!r.ok) throw new Error(j.error || (r.status===401?"Sign in to iara Inbox first.":"Server error"));
+      toast("Loaded "+j.lines+" delivered lines for Inventory."); state.inv = null; render();
+    }catch(err){ toast("Inventory import failed: "+(err.message||err)); }
+    return;
+  }
   try{
-    var rows = parseCSV(await file.text());
+    var rows = parseCSV(text);
     if(!rows.length || !("vendor" in rows[0]) || !("state" in rows[0])) throw new Error("This doesn't look like an Ottimate export.");
     rows = rows.filter(function(r){ return r.state!=="deleted" && r.state!=="temporary"; }).map(compact);
     await db.collection("meta").doc("ottimate").set({ pulledAt:new Date().toISOString(), source:file.name, by:user.email, rows:rows });
     toast("Imported "+rows.length+" Ottimate documents."+(parseCSV.dropped?" "+parseCSV.dropped+" unreadable rows skipped.":""));
   }catch(err){ console.error(err); toast("Import failed: "+(err.message||err)); }
-});
+}
 
 /* ---------- auth + sync ---------- */
 function showGate(){ var b=$("[data-k-appbar]"); if(b) b.hidden=true; $("#authGate").hidden=false; }
