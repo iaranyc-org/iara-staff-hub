@@ -88,6 +88,16 @@
   .upload .verdict{font-weight:600; font-size:15px;}
   .upload .verdict.ok{color:var(--k-good, var(--k-ink));} .upload .verdict.bad{color:var(--k-critical);}
   .upload .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
+  .count-bar{display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:center; margin-bottom:16px;}
+  .count-head{display:flex; flex-wrap:wrap; gap:12px; justify-content:space-between; align-items:flex-start;}
+  .count-cats{display:flex; gap:8px; overflow-x:auto; padding-bottom:6px; position:sticky; top:var(--k-appbar-h); background:var(--k-page); z-index:5;}
+  .count-cats .k-chip{white-space:nowrap; min-height:44px;}
+  .count-list{display:flex; flex-direction:column; gap:8px; margin-top:8px;}
+  .count-row{display:grid; grid-template-columns:1fr auto; gap:8px 12px; align-items:center; padding:12px; border:1px solid var(--k-border); border-radius:12px; background:var(--k-surface);}
+  .count-row.is-done{border-color:var(--k-good, var(--k-border));}
+  .count-name{min-width:0;} .count-qty{font-size:22px; text-align:right; font-variant-numeric:tabular-nums;}
+  .count-acts{grid-column:1 / -1; display:flex; gap:8px; flex-wrap:wrap;}
+  .count-acts .k-btn{min-height:44px; min-width:52px;} .count-in{width:96px; min-height:44px;}
   .inv-type{font-size:18px; margin:22px 0 4px; display:flex; gap:10px; align-items:baseline;}
   .inv-cat{margin-top:8px;} .inv-cat > summary{display:flex; justify-content:space-between; gap:12px; cursor:pointer; padding:8px 4px; font-weight:600; min-height:44px; align-items:center;}
   .inv-row{cursor:pointer;} .inv-row:hover td{background:var(--k-raised);} .inv-row:focus-visible{outline:2px solid var(--k-ring, var(--k-ink)); outline-offset:-2px;}
@@ -633,11 +643,12 @@ function dupPattern(list){
    Data: iara-inbox /api/inventory (count, every Ottimate line, links). Links are saved there, so they stick for everyone. */
 var INV_API = "/inbox/api/inventory";
 state.inv = null; state.ity = "all"; state.iopen = null;
-var INV_TYPES = [["Food",["Protein","Seafood","Produce","Herbs","Dairy","Dry Goods","Frozen","Oils"]],["Beverage",["Wine","Spirits","Beer","Non-Alcoholic"]],["Supplies",["Supplies","Packaging","Cleaning"]],["Other",[]]];
+// Wine, Spirits and Non-Alcoholic are their own types (Jay 2026-11-10: the menu will have a non-alcoholic list).
+var INV_TYPES = [["Food",["Protein","Seafood","Produce","Herbs","Dairy","Dry Goods","Frozen","Oils"]],["Wine",["Wine"]],["Spirits",["Spirits"]],["Beer",["Beer"]],["Non-Alcoholic",["Non-Alcoholic"]],["Supplies",["Supplies","Packaging","Cleaning"]],["Other",[]]];
 function invType(cat){ for(var i=0;i<INV_TYPES.length;i++) if(INV_TYPES[i][1].indexOf(cat)!==-1) return INV_TYPES[i][0]; return "Other"; }
 var BEV_VENDORS = /skurnik|rosenthal|winebow|usa wine|polaner|fruit of the vines|mhw|empire|southern glazer|zhumir|balter|david bowler|wine/i;
 var SUPPLY_VENDORS = /to-?rise|webstaurant|amazon|tonerpirate|bisley|xerox|uline/i;
-function guessType(vendor){ return BEV_VENDORS.test(vendor||"") ? "Beverage" : SUPPLY_VENDORS.test(vendor||"") ? "Supplies" : "Food"; }
+function guessType(vendor){ return BEV_VENDORS.test(vendor||"") ? "Wine" : SUPPLY_VENDORS.test(vendor||"") ? "Supplies" : "Food"; }
 async function loadInv(){
   if(state.invLoading) return; state.invLoading = true;
   try{ var r = await fetch(INV_API,{credentials:"include"}); state.inv = r.status===401 ? {err:"signin"} : await r.json(); }
@@ -649,9 +660,20 @@ async function invPost(body){
   var j = await r.json().catch(function(){return {};}); if(!r.ok) throw new Error(j.error||"Couldn't save"); return j;
 }
 function sameUnit(a, b){ a=(a||"").toLowerCase().replace(/s$/,""); b=(b||"").toLowerCase().replace(/s$/,""); return a && a===b; }
+// Counts (Jay 2026-11-10): a count is a date plus a log of taps. "set" replaces, "add" stacks (+1 upstairs, +1 downstairs).
+function countTotals(I, id){
+  var t = {}; (I.entries||[]).filter(function(e){ return e.count===id; }).sort(function(a,b){ return a.at<b.at?-1:1; })
+    .forEach(function(e){ var q = +e.qty||0; t[e.product] = e.op==="set" ? q : (t[e.product]||0) + q; });
+  return t;
+}
+function doneCounts(I){ return (I.counts||[]).filter(function(c){ return c.status==="done"; }).sort(function(a,b){ return a.date<b.date?1:-1; }); }
+function baseCount(I){ var d = doneCounts(I); return d.filter(function(c){ return c.id===state.ibase; })[0] || d[0] || null; }
 function invModel(I){
+  var base = baseCount(I), tot = base ? countTotals(I, base.id) : {};
+  I.countDate = base ? base.date : I.countDate;
   var prods = (I.count||[]).map(function(c){ var re=null; try{ re = c.match ? new RegExp(c.match,"i") : null; }catch(e){}
-    return {name:c.item, cat:c.category||"Other", type:invType(c.category), st:c.status, qty:+c.qty||0, unit:c.unit||"", cost:+c.unit_cost||0, value:+c.value||0, src:c.source, re:re, items:{}, got:0, gotLines:[], last:null}; });
+    var qty = base ? (tot[c.item]||0) : (+c.qty||0), cost = +c.unit_cost||0;
+    return {name:c.item, cat:c.category||"Other", type:invType(c.category), st:c.status, qty:qty, unit:c.unit||"", cost:cost, value:qty*cost, src:c.source, re:re, items:{}, got:0, gotLines:[], last:null}; });
   var byName = {}; prods.forEach(function(p){ byName[p.name] = p; });
   var link = {}; (I.links||[]).forEach(function(l){ link[l.item] = l.product; });
   var vend = {};   // vendor item -> {item, vendor, lines, since$, how}
@@ -668,7 +690,7 @@ function invModel(I){
   prods.forEach(function(p){
     p.gotLines.sort(function(a,b){ return a.date<b.date?1:-1; });
     p.change = (p.last && p.cost && sameUnit(p.last.unit, p.unit)) ? (+p.last.price - p.cost)/p.cost : null;
-    p.flag = p.st==="Needs price" ? "No Price" : p.st==="Check" ? "Check" : p.st==="Not counted" ? "Not Counted" : "";
+    p.flag = (!p.cost && p.qty) ? "No Price" : p.st==="Check" ? "Check" : !p.qty ? "Not Counted" : "";
   });
   need.sort(function(a,b){ return b.since - a.since; });
   var counted = prods.reduce(function(s,p){return s+p.value;},0), got = prods.reduce(function(s,p){return s+p.got;},0);
@@ -688,6 +710,13 @@ function vInventory(D){
   if(!I){ loadInv(); return '<div class="k-card"><p class="note">Loading inventory…</p></div>'; }
   if(I.err==="signin") return '<div class="k-card"><p class="note">Sign in to iara Inbox once on this device, then refresh. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a></p></div>';
   if(I.err) return '<div class="k-card"><p class="note">Couldn\'t load inventory. Refresh to try again.</p></div>';
+  var openCount = (I.counts||[]).filter(function(c){ return c.status==="open"; })[0];
+  if(state.counting && openCount && state.counting===openCount.id) return vCount(I, openCount);
+  var done = doneCounts(I), base = baseCount(I);
+  var countBar = '<div class="k-card count-bar">'+(openCount
+      ? '<div><div class="section-title">Count in Progress · '+dShort(openCount.date)+'</div><p class="note">Started by '+esc(String(openCount.started_by||"").replace(/@iara\.nyc$/,""))+'. Keep counting, then finish to use it here.</p></div><button class="k-btn k-btn-primary" data-act="countGo" data-v="'+esc(openCount.id)+'">Continue Count</button>'
+      : '<div><div class="section-title">Counts</div><p class="note">Pick any day: monthly, every 2 weeks or weekly.</p></div><span class="match-acts"><input class="k-input" type="date" id="countDate" value="'+nyDay(0)+'" aria-label="Count date"><button class="k-btn k-btn-primary" data-act="countStart">Start Count</button></span>')+
+    (done.length>1 ? '<label class="note" style="display:flex; gap:8px; align-items:center; width:100%">Showing count from <select class="k-input" id="ibase" style="max-width:200px">'+done.map(function(c){ return '<option value="'+esc(c.id)+'"'+(base&&c.id===base.id?' selected':'')+'>'+dShort(c.date)+'</option>'; }).join("")+'</select></label>' : '')+'</div>';
   var M = invModel(I), q = (state.iq||"").toLowerCase(), ty = state.ity;
   var attn = M.prods.filter(function(p){ return p.flag; }).length + M.need.length;
   var loaded = (I.lines||[]).length;
@@ -697,7 +726,7 @@ function vInventory(D){
       kpi("Expected On Hand", loaded?money0(M.counted+M.got):"—", "before usage")+'</div>'+
     (loaded ? '<p class="note" style="margin:-4px 0 0">Deliveries as of '+dShort(I.receivedAt)+'. Supplies and fees marked not inventory: '+money0(M.notInv)+'. To refresh, import a new Ottimate line export.</p>'
             : '<div class="k-alert">Deliveries since the count aren\'t loaded yet. Import an Ottimate line export with Import New CSV.</div>');
-  var chips = [["all","All"],["Food","Food"],["Beverage","Beverage"],["Supplies","Supplies"],["attn","Needs Attention"+(attn?" · "+attn:"")]];
+  var chips = [["all","All"]].concat(INV_TYPES.filter(function(T){ return M.prods.some(function(p){ return p.type===T[0]; }); }).map(function(T){ return [T[0],T[0]]; })).concat([["attn","Needs Attention"+(attn?" · "+attn:"")]]);
   var bar = '<div class="filters" style="margin-top:10px"><input class="k-input" id="iq" type="search" placeholder="Search products" value="'+esc(state.iq||"")+'" aria-label="Search inventory">'+
     chips.map(function(c){ return '<button class="k-chip" data-act="ity" data-v="'+c[0]+'" aria-pressed="'+(ty===c[0])+'">'+c[1]+'</button>'; }).join("")+'</div>';
   // Needs Linking: invoice items since the count that aren't tied to any product yet.
@@ -731,8 +760,39 @@ function vInventory(D){
         '</tbody></table></div></details>';
     }).join("");
   }).join("");
-  return head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>');
+  return countBar+head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>');
 }
+// Count mode: category by category, big taps. Every tap saves right away (one row per tap), so a dropped phone loses nothing.
+function vCount(I, C){
+  var tot = countTotals(I, C.id), last = (function(){ var d = doneCounts(I); return d[0] ? countTotals(I, d[0].id) : {}; })();
+  var prods = (I.count||[]).map(function(c){ return {name:c.item, cat:c.category||"Other", unit:c.unit||"", type:invType(c.category)}; });
+  var cats = []; INV_TYPES.forEach(function(T){ T[1].forEach(function(c){ if(prods.some(function(p){return p.cat===c;}) && cats.indexOf(c)===-1) cats.push(c); }); });
+  prods.forEach(function(p){ if(cats.indexOf(p.cat)===-1) cats.push(p.cat); });
+  var cat = state.ccat && cats.indexOf(state.ccat)!==-1 ? state.ccat : cats[0], q = (state.cq||"").toLowerCase();
+  var done = prods.filter(function(p){ return p.name in tot; }).length;
+  var list = prods.filter(function(p){ return q ? p.name.toLowerCase().indexOf(q)!==-1 : p.cat===cat; });
+  var trail = function(name){ return (I.entries||[]).filter(function(e){ return e.count===C.id && e.product===name; }).map(function(e){ return (e.op==="set"?"= ":"+ ")+(+e.qty); }).join(" "); };
+  return '<div class="count-head"><div><h2>Count · '+dShort(C.date)+'</h2><p class="note">'+done+' of '+prods.length+' products counted. Every tap saves.</p></div>'+
+      '<span class="match-acts"><button class="k-btn" data-act="countBack">Back</button><button class="k-btn k-btn-primary" data-act="countFinish" data-v="'+esc(C.id)+'">Finish Count</button></span></div>'+
+    '<div class="filters" style="margin:10px 0"><input class="k-input" id="cq" type="search" placeholder="Search all products" value="'+esc(state.cq||"")+'" aria-label="Search products to count"></div>'+
+    (q ? '' : '<div class="count-cats" role="tablist" aria-label="Categories">'+cats.map(function(c){ var n = prods.filter(function(p){ return p.cat===c; }), d2 = n.filter(function(p){ return p.name in tot; }).length;
+      return '<button class="k-chip" data-act="ccat" data-v="'+esc(c)+'" aria-pressed="'+(c===cat)+'">'+esc(c)+' <span class="muted">'+d2+'/'+n.length+'</span></button>'; }).join("")+'</div>')+
+    '<div class="count-list">'+list.map(function(p){ var has = p.name in tot;
+      return '<div class="count-row'+(has?' is-done':'')+'"><div class="count-name"><div>'+esc(p.name)+'</div><div class="sub">'+(p.name in last?'Last count: '+(+last[p.name])+' '+esc(p.unit):'Not in last count')+(has&&trail(p.name)?' · '+esc(trail(p.name)):'')+'</div></div>'+
+        '<div class="count-qty" aria-live="polite">'+(has?'<b>'+(+tot[p.name])+'</b>':'<span class="muted">–</span>')+' <span class="muted">'+esc(p.unit||"")+'</span></div>'+
+        '<div class="count-acts"><button class="k-btn" data-act="cadd" data-p="'+esc(p.name)+'" data-q="-1" aria-label="Subtract 1 '+esc(p.name)+'">−1</button><button class="k-btn k-btn-primary" data-act="cadd" data-p="'+esc(p.name)+'" data-q="1" aria-label="Add 1 '+esc(p.name)+'">+1</button>'+
+        '<input class="k-input count-in" type="number" inputmode="decimal" step="any" placeholder="Qty" aria-label="Amount for '+esc(p.name)+'" data-p="'+esc(p.name)+'">'+
+        '<button class="k-btn" data-act="cplus" data-p="'+esc(p.name)+'">Add</button><button class="k-btn" data-act="cset" data-p="'+esc(p.name)+'">Set</button></div></div>'; }).join("")+
+    (list.length?'':'<p class="note">Nothing here. Search, or add the product from Needs Linking.</p>')+'</div>';
+}
+async function countEntry(p, op, qty){
+  var C = (state.inv.counts||[]).filter(function(c){ return c.status==="open"; })[0]; if(!C || !isFinite(qty)) return;
+  var e = {count:C.id, product:p, op:op, qty:String(qty), at:new Date().toISOString()};
+  state.inv.entries = (state.inv.entries||[]).concat([e]); render();   // show it now, save in the background
+  try{ await invPost({action:"count-entry", count:C.id, product:p, op:op, qty:qty}); }
+  catch(err){ state.inv.entries = state.inv.entries.filter(function(x){ return x!==e; }); render(); toast("Didn't save "+p+": "+(err.message||err)); }
+}
+
 function invDetail(p, M){
   var its = Object.keys(p.items).map(function(k){ return p.items[k]; });
   return '<div class="grid2"><div><div class="section-title">Invoice Items Linked · '+its.length+'</div>'+
@@ -799,6 +859,15 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="import") $("#csvInput").click();
   else if(t.dataset.act==="inboxRefresh") loadInbox(true);
   else if(t.dataset.act==="ity"){ state.ity=t.dataset.v; render(); }
+  else if(t.dataset.act==="countStart"){ var dv = ($("#countDate")||{}).value; invPost({action:"count-start", date:dv}).then(function(j){ state.counting=j.id; state.inv=null; render(); }).catch(function(e){ toast(e.message||String(e)); }); }
+  else if(t.dataset.act==="countGo"){ state.counting=t.dataset.v; render(); window.scrollTo(0,0); }
+  else if(t.dataset.act==="countBack"){ state.counting=null; render(); }
+  else if(t.dataset.act==="countFinish"){ if(!confirm("Finish this count? It becomes the base for Inventory. Products you didn't count will show as Not Counted.")) return;
+    invPost({action:"count-finish", count:t.dataset.v}).then(function(){ state.counting=null; state.ibase=t.dataset.v; state.inv=null; render(); toast("Count finished."); }).catch(function(e){ toast(e.message||String(e)); }); }
+  else if(t.dataset.act==="ccat"){ state.ccat=t.dataset.v; render(); window.scrollTo(0,0); }
+  else if(t.dataset.act==="cadd"){ countEntry(t.dataset.p, "add", +t.dataset.q); }
+  else if(t.dataset.act==="cplus" || t.dataset.act==="cset"){ var inp = t.parentNode.querySelector(".count-in"), v = parseFloat(inp && inp.value);
+    if(!isFinite(v)){ if(inp) inp.focus(); return; } countEntry(t.dataset.p, t.dataset.act==="cset"?"set":"add", v); }
   else if(t.dataset.act==="iopen"){ if(e.target.closest("select,a,button")) return; state.iopen = state.iopen===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="vdup"){ state.openVendor = state.openVendor===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="addPhoto") $("#photoInput").click();
@@ -807,9 +876,11 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="upRemove"){ state.up.splice(+t.dataset.i,1); render(); }
   else if(t.dataset.act==="upClose"){ state.up=null; render(); }
 });
-document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("inv-link")) invLinkChange(e.target); });
+document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("inv-link")) invLinkChange(e.target);
+  if(e.target.id==="ibase"){ state.ibase=e.target.value; render(); } });
 document.addEventListener("keydown", function(e){ var r = e.target.closest && e.target.closest(".inv-row"); if(r && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); r.click(); } });
 document.addEventListener("input", function(e){
+  if(e.target.id==="cq" && !e.isComposing){ state.cq=e.target.value; var p3=e.target.selectionStart; render(); var cq=$("#cq"); cq.focus(); cq.setSelectionRange(p3,p3); return; }
   if(e.target.id==="iq" && !e.isComposing){ state.iq=e.target.value; var p2=e.target.selectionStart; render(); var iq=$("#iq"); iq.focus(); iq.setSelectionRange(p2,p2); return; }
   if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
 });
