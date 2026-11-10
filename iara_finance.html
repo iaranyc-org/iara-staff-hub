@@ -88,6 +88,11 @@
   .upload .verdict{font-weight:600; font-size:15px;}
   .upload .verdict.ok{color:var(--k-good, var(--k-ink));} .upload .verdict.bad{color:var(--k-critical);}
   .upload .acts{display:flex; gap:8px; flex-wrap:wrap; margin-top:4px;}
+  .inv-type{font-size:18px; margin:22px 0 4px; display:flex; gap:10px; align-items:baseline;}
+  .inv-cat{margin-top:8px;} .inv-cat > summary{display:flex; justify-content:space-between; gap:12px; cursor:pointer; padding:8px 4px; font-weight:600; min-height:44px; align-items:center;}
+  .inv-row{cursor:pointer;} .inv-row:hover td{background:var(--k-raised);} .inv-row:focus-visible{outline:2px solid var(--k-ring, var(--k-ink)); outline-offset:-2px;}
+  .inv-detail{background:var(--k-raised); padding:14px !important;}
+  .inv-link{max-width:240px; min-height:36px; font-size:13px;}
   .match-acts{display:flex; gap:8px; flex-wrap:wrap; align-items:center;}
   .icon-btn{width:36px; height:36px; display:inline-flex; align-items:center; justify-content:center; border-radius:999px; border:1px solid var(--k-border); background:var(--k-surface); color:var(--k-ink); cursor:pointer;}
   .icon-btn:hover{background:var(--k-raised);} .icon-btn:disabled{opacity:.7; cursor:default;}
@@ -622,65 +627,137 @@ function dupPattern(list){
   if(week>=gaps.length/2) return "Re-sends about a week later: likely a weekly statement or reminder";
   return "Re-sent later, gaps of "+gaps.map(function(h){return h<48?h+"h":Math.round(h/24)+"d";}).join(", ");
 }
-/* ---------- Inventory (Jay 2026-11-09) ----------
-   What we have right now, before usage: the last count plus everything delivered since (Ottimate line items).
-   Data: iara-inbox /api/inventory (count copied from the costing sheet, delivered lines from an Ottimate line export). */
+/* ---------- Inventory (Jay 2026-11-09, reorganized like MarginEdge) ----------
+   Products = the count list. Vendor items = what invoices call things; each links to one product or is "not inventory".
+   Expected on hand = last count + deliveries since (usage not taken out yet). Grouped Type > Category > Product.
+   Data: iara-inbox /api/inventory (count, every Ottimate line, links). Links are saved there, so they stick for everyone. */
 var INV_API = "/inbox/api/inventory";
-state.inv = null;
+state.inv = null; state.ity = "all"; state.iopen = null;
+var INV_TYPES = [["Food",["Protein","Seafood","Produce","Herbs","Dairy","Dry Goods","Frozen","Oils"]],["Beverage",["Wine","Spirits","Beer","Non-Alcoholic"]],["Supplies",["Supplies","Packaging","Cleaning"]],["Other",[]]];
+function invType(cat){ for(var i=0;i<INV_TYPES.length;i++) if(INV_TYPES[i][1].indexOf(cat)!==-1) return INV_TYPES[i][0]; return "Other"; }
+var BEV_VENDORS = /skurnik|rosenthal|winebow|usa wine|polaner|fruit of the vines|mhw|empire|southern glazer|zhumir|balter|david bowler|wine/i;
+var SUPPLY_VENDORS = /to-?rise|webstaurant|amazon|tonerpirate|bisley|xerox|uline/i;
+function guessType(vendor){ return BEV_VENDORS.test(vendor||"") ? "Beverage" : SUPPLY_VENDORS.test(vendor||"") ? "Supplies" : "Food"; }
 async function loadInv(){
   if(state.invLoading) return; state.invLoading = true;
   try{ var r = await fetch(INV_API,{credentials:"include"}); state.inv = r.status===401 ? {err:"signin"} : await r.json(); }
   catch(e){ state.inv = {err:"fail"}; }
   state.invLoading = false; render();
 }
+async function invPost(body){
+  var r = await fetch(INV_API,{method:"POST",credentials:"include",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});
+  var j = await r.json().catch(function(){return {};}); if(!r.ok) throw new Error(j.error||"Couldn't save"); return j;
+}
+function sameUnit(a, b){ a=(a||"").toLowerCase().replace(/s$/,""); b=(b||"").toLowerCase().replace(/s$/,""); return a && a===b; }
 function invModel(I){
-  var items = (I.count||[]).map(function(c){ var re=null; try{ re = c.match ? new RegExp(c.match,"i") : null; }catch(e){}
-    return {c:c, re:re, value:+c.value||0, got:0, lines:[], last:""}; });
-  var extra = {};
-  (I.received||[]).forEach(function(l){
-    var hit = items.filter(function(x){ return x.re && x.re.test(l.item); })[0];
-    var t = +l.total || 0;
-    if(hit){ hit.got += t; hit.lines.push(l); if(l.date>hit.last) hit.last=l.date; }
-    else { var k = l.item; (extra[k] = extra[k] || {item:k, vendor:l.vendor, got:0, n:0, last:""}); extra[k].got += t; extra[k].n++; if(l.date>extra[k].last) extra[k].last=l.date; }
+  var prods = (I.count||[]).map(function(c){ var re=null; try{ re = c.match ? new RegExp(c.match,"i") : null; }catch(e){}
+    return {name:c.item, cat:c.category||"Other", type:invType(c.category), st:c.status, qty:+c.qty||0, unit:c.unit||"", cost:+c.unit_cost||0, value:+c.value||0, src:c.source, re:re, items:{}, got:0, gotLines:[], last:null}; });
+  var byName = {}; prods.forEach(function(p){ byName[p.name] = p; });
+  var link = {}; (I.links||[]).forEach(function(l){ link[l.item] = l.product; });
+  var vend = {};   // vendor item -> {item, vendor, lines, since$, how}
+  (I.lines||[]).forEach(function(l){ var v = vend[l.item] || (vend[l.item] = {item:l.item, vendor:l.vendor, lines:[], since:0, sinceLines:[]}); v.lines.push(l); if(l.date > I.countDate){ v.since += +l.total||0; v.sinceLines.push(l); } });
+  var need = [], notInv = 0;
+  Object.keys(vend).forEach(function(k){
+    var v = vend[k], p = null;
+    if(k in link){ v.how = "linked"; p = link[k] ? byName[link[k]] : null; if(!link[k]){ v.how = "not"; notInv += v.since; return; } }
+    else { p = prods.filter(function(x){ return x.re && x.re.test(k); })[0]; v.how = p ? "auto" : "none"; }
+    if(!p){ if(v.since) need.push(v); return; }
+    p.items[k] = v; p.got += v.since; p.gotLines = p.gotLines.concat(v.sinceLines);
+    v.lines.forEach(function(l){ if(!p.last || l.date > p.last.date) p.last = l; });
   });
-  var counted = items.reduce(function(s,x){return s+x.value;},0), got = items.reduce(function(s,x){return s+x.got;},0);
-  var ex = Object.keys(extra).map(function(k){return extra[k];}).sort(function(a,b){return b.got-a.got;});
-  return {items:items, counted:counted, got:got, extra:ex, extraGot:ex.reduce(function(s,x){return s+x.got;},0)};
+  prods.forEach(function(p){
+    p.gotLines.sort(function(a,b){ return a.date<b.date?1:-1; });
+    p.change = (p.last && p.cost && sameUnit(p.last.unit, p.unit)) ? (+p.last.price - p.cost)/p.cost : null;
+    p.flag = p.st==="Needs price" ? "No Price" : p.st==="Check" ? "Check" : p.st==="Not counted" ? "Not Counted" : "";
+  });
+  need.sort(function(a,b){ return b.since - a.since; });
+  var counted = prods.reduce(function(s,p){return s+p.value;},0), got = prods.reduce(function(s,p){return s+p.got;},0);
+  return {prods:prods, need:need, notInv:notInv, counted:counted, got:got};
 }
 function qtyList(lines){
   var by = {}; lines.forEach(function(l){ var u = (l.unit||"").toLowerCase(); by[u] = (by[u]||0) + (+l.qty||0); });
-  return Object.keys(by).map(function(u){ var q = Math.round(by[u]*100)/100; return q+" "+u+(q===1||!u||/s$/.test(u)?"":"s"); }).join(", ");
+  return Object.keys(by).map(function(u){ var q = Math.round(by[u]*100)/100; return q+" "+(u||"units"); }).join(", ");
+}
+function linkSelect(item, M, cur){
+  var opts = '<option value="">Link to…</option><optgroup label="Products">'+M.prods.map(function(p){ return '<option value="p:'+esc(p.name)+'"'+(p.name===cur?' selected':'')+'>'+esc(p.name)+'</option>'; }).join("")+'</optgroup>'+
+    '<optgroup label="Other"><option value="new">New product…</option><option value="not">Not inventory (supplies, fees)</option></optgroup>';
+  return '<select class="k-input inv-link" data-item="'+esc(item)+'" aria-label="Link '+esc(item)+'">'+opts+'</select>';
 }
 function vInventory(D){
   var I = state.inv;
   if(!I){ loadInv(); return '<div class="k-card"><p class="note">Loading inventory…</p></div>'; }
   if(I.err==="signin") return '<div class="k-card"><p class="note">Sign in to iara Inbox once on this device, then refresh. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a></p></div>';
   if(I.err) return '<div class="k-card"><p class="note">Couldn\'t load inventory. Refresh to try again.</p></div>';
-  var M = invModel(I), q = (state.iq||"").toLowerCase(), cats = {};
-  M.items.forEach(function(x){ if(q && (x.c.item+" "+x.c.category).toLowerCase().indexOf(q)===-1) return; (cats[x.c.category] = cats[x.c.category] || []).push(x); });
-  var loaded = (I.received||[]).length || I.receivedAt;
-  var head = '<div class="head"><div><h2>Inventory</h2><p class="desc">What we should have right now: the last count ('+dShort(I.countDate)+') plus everything delivered since. Usage isn\'t taken out yet.</p></div></div>'+
-    '<div class="kpis">'+kpi("Counted "+dShort(I.countDate), money0(M.counted), M.items.length+" items")+
-      kpi("Delivered Since", loaded?money0(M.got+M.extraGot):"—", loaded?"from invoices in Ottimate":"")+
-      kpi("Should Have Now", loaded?money0(M.counted+M.got+M.extraGot):"—", "before what we\'ve used")+'</div>'+
-    (loaded ? '<p class="note" style="margin:-4px 0 4px">Deliveries loaded '+(I.receivedAt?dShort(I.receivedAt):"")+'. To refresh, import a new Ottimate line export with Import New CSV.</p>'
-            : '<div class="k-alert">Deliveries since the count aren\'t loaded yet. Import the Ottimate line export (ottimate-lines CSV) with Import New CSV.</div>');
-  var flag = function(st){ return st==="Check"?' <span class="k-badge k-badge-warning">Check</span>':st==="Needs price"?' <span class="k-badge k-badge-critical">No Price</span>':""; };
-  var body = Object.keys(cats).map(function(cat){
-    var L = cats[cat], cv = L.reduce(function(s,x){return s+x.value;},0), gv = L.reduce(function(s,x){return s+x.got;},0);
-    return '<div class="section-title" style="margin:10px 0 -6px">'+esc(cat)+' · '+money0(cv+gv)+'</div>'+
-      '<div class="table-wrap"><table class="stack"><thead><tr><th>Item</th><th>Counted</th><th class="num">Value</th><th>Delivered Since</th><th class="num">Delivered $</th><th class="num">Should Have $</th></tr></thead><tbody>'+
-      L.map(function(x){ var c = x.c;
-        return '<tr><td class="first">'+esc(c.item)+flag(c.status)+'</td><td data-label="Counted">'+esc((c.qty||"")+" "+(c.unit||""))+'</td><td class="num" data-label="Value">'+(x.value?money(x.value):'<span class="muted">No price</span>')+'</td>'+
-          '<td data-label="Delivered Since">'+(x.lines.length?esc(qtyList(x.lines))+'<span class="sub">last '+dShort(x.last)+'</span>':'<span class="muted">None</span>')+'</td>'+
-          '<td class="num" data-label="Delivered $">'+(x.got?money(x.got):"")+'</td><td class="num" data-label="Should Have $"><b>'+money(x.value+x.got)+'</b></td></tr>'; }).join("")+
-      '</tbody></table></div>';
+  var M = invModel(I), q = (state.iq||"").toLowerCase(), ty = state.ity;
+  var attn = M.prods.filter(function(p){ return p.flag; }).length + M.need.length;
+  var loaded = (I.lines||[]).length;
+  var head = '<div class="head"><div><h2>Inventory</h2><p class="desc">Expected on hand = the last count ('+dShort(I.countDate)+') plus everything delivered since. What we\'ve used isn\'t taken out yet.</p></div></div>'+
+    '<div class="kpis">'+kpi("Counted "+dShort(I.countDate), money0(M.counted), M.prods.filter(function(p){return p.qty;}).length+" products")+
+      kpi("Delivered Since", loaded?money0(M.got):"—", loaded?"inventory items only":"")+
+      kpi("Expected On Hand", loaded?money0(M.counted+M.got):"—", "before usage")+'</div>'+
+    (loaded ? '<p class="note" style="margin:-4px 0 0">Deliveries as of '+dShort(I.receivedAt)+'. Supplies and fees marked not inventory: '+money0(M.notInv)+'. To refresh, import a new Ottimate line export.</p>'
+            : '<div class="k-alert">Deliveries since the count aren\'t loaded yet. Import an Ottimate line export with Import New CSV.</div>');
+  var chips = [["all","All"],["Food","Food"],["Beverage","Beverage"],["Supplies","Supplies"],["attn","Needs Attention"+(attn?" · "+attn:"")]];
+  var bar = '<div class="filters" style="margin-top:10px"><input class="k-input" id="iq" type="search" placeholder="Search products" value="'+esc(state.iq||"")+'" aria-label="Search inventory">'+
+    chips.map(function(c){ return '<button class="k-chip" data-act="ity" data-v="'+c[0]+'" aria-pressed="'+(ty===c[0])+'">'+c[1]+'</button>'; }).join("")+'</div>';
+  // Needs Linking: invoice items since the count that aren't tied to any product yet.
+  var needList = M.need.filter(function(v){ return (!q || (v.item+" "+v.vendor).toLowerCase().indexOf(q)!==-1) && (ty==="all"||ty==="attn"||guessType(v.vendor)===ty); });
+  var needCard = needList.length ? '<div class="k-card" style="margin-top:12px"><div class="section-title">Needs Linking · '+needList.length+'</div><p class="note" style="margin-bottom:10px">Delivered since the count but not tied to a product. Link each one once and it stays linked.</p>'+
+    '<div class="table-wrap"><table class="stack"><thead><tr><th>Invoice Item</th><th>Vendor</th><th class="num">Since '+dShort(I.countDate)+'</th><th>Link</th></tr></thead><tbody>'+
+    needList.slice(0,60).map(function(v){ return '<tr><td class="first">'+esc(v.item)+'</td><td data-label="Vendor">'+esc(title(v.vendor))+'</td><td class="num" data-label="Since">'+money(v.since)+'</td><td data-label="Link">'+linkSelect(v.item, M, "")+'</td></tr>'; }).join("")+
+    '</tbody></table></div>'+(needList.length>60?'<p class="note" style="margin-top:8px">Showing the 60 biggest. Search to find the rest.</p>':'')+'</div>' : "";
+  // Products: Type > Category > Product
+  var show = M.prods.filter(function(p){ if(q && (p.name+" "+p.cat).toLowerCase().indexOf(q)===-1) return false;
+    if(ty==="attn") return !!p.flag; if(ty!=="all") return p.type===ty; return true; });
+  var body = INV_TYPES.map(function(T){
+    var inT = show.filter(function(p){ return p.type===T[0]; }); if(!inT.length) return "";
+    var cats = []; inT.forEach(function(p){ if(cats.indexOf(p.cat)===-1) cats.push(p.cat); });
+    cats.sort(function(a,b){ return (T[1].indexOf(a)+1||99) - (T[1].indexOf(b)+1||99); });
+    var tv = inT.reduce(function(s,p){return s+p.value+p.got;},0);
+    return '<h3 class="inv-type">'+T[0]+' <span class="muted">'+money0(tv)+'</span></h3>'+cats.map(function(cat){
+      var L = inT.filter(function(p){ return p.cat===cat; }), cv = L.reduce(function(s,p){return s+p.value+p.got;},0);
+      return '<details class="inv-cat" open><summary><span>'+esc(cat)+'</span><span class="muted">'+L.length+' · '+money0(cv)+'</span></summary>'+
+        '<div class="table-wrap"><table class="stack"><thead><tr><th>Product</th><th>Counted</th><th class="num">Unit Cost</th><th class="num">Count Value</th><th>Delivered Since</th><th class="num">Expected $</th></tr></thead><tbody>'+
+        L.map(function(p){ var open = state.iopen===p.name;
+          var ch = p.change==null ? "" : Math.abs(p.change)<0.03 ? "" : '<span class="sub" style="color:var(--k-'+(p.change>0?'critical':'good, var(--k-muted)')+')">'+(p.change>0?"▲ ":"▼ ")+Math.round(Math.abs(p.change)*100)+'% now '+money(+p.last.price)+'</span>';
+          var row = '<tr class="inv-row" data-act="iopen" data-v="'+esc(p.name)+'" tabindex="0" aria-expanded="'+open+'"><td class="first">'+esc(p.name)+(p.flag?' <span class="k-badge '+(p.flag==="No Price"?'k-badge-critical':'k-badge-warning')+'">'+p.flag+'</span>':'')+'</td>'+
+            '<td data-label="Counted">'+(p.qty?esc(p.qty+" "+p.unit):'<span class="muted">Not counted</span>')+'</td>'+
+            '<td class="num" data-label="Unit Cost">'+(p.cost?money(p.cost)+(p.unit?' <span class="muted">/ '+esc(p.unit)+'</span>':''):'<span class="muted">No price</span>')+ch+'</td>'+
+            '<td class="num" data-label="Count Value">'+(p.value?money(p.value):"")+'</td>'+
+            '<td data-label="Delivered Since">'+(p.gotLines.length?esc(qtyList(p.gotLines))+'<span class="sub">'+money(p.got)+' · last '+dShort(p.gotLines[0].date)+'</span>':'<span class="muted">None</span>')+'</td>'+
+            '<td class="num" data-label="Expected $"><b>'+money(p.value+p.got)+'</b></td></tr>';
+          if(open) row += '<tr><td colspan="6" class="inv-detail">'+invDetail(p, M)+'</td></tr>';
+          return row; }).join("")+
+        '</tbody></table></div></details>';
+    }).join("");
   }).join("");
-  var extra = M.extra.length ? '<details class="more" style="margin-top:14px"><summary>Delivered since the count but not on the count list · '+M.extra.length+' items · '+money0(M.extraGot)+'</summary>'+
-    '<p class="note" style="margin:6px 0 10px">Supplies, drinks and anything new. Included in Should Have Now.</p><div class="table-wrap"><table class="stack"><thead><tr><th>Item</th><th>Vendor</th><th class="num">Delivered $</th><th>Last</th></tr></thead><tbody>'+
-    M.extra.slice(0,150).map(function(e){ return '<tr><td class="first">'+esc(e.item)+'</td><td data-label="Vendor">'+esc(title(e.vendor))+'</td><td class="num" data-label="Delivered $">'+money(e.got)+'</td><td data-label="Last">'+dShort(e.last)+'</td></tr>'; }).join("")+
-    '</tbody></table></div></details>' : "";
-  return head+'<div class="filters" style="margin-top:6px"><input class="k-input" id="iq" type="search" placeholder="Search items" value="'+esc(state.iq||"")+'" aria-label="Search inventory"></div>'+body+extra;
+  return head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>');
+}
+function invDetail(p, M){
+  var its = Object.keys(p.items).map(function(k){ return p.items[k]; });
+  return '<div class="grid2"><div><div class="section-title">Invoice Items Linked · '+its.length+'</div>'+
+    (its.length ? '<div class="list">'+its.map(function(v){ var last = v.lines.slice().sort(function(a,b){return a.date<b.date?1:-1;})[0];
+      return '<div class="item" style="flex-wrap:wrap; gap:8px"><div style="flex:1; min-width:180px"><div>'+esc(v.item)+(v.how==="auto"?' <span class="k-badge k-badge-muted">Auto</span>':'')+'</div><div class="sub">'+esc(title(v.vendor))+(last?' · last '+money(+last.price)+' / '+esc(last.unit||"unit")+' on '+dShort(last.date):'')+'</div></div>'+linkSelect(v.item, M, p.name)+'</div>'; }).join("")+'</div>'
+      : '<p class="note">No invoice items linked yet. Link one from Needs Linking.</p>')+'</div>'+
+    '<div><div class="section-title">Delivered Since the Count</div>'+
+    (p.gotLines.length ? '<div class="list">'+p.gotLines.slice(0,8).map(function(l){ return item("info", dShort(l.date)+" · "+(+l.qty)+" "+(l.unit||"")+" · "+money(+l.total), l.item+" ("+title(l.vendor)+")"); }).join("")+'</div>' : '<p class="note">Nothing delivered since the count.</p>')+
+    '<p class="note" style="margin-top:10px">Count line: '+(p.qty?esc(p.qty+" "+p.unit)+" at "+(p.cost?money(p.cost):"no price"):"not counted")+(p.src?' · price from '+esc(p.src):'')+'</p></div></div>';
+}
+async function invLinkChange(sel){
+  var item = sel.getAttribute("data-item"), v = sel.value; if(!v) return;
+  try{
+    if(v==="new"){
+      var name = prompt("New product name (as you'd count it):", item.replace(/\b\d+[^ ]*\b/g,"").replace(/\s+/g," ").trim()); if(!name){ sel.value=""; return; }
+      var cat = prompt("Category (e.g. Produce, Dairy, Wine, Supplies):", guessType((state.inv.lines||[]).filter(function(l){return l.item===item;})[0]?.vendor)==="Beverage"?"Wine":"Produce") || "Other";
+      await invPost({action:"product", name:name, category:cat});
+      await invPost({action:"link", item:item, product:name});
+      toast("Added "+name+" and linked it.");
+    } else {
+      await invPost({action:"link", item:item, product: v==="not" ? "" : v.slice(2)});
+      toast(v==="not" ? "Marked not inventory." : "Linked to "+v.slice(2)+".");
+    }
+    state.inv = null; render();
+  }catch(e){ toast(e.message||String(e)); sel.value=""; }
 }
 
 function vVendors(D){
@@ -721,6 +798,8 @@ document.addEventListener("click", function(e){
   else if(t.dataset.f){ state.f=t.dataset.f; render(); }
   else if(t.dataset.act==="import") $("#csvInput").click();
   else if(t.dataset.act==="inboxRefresh") loadInbox(true);
+  else if(t.dataset.act==="ity"){ state.ity=t.dataset.v; render(); }
+  else if(t.dataset.act==="iopen"){ if(e.target.closest("select,a,button")) return; state.iopen = state.iopen===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="vdup"){ state.openVendor = state.openVendor===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="addPhoto") $("#photoInput").click();
   else if(t.dataset.act==="upSend") upSend(+t.dataset.i);
@@ -728,6 +807,8 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="upRemove"){ state.up.splice(+t.dataset.i,1); render(); }
   else if(t.dataset.act==="upClose"){ state.up=null; render(); }
 });
+document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("inv-link")) invLinkChange(e.target); });
+document.addEventListener("keydown", function(e){ var r = e.target.closest && e.target.closest(".inv-row"); if(r && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); r.click(); } });
 document.addEventListener("input", function(e){
   if(e.target.id==="iq" && !e.isComposing){ state.iq=e.target.value; var p2=e.target.selectionStart; render(); var iq=$("#iq"); iq.focus(); iq.setSelectionRange(p2,p2); return; }
   if(e.target.id==="q" && !e.isComposing){ state.q=e.target.value; var pos=e.target.selectionStart; render(); var q=$("#q"); q.focus(); q.setSelectionRange(pos,pos); }
