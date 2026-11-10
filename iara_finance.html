@@ -921,21 +921,22 @@ async function importOne(file){
 
 
 /* ---------- Ottimate sync (Jay 2026-11-10: no more CSVs) ----------
-   Ottimate has no API we can call from a server (its sign-in lasts about a day), so the sync runs from a bookmark:
-   on dashboard.plateiq.com, "Sync to iara" reads invoices + every item's price history (read-only), opens /finance,
-   and hands the data over with postMessage. This page saves it exactly like the two CSV imports did. */
+   A bookmark on dashboard.plateiq.com reads invoices + every item's price history in Jay's Ottimate session (read-only)
+   and POSTs them straight to iara-inbox /api/ottimate-sync with this manager's token (baked into the bookmark).
+   v1 handed data to a /finance window by postMessage; Ottimate's Cross-Origin-Opener-Policy cuts that link, so v2 posts. */
+var SYNC_API = "https://iara-inbox.vercel.app/inbox/api/ottimate-sync";
 function iaraSyncBookmarklet(){
   (async function(){
+    var AUTH = "__IARA_SYNC__";
     if(!/plateiq\.com|ottimate/.test(location.host)){ alert("Open Ottimate first (dashboard.plateiq.com), then click Sync to iara."); return; }
     var k = Object.keys(localStorage).filter(function(x){ return x.indexOf("authInfo")===0; })[0];
     if(!k){ alert("Sign in to Ottimate first, then click Sync to iara."); return; }
-    var w = window.open("https://staff.iara.nyc/finance#t=invoices&sync=1", "iarasync");
     var H = {Authorization: "Bearer " + JSON.parse(localStorage[k]).access_token};
     var box = document.createElement("div");
-    box.style.cssText = "position:fixed;z-index:2147483647;top:16px;right:16px;max-width:320px;background:#391d1f;color:#fff;padding:14px 18px;border-radius:12px;font:14px/1.4 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.4)";
+    box.style.cssText = "position:fixed;z-index:2147483647;top:16px;right:16px;max-width:340px;background:#391d1f;color:#fff;padding:14px 18px;border-radius:12px;font:14px/1.4 system-ui,sans-serif;box-shadow:0 8px 30px rgba(0,0,0,.4)";
     document.body.appendChild(box);
     var say = function(m){ box.textContent = "iara sync: " + m; };
-    var get = async function(u){ var r = await fetch(u, {headers: H}); if(r.status === 401) throw new Error("Ottimate signed you out. Refresh this page, then click Sync to iara again."); return r.json(); };
+    var get = async function(u){ var r = await fetch(u, {headers: H}); if(r.status === 401) throw new Error("Ottimate signed you out. Sign out and back in to Ottimate, then click Sync to iara again."); return r.json(); };
     var nm = function(x){ return x && typeof x === "object" ? (x.name || "") : String(x || ""); };
     try{
       say("reading invoices…");
@@ -955,43 +956,35 @@ function iaraSyncBookmarklet(){
       await Promise.all([worker(), worker(), worker(), worker(), worker(), worker()]);
       var esc = function(v){ return '"' + String(v == null ? "" : v).replace(/"/g, '""') + '"'; };
       var csv = ["date,vendor,item,qty,unit,price,total,invoice"].concat(lines.sort(function(a, b){ return a[0] < b[0] ? -1 : 1; }).map(function(l){ return l.map(esc).join(","); })).join("\n");
-      say("sending to iara Finance…");
-      var payload = {type: "iara-ottimate-sync", invoices: rows, lines: csv}, done = false;
-      var send = function(){ try{ w.postMessage(payload, "https://staff.iara.nyc"); }catch(e){} };
-      window.addEventListener("message", function(e){ if(e.origin !== "https://staff.iara.nyc") return;
-        if(e.data === "iara-sync-ready") send();
-        if(e.data && e.data.type === "iara-sync-done"){ done = true; say("done. " + e.data.msg); setTimeout(function(){ box.remove(); }, 8000); } });
-      send(); var tries = 0; var iv = setInterval(function(){ if(done || ++tries > 90){ clearInterval(iv); if(!done) say("iara Finance didn't answer. Sign in there, then click Sync to iara again."); } else send(); }, 2000);
+      say("saving to iara Finance…");
+      var r = await fetch("__SYNC_API__", {method: "POST", headers: {"Content-Type": "application/json", "x-iara-sync": AUTH}, body: JSON.stringify({invoices: rows, lines: csv})});
+      var j = await r.json().catch(function(){ return {}; });
+      if(!r.ok) throw new Error(j.error || ("iara Finance said " + r.status));
+      say("done. " + j.invoices + " invoices and " + j.lines + " price lines saved. Refresh Finance to see them.");
+      setTimeout(function(){ box.remove(); }, 12000);
     }catch(err){ say(err.message || String(err)); }
   })();
 }
-var SYNC_HREF = "javascript:" + encodeURIComponent("(" + iaraSyncBookmarklet.toString() + ")()");
-window.addEventListener("message", async function(e){
-  if(e.origin !== "https://dashboard.plateiq.com" || !e.data || e.data.type !== "iara-ottimate-sync") return;
-  if(!db || state.syncing || state.synced) return;   // not signed in yet: the bookmark keeps resending every 2s
-  state.syncing = true; var msg = [];
+function syncHref(){
+  if(!state.syncAuth) return "";
+  return "javascript:" + encodeURIComponent("(" + iaraSyncBookmarklet.toString().replace("__IARA_SYNC__", state.syncAuth).replace("__SYNC_API__", SYNC_API) + ")()");
+}
+// Synced invoices live on the server; use them when they're newer than the last manual CSV import (Firestore).
+async function loadSync(){
   try{
-    if(e.data.invoices && e.data.invoices.length){
-      await db.collection("meta").doc("ottimate").set({ pulledAt:new Date().toISOString(), source:"Ottimate sync", by:user.email, rows:e.data.invoices });
-      msg.push(e.data.invoices.length + " invoices");
+    var r = await fetch("/inbox/api/ottimate-sync", {credentials:"include"}); if(!r.ok) return;
+    var j = await r.json(); state.syncAuth = j.email + ":" + j.token;
+    if(j.invoices && j.invoices.rows && (!state.fsPulledAt || j.invoices.pulledAt > state.fsPulledAt)){
+      state.data = Object.assign(derive(j.invoices.rows), {pulledAt:j.invoices.pulledAt}); state.loaded = true;
     }
-    if(e.data.lines){
-      var r = await fetch(INV_API, {method:"POST", credentials:"include", headers:{"Content-Type":"application/json"}, body:JSON.stringify({csv:e.data.lines})});
-      var j = await r.json().catch(function(){ return {}; });
-      if(!r.ok) throw new Error(j.error || (r.status===401 ? "Sign in to iara Inbox on this device first." : "Couldn't save line items"));
-      msg.push(j.lines + " price lines"); state.inv = null;
-    }
-    state.synced = true; toast("Synced from Ottimate: " + msg.join(", ") + ".");
-  }catch(err){ msg = ["failed: " + (err.message || err)]; toast("Ottimate sync " + msg[0]); }
-  try{ e.source.postMessage({type:"iara-sync-done", msg: msg.join(", ")}, e.origin); }catch(x){}
-  state.syncing = false; history.replaceState(null, "", location.pathname + "#t=" + state.tab); render();
-});
-function syncReady(){ if(/sync=1/.test(location.hash) && window.opener) try{ window.opener.postMessage("iara-sync-ready", "https://dashboard.plateiq.com"); }catch(e){} }
+    render();
+  }catch(e){}
+}
 function syncCard(){
   return '<div class="k-card" style="margin-bottom:16px"><div class="section-title">Sync from Ottimate</div>'+
-    '<p class="note" style="margin-bottom:10px">One click replaces both CSV imports: invoices for the Invoices check, and item prices and deliveries for Inventory.</p>'+
-    '<ol class="note" style="padding-left:18px; display:flex; flex-direction:column; gap:6px; margin-bottom:12px"><li>Show your bookmarks bar (⌘⇧B), then drag this button onto it: <a class="k-btn k-btn-primary k-btn-sm" href="'+SYNC_HREF+'" onclick="event.preventDefault(); if(window.iaraToast) iaraToast(\'Drag it to your bookmarks bar instead of clicking.\')">Sync to iara</a></li>'+
-    '<li>Open Ottimate (dashboard.plateiq.com) and sign in.</li><li>Click <b style="color:var(--k-ink)">Sync to iara</b> in your bookmarks bar. It takes about a minute, then this page opens and saves everything.</li></ol>'+
+    '<p class="note" style="margin-bottom:10px">One click replaces both CSV imports: invoices for the Invoices check, and item prices and deliveries for Inventory. If you added the first version of this bookmark, delete it and drag this one.</p>'+
+    '<ol class="note" style="padding-left:18px; display:flex; flex-direction:column; gap:6px; margin-bottom:12px"><li>Show your bookmarks bar (⌘⇧B), then drag this button onto it: <a class="k-btn k-btn-primary k-btn-sm" href="'+(syncHref()||"#")+'" onclick="event.preventDefault(); if(window.iaraToast) iaraToast(\'Drag it to your bookmarks bar instead of clicking.\')">Sync to iara</a></li>'+
+    '<li>Open Ottimate (dashboard.plateiq.com) and sign in.</li><li>Click <b style="color:var(--k-ink)">Sync to iara</b> in your bookmarks bar. A box shows progress for about a minute and says "done". Then refresh this page.</li></ol>'+
     '<button class="k-btn k-btn-sm k-btn-ghost" data-act="syncHelp">Close</button></div>';
 }
 
@@ -1007,10 +1000,12 @@ auth.onAuthStateChanged(function(u){
   try{ if(u && isManagerEmail(u.email)) localStorage.setItem("iara_mgr_auth_hint","1"); else localStorage.removeItem("iara_mgr_auth_hint"); }catch(e){}
   if(unsub){ unsub(); unsub=null; }
   if(u && isManagerEmail(u.email)){
-    user=u; db=app.firestore(); hideGate(); syncReady(); if(!state.inbox.items) loadInbox(false);
+    user=u; db=app.firestore(); hideGate(); if(!state.inbox.items) loadInbox(false);
     unsub = db.collection("meta").doc("ottimate").onSnapshot(function(s){
       state.loaded=true; var d=s.exists?s.data():null;
-      state.data = d ? Object.assign(derive(d.rows||[]), {pulledAt:d.pulledAt}) : null; render();
+      state.fsPulledAt = d ? d.pulledAt : "";
+      if(!state.data || !state.data.pulledAt || !d || d.pulledAt >= state.data.pulledAt) state.data = d ? Object.assign(derive(d.rows||[]), {pulledAt:d.pulledAt}) : state.data;
+      render(); loadSync();
     }, function(err){ console.error(err); state.loaded=true; toast("Couldn't load Finance data. Refresh to try again."); render(); });
   } else { user=null; db=null; showGate(); }
 });
