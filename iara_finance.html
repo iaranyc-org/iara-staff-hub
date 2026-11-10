@@ -302,6 +302,12 @@ function matchInbox(D, items){
     if(/^upload:/.test(it.id)){ uploads.push(it); return; }   // photo uploads have their own list; sent ones come back as mail
     if(it.kind!=="invoice" && it.kind!=="credit" && it.kind!=="unread"){ other.push(it); return; }
     var hit = null; numKeys(it.number).some(function(k){ if(idx[k]){ hit = idx[k].filter(function(r){return r.s!=="duplicate";})[0] || idx[k][0]; return true; } });
+    // Fallback (Jay 2026-11-10: Ottimate read EB Express 1365610 A as 1355610): same vendor, same total to the cent,
+    // within 21 days. Covers OCR misreads of the invoice number; the row shows the number Ottimate has.
+    if(!hit && +it.total){ var w = String(it.vendor||it.sender||"").toLowerCase().replace(/[^a-z ]/g,"").split(" ").filter(function(x){ return x.length>2; })[0], day = (it.date||it.received||"").slice(0,10);
+      hit = (D ? D.rows : []).filter(function(r){ return r.s!=="duplicate" && Math.abs((+r.t||0) - (+it.total)) < 0.01 && w && String(r.v||"").toLowerCase().indexOf(w)!==-1 &&
+        (!day || !r.d || Math.abs(new Date(r.d) - new Date(day)) < 21*864e5); })[0] || null;
+      if(hit) it.ottOther = String(hit.n||"").replace(/^#/,""); }
     it.ott = hit;
     it.status = hit ? "in" : !it.number ? "check" : (pulled && (it.received||"").slice(0,10) >= pulled) ? "wait" : "missing";
     bills.push(it);
@@ -455,6 +461,7 @@ function vMatch(D, M){
     (state.up && state.up.length ? '' : '<div class="dropzone" data-act="addPhoto" role="button" tabindex="0">Drop invoice photos or PDFs here, or tap to pick. Several at once is fine.</div>')+vUpload(D, M)+
     (I.err==="connect" ? '<div class="k-alert" style="margin-top:12px">New invoices@ mail isn\'t being read yet. <a href="/inbox/api/connect/invoices">Connect jay@ Gmail</a> (read-only) to turn it on.</div>' : '')+
     (bad ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Not in Ottimate · '+bad+'</div>'+table(M.missing, "Forward it to iaranyc@smgaba.com") : '')+
+    (function(){ var diff = M.in.filter(function(b){ return b.ottOther; }); return diff.length ? '<div class="section-title" style="margin-top:16px">Number Differs in Ottimate · '+diff.length+'</div><p class="note">Matched by vendor and amount, but Ottimate has a different invoice number (usually a misread). Ask the accountant to fix it.</p>'+table(diff, function(it){ return "Ottimate has #"+it.ottOther; }) : ''; })()+
     (M.check.length ? '<div class="section-title" style="margin-top:16px">Check by Hand · '+M.check.length+'</div><p class="note">The invoice number couldn\'t be read, often a photo or a file with no number in its name.</p>'+table(M.check, function(it){ return it.note || "Open it and look for it in Ottimate"; }) : '')+
     (M.wait.length ? '<div class="section-title" style="margin-top:16px">Waiting for the Next Ottimate Import · '+M.wait.length+'</div><p class="note">Sent after the Ottimate data above was pulled, so they can\'t be checked yet.</p>'+table(M.wait, "Sync from Ottimate to check") : '')+
     (M.uploads.length ? '<details class="more" style="margin-top:12px"'+(M.uploads.some(function(u){return /fail|check by hand|Checking|Couldn/i.test(u.note);})?' open':'')+'><summary>Recent photo uploads · '+M.uploads.length+'</summary>'+
