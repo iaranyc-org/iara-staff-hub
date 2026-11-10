@@ -321,6 +321,10 @@ button.k-apptab { margin: 0; border: 0; background: none; cursor: pointer; }
 
 .k-appbar .k-palette-trigger { border-color: transparent; background: none; }
 .k-appbar .k-palette-trigger:hover, .k-appbar .k-palette-trigger[aria-expanded="true"] { background: var(--k-raised); }
+/* Search is an icon in the bar at every width (Jay, 2026-11-09: nav cramped; the full row needed 1,247px of a 1,200px bar,
+   so the account button wrapped). Cmd/Ctrl K still opens it; the label lives in aria-label and the tooltip. */
+.k-appbar .k-palette-trigger span, .k-appbar .k-palette-trigger kbd { display: none; }
+.k-appbar .k-palette-trigger { padding: 0; width: var(--k-tap); justify-content: center; }
 
 /* Narrow: tabs become a full-width second row that scrolls sideways */
 @media (max-width: 1099px) {
