@@ -28,18 +28,23 @@
     { label: "Analytics", href: "/analytics" },
     { label: "Settings", href: "/inbox/settings" }
   ];
+  // Guests family (Jay, 2026-11-09: "nav bar cramped", fold them): Watch List, Guest Reviews and Feedback were their own
+  // tabs (10/19, 10/20, 11/6); now one Guests tab opens a menu of them. Each page keeps its own rolling title and subtitle.
+  var GUESTS_MENU = [
+    { label: "Watch List", href: "/inbox/watch" },
+    { label: "Guest Reviews", href: "/inbox/guest-reviews" },
+    { label: "Feedback", href: "/inbox/feedback" }
+  ];
   // `more: true` tabs fold into a "More" menu on phones under 480px (staff.css hides them, shows the More button).
   var APPS = [
     { label: "Home", title: "Home", href: "/home", sub: "Today at iara, from this morning's Bom Dia." },
     { label: "Inbox", title: "Inbox", href: "/inbox", sub: "Review drafted replies to guest texts, emails and DMs before they send.", menu: INBOX_MENU },
     { label: "Analytics", title: "Inbox", href: "/analytics", sub: "See how fast we answer guests and how bookings are going.", hidden: true, parent: "/inbox" },
     { label: "Private Dining", title: "Private Dining", href: "/private-dining", sub: "Track every private dining party from first inquiry to dinner night." },
-    // Own tab (Jay, 2026-10-19: "watch list on the main nav, not hidden in inbox"). Page lives in the Inbox app.
-    { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", more: true },
-    // Own tab (Jay, 2026-10-20). Page lives in the Inbox app.
-    { label: "Guest Reviews", title: "Guest Reviews", href: "/inbox/guest-reviews", sub: "See every low Resy rating, plus 5-star notes from VIPs and regulars worth answering.", more: true },
-    // Own tab (Jay, 2026-11-06): guest feedback from every channel, right of Guest Reviews. Manager login only.
-    { label: "Feedback", title: "Feedback", href: "/inbox/feedback", sub: "Every guest complaint in one list, with patterns, fixes and staff training.", more: true },
+    { label: "Guests", title: "Guests", href: "/guests", sub: "Press to know, guest reviews and feedback.", menu: GUESTS_MENU, more: true },
+    { label: "Watch List", title: "Watch List", href: "/inbox/watch", sub: "See the press and critics to know, and who of them is booked in the next 14 days.", hidden: true, parent: "/guests" },
+    { label: "Guest Reviews", title: "Guest Reviews", href: "/inbox/guest-reviews", sub: "See every low Resy rating, plus 5-star notes from VIPs and regulars worth answering.", hidden: true, parent: "/guests" },
+    { label: "Feedback", title: "Feedback", href: "/inbox/feedback", sub: "Every guest complaint in one list, with patterns, fixes and staff training.", hidden: true, parent: "/guests" },
     // Own tab (Jay, 2026-11-04): Kitchen Ops becomes Finance, between Guest Reviews and Lineup. Manager login only.
     { label: "Finance", title: "Finance", href: "/finance", sub: "Invoices, costs and margins, checked against the accountant's books.", more: true },
     { label: "Lineup", title: "Lineup", href: "/lineup", sub: "Learn the menu and service, then test what you know.", external: true, more: true }
@@ -82,7 +87,7 @@
         lists += '<div class="k-menu-list k-menu-fixed" role="menu" id="' + id + '" aria-label="' + a.label + '" hidden>' + a.menu.map(function (m) {
           return '<a class="k-menu-item" role="menuitem" href="' + m.href + '"' + (m === best ? ' aria-current="page"' : "") + ">" + m.label + "</a>";
         }).join("") + "</div>";
-        return '<button type="button" class="k-apptab" aria-haspopup="menu" aria-expanded="false" aria-controls="' + id + '"' + (on ? ' aria-current="page"' : "") + ">" + a.label + ICON.down + "</button>";
+        return '<button type="button" class="k-apptab" data-k-menu-tab="' + a.href + '" aria-haspopup="menu" aria-expanded="false" aria-controls="' + id + '"' + (on ? ' aria-current="page"' : "") + (a.more ? " data-k-overflow" : "") + ">" + a.label + ICON.down + "</button>";
       }
       return '<a class="k-apptab" href="' + a.href + '"' + (on ? ' aria-current="page"' : "") + (a.more ? " data-k-overflow" : "") +
         (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
@@ -108,11 +113,16 @@
 
   // Phone-only "More" tab (CSS shows it under 480px): a menu of the `more` tabs. Marked current when one of them is.
   function moreTab(shown, cur) {
-    var on = shown.some(function (a) { return a.more && a === cur; });
+    var on = shown.some(function (a) { return a.more && (a === cur || (cur && a.href === cur.parent)); });
     return '<button type="button" class="k-apptab k-apptab-more" aria-haspopup="menu" aria-expanded="false" aria-controls="k-tabmenu-more"' + (on ? ' aria-current="page"' : "") + ">More" + ICON.down + "</button>";
   }
   function moreList(shown, cur) {
-    return '<div class="k-menu-list k-menu-fixed" role="menu" id="k-tabmenu-more" aria-label="More apps" hidden>' + shown.filter(function (a) { return a.more; }).map(function (a) {
+    var items = [];
+    shown.filter(function (a) { return a.more; }).forEach(function (a) {
+      if (a.menu) a.menu.forEach(function (m) { items.push(APPS.filter(function (x) { return x.href === m.href; })[0] || { label: m.label, href: m.href }); });
+      else items.push(a);
+    });
+    return '<div class="k-menu-list k-menu-fixed" role="menu" id="k-tabmenu-more" aria-label="More apps" hidden>' + items.map(function (a) {
       return '<a class="k-menu-item" role="menuitem" href="' + a.href + '"' + (a === cur ? ' aria-current="page"' : "") +
         (a.external ? ' target="_blank" rel="noopener" aria-label="' + a.label + ', opens in a new tab"' : "") + ">" + a.label + (a.external ? ICON.ext : "") + "</a>";
     }).join("") + "</div>";
@@ -210,10 +220,11 @@
     el.querySelectorAll(".k-tab-count").forEach(function (b) { b.remove(); });
     var more = 0;
     APPS.forEach(function (a) {
-      var n = counts[a.href]; if (!n || a.hidden) return;
-      if (a.more) more += n;
-      el.querySelectorAll('.k-apptab[href="' + a.href + '"], .k-menu-item[href="' + a.href + '"]').forEach(function (t) {
-        var ext = t.querySelector("svg"); t.insertAdjacentHTML("beforeend", badge(n)); if (ext) t.appendChild(ext);   // badge before the new-tab arrow
+      var n = counts[a.href]; if (!n) return;
+      var parent = a.parent && APPS.filter(function (x) { return x.href === a.parent; })[0];
+      if (a.more || (parent && parent.more)) more += n;
+      el.querySelectorAll('.k-apptab[href="' + a.href + '"], .k-menu-item[href="' + a.href + '"]' + (parent && parent.menu ? ', .k-apptab[data-k-menu-tab="' + parent.href + '"]' : "")).forEach(function (t) {
+        var ext = t.querySelector("svg"); t.insertAdjacentHTML("beforeend", badge(n)); if (ext) t.appendChild(ext);   // badge before the arrow
       });
     });
     var mb = el.querySelector(".k-apptab-more");
