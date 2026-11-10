@@ -553,6 +553,8 @@ document.addEventListener("DOMContentLoaded", function(){
 
   firebase.auth().onAuthStateChanged(function(user){
     try { if (user) localStorage.setItem("iara_auth_hint", "1"); else localStorage.removeItem("iara_auth_hint"); } catch(e){}
+    // Same account button as every other page (Jay, 2026-11-10: one nav everywhere).
+    if (window.iaraNav) iaraNav.setAccount(user ? { email: user.email, signOut: function(){ firebase.auth().signOut(); } } : null);
     if (user){ $("gate").hidden = true; $("an-bar").hidden = false; $("app").hidden = false; paint(); load(); }
     else { $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; try { $("pw").focus({ preventScroll: true }); } catch(e){} }
   });
