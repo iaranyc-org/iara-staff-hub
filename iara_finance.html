@@ -420,7 +420,7 @@ function vInvoices(D){
     if(state.f==="notx") return !r.x && r.d>=OPENING;
     if(state.f==="pre") return r.d && r.d<OPENING;
     return true;
-  }).sort(function(a,b){ return (b.d||"9")<(a.d||"9")?-1:1; });
+  }).sort(function(a,b){ return (b.d||"0")<(a.d||"0")?-1:1; });   // newest first; not-yet-read docs (no date) go last
   var sum = rows.reduce(function(s,r){return s+r.t;},0);
   var M = state.inbox.items ? matchInbox(D, state.inbox.items) : null;
   return '<div class="head"><div><h2>Invoices</h2><p class="desc">Every bill the accountant has in Ottimate, checked against what was sent to invoices@.</p></div></div>'+
