@@ -207,7 +207,8 @@ var TABS = [
   {id:"overview", label:"Overview"},
   {id:"invoices", label:"Invoices"},
   {id:"vendors", label:"Vendors"},
-  {id:"inventory", label:"Inventory"}
+  {id:"inventory", label:"Inventory"},
+  {id:"tempcount", label:"Temp Count"}
 ];
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
@@ -351,7 +352,7 @@ function render(){
   // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
   var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
   var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Sync from Ottimate to refresh it.</span><button class="k-btn k-btn-sm" data-act="syncHelp">Sync from Ottimate</button></div>' : '';
-  m.innerHTML = (state.syncHelp ? syncCard() : "") + nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory})[state.tab](D);
+  m.innerHTML = (state.syncHelp ? syncCard() : "") + nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory, tempcount:vTempCount})[state.tab](D);
 }
 
 // Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
@@ -661,8 +662,8 @@ async function invPost(body){
 }
 function sameUnit(a, b){ a=(a||"").toLowerCase().replace(/s$/,""); b=(b||"").toLowerCase().replace(/s$/,""); return a && a===b; }
 // Counts (Jay 2026-11-10): a count is a date plus a log of taps. "set" replaces, "add" stacks (+1 upstairs, +1 downstairs).
-function countTotals(I, id){
-  var t = {}; (I.entries||[]).filter(function(e){ return e.count===id; }).sort(function(a,b){ return a.at<b.at?-1:1; })
+function countTotals(I, id, entries){
+  var t = {}; (entries || I.entries || []).filter(function(e){ return e.count===id; }).sort(function(a,b){ return a.at<b.at?-1:1; })
     .forEach(function(e){ var q = +e.qty||0; t[e.product] = e.op==="set" ? q : (t[e.product]||0) + q; });
   return t;
 }
@@ -711,11 +712,9 @@ function vInventory(D){
   if(I.err==="signin") return '<div class="k-card"><p class="note">Sign in to iara Inbox once on this device, then refresh. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a></p></div>';
   if(I.err) return '<div class="k-card"><p class="note">Couldn\'t load inventory. Refresh to try again.</p></div>';
   var openCount = (I.counts||[]).filter(function(c){ return c.status==="open"; })[0];
-  if(state.counting && openCount && state.counting===openCount.id) return vCount(I, openCount);
+  // Counting is paused on the master Inventory (Jay 2026-11-10); Ron counts in Temp Count, which never feeds this tab.
   var done = doneCounts(I), base = baseCount(I);
-  var countBar = '<div class="k-card count-bar">'+(openCount
-      ? '<div><div class="section-title">Count in Progress · '+dShort(openCount.date)+'</div><p class="note">Started by '+esc(String(openCount.started_by||"").replace(/@iara\.nyc$/,""))+'. Keep counting, then finish to use it here.</p></div><button class="k-btn k-btn-primary" data-act="countGo" data-v="'+esc(openCount.id)+'">Continue Count</button>'
-      : '<div><div class="section-title">Counts</div><p class="note">Pick any day: monthly, every 2 weeks or weekly.</p></div><span class="match-acts"><input class="k-input" type="date" id="countDate" value="'+nyDay(0)+'" aria-label="Count date"><button class="k-btn k-btn-primary" data-act="countStart">Start Count</button></span>')+
+  var countBar = '<div class="k-card count-bar"><div><div class="section-title">Counts</div><p class="note">Counting is paused on the master Inventory. Practice and spot counts go in <button class="k-btn k-btn-sm k-btn-ghost" data-tab="tempcount" style="padding:0 6px">Temp Count</button>, which never changes these numbers.</p></div>'+
     (done.length>1 ? '<label class="note" style="display:flex; gap:8px; align-items:center; width:100%">Showing count from <select class="k-input" id="ibase" style="max-width:200px">'+done.map(function(c){ return '<option value="'+esc(c.id)+'"'+(base&&c.id===base.id?' selected':'')+'>'+dShort(c.date)+'</option>'; }).join("")+'</select></label>' : '')+'</div>';
   var M = invModel(I), q = (state.iq||"").toLowerCase(), ty = state.ity;
   var attn = M.prods.filter(function(p){ return p.flag; }).length + M.need.length;
@@ -763,16 +762,17 @@ function vInventory(D){
   return countBar+head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>');
 }
 // Count mode: category by category, big taps. Every tap saves right away (one row per tap), so a dropped phone loses nothing.
-function vCount(I, C){
-  var tot = countTotals(I, C.id), last = (function(){ var d = doneCounts(I); return d[0] ? countTotals(I, d[0].id) : {}; })();
+function vCount(I, C, S, label){
+  S = S || I; label = label || "Count";
+  var tot = countTotals(I, C.id, S.entries), last = (function(){ var d = doneCounts(I); return d[0] ? countTotals(I, d[0].id) : {}; })();
   var prods = (I.count||[]).map(function(c){ return {name:c.item, cat:c.category||"Other", unit:c.unit||"", type:invType(c.category)}; });
   var cats = []; INV_TYPES.forEach(function(T){ T[1].forEach(function(c){ if(prods.some(function(p){return p.cat===c;}) && cats.indexOf(c)===-1) cats.push(c); }); });
   prods.forEach(function(p){ if(cats.indexOf(p.cat)===-1) cats.push(p.cat); });
   var cat = state.ccat && cats.indexOf(state.ccat)!==-1 ? state.ccat : cats[0], q = (state.cq||"").toLowerCase();
   var done = prods.filter(function(p){ return p.name in tot; }).length;
   var list = prods.filter(function(p){ return q ? p.name.toLowerCase().indexOf(q)!==-1 : p.cat===cat; });
-  var trail = function(name){ return (I.entries||[]).filter(function(e){ return e.count===C.id && e.product===name; }).map(function(e){ return (e.op==="set"?"= ":"+ ")+(+e.qty); }).join(" "); };
-  return '<div class="count-head"><div><h2>Count · '+dShort(C.date)+'</h2><p class="note">'+done+' of '+prods.length+' products counted. Every tap saves.</p></div>'+
+  var trail = function(name){ return (S.entries||[]).filter(function(e){ return e.count===C.id && e.product===name; }).map(function(e){ return (e.op==="set"?"= ":"+ ")+(+e.qty); }).join(" "); };
+  return '<div class="count-head"><div><h2>'+esc(label)+' · '+dShort(C.date)+'</h2><p class="note">'+done+' of '+prods.length+' products counted. Every tap saves.</p></div>'+
       '<span class="match-acts"><button class="k-btn" data-act="countBack">Back</button><button class="k-btn k-btn-primary" data-act="countFinish" data-v="'+esc(C.id)+'">Finish Count</button></span></div>'+
     '<div class="filters" style="margin:10px 0"><input class="k-input" id="cq" type="search" placeholder="Search all products" value="'+esc(state.cq||"")+'" aria-label="Search products to count"></div>'+
     (q ? '' : '<div class="count-cats" role="tablist" aria-label="Categories">'+cats.map(function(c){ var n = prods.filter(function(p){ return p.cat===c; }), d2 = n.filter(function(p){ return p.name in tot; }).length;
@@ -785,12 +785,40 @@ function vCount(I, C){
         '<button class="k-btn" data-act="cplus" data-p="'+esc(p.name)+'">Add</button><button class="k-btn" data-act="cset" data-p="'+esc(p.name)+'">Set</button></div></div>'; }).join("")+
     (list.length?'':'<p class="note">Nothing here. Search, or add the product from Needs Linking.</p>')+'</div>';
 }
+function cspace(){ return state.tab==="tempcount" ? "temp" : "main"; }
+function spaceData(){ var I = state.inv; if(cspace()==="temp"){ I.temp = I.temp || {counts:[], entries:[]}; return I.temp; } return I; }
 async function countEntry(p, op, qty){
-  var C = (state.inv.counts||[]).filter(function(c){ return c.status==="open"; })[0]; if(!C || !isFinite(qty)) return;
+  var S = spaceData(), C = (S.counts||[]).filter(function(c){ return c.status==="open"; })[0]; if(!C || !isFinite(qty)) return;
   var e = {count:C.id, product:p, op:op, qty:String(qty), at:new Date().toISOString()};
-  state.inv.entries = (state.inv.entries||[]).concat([e]); render();   // show it now, save in the background
-  try{ await invPost({action:"count-entry", count:C.id, product:p, op:op, qty:qty}); }
-  catch(err){ state.inv.entries = state.inv.entries.filter(function(x){ return x!==e; }); render(); toast("Didn't save "+p+": "+(err.message||err)); }
+  S.entries = (S.entries||[]).concat([e]); render();   // show it now, save in the background
+  try{ await invPost({action:"count-entry", space:cspace(), count:C.id, product:p, op:op, qty:qty}); }
+  catch(err){ S.entries = S.entries.filter(function(x){ return x!==e; }); render(); toast("Didn't save "+p+": "+(err.message||err)); }
+}
+// Temp Count (Jay 2026-11-10): Ron counts here without touching the master Inventory. Same count screen, own storage.
+function vTempCount(D){
+  var I = state.inv;
+  if(!I){ loadInv(); return '<div class="k-card"><p class="note">Loading…</p></div>'; }
+  if(I.err) return '<div class="k-card"><p class="note">'+(I.err==="signin"?'Sign in to iara Inbox once on this device, then refresh.':'Couldn\'t load. Refresh to try again.')+'</p></div>';
+  var T = I.temp || {counts:[], entries:[]};
+  var open = (T.counts||[]).filter(function(c){ return c.status==="open"; })[0];
+  if(open && state.counting===open.id) return vCount(I, open, T, "Temp Count");
+  var past = (T.counts||[]).filter(function(c){ return c.status==="done"; }).sort(function(a,b){ return a.date<b.date?1:-1; });
+  var costs = {}; (I.count||[]).forEach(function(c){ costs[c.item] = {cost:+c.unit_cost||0, unit:c.unit||""}; });
+  var view = past.filter(function(c){ return c.id===state.tview; })[0];
+  var card = '<div class="k-card count-bar">'+(open
+      ? '<div><div class="section-title">Temp Count in Progress · '+dShort(open.date)+'</div><p class="note">Started by '+esc(String(open.started_by||"").replace(/@iara\.nyc$/,""))+'.</p></div><button class="k-btn k-btn-primary" data-act="countGo" data-v="'+esc(open.id)+'">Continue Count</button>'
+      : '<div><div class="section-title">Start a Temp Count</div><p class="note">Count what we have, category by category. +1 adds up across spots (one bottle upstairs, one downstairs).</p></div><span class="match-acts"><input class="k-input" type="date" id="countDate" value="'+nyDay(0)+'" aria-label="Count date"><button class="k-btn k-btn-primary" data-act="countStart">Start Count</button></span>')+'</div>';
+  var list = past.length ? '<div class="k-card"><div class="section-title">Finished Temp Counts</div><div class="list">'+past.map(function(c){
+      var t = countTotals(I, c.id, T.entries), n = Object.keys(t).length, v = Object.keys(t).reduce(function(s,k){ return s + t[k]*((costs[k]||{}).cost||0); },0);
+      return '<button type="button" class="item item-go" data-act="tview" data-v="'+esc(c.id)+'"><span class="dot info"></span><span><span style="display:block">'+dShort(c.date)+' · '+n+' products · '+money0(v)+'</span><span class="sub" style="display:block">by '+esc(String(c.started_by||"").replace(/@iara\.nyc$/,""))+'</span></span><span class="go-arrow" aria-hidden="true">›</span></button>'; }).join("")+'</div></div>' : '';
+  var detail = "";
+  if(view){
+    var t = countTotals(I, view.id, T.entries), names = Object.keys(t).sort();
+    detail = '<div class="k-card"><div class="section-title">Temp Count · '+dShort(view.date)+'</div><div class="table-wrap"><table class="stack"><thead><tr><th>Product</th><th>Counted</th><th class="num">Value</th></tr></thead><tbody>'+
+      names.map(function(k){ var c = costs[k]||{}; return '<tr><td class="first">'+esc(k)+'</td><td data-label="Counted">'+(+t[k])+' '+esc(c.unit||"")+'</td><td class="num" data-label="Value">'+(c.cost?money(t[k]*c.cost):'<span class="muted">No price</span>')+'</td></tr>'; }).join("")+
+      '</tbody></table></div><button class="k-btn k-btn-sm" data-act="treopen" data-v="'+esc(view.id)+'" style="margin-top:10px">Reopen to Keep Counting</button></div>';
+  }
+  return '<div class="head"><div><h2>Temp Count</h2><p class="desc">A practice count that never changes the master Inventory. Use it to count the shelves and compare.</p></div></div>'+card+list+detail;
 }
 
 function invDetail(p, M){
@@ -860,11 +888,14 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="inboxRefresh") loadInbox(true);
   else if(t.dataset.act==="ity"){ state.ity=t.dataset.v; render(); }
   else if(t.dataset.act==="syncHelp"){ state.syncHelp=!state.syncHelp; render(); window.scrollTo(0,0); }
-  else if(t.dataset.act==="countStart"){ var dv = ($("#countDate")||{}).value; invPost({action:"count-start", date:dv}).then(function(j){ state.counting=j.id; state.inv=null; render(); }).catch(function(e){ toast(e.message||String(e)); }); }
+  else if(t.dataset.act==="countStart"){ var dv = ($("#countDate")||{}).value; invPost({action:"count-start", space:cspace(), date:dv}).then(function(j){ state.counting=j.id; state.inv=null; render(); }).catch(function(e){ toast(e.message||String(e)); }); }
   else if(t.dataset.act==="countGo"){ state.counting=t.dataset.v; render(); window.scrollTo(0,0); }
   else if(t.dataset.act==="countBack"){ state.counting=null; render(); }
-  else if(t.dataset.act==="countFinish"){ if(!confirm("Finish this count? It becomes the base for Inventory. Products you didn't count will show as Not Counted.")) return;
-    invPost({action:"count-finish", count:t.dataset.v}).then(function(){ state.counting=null; state.ibase=t.dataset.v; state.inv=null; render(); toast("Count finished."); }).catch(function(e){ toast(e.message||String(e)); }); }
+  else if(t.dataset.act==="countFinish"){ var tmp = cspace()==="temp";
+    if(!confirm(tmp ? "Finish this temp count? You can reopen it later." : "Finish this count? It becomes the base for Inventory. Products you didn't count will show as Not Counted.")) return;
+    invPost({action:"count-finish", space:cspace(), count:t.dataset.v}).then(function(){ state.counting=null; if(tmp) state.tview=t.dataset.v; else state.ibase=t.dataset.v; state.inv=null; render(); toast("Count finished."); }).catch(function(e){ toast(e.message||String(e)); }); }
+  else if(t.dataset.act==="tview"){ state.tview = state.tview===t.dataset.v ? null : t.dataset.v; render(); }
+  else if(t.dataset.act==="treopen"){ invPost({action:"count-reopen", space:"temp", count:t.dataset.v}).then(function(){ state.counting=t.dataset.v; state.inv=null; render(); }).catch(function(e){ toast(e.message||String(e)); }); }
   else if(t.dataset.act==="ccat"){ state.ccat=t.dataset.v; render(); window.scrollTo(0,0); }
   else if(t.dataset.act==="cadd"){ countEntry(t.dataset.p, "add", +t.dataset.q); }
   else if(t.dataset.act==="cplus" || t.dataset.act==="cset"){ var inp = t.parentNode.querySelector(".count-in"), v = parseFloat(inp && inp.value);
