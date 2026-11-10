@@ -813,7 +813,11 @@ function vTempCount(D){
   var costs = {}; (I.count||[]).forEach(function(c){ costs[c.item] = {cost:+c.unit_cost||0, unit:c.unit||""}; });
   var view = past.filter(function(c){ return c.id===state.tview; })[0];
   var card = '<div class="k-card count-bar">'+(open
-      ? '<div><div class="section-title">Temp Count in Progress · '+dShort(open.date)+'</div><p class="note">Started by '+esc(String(open.started_by||"").replace(/@iara\.nyc$/,""))+'.</p></div><button class="k-btn k-btn-primary" data-act="countGo" data-v="'+esc(open.id)+'">Continue Count</button>'
+      ? '<div><div class="section-title">Temp Count in Progress · '+dShort(open.date)+'</div><p class="note">'+(function(){
+        // Progress at a glance (Jay 2026-11-10), so managers can see how far it is without opening it.
+        var es = (T.entries||[]).filter(function(e){ return e.count===open.id; }), done = Object.keys(countTotals(I, open.id, T.entries)).length, last = es.slice().sort(function(a,b){ return a.at<b.at?1:-1; })[0];
+        return done+' of '+(I.count||[]).length+' products counted · started by '+esc(String(open.started_by||"").replace(/@iara\.nyc$/,""))+(last?' · last tap '+new Date(last.at).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"})+' by '+esc(String(last.by||"").replace(/@iara\.nyc$/,"")):'');
+      })()+'.</p></div><button class="k-btn k-btn-primary" data-act="countGo" data-v="'+esc(open.id)+'">Continue Count</button>'
       : '<div><div class="section-title">Start a Temp Count</div><p class="note">Count what we have, category by category. +1 adds up across spots (one bottle upstairs, one downstairs).</p></div><span class="match-acts"><input class="k-input" type="date" id="countDate" value="'+nyDay(0)+'" aria-label="Count date"><button class="k-btn k-btn-primary" data-act="countStart">Start Count</button></span>')+'</div>';
   var list = past.length ? '<div class="k-card"><div class="section-title">Finished Temp Counts</div><div class="list">'+past.map(function(c){
       var t = countTotals(I, c.id, T.entries), n = Object.keys(t).length, v = Object.keys(t).reduce(function(s,k){ return s + t[k]*((costs[k]||{}).cost||0); },0);
