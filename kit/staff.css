@@ -512,3 +512,4 @@ dialog.k-sheet[open] { display: flex; animation: k-sheet-up 250ms var(--k-ease);
   .k-appbar-title { padding: 0 6px 0 4px; }
   .k-appbar-title .k-roll { font-size: calc(var(--k-lockup-word) * 0.86); }
 }
+@media (max-width: 359px) { .k-appbar-mark img { width: calc(var(--k-lockup-mark) * 0.85); } .k-appbar-inner { gap: 0 2px; } }
