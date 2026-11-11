@@ -495,3 +495,20 @@ dialog.k-sheet[open] { display: flex; animation: k-sheet-up 250ms var(--k-ease);
     mask-image: linear-gradient(90deg, #000 calc(100% - var(--k-fade)), transparent);
   }
 }
+
+/* Phone QA (Jay, 2026-11-11: "so fucked and sloppy on mobile"). Section tabs used to scroll sideways and cut the
+   next tab mid-word ("Invent", "Or") with nothing saying more were there. Under 640px they wrap so every tab shows. */
+@media (max-width: 640px) {
+  .k-tabs, .k-subtabs-row { display: flex; flex-wrap: wrap; width: 100%; overflow: visible; -webkit-mask-image: none; mask-image: none; animation: none; }
+  .k-tabs > *, .k-subtabs-row > * { flex: 1 1 auto; justify-content: center; }
+}
+/* 320px phones: Home, Inbox, Private Dining and More fit without the row sliding. */
+@media (max-width: 359px) {
+  .k-apptab { padding: 0 7px; font-size: 13px; }
+  .k-apptabs { margin-left: -4px; }
+}
+/* 320px: long titles ("Guest Reviews") pushed the account button onto a second line. */
+@media (max-width: 359px) {
+  .k-appbar-title { padding: 0 6px 0 4px; }
+  .k-appbar-title .k-roll { font-size: calc(var(--k-lockup-word) * 0.86); }
+}

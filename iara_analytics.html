@@ -23,7 +23,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&display=swap"></noscript>
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css"></noscript>
 <link rel="stylesheet" href="/kit/tokens.css?v=5ac7b7c914">
-<link rel="stylesheet" href="/kit/staff.css?v=8972ef1b42">
+<link rel="stylesheet" href="/kit/staff.css?v=f4aee98f94">
 <script src="/kit/palette.js?v=e8ffae205e" defer></script>
 <script src="/kit/nav.js?v=0b4e710601" defer blocking="render"></script>
 <script src="/kit/tip.js?v=e20294c917" defer></script>
@@ -109,6 +109,13 @@
   td{ padding:10px 8px; border-bottom:1px solid color-mix(in srgb,var(--line) 60%,transparent); vertical-align:top; }
   td.num, th.num{ text-align:right; font-variant-numeric:tabular-nums; white-space:nowrap; }
   .ch{ display:flex; align-items:flex-start; }
+  /* Phones (QA 2026-11-11): By Channel's 6 columns were cut off at "Median"; each channel becomes a small card. */
+  @media (max-width:640px){
+    table.bych thead{ display:none; } table.bych tr{ display:block; padding:8px 0; border-bottom:1px solid var(--line); }
+    table.bych td{ display:flex; justify-content:space-between; border:0; padding:3px 0; }
+    table.bych td.num::before{ content:attr(data-label); color:var(--river); font-size:13px; }
+    table.bych td:first-child{ font-weight:600; padding-bottom:4px; }
+  }
   .ch .dot{ flex:none; margin-top:4px; }
   .dot{ display:inline-block; width:10px; height:10px; border-radius:2px; margin-right:8px; vertical-align:-1px; }
   .split{ display:flex; height:14px; border-radius:7px; overflow:hidden; background:var(--paper); margin:4px 0 12px; }
@@ -782,8 +789,8 @@ document.addEventListener("DOMContentLoaded", function(){
       '<div class="card" style="margin-bottom:12px"><h2>Where Guests Reached Us</h2><div class="split">' +
         rows.map(function(r){ return r.in ? '<span style="width:' + (100 * r.in / Math.max(tot.in, 1)) + '%;background:' + r.color + '" data-k-tip="' + esc(r.name) + ": " + r.in + '"></span>' : ""; }).join("") + '</div>' +
         '<div class="legend">' + rows.map(function(r){ return '<span><i style="background:' + r.color + '"></i>' + esc(r.name) + " " + r.in + '</span>'; }).join("") + '</div></div>' +
-      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
-        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="ch"><span class="dot" style="background:' + r.color + '"></span><span>' + esc(r.name) + '</span></span></td><td class="num">' + r.in + '</td><td class="num">' + (isR ? "-" : r.needed) + '</td><td class="num">' + (isR ? "-" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num">' + (isR ? "-" : hrs(r.median)) + '</td><td class="num">' + (isR ? "-" : r.waiting) + '</td></tr>'; }).join("") +
+      '<div class="card" style="margin-bottom:12px"><h2>By Channel</h2><div style="overflow-x:auto"><table class="bych"><thead><tr><th>Channel</th><th class="num">In</th><th class="num">Needed Reply</th><th class="num">Replied</th><th class="num">Median Reply</th><th class="num">Waiting</th></tr></thead><tbody>' +
+        rows.map(function(r){ var isR = /Ratings/.test(r.name); return '<tr><td><span class="ch"><span class="dot" style="background:' + r.color + '"></span><span>' + esc(r.name) + '</span></span></td><td class="num" data-label="In">' + r.in + '</td><td class="num" data-label="Needed Reply">' + (isR ? "-" : r.needed) + '</td><td class="num" data-label="Replied">' + (isR ? "-" : r.replied + " (" + pct(r.replied, r.needed) + ")") + '</td><td class="num" data-label="Median Reply">' + (isR ? "-" : hrs(r.median)) + '</td><td class="num" data-label="Waiting">' + (isR ? "-" : r.waiting) + '</td></tr>'; }).join("") +
       '</tbody></table></div>' + (ph ? "" : '<p class="note">Phone numbers didn\'t load this time; open the Phone tab for them.</p>') +
       '<p class="note">"In" counts everything that came in (each call, text, email, DM, comment and rating). For phone, Needed Reply, Replied and Waiting count people, matching the Phone tab, and the median is time to call or text back a guest whose call we missed. Resy ratings are private, so they need no reply.</p></div>' +
       trendCard(a.trend, "Replied Within an Hour", [
