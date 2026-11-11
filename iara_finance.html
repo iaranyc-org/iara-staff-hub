@@ -18,7 +18,7 @@
 <link rel="stylesheet" href="https://use.typekit.net/uok5rzd.css">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;1,9..144,400&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <link rel="stylesheet" href="/kit/tokens.css?v=5ac7b7c914">
-<link rel="stylesheet" href="/kit/staff.css?v=8972ef1b42">
+<link rel="stylesheet" href="/kit/staff.css?v=f4aee98f94">
 <script src="/kit/palette.js?v=e8ffae205e" defer></script>
 <script src="/kit/nav.js?v=0b4e710601" defer blocking="render"></script>
 <script src="/kit/toast.js?v=0085d82749" defer></script>
@@ -40,7 +40,8 @@
     background:var(--k-page); box-shadow:0 0 0 100vmax var(--k-page), 0 1px 0 100vmax var(--k-border); clip-path:inset(0 -100vmax -1px -100vmax);}
   .tabs-bar .k-tabs{scrollbar-width:none;}
   .tabs-status{margin-left:auto; font-size:12px; color:var(--k-muted); white-space:nowrap;}
-  @media (max-width:640px){ .tabs-bar{flex-wrap:wrap;} .tabs-status{font-size:0; margin-left:0;} .tabs-status .k-btn{font-size:13px;} }
+  @media (max-width:640px){ .tabs-bar{position:static; flex-wrap:wrap; box-shadow:none; clip-path:none; margin-bottom:12px;} .tabs-status{display:none;}
+    .filters .k-input{max-width:none; flex:1 1 100%;} h2{font-size:26px;} }
   #main{display:flex; flex-direction:column; gap:18px; min-width:0; padding-bottom:48px;}
   .head{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap;}
   .head .desc{font-size:13px; color:var(--k-muted); margin-top:4px; max-width:70ch;}
@@ -123,8 +124,10 @@
     table.stack{min-width:0;} table.stack thead{display:none;}
     table.stack tr{display:block; padding:10px 12px; border-bottom:1px solid var(--k-border);}
     table.stack tbody tr:last-child{border-bottom:none;}
-    table.stack td{display:flex; justify-content:space-between; gap:12px; padding:3px 0; border:none; text-align:right;}
-    table.stack td::before{content:attr(data-label); color:var(--k-muted); font-size:12px; text-align:left; flex:none;}
+    table.stack td{display:block; position:relative; padding:4px 0 4px 42%; border:none; text-align:right; min-height:22px; overflow-wrap:anywhere;}
+    table.stack td::before{content:attr(data-label); position:absolute; left:0; top:5px; max-width:40%; color:var(--k-muted); font:500 12px/1.3 var(--k-font-sans); text-align:left;}
+    table.stack td .sub{display:block;}
+    table.stack .hide-sm{display:none;}
     table.stack td.first{display:block; text-align:left; font-weight:600; font-size:15px; padding-bottom:6px;}
     table.stack td.first::before{content:none;}
     table.stack td:empty{display:none;}
@@ -711,7 +714,7 @@ function invModel(I){
       p.allLines.forEach(function(l){ if(l.date <= lc.date) return; var n = toCountUnits(l, p); if(n==null) unknown = true; else add += n; });
       p.onHand = lc.qty + add; p.onHandFrom = lc; p.onHandUnknown = unknown;
     } else { p.onHand = null; }
-    p.low = p.par!=null && p.par>0 && p.onHand!=null && p.onHand < p.par;
+    p.low = p.par!=null && p.par>0 && p.onHand!=null && !p.onHandUnknown && p.onHand < p.par;
     p.gotLines.sort(function(a,b){ return a.date<b.date?1:-1; });
     p.change = (p.last && p.cost && sameUnit(p.last.unit, p.unit)) ? (+p.last.price - p.cost)/p.cost : null;
     p.flag = (!p.cost && p.qty) ? "No Price" : p.st==="Check" ? "Check" : p.low ? "Low" : !p.qty ? "Not Counted" : "";
@@ -791,8 +794,8 @@ function vInventory(D){
           var row = '<tr class="inv-row" data-act="iopen" data-v="'+esc(p.name)+'" tabindex="0" aria-expanded="'+open+'"><td class="first">'+esc(p.name)+(p.flag?' <span class="k-badge '+(p.flag==="No Price"||p.flag==="Low"?'k-badge-critical':'k-badge-warning')+'">'+p.flag+'</span>':'')+'</td>'+
             '<td data-label="Counted">'+(p.qty?esc(p.qty+" "+p.unit):'<span class="muted">Not counted</span>')+'</td>'+
             '<td class="num" data-label="Unit Cost">'+(p.cost?money(p.cost)+(p.unit?' <span class="muted">/ '+esc(p.unit)+'</span>':''):'<span class="muted">No price</span>')+ch+'</td>'+
-            '<td class="num" data-label="Count Value">'+(p.value?money(p.value):"")+'</td>'+
-            '<td data-label="Delivered Since">'+(p.gotLines.length?esc(qtyList(p.gotLines))+'<span class="sub">'+money(p.got)+' · last '+dShort(p.gotLines[0].date)+'</span>':'<span class="muted">None</span>')+'</td>'+
+            '<td class="num hide-sm" data-label="Count Value">'+(p.value?money(p.value):"")+'</td>'+
+            '<td class="hide-sm" data-label="Delivered Since">'+(p.gotLines.length?esc(qtyList(p.gotLines))+'<span class="sub">'+money(p.got)+' · last '+dShort(p.gotLines[0].date)+'</span>':'<span class="muted">None</span>')+'</td>'+
             '<td data-label="On Hand · Par">'+onHandCell(p)+'</td>'+
             '<td class="num" data-label="Expected $"><b>'+money(p.value+p.got)+'</b></td></tr>';
           if(open) row += '<tr><td colspan="7" class="inv-detail">'+invDetail(p, M)+'</td></tr>';
@@ -872,7 +875,8 @@ function vTempCount(D){
 
 function fmtQ(n){ return String(Math.round(n*100)/100); }
 function onHandCell(p){
-  var oh = p.onHand==null ? '<span class="muted">Not counted</span>' : (p.onHandUnknown?'~':'')+fmtQ(p.onHand)+' '+esc(p.unit);
+  if(p.onHand!=null && p.onHandUnknown) return fmtQ(p.onHandFrom.qty)+' '+esc(p.unit)+(p.par!=null?' <span class="muted">· par '+fmtQ(p.par)+'</span>':'')+'<span class="sub">'+esc(p.onHandFrom.label)+' + deliveries. Set units per pack to total it.</span>';
+  var oh = p.onHand==null ? '<span class="muted">Not counted</span>' : fmtQ(p.onHand)+' '+esc(p.unit);
   return oh+(p.par!=null?' <span class="muted">· par '+fmtQ(p.par)+'</span>':'')+(p.onHandFrom?'<span class="sub">'+esc(p.onHandFrom.label)+(p.onHandUnknown?', some deliveries in other units':'')+'</span>':'');
 }
 var AREAS = ["Walk-in","Freezer","Dry Storage","Bar","Wine Room","Downstairs","Other"];
@@ -901,7 +905,7 @@ function vOrder(D){
   if(!I){ loadInv(); return '<div class="k-card"><p class="note">Loading…</p></div>'; }
   if(I.err) return '<div class="k-card"><p class="note">'+(I.err==="signin"?'Sign in to iara Inbox once on this device, then refresh.':'Couldn\'t load. Refresh to try again.')+'</p></div>';
   var M = invModel(I), withPar = M.prods.filter(function(p){ return p.par!=null && p.par>0; });
-  var low = withPar.filter(function(p){ return p.low; }), noCount = withPar.filter(function(p){ return p.onHand==null; });
+  var low = withPar.filter(function(p){ return p.low; }), noCount = withPar.filter(function(p){ return p.onHand==null || p.onHandUnknown; });
   var byV = {}; low.forEach(function(p){ var v = title(p.vendor||"No vendor yet"); (byV[v] = byV[v] || []).push(p); });
   var head = '<div class="head"><div><h2>Order Guide</h2><p class="desc">Everything below par, grouped by vendor. On hand = the latest count (Temp Count too) plus deliveries since. Set par on any product in Inventory.</p></div></div>'+
     '<div class="kpis">'+kpi("Products With Par", String(withPar.length), withPar.length?"of "+M.prods.length:"none set yet")+kpi("Below Par", String(low.length), Object.keys(byV).length+" vendors")+
@@ -910,12 +914,12 @@ function vOrder(D){
   var body = Object.keys(byV).sort().map(function(v){ var L = byV[v];
     return '<div class="k-card og-vendor"><div class="section-title">'+esc(v)+' · '+L.length+'</div><div class="table-wrap"><table class="stack"><thead><tr><th>Product</th><th>On Hand</th><th>Par</th><th>Order</th><th class="num">Est. Cost</th></tr></thead><tbody>'+
       L.sort(function(a,b){ return a.name<b.name?-1:1; }).map(function(p){ var need = p.par - p.onHand, packs = p.packUnits>0 ? Math.ceil(need/p.packUnits) : null;
-        return '<tr><td class="first">'+esc(p.name)+'</td><td data-label="On Hand">'+(p.onHandUnknown?'~':'')+fmtQ(p.onHand)+' '+esc(p.unit)+'</td><td data-label="Par">'+fmtQ(p.par)+' '+esc(p.unit)+'</td>'+
+        return '<tr><td class="first">'+esc(p.name)+'</td><td data-label="On Hand">'+fmtQ(p.onHand)+' '+esc(p.unit)+'</td><td data-label="Par">'+fmtQ(p.par)+' '+esc(p.unit)+'</td>'+
           '<td data-label="Order"><b>'+fmtQ(need)+' '+esc(p.unit)+'</b>'+(packs?'<span class="sub">'+packs+' pack'+(packs>1?'s':'')+' of '+p.packUnits+'</span>':'')+'</td>'+
           '<td class="num" data-label="Est. Cost">'+(p.cost?money((packs&&p.packCost?packs*p.packCost:need*p.cost)):'<span class="muted">No price</span>')+'</td></tr>'; }).join("")+
       '</tbody></table></div></div>'; }).join("");
   var ok = low.length ? "" : '<div class="k-card"><p class="note">Everything with a par is at or above it.</p></div>';
-  var nc = noCount.length ? '<p class="note" style="margin-top:12px">'+noCount.length+' product'+(noCount.length>1?'s have':' has')+' a par but no count yet: '+esc(noCount.map(function(p){return p.name;}).slice(0,8).join(", "))+(noCount.length>8?"…":"")+'.</p>' : '';
+  var nc = noCount.length ? '<p class="note" style="margin-top:12px">'+noCount.length+' product'+(noCount.length>1?'s have':' has')+' a par but no usable on-hand number (not counted, or deliveries in a unit we can\'t convert): '+esc(noCount.map(function(p){return p.name;}).slice(0,8).join(", "))+(noCount.length>8?"…":"")+'.</p>' : '';
   return head+ok+body+nc;
 }
 // Prices (Jay 2026-11-11, from Ron's Kitchen Ops): every invoice item, current cost, trend and full purchase history.
