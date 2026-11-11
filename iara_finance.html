@@ -128,7 +128,7 @@
     table.stack td::before{content:attr(data-label); position:absolute; left:0; top:5px; max-width:40%; color:var(--k-muted); font:500 12px/1.3 var(--k-font-sans); text-align:left;}
     table.stack td .sub{display:block;}
     table.stack .hide-sm{display:none;}
-    table.stack td.first{display:block; text-align:left; font-weight:600; font-size:15px; padding-bottom:6px;}
+    table.stack td.first{display:block; text-align:left; font-weight:600; font-size:15px; padding:0 0 6px;}
     table.stack td.first::before{content:none;}
     table.stack td:empty{display:none;}
   }
@@ -875,7 +875,7 @@ function vTempCount(D){
 
 function fmtQ(n){ return String(Math.round(n*100)/100); }
 function onHandCell(p){
-  if(p.onHand!=null && p.onHandUnknown) return fmtQ(p.onHandFrom.qty)+' '+esc(p.unit)+(p.par!=null?' <span class="muted">· par '+fmtQ(p.par)+'</span>':'')+'<span class="sub">'+esc(p.onHandFrom.label)+' + deliveries. Set units per pack to total it.</span>';
+  if(p.onHand!=null && p.onHandUnknown) return fmtQ(p.onHandFrom.qty)+' '+esc(p.unit)+(p.par!=null?' <span class="muted">· par '+fmtQ(p.par)+'</span>':'')+'<span class="sub">'+esc(p.onHandFrom.label)+' + deliveries</span>';
   var oh = p.onHand==null ? '<span class="muted">Not counted</span>' : fmtQ(p.onHand)+' '+esc(p.unit);
   return oh+(p.par!=null?' <span class="muted">· par '+fmtQ(p.par)+'</span>':'')+(p.onHandFrom?'<span class="sub">'+esc(p.onHandFrom.label)+(p.onHandUnknown?', some deliveries in other units':'')+'</span>':'');
 }
