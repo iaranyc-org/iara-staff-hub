@@ -319,6 +319,8 @@ function matchInbox(D, items){
         (!day || !r.d || Math.abs(new Date(r.d) - new Date(day)) < 21*864e5); })[0] || null;
       if(hit) it.ottOther = String(hit.n||"").replace(/^#/,""); }
     it.ott = hit;
+    // Physical copy wins (Jay 2026-11-12): when the invoice and Ottimate disagree on the total, the invoice is right.
+    if(hit && +it.total && Math.abs(Math.abs(+hit.t||0) - Math.abs(+it.total)) >= 0.01) it.ottTotal = +hit.t||0;
     it.status = hit ? "in" : !it.number ? "check" : (pulled && (it.received||"").slice(0,10) >= pulled) ? "wait" : "missing";
     bills.push(it);
   });
@@ -328,8 +330,20 @@ function matchInbox(D, items){
   var byOtt = {}; bills.forEach(function(it){ if(it.ott && it.msg_id) byOtt[it.ott.id || (it.ott.v+"|"+it.ott.n)] = it; });
   return { bills:bills, other:other, byOtt:byOtt, uploads:uploads.sort(function(a,b){ return a.received<b.received?1:-1; }),
     in: bills.filter(function(b){return b.status==="in";}), missing: bills.filter(function(b){return b.status==="missing";}),
-    check: bills.filter(function(b){return b.status==="check";}), wait: bills.filter(function(b){return b.status==="wait";}),
+    check: bills.filter(function(b){return b.status==="check";}),
+    differ: bills.filter(function(b){ return b.status==="in" && (b.ottOther || b.ottTotal!=null); }), wait: bills.filter(function(b){return b.status==="wait";}),
     last: items.reduce(function(m,i){ return (i.received||"")>m ? i.received : m; }, "") };
+}
+function differWhy(it){
+  var p = [];
+  if(it.ottTotal!=null) p.push("Ottimate has "+money(it.ottTotal)+", invoice says "+money(+it.total));
+  if(it.ottOther) p.push("Ottimate has #"+it.ottOther+", invoice says #"+String(it.number||"").replace(/^#/,""));
+  return p.join(". ")+". Invoice is right: ask the accountant to fix Ottimate.";
+}
+function differNote(list){
+  return "Hi, a few bills in Ottimate don't match the invoice itself. The invoice is correct; could you update Ottimate?\n\n"+
+    list.map(function(it){ return "- "+(it.vendor||it.sender||"")+" #"+String(it.number||"").replace(/^#/,"")+": "+
+      [it.ottTotal!=null ? "total should be "+money(+it.total)+" (Ottimate has "+money(it.ottTotal)+")" : "", it.ottOther ? "invoice # should be "+String(it.number||"").replace(/^#/,"")+" (Ottimate has "+it.ottOther+")" : ""].filter(Boolean).join("; "); }).join("\n")+"\n\nThanks";
 }
 function fileUrl(it, dl){ if(it && /^invoice-uploads\//.test(it.part_id||"")) return INBOX_API+"/file?b="+encodeURIComponent(it.part_id); return it && it.msg_id ? INBOX_API+"/file?m="+encodeURIComponent(it.msg_id)+"&p="+encodeURIComponent(it.part_id)+(dl?"&dl=1":"") : ""; }
 function dlBtn(it){ var u=fileUrl(it); return u ? '<a class="dl" href="'+u+'" target="_blank" rel="noopener" aria-label="Open '+esc(it.file)+'">Open File</a>' : ""; }
@@ -392,6 +406,7 @@ function vOverview(D){
   var upNeed = M ? M.uploads.filter(function(u){ return /fail|check by hand|Couldn/i.test(u.note||""); }).length : 0;
   var look = [];
   if(M && M.missing.length) look.push(go("crit", M.missing.length+" invoice"+(M.missing.length===1?"":"s")+" sent to invoices@ never reached Ottimate", "Forward to the accountant. See Invoices.", "invoices"));
+  if(M && M.differ.length) look.push(go("crit", M.differ.length+" bill"+(M.differ.length===1?"":"s")+" in Ottimate don't match the invoice", "The invoice is right. Send the accountant the fix. See Invoices.", "invoices"));
   if(upNeed) look.push(go("crit", upNeed+" photo upload"+(upNeed===1?"":"s")+" need a look", "The invoice number couldn't be read or sending failed. See Invoices.", "invoices"));
   if(D.overdue.length) look.push(go("", D.overdue.length+" bills past their due date ("+money0(sumOver)+")", "Unpaid in Ottimate. Some may be paid outside it.", "invoices", "overdue"));
   if(quiet.length) look.push(go("", quiet.length+" vendors sent 0 or 1 bill since opening", "Bills that may never have reached the accountant. See Vendors.", "vendors"));
@@ -471,7 +486,8 @@ function vMatch(D, M){
     (state.up && state.up.length ? '' : '<div class="dropzone" data-act="addPhoto" role="button" tabindex="0">Drop invoice photos or PDFs here, or tap to pick. Several at once is fine.</div>')+vUpload(D, M)+
     (I.err==="connect" ? '<div class="k-alert" style="margin-top:12px">New invoices@ mail isn\'t being read yet. <a href="/inbox/api/connect/invoices">Connect jay@ Gmail</a> (read-only) to turn it on.</div>' : '')+
     (bad ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Not in Ottimate · '+bad+'</div>'+table(M.missing, "Forward it to iaranyc@smgaba.com") : '')+
-    (function(){ var diff = M.in.filter(function(b){ return b.ottOther; }); return diff.length ? '<div class="section-title" style="margin-top:16px">Number Differs in Ottimate · '+diff.length+'</div><p class="note">Matched by vendor and amount, but Ottimate has a different invoice number (usually a misread). Ask the accountant to fix it.</p>'+table(diff, function(it){ return "Ottimate has #"+it.ottOther; }) : ''; })()+
+    (M.differ.length ? '<div class="section-title" style="margin-top:16px; color:var(--k-critical)">Ottimate Doesn\'t Match the Invoice · '+M.differ.length+'</div><p class="note">The invoice itself is the source of truth. Ottimate gets corrected, never the invoice.</p>'+
+      '<div class="acts" style="margin-top:8px"><button class="k-btn k-btn-sm" data-act="copyDiffer">Copy Note for the Accountant</button></div>'+table(M.differ, differWhy) : '')+
     (M.check.length ? '<div class="section-title" style="margin-top:16px">Check by Hand · '+M.check.length+'</div><p class="note">The invoice number couldn\'t be read, often a photo or a file with no number in its name.</p>'+table(M.check, function(it){ return it.note || "Open it and look for it in Ottimate"; }) : '')+
     (M.wait.length ? '<div class="section-title" style="margin-top:16px">Waiting for the Next Ottimate Import · '+M.wait.length+'</div><p class="note">Sent after the Ottimate data above was pulled, so they can\'t be checked yet.</p>'+table(M.wait, "Sync from Ottimate to check") : '')+
     (M.uploads.length ? '<details class="more" style="margin-top:12px"'+(M.uploads.some(function(u){return /fail|check by hand|Checking|Couldn/i.test(u.note);})?' open':'')+'><summary>Recent photo uploads · '+M.uploads.length+'</summary>'+
@@ -502,6 +518,8 @@ function upVerdict(D, M, U){
   if(U.stage==="sending") return {txt:"Sending to invoices@…"};
   if(U.stage==="sent") return {cls:"ok", txt:(U.auto==="sent"||U.autoSending?"Wasn't in Ottimate, so it was sent to invoices@ automatically.":"Sent to invoices@. The accountant has it.")};
   if(f.kind && f.kind!=="invoice" && f.kind!=="credit") return {txt:"Looks like a "+(f.kind==="other"?"document that isn't a bill":f.kind)+".", send:"Send Anyway"};
+  if(t && t.where==="ottimate" && +f.total && Math.abs(Math.abs(+t.r.t||0) - Math.abs(+f.total)) >= 0.01)
+    return {cls:"bad", txt:"In Ottimate, but the total is wrong there. This invoice is right.", sub:"Ottimate has "+money(+t.r.t||0)+", invoice says "+money(+f.total)+". Ask the accountant to fix Ottimate."};
   if(t && t.where==="ottimate") return {cls:"ok", txt:"Already with the accountant. Nothing to do.", sub:"In Ottimate as "+(title(t.r.v)||"")+" #"+String(t.r.n).replace(/^#/,"")+(t.r.t?" · "+money(t.r.t):"")};
   if(t && t.where==="sent" && t.r.status!=="missing") return {cls:"ok", txt:"Already sent to invoices@ on "+dShort(t.r.received)+". Waiting for Ottimate."};
   if(t && t.where==="sent") return {cls:"bad", txt:"Sent to invoices@ on "+dShort(t.r.received)+" but never reached Ottimate.", send:"Send Again", need:true};
@@ -1039,6 +1057,8 @@ document.addEventListener("click", function(e){
     if(!isFinite(v)){ if(inp) inp.focus(); return; } countEntry(t.dataset.p, t.dataset.act==="cset"?"set":"add", v); }
   else if(t.dataset.act==="iopen"){ if(e.target.closest("select,a,button,input,form")) return; state.iopen = state.iopen===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="vdup"){ state.openVendor = state.openVendor===t.dataset.v ? null : t.dataset.v; render(); }
+  else if(t.dataset.act==="copyDiffer"){ var MM = matchInbox(state.data, state.inbox.items||[]);
+    (navigator.clipboard ? navigator.clipboard.writeText(differNote(MM.differ)) : Promise.reject()).then(function(){ toast("Copied. Paste it into an email to iaranyc@smgaba.com."); }, function(){ toast("Couldn't copy on this device."); }); }
   else if(t.dataset.act==="addPhoto") $("#photoInput").click();
   else if(t.dataset.act==="upSend") upSend(+t.dataset.i);
   else if(t.dataset.act==="upSendAll") upSendAll();
