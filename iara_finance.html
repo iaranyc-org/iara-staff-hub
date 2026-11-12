@@ -311,6 +311,7 @@ function matchInbox(D, items){
   items.forEach(function(it){
     if(/^upload:/.test(it.id)){ uploads.push(it); return; }   // photo uploads have their own list; sent ones come back as mail
     if(it.kind!=="invoice" && it.kind!=="credit" && it.kind!=="unread"){ other.push(it); return; }
+    delete it.ottOther; delete it.ottTotal;   // items are reused across renders; never keep a flag from an older Ottimate copy
     var hit = null; numKeys(it.number).some(function(k){ if(idx[k]){ hit = idx[k].filter(function(r){return r.s!=="duplicate";})[0] || idx[k][0]; return true; } });
     // Fallback (Jay 2026-11-10: Ottimate read EB Express 1365610 A as 1355610): same vendor, same total to the cent,
     // within 21 days. Covers OCR misreads of the invoice number; the row shows the number Ottimate has.
