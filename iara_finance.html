@@ -143,6 +143,7 @@
   .pedit .k-input{width:100%;}
   .og-vendor{margin-top:14px;}
   .trend-up{color:var(--k-critical);} .trend-down{color:var(--k-good, var(--k-muted));}
+@media print{ [data-k-appbar], .tabs-bar, .no-print, #main > :not(.print-area){ display:none !important; } .print-area{ box-shadow:none; border:0; } }
 </style>
 </head>
 <body>
@@ -218,6 +219,8 @@ var TABS = [
   {id:"inventory", label:"Inventory"},
   {id:"order", label:"Order Guide"},
   {id:"prices", label:"Prices"},
+  {id:"recipes", label:"Recipes"},
+  {id:"reports", label:"Reports"},
   {id:"tempcount", label:"Temp Count"}
 ];
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
@@ -383,7 +386,7 @@ function render(){
   // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
   var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
   var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Sync from Ottimate to refresh it.</span><button class="k-btn k-btn-sm" data-act="syncHelp">Sync from Ottimate</button></div>' : '';
-  m.innerHTML = (state.syncHelp ? syncCard() : "") + nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory, order:vOrder, prices:vPrices, tempcount:vTempCount})[state.tab](D);
+  m.innerHTML = (state.syncHelp ? syncCard() : "") + nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory, order:vOrder, prices:vPrices, recipes:vRecipes, reports:vReports, tempcount:vTempCount})[state.tab](D);
 }
 
 // Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
@@ -753,7 +756,7 @@ function toCountUnits(l, p){
 // Most recent count of each product across the master counts and Temp Counts (open ones too), for On Hand.
 function latestCounts(I){
   var out = {};
-  function take(counts, entries){ (counts||[]).forEach(function(c){ var t = countTotals(I, c.id, entries);
+  function take(counts, entries){ (counts||[]).filter(function(c){ return c.status!=="deleted"; }).forEach(function(c){ var t = countTotals(I, c.id, entries);
     Object.keys(t).forEach(function(k){ if(!out[k] || c.date > out[k].date || (c.date===out[k].date && c.status==="open")) out[k] = {date:c.date, qty:+t[k], label:(c.status==="open"?"open ":"")+(entries===I.entries?"count":"temp count")+" "+dShort(c.date)}; }); }); }
   take(I.counts, I.entries); if(I.temp) take(I.temp.counts, I.temp.entries);
   return out;
@@ -822,7 +825,7 @@ function vInventory(D){
         '</tbody></table></div></details>';
     }).join("");
   }).join("");
-  return countBar+head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>');
+  return countBar+head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>')+'<div style="margin-top:16px">'+countHistory(I, I, "main")+'</div>';
 }
 // Count mode: category by category, big taps. Every tap saves right away (one row per tap), so a dropped phone loses nothing.
 function vCount(I, C, S, label){
@@ -879,17 +882,180 @@ function vTempCount(D){
         return done+' of '+(I.count||[]).length+' products counted · started by '+esc(String(open.started_by||"").replace(/@iara\.nyc$/,""))+(last?' · last tap '+new Date(last.at).toLocaleTimeString("en-US",{hour:"numeric",minute:"2-digit",timeZone:"America/New_York"})+' by '+esc(String(last.by||"").replace(/@iara\.nyc$/,"")):'');
       })()+'.</p></div><button class="k-btn k-btn-primary" data-act="countGo" data-v="'+esc(open.id)+'">Continue Count</button>'
       : '<div><div class="section-title">Start a Temp Count</div><p class="note">Count what we have, category by category. +1 adds up across spots (one bottle upstairs, one downstairs).</p></div><span class="match-acts"><input class="k-input" type="date" id="countDate" value="'+nyDay(0)+'" aria-label="Count date"><button class="k-btn k-btn-primary" data-act="countStart">Start Count</button></span>')+'</div>';
-  var list = past.length ? '<div class="k-card"><div class="section-title">Finished Temp Counts</div><div class="list">'+past.map(function(c){
-      var t = countTotals(I, c.id, T.entries), n = Object.keys(t).length, v = Object.keys(t).reduce(function(s,k){ return s + t[k]*((costs[k]||{}).cost||0); },0);
-      return '<button type="button" class="item item-go" data-act="tview" data-v="'+esc(c.id)+'"><span class="dot info"></span><span><span style="display:block">'+dShort(c.date)+' · '+n+' products · '+money0(v)+'</span><span class="sub" style="display:block">by '+esc(String(c.started_by||"").replace(/@iara\.nyc$/,""))+'</span></span><span class="go-arrow" aria-hidden="true">›</span></button>'; }).join("")+'</div></div>' : '';
-  var detail = "";
-  if(view){
-    var t = countTotals(I, view.id, T.entries), names = Object.keys(t).sort();
-    detail = '<div class="k-card"><div class="section-title">Temp Count · '+dShort(view.date)+'</div><div class="table-wrap"><table class="stack"><thead><tr><th>Product</th><th>Counted</th><th class="num">Value</th></tr></thead><tbody>'+
-      names.map(function(k){ var c = costs[k]||{}; return '<tr><td class="first">'+esc(k)+'</td><td data-label="Counted">'+(+t[k])+' '+esc(c.unit||"")+'</td><td class="num" data-label="Value">'+(c.cost?money(t[k]*c.cost):'<span class="muted">No price</span>')+'</td></tr>'; }).join("")+
-      '</tbody></table></div><button class="k-btn k-btn-sm" data-act="treopen" data-v="'+esc(view.id)+'" style="margin-top:10px">Reopen to Keep Counting</button></div>';
+  return '<div class="head"><div><h2>Temp Count</h2><p class="desc">A practice count that never changes the master Inventory. Use it to count the shelves and compare.</p></div></div>'+card+countHistory(I, T, "temp");
+}
+
+/* ---------- Phase 2 + 3 of Ron's Kitchen Ops (Jay 2026-11-12) ---------- */
+/* Reports: purchase report (presets, print), inventory value over time, food and beverage cost %, theoretical vs actual.
+   Recipes: ingredient lines from Inventory products, plate cost, food cost % against a target. Sales are logged by hand until Toast connects. */
+var BEV_TYPES = {Wine:1, Spirits:1, Beer:1, "Non-Alcoholic":1};
+function isoAdd(iso, d){ var x = new Date(iso+"T12:00:00Z"); x.setUTCDate(x.getUTCDate()+d); return x.toISOString().slice(0,10); }
+function rptRange(){
+  var t = nyDay(0), dow = new Date(t+"T12:00:00Z").getUTCDay(), mon = isoAdd(t, -((dow+6)%7)), p = state.rp || "month";
+  if(p==="week") return [mon, t, "This Week"];
+  if(p==="lweek") return [isoAdd(mon,-7), isoAdd(mon,-1), "Last Week"];
+  if(p==="month") return [t.slice(0,8)+"01", t, "This Month"];
+  if(p==="lmonth"){ var f = t.slice(0,8)+"01", e = isoAdd(f,-1); return [e.slice(0,8)+"01", e, "Last Month"]; }
+  if(p==="open") return [OPENING, t, "Since Opening"];
+  return [state.rs || t.slice(0,8)+"01", state.re || t, "Custom"];
+}
+// Product for each vendor item (links first, then the product's match rule), so purchases can be split food / beverage.
+function lineTypes(I, M){
+  var link = {}; (I.links||[]).forEach(function(l){ link[l.item] = l.product; });
+  var byName = {}; M.prods.forEach(function(p){ byName[p.name] = p; });
+  var memo = {};
+  return function(l){ if(l.item in memo) return memo[l.item];
+    var p = null;
+    if(l.item in link){ if(!link[l.item]) return memo[l.item] = "Not Inventory"; p = byName[link[l.item]]; }
+    else p = M.prods.filter(function(x){ return x.re && x.re.test(l.item); })[0];
+    var ty = p ? p.type : guessType(l.vendor);
+    return memo[l.item] = ty; };
+}
+function bucket(ty){ return ty==="Not Inventory" || ty==="Supplies" || ty==="Other" ? "Other" : BEV_TYPES[ty] ? "Beverage" : "Food"; }
+function countValue(I, c, entries, M){
+  var t = countTotals(I, c.id, entries), cost = {}; M.prods.forEach(function(p){ cost[p.name] = p; });
+  var v = {all:0, Food:0, Beverage:0, Other:0};
+  Object.keys(t).forEach(function(k){ var p = cost[k]; if(!p) return; var x = t[k]*(p.cost||0); v.all += x; v[bucket(p.type)] += x; });
+  return v;
+}
+function valueChart(pts){
+  if(pts.length<2) return '<p class="note">The chart starts once there are two finished counts. '+(pts.length?'One so far: '+dShort(pts[0].date)+', '+money0(pts[0].v)+'.':'')+'</p>';
+  var W=640, H=200, L=56, R=12, T=12, B=28, max = Math.max.apply(null, pts.map(function(p){return p.v;}))*1.1 || 1;
+  var t0 = new Date(pts[0].date).getTime(), t1 = new Date(pts[pts.length-1].date).getTime() || t0+1, span = Math.max(t1-t0, 864e5);
+  var X = function(d){ return L + (new Date(d).getTime()-t0)/span*(W-L-R); }, Y = function(v){ return T + (1-v/max)*(H-T-B); };
+  var path = pts.map(function(p,i){ return (i?"L":"M")+X(p.date).toFixed(1)+" "+Y(p.v).toFixed(1); }).join(" ");
+  var grid = [0,0.5,1].map(function(f){ var v=max*f/1.1*1.0; var y=Y(v); return '<line x1="'+L+'" x2="'+(W-R)+'" y1="'+y+'" y2="'+y+'" stroke="var(--k-border)" stroke-width="1"/><text x="'+(L-6)+'" y="'+(y+4)+'" text-anchor="end" font-size="11" fill="var(--k-muted)">'+money0(v)+'</text>'; }).join("");
+  return '<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Inventory value by count date" style="max-height:240px">'+grid+
+    '<path d="'+path+'" fill="none" stroke="var(--k-accent, currentColor)" stroke-width="2.5" stroke-linejoin="round"/>'+
+    pts.map(function(p){ return '<circle cx="'+X(p.date)+'" cy="'+Y(p.v)+'" r="4" fill="var(--k-accent, currentColor)"><title>'+dShort(p.date)+' '+esc(p.label)+': '+money0(p.v)+'</title></circle><text x="'+X(p.date)+'" y="'+(H-8)+'" text-anchor="middle" font-size="11" fill="var(--k-muted)">'+dShort(p.date).replace(/\/\d+$/,"")+'</text>'; }).join("")+'</svg>';
+}
+function recipeCost(r, M){
+  var by = {}; M.prods.forEach(function(p){ by[p.name] = p; });
+  var lines = []; try{ lines = typeof r.lines==="string" ? JSON.parse(r.lines||"[]") : (r.lines||[]); }catch(e){}
+  var miss = [], cost = lines.reduce(function(s,l){ var p = by[l.product]; if(!p || !p.cost){ miss.push(l.product); return s; } return s + (+l.qty||0)*p.cost; }, 0);
+  var y = +r.yield || 1, plate = cost / y, price = +r.menu_price || 0;
+  return {lines:lines, cost:cost, plate:plate, pct: price ? plate/price : null, target:(+r.target||30)/100, miss:miss, price:price};
+}
+function needInv(){ var I = state.inv;
+  if(!I){ loadInv(); return '<div class="k-card"><p class="note">Loading…</p></div>'; }
+  if(I.err) return '<div class="k-card"><p class="note">'+(I.err==="signin"?'Sign in to iara Inbox once on this device, then refresh. <a href="/inbox" target="_blank" rel="noopener">Open iara Inbox</a>':'Couldn\'t load. Refresh to try again.')+'</p></div>';
+  return ""; }
+// Ron's dashboard tiles, on Inventory and Reports.
+function kitchenTiles(I, M){
+  var low = M.prods.filter(function(p){ return p.low; }).length;
+  var since = nyDay(-30), ups = M.prods.filter(function(p){ return p.change!=null && p.change>=0.03 && p.last && p.last.date>=since; }).length;
+  var rs = (I.recipes||[]).map(function(r){ return recipeCost(r, M); }).filter(function(c){ return c.pct!=null; });
+  var avg = rs.length ? rs.reduce(function(s,c){ return s+c.pct; },0)/rs.length : null;
+  return '<div class="kpis">'+
+    '<div class="kpi"><div class="label">Inventory Value</div><div class="value">'+money0(M.counted+M.got)+'</div><div class="foot">last count + deliveries</div></div>'+
+    '<div class="kpi'+(avg!=null&&avg>0.32?' crit':'')+'"><div class="label">Avg Plate Cost</div><div class="value">'+(avg==null?'<span class="muted">No recipes</span>':Math.round(avg*1000)/10+'%')+'</div><div class="foot">'+rs.length+' priced recipe'+(rs.length===1?'':'s')+'</div></div>'+
+    '<div class="kpi'+(low?' crit':'')+'"><div class="label">Low Stock</div><div class="value">'+low+'</div><div class="foot">below par</div></div>'+
+    '<div class="kpi'+(ups?' warn':'')+'"><div class="label">Price Increases</div><div class="value">'+ups+'</div><div class="foot">3%+ in the last 30 days</div></div></div>';
+}
+function vReports(D){
+  var w = needInv(); if(w) return w;
+  var I = state.inv, M = invModel(I), R = rptRange(), ty = lineTypes(I, M);
+  var lines = (I.lines||[]).filter(function(l){ return l.date>=R[0] && l.date<=R[1]; });
+  var by = {}, tot = {Food:0, Beverage:0, Other:0};
+  lines.forEach(function(l){ var b = bucket(ty(l)), v = by[l.vendor] || (by[l.vendor] = {v:l.vendor, Food:0, Beverage:0, Other:0, inv:{}}); var x = +l.total||0; v[b]+=x; tot[b]+=x; if(l.invoice) v.inv[l.invoice]=1; });
+  var vend = Object.keys(by).map(function(k){ return by[k]; }).sort(function(a,b){ return (b.Food+b.Beverage+b.Other)-(a.Food+a.Beverage+a.Other); });
+  var all = tot.Food+tot.Beverage+tot.Other;
+  var presets = [["week","This Week"],["lweek","Last Week"],["month","This Month"],["lmonth","Last Month"],["open","Since Opening"],["custom","Custom"]];
+  var purchase = '<div class="k-card print-area"><div class="count-head"><div><div class="section-title">Purchase Report · '+R[2]+'</div><p class="note">'+dShort(R[0])+' to '+dShort(R[1])+' · from Ottimate invoice lines (as of '+dShort(I.receivedAt)+')</p></div><button class="k-btn k-btn-sm no-print" data-act="print">Print</button></div>'+
+    '<div class="filters no-print" style="margin:10px 0">'+presets.map(function(p){ return '<button class="k-chip" data-act="rp" data-v="'+p[0]+'" aria-pressed="'+((state.rp||"month")===p[0])+'">'+p[1]+'</button>'; }).join("")+
+      ((state.rp==="custom")?'<input class="k-input" type="date" id="rs" value="'+R[0]+'" aria-label="From"><input class="k-input" type="date" id="re" value="'+R[1]+'" aria-label="To">':'')+'</div>'+
+    '<div class="kpis">'+kpi("Food", money0(tot.Food), all?Math.round(tot.Food/all*100)+"% of spend":"")+kpi("Beverage", money0(tot.Beverage), all?Math.round(tot.Beverage/all*100)+"% of spend":"")+kpi("Supplies and Other", money0(tot.Other), "not inventory")+kpi("Total", money0(all), lines.length+" lines")+'</div>'+
+    (vend.length ? '<div class="table-wrap" style="margin-top:10px"><table class="stack"><thead><tr><th>Vendor</th><th class="num">Invoices</th><th class="num">Food</th><th class="num">Beverage</th><th class="num">Other</th><th class="num">Total</th></tr></thead><tbody>'+
+      vend.map(function(v){ return '<tr><td class="first">'+esc(title(v.v))+'</td><td class="num" data-label="Invoices">'+Object.keys(v.inv).length+'</td><td class="num" data-label="Food">'+(v.Food?money(v.Food):'')+'</td><td class="num" data-label="Beverage">'+(v.Beverage?money(v.Beverage):'')+'</td><td class="num" data-label="Other">'+(v.Other?money(v.Other):'')+'</td><td class="num" data-label="Total"><b>'+money(v.Food+v.Beverage+v.Other)+'</b></td></tr>'; }).join("")+
+      '</tbody></table></div>' : '<p class="note" style="margin-top:10px">No invoice lines in this range.</p>')+'</div>';
+  // Value over time: every finished count (master and temp), valued at today's cost.
+  var pts = doneCounts(I).map(function(c){ return {date:c.date, v:countValue(I, c, I.entries, M).all, label:"count"}; });
+  ((I.temp||{}).counts||[]).filter(function(c){ return c.status==="done"; }).forEach(function(c){ pts.push({date:c.date, v:countValue(I, c, I.temp.entries, M).all, label:"temp count"}); });
+  pts.sort(function(a,b){ return a.date<b.date?-1:1; });
+  var chart = '<div class="k-card"><div class="section-title">Inventory Value Over Time</div><p class="note" style="margin-bottom:8px">Each finished count, valued at today\'s cost per unit.</p>'+valueChart(pts)+'</div>';
+  // Cost % per logged sales period: actual = begin inventory + purchases - end inventory, over sales.
+  var sales = (I.sales||[]).slice().sort(function(a,b){ return a.start<b.start?1:-1; });
+  var allCounts = pts;   // nearest count on or before a date
+  var nearest = function(d, after){ var c = null; allCounts.forEach(function(p){ if(after ? p.date>=d && (!c || p.date<c.date) : p.date<=d && (!c || p.date>c.date)) c = p; }); return c; };
+  var rs = (I.recipes||[]).map(function(r){ return {k:r.kind, c:recipeCost(r, M)}; }).filter(function(x){ return x.c.pct!=null; });
+  var theo = function(k){ var a = rs.filter(function(x){ return x.k===k; }); return a.length ? a.reduce(function(s,x){ return s+x.c.pct; },0)/a.length : null; };
+  var pct = function(n){ return n==null||!isFinite(n) ? '<span class="muted">n/a</span>' : (Math.round(n*1000)/10)+'%'; };
+  var cogs = '<div class="k-card"><div class="count-head"><div><div class="section-title">Food and Beverage Cost %</div><p class="note">Sales are entered by hand until Toast is connected. Actual cost = purchases in the period, adjusted by the counts at each end when we have them. Theoretical = the average plate cost of our recipes.</p></div></div>'+
+    '<form class="sform filters" style="margin:10px 0; align-items:flex-end"><label class="note">From<input class="k-input" type="date" name="start" value="'+isoAdd(nyDay(0),-6)+'" required></label><label class="note">To<input class="k-input" type="date" name="end" value="'+nyDay(0)+'" required></label>'+
+      '<label class="note">Food Sales $<input class="k-input" type="number" step="0.01" min="0" name="food" inputmode="decimal" required></label><label class="note">Beverage Sales $<input class="k-input" type="number" step="0.01" min="0" name="bev" inputmode="decimal" required></label><button class="k-btn k-btn-primary">Log Sales</button></form>'+
+    (sales.length ? '<div class="table-wrap"><table class="stack"><thead><tr><th>Period</th><th class="num">Sales</th><th class="num">Food Cost %</th><th class="num">Bev Cost %</th><th class="num">Theoretical</th><th><span class="k-sr-only">Delete</span></th></tr></thead><tbody>'+
+      sales.map(function(s){
+        var pl = (I.lines||[]).filter(function(l){ return l.date>=s.start && l.date<=s.end; }), f = 0, b = 0;
+        pl.forEach(function(l){ var k = bucket(ty(l)); if(k==="Food") f += +l.total||0; else if(k==="Beverage") b += +l.total||0; });
+        var c0 = nearest(isoAdd(s.start,-1)), c1 = nearest(s.end), adj = "";
+        if(c0 && c1 && c0!==c1){ var v0 = valueBy(c0), v1 = valueBy(c1); f += v0.Food - v1.Food; b += v0.Beverage - v1.Beverage; adj = " · counts "+dShort(c0.date)+" to "+dShort(c1.date); }
+        return '<tr><td class="first">'+dShort(s.start)+' to '+dShort(s.end)+'<span class="sub">'+(adj?'adjusted'+adj:'purchases only, no counts at both ends')+'</span></td>'+
+          '<td class="num" data-label="Sales">'+money0((+s.food||0)+(+s.bev||0))+'</td><td class="num" data-label="Food Cost %">'+pct(+s.food ? f/(+s.food) : null)+'</td><td class="num" data-label="Bev Cost %">'+pct(+s.bev ? b/(+s.bev) : null)+'</td>'+
+          '<td class="num" data-label="Theoretical">'+pct(theo("Food"))+' / '+pct(theo("Beverage"))+'</td><td><button class="k-btn k-btn-sm k-btn-ghost" data-act="sdel" data-v="'+esc(s.id)+'">Delete</button></td></tr>'; }).join("")+
+      '</tbody></table></div>' : '<p class="note">No sales logged yet. Log a week of food and beverage sales from Toast to see cost %.</p>')+'</div>';
+  function valueBy(p){ var src = p.label==="count" ? {list:doneCounts(I), e:I.entries} : {list:((I.temp||{}).counts||[]), e:(I.temp||{}).entries};
+    var c = src.list.filter(function(x){ return x.date===p.date && x.status==="done"; })[0]; return c ? countValue(I, c, src.e, M) : {Food:0, Beverage:0}; }
+  return '<div class="head"><div><h2>Reports</h2><p class="desc">Purchases, inventory value and cost %, from Ottimate lines, our counts and logged sales.</p></div></div>'+kitchenTiles(I, M)+purchase+chart+cogs;
+}
+function vRecipes(D){
+  var w = needInv(); if(w) return w;
+  var I = state.inv, M = invModel(I), list = (I.recipes||[]).slice().sort(function(a,b){ return a.name<b.name?-1:1; });
+  var ed = state.redit;
+  var form = "";
+  if(ed){
+    var r = ed==="new" ? {name:"", kind:"Food", menu_price:"", yield:1, target:30, lines:[]} : list.filter(function(x){ return x.id===ed; })[0] || null;
+    if(r && state.rdraft) r = Object.assign({}, r, state.rdraft, {id:r.id||""});
+    if(r){ var c = recipeCost(r, M), lines = state.rlines || (state.rlines = c.lines.length ? c.lines.slice() : [{product:"", qty:""}]);
+      var opts = M.prods.slice().sort(function(a,b){ return a.name<b.name?-1:1; }).map(function(p){ return '<option value="'+esc(p.name)+'">'+esc(p.name)+(p.unit?' ('+esc(p.unit)+')':'')+'</option>'; }).join("");
+      form = '<form class="k-card rform" data-id="'+esc(r.id||"")+'"><div class="section-title">'+(r.id?'Edit Recipe':'New Recipe')+'</div>'+
+        '<div class="filters" style="margin:10px 0; align-items:flex-end"><label class="note" style="flex:2 1 200px">Name<input class="k-input" name="name" value="'+esc(r.name)+'" required></label>'+
+        '<label class="note">Type<select class="k-input" name="kind"><option'+(r.kind!=="Beverage"?' selected':'')+'>Food</option><option'+(r.kind==="Beverage"?' selected':'')+'>Beverage</option></select></label>'+
+        '<label class="note">Menu Price $<input class="k-input" type="number" step="0.01" min="0" name="menu_price" value="'+esc(r.menu_price)+'" inputmode="decimal"></label>'+
+        '<label class="note">Portions<input class="k-input" type="number" step="any" min="0.01" name="yield" value="'+esc(r.yield||1)+'" inputmode="decimal"></label>'+
+        '<label class="note">Target Cost %<input class="k-input" type="number" step="0.5" min="1" max="100" name="target" value="'+esc(r.target||30)+'" inputmode="decimal"></label></div>'+
+        '<datalist id="rprods">'+opts+'</datalist><div class="section-title" style="font-size:13px">Ingredients <span class="muted">(amount in the product\'s count unit)</span></div>'+
+        lines.map(function(l, i){ var p = M.prods.filter(function(x){ return x.name===l.product; })[0];
+          return '<div class="filters rline" style="margin:6px 0"><input class="k-input" list="rprods" name="p'+i+'" value="'+esc(l.product)+'" placeholder="Product from Inventory" aria-label="Ingredient '+(i+1)+'" style="flex:2 1 220px">'+
+            '<input class="k-input" type="number" step="any" min="0" name="q'+i+'" value="'+esc(l.qty)+'" placeholder="Amount" aria-label="Amount '+(i+1)+'" inputmode="decimal" style="max-width:110px">'+
+            '<span class="note" style="min-width:110px">'+(p ? (p.cost ? money((+l.qty||0)*p.cost)+' · '+money(p.cost)+'/'+esc(p.unit||"unit") : 'No price yet') : (l.product?'Not in Inventory':''))+'</span>'+
+            '<button type="button" class="k-btn k-btn-sm k-btn-ghost" data-act="rlineDel" data-i="'+i+'" aria-label="Remove ingredient '+(i+1)+'">Remove</button></div>'; }).join("")+
+        '<button type="button" class="k-btn k-btn-sm" data-act="rlineAdd">Add Ingredient</button>'+
+        '<p class="note" style="margin-top:10px">Batch cost '+money(c.cost)+' · plate cost '+money(c.plate)+(c.pct!=null?' · <b>'+Math.round(c.pct*1000)/10+'% of menu price</b>':'')+(c.miss.length?' · '+c.miss.length+' ingredient'+(c.miss.length===1?'':'s')+' without a price':'')+'</p>'+
+        '<div class="match-acts" style="margin-top:10px"><button class="k-btn k-btn-primary">Save Recipe</button><button type="button" class="k-btn" data-act="rcancel">Cancel</button>'+(r.id?'<button type="button" class="k-btn k-btn-ghost" data-act="rdel" data-v="'+esc(r.id)+'">Delete</button>':'')+'</div></form>'; }
   }
-  return '<div class="head"><div><h2>Temp Count</h2><p class="desc">A practice count that never changes the master Inventory. Use it to count the shelves and compare.</p></div></div>'+card+list+detail;
+  var rows = list.map(function(r){ var c = recipeCost(r, M), over = c.pct!=null && c.pct > c.target;
+    return '<tr class="inv-row" data-act="redit" data-v="'+esc(r.id)+'" tabindex="0"><td class="first">'+esc(r.name)+(over?' <span class="k-badge k-badge-critical">Over Target</span>':'')+(c.miss.length?' <span class="k-badge k-badge-warning">Missing Price</span>':'')+'<span class="sub">'+esc(r.kind)+' · '+c.lines.length+' ingredients</span></td>'+
+      '<td class="num" data-label="Plate Cost">'+money(c.plate)+'</td><td class="num" data-label="Menu Price">'+(c.price?money(c.price):'<span class="muted">Not set</span>')+'</td>'+
+      '<td class="num" data-label="Cost %">'+(c.pct==null?'<span class="muted">n/a</span>':'<b'+(over?' style="color:var(--k-critical)"':'')+'>'+Math.round(c.pct*1000)/10+'%</b>')+'</td><td class="num" data-label="Target">'+Math.round(c.target*100)+'%</td></tr>'; }).join("");
+  var overN = list.filter(function(r){ var c = recipeCost(r, M); return c.pct!=null && c.pct>c.target; }).length;
+  return '<div class="head"><div><h2>Recipes</h2><p class="desc">Plate cost from Inventory prices, so it moves when vendor prices move.</p></div>'+(ed?'':'<button class="k-btn k-btn-primary" data-act="redit" data-v="new">Add Recipe</button>')+'</div>'+
+    form+(list.length ? (overN?'<div class="k-alert" style="margin-bottom:12px">'+overN+' recipe'+(overN===1?' is':'s are')+' over target cost.</div>':'')+
+      '<div class="table-wrap"><table class="stack"><thead><tr><th>Recipe</th><th class="num">Plate Cost</th><th class="num">Menu Price</th><th class="num">Cost %</th><th class="num">Target</th></tr></thead><tbody>'+rows+'</tbody></table></div>'
+    : (ed?'':'<div class="k-empty"><h3>No Recipes Yet</h3><p>Add a dish or drink, pick its ingredients from Inventory and set the menu price. Plate cost and cost % fill in from vendor prices.</p><button class="k-btn k-btn-primary" data-act="redit" data-v="new">Add Recipe</button></div>'));
+}
+function readRecipeForm(f){
+  var fd = new FormData(f), lines = [];
+  (state.rlines||[]).forEach(function(_, i){ lines.push({product:(fd.get("p"+i)||"").trim(), qty:fd.get("q"+i)||""}); });
+  return {id:f.dataset.id||"", name:fd.get("name"), kind:fd.get("kind"), menu_price:fd.get("menu_price"), yield:fd.get("yield"), target:fd.get("target"), lines:lines};
+}
+// Past counts: view, fix a number, change the date, delete (Ron's Kitchen Ops had all four).
+function countHistory(I, S, space){
+  var M = invModel(I), past = (S.counts||[]).filter(function(c){ return c.status==="done"; }).sort(function(a,b){ return a.date<b.date?1:-1; });
+  if(!past.length) return "";
+  var view = past.filter(function(c){ return c.id===state.hview; })[0];
+  var costs = {}; M.prods.forEach(function(p){ costs[p.name] = p; });
+  var out = '<div class="k-card"><div class="section-title">'+(space==="temp"?"Finished Temp Counts":"Past Counts")+'</div><div class="list">'+past.map(function(c){
+    var t = countTotals(I, c.id, S.entries), n = Object.keys(t).length, v = countValue(I, c, S.entries, M).all, on = view && view.id===c.id;
+    return '<button type="button" class="item item-go" data-act="hview" data-v="'+esc(c.id)+'" aria-expanded="'+!!on+'"><span class="dot info"></span><span><span style="display:block">'+dShort(c.date)+' · '+n+' products · '+money0(v)+'</span><span class="sub" style="display:block">by '+esc(String(c.started_by||"").replace(/@iara\.nyc$/,""))+'</span></span><span class="go-arrow" aria-hidden="true">›</span></button>'; }).join("")+'</div></div>';
+  if(view){
+    var t = countTotals(I, view.id, S.entries), names = Object.keys(t).sort();
+    out += '<div class="k-card"><div class="count-head"><div><div class="section-title">Count · '+dShort(view.date)+'</div><p class="note">Fix a number and it saves. Change the date or delete the whole count below.</p></div></div>'+
+      '<div class="table-wrap"><table class="stack"><thead><tr><th>Product</th><th>Counted</th><th class="num">Value</th></tr></thead><tbody>'+
+      names.map(function(k){ var p = costs[k]||{}; return '<tr><td class="first">'+esc(k)+'</td><td data-label="Counted"><input class="k-input hfix" type="number" step="any" min="0" inputmode="decimal" value="'+(+t[k])+'" data-c="'+esc(view.id)+'" data-p="'+esc(k)+'" data-s="'+space+'" aria-label="Counted '+esc(k)+'" style="max-width:100px"> <span class="muted">'+esc(p.unit||"")+'</span></td><td class="num" data-label="Value">'+(p.cost?money(t[k]*p.cost):'<span class="muted">No price</span>')+'</td></tr>'; }).join("")+
+      '</tbody></table></div><div class="match-acts" style="margin-top:10px; flex-wrap:wrap"><input class="k-input" type="date" id="hdate" value="'+esc(view.date)+'" aria-label="Count date"><button class="k-btn k-btn-sm" data-act="hdate" data-v="'+esc(view.id)+'" data-s="'+space+'">Change Date</button>'+
+      '<button class="k-btn k-btn-sm" data-act="hreopen" data-v="'+esc(view.id)+'" data-s="'+space+'">Reopen to Keep Counting</button><button class="k-btn k-btn-sm k-btn-ghost" data-act="hdel" data-v="'+esc(view.id)+'" data-s="'+space+'">Delete Count</button></div></div>';
+  }
+  return out;
 }
 
 function fmtQ(n){ return String(Math.round(n*100)/100); }
@@ -1060,15 +1226,36 @@ document.addEventListener("click", function(e){
   else if(t.dataset.act==="vdup"){ state.openVendor = state.openVendor===t.dataset.v ? null : t.dataset.v; render(); }
   else if(t.dataset.act==="copyDiffer"){ var MM = matchInbox(state.data, state.inbox.items||[]);
     (navigator.clipboard ? navigator.clipboard.writeText(differNote(MM.differ)) : Promise.reject()).then(function(){ toast("Copied. Paste it into an email to iaranyc@smgaba.com."); }, function(){ toast("Couldn't copy on this device."); }); }
+  else if(t.dataset.act==="rp"){ state.rp=t.dataset.v; render(); }
+  else if(t.dataset.act==="print") window.print();
+  else if(t.dataset.act==="redit"){ if(e.target.closest("select,a,input")) return; state.redit=t.dataset.v; state.rlines=null; state.rdraft=null; render(); window.scrollTo(0,0); }
+  else if(t.dataset.act==="rcancel"){ state.redit=null; state.rlines=null; state.rdraft=null; render(); }
+  else if(t.dataset.act==="rlineAdd" || t.dataset.act==="rlineDel"){ var rf=t.closest("form"); state.rdraft=readRecipeForm(rf); state.rlines=state.rdraft.lines; if(t.dataset.act==="rlineAdd") state.rlines.push({product:"", qty:""}); else state.rlines.splice(+t.dataset.i,1); if(!state.rlines.length) state.rlines.push({product:"", qty:""}); render(); }
+  else if(t.dataset.act==="rdel"){ if(!confirm("Delete this recipe?")) return; invPost({action:"recipe-delete", recipe:{id:t.dataset.v}}).then(function(){ state.redit=null; state.rlines=null; state.rdraft=null; state.inv=null; render(); toast("Recipe deleted."); }).catch(function(er){ toast(er.message||String(er)); }); }
+  else if(t.dataset.act==="sdel"){ if(!confirm("Delete this sales entry?")) return; invPost({action:"sales-delete", sale:{id:t.dataset.v}}).then(function(){ state.inv=null; render(); }).catch(function(er){ toast(er.message||String(er)); }); }
+  else if(t.dataset.act==="hview"){ state.hview = state.hview===t.dataset.v ? null : t.dataset.v; render(); }
+  else if(t.dataset.act==="hdate"){ var hd=($("#hdate")||{}).value; invPost({action:"count-date", space:t.dataset.s, count:t.dataset.v, date:hd}).then(function(){ state.inv=null; render(); toast("Date changed to "+dShort(hd)+"."); }).catch(function(er){ toast(er.message||String(er)); }); }
+  else if(t.dataset.act==="hreopen"){ invPost({action:"count-reopen", space:t.dataset.s, count:t.dataset.v}).then(function(){ state.counting=t.dataset.v; state.hview=null; state.inv=null; if(t.dataset.s==="temp") state.tab="tempcount"; render(); }).catch(function(er){ toast(er.message||String(er)); }); }
+  else if(t.dataset.act==="hdel"){ if(!confirm("Delete this count? It disappears from Inventory and Reports. The taps stay in the sheet in case we need them back.")) return; invPost({action:"count-delete", space:t.dataset.s, count:t.dataset.v}).then(function(){ state.hview=null; if(state.ibase===t.dataset.v) state.ibase=null; state.inv=null; render(); toast("Count deleted."); }).catch(function(er){ toast(er.message||String(er)); }); }
   else if(t.dataset.act==="addPhoto") $("#photoInput").click();
   else if(t.dataset.act==="upSend") upSend(+t.dataset.i);
   else if(t.dataset.act==="upSendAll") upSendAll();
   else if(t.dataset.act==="upRemove"){ state.up.splice(+t.dataset.i,1); render(); }
   else if(t.dataset.act==="upClose"){ state.up=null; render(); }
 });
-document.addEventListener("submit", function(e){ var f = e.target.closest && e.target.closest(".pform"); if(f){ e.preventDefault(); saveProduct(f); } });
+document.addEventListener("submit", function(e){ var f = e.target.closest && e.target.closest(".pform"); if(f){ e.preventDefault(); saveProduct(f); return; }
+  var rf = e.target.closest && e.target.closest(".rform");
+  if(rf){ e.preventDefault(); var r = readRecipeForm(rf); r.lines = r.lines.filter(function(l){ return l.product; });
+    invPost({action:"recipe-save", recipe:r}).then(function(){ state.redit=null; state.rlines=null; state.rdraft=null; state.inv=null; render(); toast("Saved "+r.name+"."); }).catch(function(er){ toast(er.message||String(er)); }); return; }
+  var sf = e.target.closest && e.target.closest(".sform");
+  if(sf){ e.preventDefault(); var fd = new FormData(sf);
+    invPost({action:"sales-save", sale:{start:fd.get("start"), end:fd.get("end"), food:fd.get("food"), bev:fd.get("bev")}}).then(function(){ state.inv=null; render(); toast("Sales logged."); }).catch(function(er){ toast(er.message||String(er)); }); } });
 document.addEventListener("change", function(e){ if(e.target.classList && e.target.classList.contains("inv-link")) invLinkChange(e.target);
-  if(e.target.id==="ibase"){ state.ibase=e.target.value; render(); } });
+  if(e.target.id==="ibase"){ state.ibase=e.target.value; render(); }
+  if(e.target.id==="rs" || e.target.id==="re"){ state[e.target.id]=e.target.value; render(); }
+  var rf = e.target.closest && e.target.closest(".rform"); if(rf){ state.rdraft = readRecipeForm(rf); state.rlines = state.rdraft.lines; render(); }
+  if(e.target.classList && e.target.classList.contains("hfix")){ var x=e.target, v=parseFloat(x.value); if(!(v>=0)) return;
+    invPost({action:"count-fix", space:x.dataset.s, count:x.dataset.c, product:x.dataset.p, qty:v}).then(function(){ state.inv=null; render(); toast(x.dataset.p+" set to "+v+"."); }).catch(function(er){ toast(er.message||String(er)); }); } });
 document.addEventListener("keydown", function(e){ var r = e.target.closest && e.target.closest(".inv-row"); if(r && (e.key==="Enter"||e.key===" ")){ e.preventDefault(); r.click(); } });
 document.addEventListener("input", function(e){
   if(e.target.id==="cq" && !e.isComposing){ state.cq=e.target.value; var p3=e.target.selectionStart; render(); var cq=$("#cq"); cq.focus(); cq.setSelectionRange(p3,p3); return; }
