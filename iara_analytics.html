@@ -574,8 +574,9 @@ document.addEventListener("DOMContentLoaded", function(){
     try { if (user) localStorage.setItem("iara_auth_hint", "1"); else localStorage.removeItem("iara_auth_hint"); } catch(e){}
     // Same account button as every other page (Jay, 2026-11-10: one nav everywhere).
     if (window.iaraNav) iaraNav.setAccount(user ? { email: user.email, signOut: function(){ firebase.auth().signOut(); MGR.auth().signOut(); } } : null);
-    if (user){ $("gate").hidden = true; $("an-bar").hidden = false; $("app").hidden = false; paint(); load(); }
-    else { $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; try { $("pw").focus({ preventScroll: true }); } catch(e){} }
+    // Two logins (staff@ and the manager app) both report in; load once per signed-in user (speed audit 11/13: it loaded twice).
+    if (user){ $("gate").hidden = true; $("an-bar").hidden = false; $("app").hidden = false; if (window.__anUid !== user.uid) { window.__anUid = user.uid; paint(); load(); } }
+    else { window.__anUid = null; $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; try { $("pw").focus({ preventScroll: true }); } catch(e){} }
   });
   // Same wording as the hub gate: an empty field is not a wrong password.
   $("gate-form").addEventListener("submit", function(ev){ ev.preventDefault(); $("gate-err").hidden = true;
