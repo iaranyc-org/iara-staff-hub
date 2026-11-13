@@ -25,7 +25,7 @@
   if (window.iaraTip) return;
 
   var SEL = "[data-k-tip], [data-k-tip-for]";
-  var HOVER_DELAY = 300, LEAVE_DELAY = 120, GAP = 8, EDGE = 8;
+  var HOVER_DELAY = 80, LEAVE_DELAY = 100, GAP = 8, EDGE = 8;
   var tip, cur = null, openTimer = 0, closeTimer = 0, touchAt = 0, store, n = 0;
 
   function el() {
