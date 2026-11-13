@@ -235,6 +235,8 @@ var ALL_TABS = TABS.concat([{id:"order"},{id:"tempcount"}]);
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
 (function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && (m[1]==="duplicates"||m[1]==="missing")) m[1]="vendors"; if(m && ALL_TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
+// A link like /finance#t=order opened while Finance is already open switches the view (QA 11/13).
+window.addEventListener("hashchange", function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && ALL_TABS.some(function(t){return t.id===m[1];}) && m[1]!==state.tab){ state.tab=m[1]; render(); window.scrollTo(0,0); } });
 function saveTab(){ history.replaceState(null,"",location.pathname+location.search+"#t="+state.tab); }
 var db=null, auth=null, user=null;
 
@@ -801,7 +803,7 @@ function vInventory(D){
   var attn = M.prods.filter(function(p){ return p.flag; }).length + M.need.length;
   var loaded = (I.lines||[]).length;
   var head = '<div class="head"><div><h2>Inventory</h2><p class="desc">Expected on hand = the last count ('+dShort(I.countDate)+') plus everything delivered since. What we\'ve used isn\'t taken out yet.</p></div></div>'+
-    '<div class="kpis">'+kpi("Counted "+dShort(I.countDate), money0(M.counted), M.prods.filter(function(p){return p.qty;}).length+" products")+
+    '<div class="kpis">'+kpi(state.ibase ? "Counted "+dShort(I.countDate) : "Latest Counts", money0(M.counted), M.prods.filter(function(p){return p.qty;}).length+" products"+(state.ibase ? "" : " · "+doneCounts(I).map(function(c){ return dShort(c.date).replace(/\/\d+$/,""); }).reverse().join(" + ")))+
       kpi("Delivered Since", loaded?money0(M.got):"—", loaded?"inventory items only":"")+
       kpi("Expected On Hand", loaded?money0(M.counted+M.got):"—", "before usage")+'</div>'+
     (loaded ? '<p class="note" style="margin:-4px 0 0">Deliveries as of '+dShort(I.receivedAt)+'. Supplies and fees marked not inventory: '+money0(M.notInv)+'. To refresh, import a new Ottimate line export.</p>'
