@@ -513,3 +513,84 @@ dialog.k-sheet[open] { display: flex; animation: k-sheet-up 250ms var(--k-ease);
   .k-appbar-title .k-roll { font-size: calc(var(--k-lockup-word) * 0.86); }
 }
 @media (max-width: 359px) { .k-appbar-mark img { width: calc(var(--k-lockup-mark) * 0.85); } .k-appbar-inner { gap: 0 2px; } }
+
+/* ==========================================================================
+   Page anatomy (Jay, 2026-11-12: "it feels like Frankenstein"). Every page, in this order, nothing else:
+     1. .k-pagehead   the app subtitle (one-line purpose) left; freshness + at most 1 primary + 1 icon action right.
+                      No H1 that repeats the app bar name or the selected tab ("Finance", "Overview"): the bar
+                      already says it. Exception: a title that is data (Home's "Thursday, Nov 12").
+     2. Row A         the family .k-subtabs (Inbox · Reviews · …) or the page's own .k-tabs. One level only.
+     3. Row B         .k-toolbar: in-page view tabs (.k-tabs, orange) / filter chips / range left, search right.
+                      Family nav = quiet underline (.k-subtab); views inside a page = orange fill (.k-tab).
+     Max 2 control rows under the header. A third level becomes a <select> or a chip group in Row B.
+     Sections:  .k-section-head (title, count, ⓘ help, right-side meta or link). No paragraph under a title:
+                explanation goes in the ⓘ tooltip; visible text is only what someone acts on.
+     Numbers:   .k-stats > .k-stat (label, value, delta, one detail line). Same size, same ink, every page.
+   Static markup:
+     <header class="k-pagehead"><p class="k-app-sub" data-k-subtitle></p>
+       <div class="k-pagehead-actions"><span class="k-meta">Updated 3m ago</span><button class="k-btn k-btn-primary">New Party</button>
+       <button class="k-btn k-btn-outline k-btn-icon" aria-label="Refresh" data-k-tip="Refresh">↻</button></div></header>
+     <div class="k-toolbar"><div class="k-toolbar-start">chips/tabs</div><div class="k-toolbar-end">search</div></div>
+     <div class="k-section-head"><h2 class="k-h-section">Needs a Look <span class="k-count">5</span></h2>
+       <button class="k-help" aria-label="About Needs a Look" data-k-tip="…">i</button><span class="k-section-meta">…</span></div>
+     <div class="k-stats"><div class="k-stat"><div class="k-stat-label">Covers <button class="k-help" …>i</button></div>
+       <div class="k-stat-value">127<span class="k-stat-unit">/ 150</span></div><div class="k-stat-delta is-up">+12 vs last Thu</div>
+       <div class="k-stat-detail">23 under cap</div></div></div>
+   ========================================================================== */
+.k-pagehead { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 12px 24px; margin: 0 0 20px; }
+.k-pagehead > :first-child { min-width: 0; }
+.k-pagehead .k-app-sub { margin: 0; }
+.k-pagehead-sub { margin: 6px 0 0; font-size: var(--k-text-small); line-height: var(--k-text-small-lh); color: var(--k-muted); max-width: 64ch; text-wrap: pretty; }
+.k-pagehead-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.k-meta { font-size: var(--k-text-meta); line-height: var(--k-text-meta-lh); font-weight: var(--k-text-meta-w); color: var(--k-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.k-meta.is-stale { color: var(--k-critical); }
+
+.k-pagehead + .k-tabs, .k-pagehead + .k-subtabs { margin-bottom: 12px; }
+.k-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; margin: 0 0 20px; }
+.k-toolbar-start, .k-toolbar-end { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
+.k-toolbar-end { margin-left: auto; }
+.k-toolbar .k-chip { white-space: nowrap; }
+.k-toolbar .k-input[type="search"] { width: 240px; max-width: 100%; }
+@media (max-width: 640px) {
+  /* Phones: wrap, never scroll sideways: a chip cut in half ("Texts 3") hid the rest (Inbox QA 11/13). */
+  .k-toolbar-start { width: 100%; }
+  .k-toolbar-start > [role="group"] { display: flex; flex-wrap: wrap; gap: 6px; }
+  .k-toolbar-end, .k-toolbar .k-input[type="search"] { width: 100%; margin-left: 0; }
+}
+
+.k-section-head { display: flex; align-items: center; gap: 8px; margin: 32px 0 12px; min-height: 28px; }
+.k-section-head:first-child { margin-top: 0; }
+.k-section-head .k-h-section { display: inline-flex; align-items: baseline; gap: 8px; }
+.k-section-meta { margin-left: auto; font-size: var(--k-text-small); color: var(--k-muted); display: inline-flex; align-items: center; gap: 8px; font-variant-numeric: tabular-nums; }
+.k-count { font-family: var(--k-font-sans); font-size: var(--k-text-meta); font-weight: 600; line-height: 1; color: var(--k-muted); background: var(--k-raised); border-radius: 999px; padding: 4px 8px; font-variant-numeric: tabular-nums; }
+.k-help { display: inline-grid; place-items: center; width: 20px; height: 20px; padding: 0; border: 1px solid var(--k-border-input); border-radius: 999px; background: none; color: var(--k-muted);
+  font: 600 11px/1 var(--k-font-sans); font-style: italic; cursor: help; flex: none; position: relative; }
+.k-help::after { content: ""; position: absolute; inset: -12px; }   /* 44px touch target */
+.k-help:hover, .k-help:focus-visible { color: var(--k-ink); border-color: var(--k-ink); }
+.k-help:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+
+.k-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(150px, 100%), 1fr)); gap: 12px; margin: 0 0 24px; }
+.k-stat { background: var(--k-surface); border: 1px solid var(--k-border); border-radius: var(--k-radius-lg); padding: 16px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.k-stat-label { display: flex; align-items: center; gap: 6px; font-size: var(--k-text-label); line-height: var(--k-text-label-lh); font-weight: var(--k-text-label-w); color: var(--k-muted); }
+.k-stat-value { font-family: var(--k-font-sans); font-size: 28px; line-height: 1.1; font-weight: 600; letter-spacing: -0.01em; color: var(--k-ink); font-variant-numeric: tabular-nums; }
+.k-stat-unit { margin-left: 4px; font-size: var(--k-text-small); font-weight: 500; color: var(--k-muted); }
+.k-stat-delta { font-size: var(--k-text-meta); font-weight: 600; color: var(--k-muted); font-variant-numeric: tabular-nums; }
+.k-stat-delta.is-good { color: var(--k-good); } .k-stat-delta.is-bad { color: var(--k-critical); }
+.k-stat-detail { font-size: var(--k-text-small); line-height: var(--k-text-small-lh); color: var(--k-muted); overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.k-stat.is-alert { border-color: var(--k-critical); }
+@media (max-width: 480px) { .k-stat { padding: 12px; } .k-stat-value { font-size: 24px; } }
+button.k-stat[aria-pressed="true"] { border-color: var(--k-ink); background: var(--k-raised); }
+a.k-stat, button.k-stat { text-align: left; color: inherit; text-decoration: none; cursor: pointer; font: inherit; width: 100%; }
+button.k-stat:active { transform: translateY(1px); }
+@media (prefers-reduced-motion: reduce) { button.k-stat:active { transform: none; } }
+a.k-stat:hover, button.k-stat:hover { background: var(--k-raised); }
+a.k-stat:focus-visible, button.k-stat:focus-visible { outline: 2px solid var(--k-ring); outline-offset: 2px; }
+/* Compact stats for narrow columns (sidebars): same anatomy, smaller number, fixed column count via data-cols. */
+.k-stats.is-compact { gap: 8px; }
+.k-stats.is-compact[data-cols="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.k-stats.is-compact[data-cols="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.k-stats.is-compact .k-stat { padding: 12px; }
+.k-stats.is-compact .k-stat-value { font-size: 20px; }
+/* Section head on phones: meta drops under the title instead of squeezing beside it. */
+.k-section-head { flex-wrap: wrap; row-gap: 4px; }
+@media (max-width: 640px) { .k-section-meta { flex-basis: 100%; margin-left: 0; flex-wrap: wrap; } }
