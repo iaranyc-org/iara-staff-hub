@@ -710,6 +710,8 @@ function doneCounts(I){ return (I.counts||[]).filter(function(c){ return c.statu
 function baseCount(I){ var d = doneCounts(I); return d.filter(function(c){ return c.id===state.ibase; })[0] || d[0] || null; }
 function invModel(I){
   var base = baseCount(I), tot = base ? countTotals(I, base.id) : {};
+  // No count picked: each product takes its most recent finished count (Jay 2026-11-12: Ron's 10/31 bar count + our 11/2 kitchen count together).
+  if(base && !state.ibase){ tot = {}; doneCounts(I).slice().reverse().forEach(function(c){ var t = countTotals(I, c.id); Object.keys(t).forEach(function(k){ tot[k] = t[k]; }); }); }
   I.countDate = base ? base.date : I.countDate;
   var prods = (I.count||[]).map(function(c){ var re=null; try{ re = c.match ? new RegExp(c.match,"i") : null; }catch(e){}
     var qty = base ? (tot[c.item]||0) : (+c.qty||0), cost = +c.unit_cost||0;
@@ -779,7 +781,7 @@ function vInventory(D){
   // Counting is paused on the master Inventory (Jay 2026-11-10); Ron counts in Temp Count, which never feeds this tab.
   var done = doneCounts(I), base = baseCount(I);
   var countBar = '<div class="k-card count-bar"><div><div class="section-title">Counts</div><p class="note">Counting is paused on the master Inventory. Practice and spot counts go in <button class="k-btn k-btn-sm k-btn-ghost" data-tab="tempcount" style="padding:0 6px">Temp Count</button>, which never changes these numbers.</p></div>'+
-    (done.length>1 ? '<label class="note" style="display:flex; gap:8px; align-items:center; width:100%">Showing count from <select class="k-input" id="ibase" style="max-width:200px">'+done.map(function(c){ return '<option value="'+esc(c.id)+'"'+(base&&c.id===base.id?' selected':'')+'>'+dShort(c.date)+'</option>'; }).join("")+'</select></label>' : '')+'</div>';
+    (done.length>1 ? '<label class="note" style="display:flex; gap:8px; align-items:center; width:100%">Showing count from <select class="k-input" id="ibase" style="max-width:240px"><option value="">Latest of Each Product</option>'+done.map(function(c){ return '<option value="'+esc(c.id)+'"'+(state.ibase&&c.id===state.ibase?' selected':'')+'>'+dShort(c.date)+'</option>'; }).join("")+'</select></label>' : '')+'</div>';
   var M = invModel(I), q = (state.iq||"").toLowerCase(), ty = state.ity;
   var attn = M.prods.filter(function(p){ return p.flag; }).length + M.need.length;
   var loaded = (I.lines||[]).length;
