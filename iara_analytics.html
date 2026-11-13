@@ -474,6 +474,12 @@ document.addEventListener("DOMContentLoaded", function(){
   var STAFF_EMAIL = "staff@iara.nyc", API = "https://iara-inbox.vercel.app/inbox/api";
   firebase.initializeApp({ apiKey: "AIzaSyAj4YUF1DteDZgXM5zV_T08DV3OjzwD_SE", authDomain: "iara-lineup.firebaseapp.com", projectId: "iara-lineup",
     storageBucket: "iara-lineup.firebasestorage.app", messagingSenderId: "840712867607", appId: "1:840712867607:web:2003c145731aa85a13b152" });
+
+  // Managers sign in with Google on the "manager" app (Finance, hub). Use that login when there's no staff@ session,
+  // so Jay on his phone isn't stuck behind the staff password (2026-11-12: "won't load for me").
+  var MGR = firebase.apps.filter(function(a){ return a.name === "manager"; })[0] || firebase.initializeApp(firebase.app().options, "manager");
+  window.anUser = function(){ return firebase.auth().currentUser || MGR.auth().currentUser; };
+  function anAuthChanged(cb){ firebase.auth().onAuthStateChanged(function(){ cb(window.anUser()); }); MGR.auth().onAuthStateChanged(function(){ cb(window.anUser()); }); }
   var $ = function(id){ return document.getElementById(id); };
   var esc = function(s){ return String(s == null ? "" : s).replace(/[&<>"']/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   var fmt = function(n){ return n == null ? "-" : String(n); };
@@ -558,10 +564,10 @@ document.addEventListener("DOMContentLoaded", function(){
   // Links like /analytics#t=email&r=30d work even when the page is already open.
   window.addEventListener("hashchange", function(){ var t = hashGet("t"), r = hashGet("r"); if (t) tab = tabOf(t); var nr = resolve(r || rangeTag()), changed = (nr.from + nr.to + nr.key) !== (range.from + range.to + range.key); range = nr; syncHash(); paint(); if (changed) load(); });
 
-  firebase.auth().onAuthStateChanged(function(user){
+  anAuthChanged(function(user){
     try { if (user) localStorage.setItem("iara_auth_hint", "1"); else localStorage.removeItem("iara_auth_hint"); } catch(e){}
     // Same account button as every other page (Jay, 2026-11-10: one nav everywhere).
-    if (window.iaraNav) iaraNav.setAccount(user ? { email: user.email, signOut: function(){ firebase.auth().signOut(); } } : null);
+    if (window.iaraNav) iaraNav.setAccount(user ? { email: user.email, signOut: function(){ firebase.auth().signOut(); MGR.auth().signOut(); } } : null);
     if (user){ $("gate").hidden = true; $("an-bar").hidden = false; $("app").hidden = false; paint(); load(); }
     else { $("gate").hidden = false; $("an-bar").hidden = true; $("app").hidden = true; try { $("pw").focus({ preventScroll: true }); } catch(e){} }
   });
@@ -579,13 +585,13 @@ document.addEventListener("DOMContentLoaded", function(){
   // The banner is for "you're looking at the last load"; when nothing loaded, the error box already says offline.
   function syncOnline(){ $("offline").hidden = navigator.onLine !== false || !$("err").hidden; }
   window.addEventListener("offline", syncOnline);
-  window.addEventListener("online", function(){ syncOnline(); if (!$("err").hidden && firebase.auth().currentUser) { $("err").hidden = true; load(); } });
+  window.addEventListener("online", function(){ syncOnline(); if (!$("err").hidden && window.anUser()) { $("err").hidden = true; load(); } });
   syncOnline();
   var seq = 0, booted = false;
   function load(){
     // First load: the bold full-page loader (#an-boot). Range changes after that: the quiet skeleton.
     var mine = ++seq; $(booted ? "loading" : "an-boot").hidden = false; $("err").hidden = true;
-    firebase.auth().currentUser.getIdToken().then(function(tok){
+    window.anUser().getIdToken().then(function(tok){
       var get = function(path){ return fetch(API + path + "?from=" + range.from + "&to=" + range.to, { headers: { Authorization: "Bearer " + tok }, cache: "no-store" })
         .then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); }); };
       // Phone numbers are optional for the Overview: if that feed is slow or down, the rest still shows.
@@ -850,7 +856,7 @@ document.addEventListener("DOMContentLoaded", function(){
     var shown = !$("body").hidden;
     if (!shown) $("loading").hidden = false;
     $("err").hidden = true;
-    firebase.auth().currentUser.getIdToken().then(function(tok){
+    window.anUser().getIdToken().then(function(tok){
       return fetch("https://iara-inbox.vercel.app/inbox/api/phone-stats?from=" + range.from + "&to=" + range.to + (fresh ? "&refresh=1" : ""), { headers: { Authorization: "Bearer " + tok }, cache: "no-store" });
     }).then(function(r){ return r.json().then(function(j){ if (!r.ok) throw new Error(j.error || r.status); return j; }); })
       .then(function(j){
@@ -924,7 +930,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // Dismiss hides a row for everyone until that guest reaches out again; Undo puts it back.
   function dismiss(key, undo){
-    return firebase.auth().currentUser.getIdToken().then(function(tok){
+    return window.anUser().getIdToken().then(function(tok){
       return fetch("https://iara-inbox.vercel.app/inbox/api/phone-stats", { method: "POST", headers: { Authorization: "Bearer " + tok, "Content-Type": "application/json" }, body: JSON.stringify({ key: key, undo: !!undo }), cache: "no-store" });
     }).then(function(r){ if (!r.ok) throw new Error(r.status); });
   }
@@ -1055,11 +1061,12 @@ document.addEventListener("DOMContentLoaded", function(){
   }
   // Started by iara Inbox Analytics: render the first time the Phone tab is shown.
   var started = false;
-  function maybeStart(){ if (started || P.hidden || !firebase.auth().currentUser) return; range = shared(); if (!range) return; started = true; load(false); }
+  function maybeStart(){ if (started || P.hidden || !window.anUser()) return; range = shared(); if (!range) return; started = true; load(false); }
   window.addEventListener("analytics:tab", function(e){ if (e.detail && e.detail.tab === "phone") setTimeout(maybeStart, 0); });
   // Follow the shared date bar.
   window.addEventListener("analytics:range", function(){ range = shared(); if (started) load(false); else maybeStart(); });
   firebase.auth().onAuthStateChanged(function(){ setTimeout(maybeStart, 0); });
+  firebase.apps.filter(function(a){ return a.name === "manager"; }).forEach(function(a){ a.auth().onAuthStateChanged(function(){ setTimeout(maybeStart, 0); }); });
 })();
 });
 </script>
