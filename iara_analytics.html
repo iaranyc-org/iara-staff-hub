@@ -477,7 +477,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
   // Managers sign in with Google on the "manager" app (Finance, hub). Use that login when there's no staff@ session,
   // so Jay on his phone isn't stuck behind the staff password (2026-11-12: "won't load for me").
-  var MGR = firebase.apps.filter(function(a){ return a.name === "manager"; })[0] || firebase.initializeApp(firebase.app().options, "manager");
+  var MGR = firebase.apps.filter(function(a){ return a.name === "manager"; })[0] || firebase.initializeApp(firebase.apps[0].options, "manager");
   window.anUser = function(){ return firebase.auth().currentUser || MGR.auth().currentUser; };
   function anAuthChanged(cb){ firebase.auth().onAuthStateChanged(function(){ cb(window.anUser()); }); MGR.auth().onAuthStateChanged(function(){ cb(window.anUser()); }); }
   var $ = function(id){ return document.getElementById(id); };
