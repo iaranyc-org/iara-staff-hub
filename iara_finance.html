@@ -49,10 +49,14 @@
   @media (max-width:860px){ .kpis{grid-template-columns:repeat(2,1fr);} }
   .kpi{background:var(--k-surface); border:1px solid var(--k-border); border-radius:var(--k-radius-lg); padding:14px 16px; display:flex; flex-direction:column; gap:4px;}
   .kpi .label{font-size:13px; color:var(--k-muted); font-weight:600;}
-  .kpi .value{font-family:var(--k-font-mono); font-size:24px; font-weight:600; font-variant-numeric:tabular-nums;}
+  .kpi .value{font-family:var(--k-font-sans); font-size:28px; line-height:1.1; font-weight:600; letter-spacing:-0.01em; color:var(--k-ink); font-variant-numeric:tabular-nums;}
   .kpi .foot{font-size:12px; color:var(--k-muted);}
-  .kpi.alert .value{color:var(--k-critical);} .kpi.warn .value{color:var(--k-warning);}
-  .section-title{font-size:15px; font-weight:700; margin-bottom:10px;}
+  /* Page anatomy (11/12): colour goes on the border, never the number. */
+  .kpi.alert{border-color:var(--k-critical);} .kpi.warn{border-color:var(--k-warning);}
+  .section-title{font:var(--k-text-card-w) var(--k-text-card)/var(--k-text-card-lh) var(--k-font-sans); color:var(--k-ink); margin-bottom:10px;}
+  /* The tab already names the page; its one-line purpose moves into the page head (render()). */
+  .head > div:first-child > h2{position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap;}
+  .head:has(> div:first-child:only-child){display:none;}
   .list{display:flex; flex-direction:column; gap:10px;}
   .item{display:flex; gap:10px; align-items:flex-start; font-size:14px; line-height:1.45;}
   .item .dot{width:8px; height:8px; border-radius:50%; margin-top:7px; flex:none; background:var(--k-warning);}
@@ -151,9 +155,10 @@
   <div data-k-appbar data-app="Finance" data-home="/finance"></div>
   <h1 class="k-sr-only">Finance</h1>
   <main class="k-page">
+    <header class="k-pagehead" id="pageHead"><p class="k-app-sub" id="pageSub">Invoices, costs and margins, checked against the accountant's books.</p>
+      <div class="k-pagehead-actions" id="dataStatus"></div></header>
     <div class="tabs-bar">
       <div class="k-tabs" id="tabNav" role="tablist" aria-label="Sections"></div>
-      <div class="tabs-status" id="dataStatus"></div>
     </div>
     <div id="main" role="tabpanel" tabindex="-1"></div>
   </main>
@@ -217,15 +222,16 @@ var TABS = [
   {id:"invoices", label:"Invoices"},
   {id:"vendors", label:"Vendors"},
   {id:"inventory", label:"Inventory"},
-  {id:"order", label:"Order Guide"},
   {id:"prices", label:"Prices"},
   {id:"recipes", label:"Recipes"},
-  {id:"reports", label:"Reports"},
-  {id:"tempcount", label:"Temp Count"}
+  {id:"reports", label:"Reports"}
 ];
+// Inventory family (page anatomy 11/12: 10 tabs didn't fit): Order Guide and Temp Count are views inside Inventory.
+var INV_FAMILY = [["inventory","Stock"],["order","Order Guide"],["tempcount","Temp Count"]];
+var ALL_TABS = TABS.concat([{id:"order"},{id:"tempcount"}]);
 var state = { tab:"overview", data:null, loaded:false, q:"", f:"all", inbox:{items:null, err:"", busy:false}, up:null };
 // Remember the open tab in the URL (#t=invoices) so a refresh lands on the same tab.
-(function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && (m[1]==="duplicates"||m[1]==="missing")) m[1]="vendors"; if(m && TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
+(function(){ var m=/[#&]t=([\w-]+)/.exec(location.hash); if(m && (m[1]==="duplicates"||m[1]==="missing")) m[1]="vendors"; if(m && ALL_TABS.some(function(t){return t.id===m[1];})) state.tab=m[1]; })();
 function saveTab(){ history.replaceState(null,"",location.pathname+location.search+"#t="+state.tab); }
 var db=null, auth=null, user=null;
 
@@ -366,7 +372,7 @@ async function loadInbox(refresh){
 
 /* ---------- render ---------- */
 function renderNav(){
-  $("#tabNav").innerHTML = TABS.map(function(t){ var on=state.tab===t.id;
+  $("#tabNav").innerHTML = TABS.map(function(t){ var on=state.tab===t.id || (t.id==="inventory" && INV_FAMILY.some(function(f){ return f[0]===state.tab; }));
     return '<button type="button" role="tab" class="k-tab" aria-selected="'+on+'" tabindex="'+(on?0:-1)+'" data-tab="'+t.id+'">'+t.label+'</button>'; }).join("");
 }
 function kpi(label, value, foot, cls){ if(value==="\u2014"||value==="—") return ""; return '<div class="kpi '+(cls||"")+'"><div class="label">'+label+'</div><div class="value">'+value+'</div><div class="foot">'+foot+'</div></div>'; }
@@ -382,11 +388,17 @@ function render(){
   }
   var D = state.data;
   // Import lives here so it is always one tap away, on every tab.
-  $("#dataStatus").innerHTML = "Ottimate data from "+dShort(D.pulledAt)+' <button class="k-btn k-btn-sm k-btn-ghost" data-act="syncHelp">Sync from Ottimate</button> <button class="k-btn k-btn-sm k-btn-ghost" data-act="import">Import CSV</button>';
+  // Page head (anatomy 11/12): freshness + one icon. Import CSV lives in the Sync card it opens.
+  $("#dataStatus").innerHTML = '<span class="k-meta">Ottimate data from '+dShort(D.pulledAt)+'</span><button type="button" class="k-btn k-btn-outline k-btn-icon" data-act="syncHelp" aria-label="Sync from Ottimate" data-k-tip="Sync from Ottimate or import a CSV"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/></svg></button>';
   // Ottimate has no lasting API login yet (asked them 2026-11-07), so the copy here comes from a CSV import. Nudge when it's old.
   var age = D.pulledAt ? Math.floor((Date.now()-new Date(D.pulledAt))/864e5) : 99;
   var nudge = age>=3 ? '<div class="k-alert" style="margin-bottom:16px; display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;"><span>Ottimate data is '+age+' days old, so new invoices can look missing and photo uploads may re-send them. Sync from Ottimate to refresh it.</span><button class="k-btn k-btn-sm" data-act="syncHelp">Sync from Ottimate</button></div>' : '';
-  m.innerHTML = (state.syncHelp ? syncCard() : "") + nudge + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory, order:vOrder, prices:vPrices, recipes:vRecipes, reports:vReports, tempcount:vTempCount})[state.tab](D);
+  var fam = INV_FAMILY.some(function(f){ return f[0]===state.tab; }) ? '<div class="k-toolbar" role="toolbar" aria-label="Inventory views"><div class="k-toolbar-start"><div role="group" aria-label="Inventory views">'+
+    INV_FAMILY.map(function(f){ return '<button type="button" class="k-chip" data-tab="'+f[0]+'" aria-pressed="'+(state.tab===f[0])+'">'+f[1]+'</button>'; }).join("")+'</div></div></div>' : '';
+  m.innerHTML = (state.syncHelp ? syncCard() : "") + nudge + fam + ({overview:vOverview, invoices:vInvoices, vendors:vVendors, inventory:vInventory, order:vOrder, prices:vPrices, recipes:vRecipes, reports:vReports, tempcount:vTempCount})[state.tab](D);
+  var desc = m.querySelector(".head .desc"), sub = $("#pageSub");
+  if(sub){ sub.textContent = desc ? desc.textContent : "Invoices, costs and margins, checked against the accountant's books."; }
+  if(desc) desc.remove();
 }
 
 // Sources that aren't connected yet (Jay, 2026-11-05: finish the dashboard now, connect Toast and QuickBooks later).
@@ -827,7 +839,7 @@ function vInventory(D){
         '</tbody></table></div></details>';
     }).join("");
   }).join("");
-  return countBar+head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>')+'<div style="margin-top:16px">'+countHistory(I, I, "main")+'</div>';
+  return head+bar+needCard+(body||'<p class="note" style="margin-top:16px">Nothing matches.</p>')+'<div style="margin-top:16px">'+countBar+countHistory(I, I, "main")+'</div>';
 }
 // Count mode: category by category, big taps. Every tap saves right away (one row per tap), so a dropped phone loses nothing.
 function vCount(I, C, S, label){
@@ -1365,7 +1377,7 @@ function syncCard(){
     '<p class="note" style="margin-bottom:10px">One click replaces both CSV imports: invoices for the Invoices check, and item prices and deliveries for Inventory. If you added the first version of this bookmark, delete it and drag this one.</p>'+
     '<ol class="note" style="padding-left:18px; display:flex; flex-direction:column; gap:6px; margin-bottom:12px"><li>Show your bookmarks bar (⌘⇧B), then drag this button onto it: <a class="k-btn k-btn-primary k-btn-sm" href="'+(syncHref()||"#")+'" onclick="event.preventDefault(); if(window.iaraToast) iaraToast(\'Drag it to your bookmarks bar instead of clicking.\')">Sync to iara</a></li>'+
     '<li>Open Ottimate (dashboard.plateiq.com) and sign in.</li><li>Click <b style="color:var(--k-ink)">Sync to iara</b> in your bookmarks bar. A box shows progress for about a minute and says "done". Then refresh this page.</li></ol>'+
-    '<button class="k-btn k-btn-sm k-btn-ghost" data-act="syncHelp">Close</button></div>';
+    '<div class="match-acts"><button class="k-btn k-btn-sm" data-act="import">Import a CSV Instead</button><button class="k-btn k-btn-sm k-btn-ghost" data-act="syncHelp">Close</button></div></div>';
 }
 
 /* ---------- auth + sync ---------- */
