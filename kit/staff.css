@@ -594,3 +594,6 @@ a.k-stat:focus-visible, button.k-stat:focus-visible { outline: 2px solid var(--k
 /* Section head on phones: meta drops under the title instead of squeezing beside it. */
 .k-section-head { flex-wrap: wrap; row-gap: 4px; }
 @media (max-width: 640px) { .k-section-meta { flex-basis: 100%; margin-left: 0; flex-wrap: wrap; } }
+/* Exactly 4 tiles: 2 x 2 until all 4 fit, never 3 + 1 (Feedback QA 11/13). */
+.k-stats:has(> :nth-child(4):last-child) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (min-width: 900px) { .k-stats:has(> :nth-child(4):last-child) { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
